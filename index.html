@@ -6,25 +6,28 @@
   <title>White Dragon [WD] | StarCraft: Remastered Clan</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;800;900&family=Rajdhani:wght@500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;800;900&family=Rajdhani:wght@500;600;700;800&family=Share+Tech+Mono&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg-dark: #080c14;
-      --bg-surface: #0e1524;
-      --bg-card: #121b2f;
-      --bg-card-hover: #17233d;
-      --border-color: #1e2c47;
-      --border-glow: #00e5ff33;
-      --cyan: #00e5ff;
-      --cyan-bright: #38ef7d;
-      --cyan-glow: rgba(0, 229, 255, 0.35);
-      --text-main: #e2e8f0;
-      --text-muted: #8899b3;
-      --terran: #3b82f6;
-      --protoss: #f59e0b;
-      --zerg: #a855f7;
-      --win: #10b981;
-      --loss: #ef4444;
+      /* White Dragon / StarCraft Glacier & Platinum Cyber Theme */
+      --bg-dark: #f0f4fa;
+      --bg-surface: #ffffff;
+      --bg-card: #f8fafc;
+      --bg-card-hover: #edf4fc;
+      --border-color: #cbd8e8;
+      --border-glow: rgba(14, 165, 233, 0.35);
+      --dragon-blue: #0284c7;
+      --dragon-cyan: #0284c7;
+      --dragon-glow: rgba(2, 132, 199, 0.25);
+      --text-main: #0f172a;
+      --text-muted: #475569;
+      --terran: #2563eb;
+      --protoss: #d97706;
+      --zerg: #7e22ce;
+      --win: #15803d;
+      --loss: #dc2626;
+      --dragon-silver: #e2e8f0;
+      --dragon-frost: #e0f2fe;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
     html { scroll-behavior: smooth; }
@@ -35,21 +38,22 @@
       font-size: 16px;
       line-height: 1.5;
       background-image: 
-        radial-gradient(circle at 50% 0%, rgba(0, 229, 255, 0.07) 0%, transparent 60%),
-        linear-gradient(rgba(8, 12, 20, 0.95), rgba(8, 12, 20, 0.98)),
-        radial-gradient(#1e2c47 1px, transparent 1px);
+        radial-gradient(circle at 50% 0%, rgba(2, 132, 199, 0.08) 0%, transparent 60%),
+        linear-gradient(rgba(240, 244, 250, 0.94), rgba(240, 244, 250, 0.98)),
+        radial-gradient(#94a3b8 1.1px, transparent 1.1px);
       background-size: 100% 100%, 100% 100%, 28px 28px;
       min-height: 100vh;
     }
 
     /* TOP HEADER & NAVBAR */
     header {
-      background: rgba(11, 17, 30, 0.92);
-      border-bottom: 1px solid var(--border-color);
+      background: rgba(255, 255, 255, 0.94);
+      border-bottom: 2px solid #cbd8e8;
       position: sticky;
       top: 0;
       z-index: 100;
-      backdrop-filter: blur(12px);
+      backdrop-filter: blur(14px);
+      box-shadow: 0 4px 18px rgba(15, 23, 42, 0.06);
     }
     .nav-container {
       max-width: 1200px;
@@ -64,32 +68,36 @@
       align-items: center;
       gap: 12px;
       text-decoration: none;
-      color: #fff;
+      color: #0f172a;
     }
     .crest-nav-img {
-      width: 42px;
-      height: 42px;
+      width: 44px;
+      height: 44px;
       border-radius: 8px;
-      border: 1px solid var(--cyan);
-      box-shadow: 0 0 10px var(--cyan-glow);
+      border: 2px solid var(--dragon-blue);
+      box-shadow: 0 0 10px rgba(2, 132, 199, 0.3);
       object-fit: cover;
       display: block;
+      background: #ffffff;
     }
     .brand-title {
       font-family: 'Orbitron', sans-serif;
-      font-size: 1.2rem;
+      font-size: 1.25rem;
       font-weight: 900;
-      letter-spacing: 2px;
-      color: #fff;
+      letter-spacing: 2.5px;
+      color: #0f172a;
     }
-    .brand-title span { color: var(--cyan); }
+    .brand-title span { 
+      color: var(--dragon-blue); 
+      text-shadow: 0 0 12px rgba(2, 132, 199, 0.2); 
+    }
     .nav-links {
       display: flex;
       gap: 6px;
       list-style: none;
     }
     .nav-tab-btn {
-      color: var(--text-muted);
+      color: #475569;
       text-decoration: none;
       font-weight: 700;
       font-size: 0.88rem;
@@ -104,58 +112,62 @@
       font-family: 'Rajdhani', sans-serif;
     }
     .nav-tab-btn:hover {
-      color: #fff;
-      background: rgba(0, 229, 255, 0.06);
-      border-color: rgba(0, 229, 255, 0.2);
+      color: var(--dragon-blue);
+      background: rgba(2, 132, 199, 0.08);
+      border-color: rgba(2, 132, 199, 0.3);
     }
     .nav-tab-btn.active {
-      color: var(--cyan);
-      background: rgba(0, 229, 255, 0.12);
-      border-color: var(--cyan);
-      box-shadow: 0 0 12px rgba(0, 229, 255, 0.2);
+      color: #ffffff;
+      background: linear-gradient(135deg, #0284c7, #0369a1);
+      border-color: #0284c7;
+      box-shadow: 0 2px 10px rgba(2, 132, 199, 0.35);
     }
 
-    /* ÜBERSICHTLICH HERO BANNER */
+    /* WHITE DRAGON CYBER HERO BANNER */
     .hero-banner {
       max-width: 1200px;
       margin: 28px auto 20px;
       padding: 0 20px;
     }
     .hero-panel {
-      background: linear-gradient(135deg, rgba(14, 21, 36, 0.95), rgba(9, 14, 24, 0.98));
-      border: 1px solid var(--border-color);
-      border-radius: 12px;
-      padding: 24px 28px;
+      background: linear-gradient(135deg, #ffffff 0%, #f1f6fc 100%);
+      border: 1px solid #bfdbfe;
+      border-radius: 14px;
+      padding: 28px 32px;
       display: grid;
       grid-template-columns: 1fr auto;
-      gap: 30px;
+      gap: 32px;
       align-items: center;
-      box-shadow: 0 8px 30px rgba(0,0,0,0.5);
+      box-shadow: 0 12px 36px rgba(15, 23, 42, 0.08), 0 1px 3px rgba(15, 23, 42, 0.05);
       position: relative;
       overflow: hidden;
     }
     .hero-panel::after {
       content: '';
       position: absolute;
-      top: 0; left: 0; width: 4px; height: 100%;
-      background: var(--cyan);
-      box-shadow: 0 0 12px var(--cyan);
+      top: 0; left: 0; width: 5px; height: 100%;
+      background: linear-gradient(180deg, #0284c7, #38bdf8);
+      box-shadow: 0 0 14px rgba(2, 132, 199, 0.5);
     }
     .hero-title-group h1 {
       font-family: 'Orbitron', sans-serif;
-      font-size: 2.2rem;
+      font-size: 2.3rem;
       font-weight: 900;
-      letter-spacing: 1.5px;
-      color: #fff;
+      letter-spacing: 2px;
+      color: #0f172a;
       line-height: 1.1;
       margin-bottom: 8px;
     }
-    .hero-title-group h1 span { color: var(--cyan); text-shadow: 0 0 15px var(--cyan-glow); }
+    .hero-title-group h1 span { 
+      color: var(--dragon-blue); 
+      text-shadow: 0 0 15px rgba(2, 132, 199, 0.3); 
+    }
     .hero-desc {
-      color: var(--text-muted);
+      color: #475569;
       font-size: 1.05rem;
+      font-weight: 600;
       max-width: 680px;
-      margin-bottom: 16px;
+      margin-bottom: 18px;
     }
     .hero-quick-intel {
       display: flex;
@@ -165,20 +177,21 @@
       font-size: 0.85rem;
     }
     .intel-badge {
-      background: #090e1a;
-      border: 1px solid var(--border-color);
-      border-radius: 4px;
-      padding: 5px 12px;
+      background: #ffffff;
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      padding: 6px 14px;
       display: inline-flex;
       align-items: center;
       gap: 6px;
-      color: #cbd5e1;
+      color: #334155;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.04);
     }
-    .intel-badge strong { color: #fff; }
+    .intel-badge strong { color: #0f172a; }
     .intel-badge.channel-badge {
-      border-color: var(--cyan);
-      background: rgba(0, 229, 255, 0.1);
-      color: var(--cyan);
+      border-color: #0284c7;
+      background: #e0f2fe;
+      color: #0369a1;
       font-weight: bold;
     }
     .hero-emblem-preview {
@@ -186,68 +199,76 @@
       padding: 10px;
     }
     .hero-emblem-preview img, .hero-emblem-preview svg {
-      width: 140px;
-      height: 140px;
-      border-radius: 8px;
+      width: 145px;
+      height: 145px;
+      border-radius: 10px;
       display: block;
       margin: 0 auto 6px;
       object-fit: cover;
+      box-shadow: 0 6px 20px rgba(14, 165, 233, 0.2);
+      border: 2px solid #bae6fd;
     }
 
     /* QUICK NAVIGATION DASHBOARD (ÜBERSICHT) */
     .dashboard-nav-grid {
       max-width: 1200px;
-      margin: 0 auto 30px;
+      margin: 0 auto 28px;
       padding: 0 20px;
       display: grid;
       grid-template-columns: repeat(6, 1fr);
       gap: 12px;
     }
     .dash-btn {
-      background: var(--bg-surface);
-      border: 1px solid var(--border-color);
-      border-radius: 8px;
-      padding: 12px 10px;
+      background: #ffffff;
+      border: 1px solid #cbd8e8;
+      border-radius: 10px;
+      padding: 13px 10px;
       text-align: center;
       text-decoration: none;
-      color: var(--text-muted);
+      color: #475569;
       transition: all 0.2s;
       cursor: pointer;
       display: flex;
       flex-direction: column;
       align-items: center;
       gap: 4px;
+      box-shadow: 0 2px 6px rgba(15, 23, 42, 0.04);
     }
     .dash-btn .dash-icon {
-      font-size: 1.25rem;
-      color: var(--cyan);
+      font-size: 1.3rem;
+      color: var(--dragon-blue);
     }
     .dash-btn .dash-label {
       font-family: 'Orbitron', sans-serif;
-      font-size: 0.75rem;
-      font-weight: 700;
-      letter-spacing: 1px;
-      color: #fff;
+      font-size: 0.76rem;
+      font-weight: 800;
+      letter-spacing: 1.2px;
+      color: #0f172a;
     }
     .dash-btn .dash-sub {
-      font-size: 0.7rem;
-      color: var(--text-muted);
+      font-size: 0.72rem;
+      color: #64748b;
       font-family: 'Share Tech Mono', monospace;
     }
-    .dash-btn:hover, .dash-btn.active {
-      border-color: var(--cyan);
-      background: rgba(0, 229, 255, 0.08);
-      box-shadow: 0 0 12px rgba(0, 229, 255, 0.15);
+    .dash-btn:hover {
+      border-color: #0284c7;
+      background: #f0f9ff;
+      box-shadow: 0 6px 16px rgba(2, 132, 199, 0.15);
       transform: translateY(-2px);
     }
-    .dash-btn.active .dash-label { color: var(--cyan); }
+    .dash-btn.active {
+      border-color: #0284c7;
+      background: #e0f2fe;
+      box-shadow: 0 4px 14px rgba(2, 132, 199, 0.2);
+    }
+    .dash-btn.active .dash-label { color: #0369a1; }
 
     /* CONTENT SECTIONS */
     .section-wrap {
       max-width: 1200px;
       margin: 20px auto 50px;
       padding: 0 20px;
-      display: none; /* Controlled by tab switching for clean overview */
+      display: none;
     }
     .section-wrap.active-tab {
       display: block;
@@ -259,7 +280,7 @@
     }
     .section-head {
       margin-bottom: 20px;
-      border-bottom: 1px solid var(--border-color);
+      border-bottom: 2px solid #cbd5e1;
       padding-bottom: 12px;
       display: flex;
       justify-content: space-between;
@@ -270,35 +291,38 @@
       font-size: 1.5rem;
       letter-spacing: 1.5px;
       text-transform: uppercase;
-      color: #fff;
+      color: #0f172a;
+      font-weight: 900;
     }
-    .section-head h2 span { color: var(--cyan); }
+    .section-head h2 span { color: var(--dragon-blue); }
     .section-subtitle {
-      font-size: 0.9rem;
-      color: var(--text-muted);
+      font-size: 0.95rem;
+      color: #475569;
+      font-weight: 600;
       margin-top: 4px;
     }
 
-    /* TEAM A (WD-A) SELECTOR */
+    /* TEAM SQUAD SELECTOR */
     .team-badge-header {
       display: inline-flex;
       align-items: center;
       gap: 10px;
-      background: rgba(0, 229, 255, 0.1);
-      border: 1px solid var(--cyan);
+      background: #e0f2fe;
+      border: 1px solid #7dd3fc;
       border-radius: 6px;
       padding: 8px 16px;
       margin-bottom: 16px;
       font-family: 'Orbitron', sans-serif;
       font-size: 0.95rem;
-      color: #fff;
+      color: #0369a1;
+      font-weight: 800;
     }
     .team-badge-header span.pill {
-      background: var(--cyan);
-      color: #080c14;
+      background: #0284c7;
+      color: #ffffff;
       font-size: 0.75rem;
       font-weight: 900;
-      padding: 2px 8px;
+      padding: 3px 8px;
       border-radius: 4px;
     }
 
@@ -306,152 +330,158 @@
     .data-table {
       width: 100%;
       border-collapse: collapse;
-      background: var(--bg-surface);
-      border: 1px solid var(--border-color);
-      border-radius: 8px;
+      background: #ffffff;
+      border: 1px solid #cbd5e1;
+      border-radius: 10px;
       overflow: hidden;
       margin-bottom: 24px;
+      box-shadow: 0 4px 14px rgba(15, 23, 42, 0.04);
     }
     .data-table th, .data-table td {
-      padding: 12px 16px;
+      padding: 13px 18px;
       text-align: left;
       vertical-align: middle;
     }
     .data-table th {
-      background: #101828;
+      background: #f1f5f9;
       font-family: 'Orbitron', sans-serif;
-      font-size: 0.78rem;
+      font-size: 0.8rem;
       letter-spacing: 1.5px;
-      color: var(--text-muted);
-      border-bottom: 1px solid var(--border-color);
+      color: #334155;
+      font-weight: 800;
+      border-bottom: 2px solid #cbd5e1;
     }
     .data-table tr {
-      border-bottom: 1px solid rgba(30, 44, 71, 0.6);
+      border-bottom: 1px solid #e2e8f0;
       transition: background 0.15s;
     }
     .data-table tbody tr.clickable-row {
       cursor: pointer;
     }
     .data-table tbody tr.clickable-row:hover {
-      background: rgba(0, 229, 255, 0.08);
-      border-left: 3px solid var(--cyan);
+      background: #f0f9ff;
+      border-left: 4px solid var(--dragon-blue);
     }
     .player-tag {
-      font-weight: 700;
-      color: #fff;
+      font-weight: 800;
+      color: #0f172a;
       font-size: 1.05rem;
       display: inline-flex;
       align-items: center;
       gap: 6px;
     }
     .player-tag:hover {
-      color: var(--cyan);
-      text-shadow: 0 0 10px var(--cyan-glow);
+      color: var(--dragon-blue);
     }
     .click-hint {
       font-size: 0.7rem;
-      color: var(--cyan);
-      background: rgba(0, 229, 255, 0.1);
-      border: 1px solid rgba(0, 229, 255, 0.3);
+      color: #0369a1;
+      background: #e0f2fe;
+      border: 1px solid #bae6fd;
       padding: 2px 6px;
-      border-radius: 3px;
+      border-radius: 4px;
       font-family: 'Share Tech Mono', monospace;
       margin-left: 6px;
+      font-weight: bold;
     }
     .race-badge {
       display: inline-flex;
       align-items: center;
       gap: 6px;
-      padding: 3px 10px;
+      padding: 4px 11px;
       border-radius: 4px;
-      font-size: 0.78rem;
-      font-weight: 700;
+      font-size: 0.8rem;
+      font-weight: 800;
       letter-spacing: 1px;
       text-transform: uppercase;
       font-family: 'Orbitron', sans-serif;
     }
-    .race-terran { background: rgba(59, 130, 246, 0.15); color: #60a5fa; border: 1px solid rgba(59, 130, 246, 0.4); }
-    .race-protoss { background: rgba(245, 158, 11, 0.15); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.4); }
-    .race-zerg { background: rgba(168, 85, 247, 0.15); color: #c084fc; border: 1px solid rgba(168, 85, 247, 0.4); }
+    .race-terran { background: #dbeafe; color: #1d4ed8; border: 1px solid #93c5fd; }
+    .race-protoss { background: #fef3c7; color: #b45309; border: 1px solid #fde68a; }
+    .race-zerg { background: #f3e8ff; color: #7e22ce; border: 1px solid #d8b4fe; }
+
     .role-badge {
       display: inline-flex;
       align-items: center;
       gap: 4px;
-      padding: 3px 8px;
+      padding: 4px 9px;
       border-radius: 4px;
-      font-size: 0.72rem;
+      font-size: 0.74rem;
       font-weight: 800;
       letter-spacing: 1px;
       text-transform: uppercase;
       font-family: 'Orbitron', sans-serif;
     }
     .role-squadleader {
-      background: rgba(0, 229, 255, 0.18);
-      color: #00e5ff;
-      border: 1px solid rgba(0, 229, 255, 0.6);
-      box-shadow: 0 0 10px rgba(0, 229, 255, 0.3);
+      background: #e0f2fe;
+      color: #0369a1;
+      border: 1px solid #0284c7;
+      box-shadow: 0 0 8px rgba(2, 132, 199, 0.2);
     }
     .role-captain {
-      background: rgba(251, 191, 36, 0.18);
-      color: #fbbf24;
-      border: 1px solid rgba(251, 191, 36, 0.6);
-      box-shadow: 0 0 10px rgba(251, 191, 36, 0.25);
+      background: #fef3c7;
+      color: #92400e;
+      border: 1px solid #f59e0b;
+      box-shadow: 0 0 8px rgba(245, 158, 11, 0.2);
     }
     .role-starter {
-      background: rgba(148, 163, 184, 0.1);
-      color: #cbd5e1;
-      border: 1px solid rgba(148, 163, 184, 0.3);
+      background: #f1f5f9;
+      color: #475569;
+      border: 1px solid #cbd5e1;
     }
 
-
-    /* MATCH CARDS */
+    /* CARDS */
     .grid-2 {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 20px;
     }
     .card {
-      background: var(--bg-surface);
-      border: 1px solid var(--border-color);
-      border-radius: 8px;
-      padding: 18px;
+      background: #ffffff;
+      border: 1px solid #cbd5e1;
+      border-radius: 10px;
+      padding: 20px;
+      box-shadow: 0 4px 14px rgba(15, 23, 42, 0.04);
     }
     .match-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      border-bottom: 1px solid var(--border-color);
+      border-bottom: 2px solid #e2e8f0;
       padding-bottom: 10px;
       margin-bottom: 12px;
       font-family: 'Orbitron', sans-serif;
-      font-size: 0.85rem;
+      font-size: 0.88rem;
     }
-    .match-header span.week { color: var(--cyan); }
+    .match-header span.week { color: var(--dragon-blue); font-weight: 800; }
     .match-header span.score-win { color: var(--win); font-weight: 900; }
     .match-header span.score-loss { color: var(--loss); font-weight: 900; }
     .set-row {
       display: flex;
       justify-content: space-between;
-      padding: 6px 0;
-      border-bottom: 1px dotted rgba(30, 44, 71, 0.5);
-      font-size: 0.9rem;
+      padding: 7px 0;
+      border-bottom: 1px dotted #cbd5e1;
+      font-size: 0.94rem;
+      font-weight: 600;
     }
 
     /* REPLAYS SECTION */
     .replay-card {
-      background: var(--bg-surface);
-      border: 1px solid var(--border-color);
-      border-radius: 8px;
-      padding: 16px;
+      background: #ffffff;
+      border: 1px solid #cbd5e1;
+      border-radius: 10px;
+      padding: 18px;
       display: flex;
       justify-content: space-between;
       align-items: center;
       margin-bottom: 12px;
       transition: all 0.2s;
+      box-shadow: 0 2px 8px rgba(15, 23, 42, 0.03);
     }
     .replay-card:hover {
-      border-color: var(--cyan);
-      background: rgba(0, 229, 255, 0.04);
+      border-color: var(--dragon-blue);
+      background: #f0f9ff;
+      box-shadow: 0 4px 14px rgba(2, 132, 199, 0.12);
     }
     .replay-meta {
       display: flex;
@@ -460,24 +490,25 @@
     }
     .replay-title {
       font-family: 'Orbitron', sans-serif;
-      font-weight: 700;
-      font-size: 0.95rem;
-      color: #fff;
+      font-weight: 800;
+      font-size: 0.98rem;
+      color: #0f172a;
     }
     .replay-sub {
-      font-size: 0.82rem;
-      color: var(--text-muted);
+      font-size: 0.86rem;
+      color: #64748b;
       font-family: 'Share Tech Mono', monospace;
+      font-weight: 600;
     }
     .btn-download-rep {
-      background: rgba(0, 229, 255, 0.1);
-      border: 1px solid var(--cyan);
-      color: var(--cyan);
-      padding: 6px 14px;
-      border-radius: 5px;
+      background: #e0f2fe;
+      border: 1.5px solid var(--dragon-blue);
+      color: #0369a1;
+      padding: 7px 16px;
+      border-radius: 6px;
       font-family: 'Orbitron', sans-serif;
       font-size: 0.78rem;
-      font-weight: 700;
+      font-weight: 800;
       text-decoration: none;
       cursor: pointer;
       display: inline-flex;
@@ -486,9 +517,9 @@
       transition: all 0.2s;
     }
     .btn-download-rep:hover {
-      background: var(--cyan);
-      color: #080c14;
-      box-shadow: 0 0 14px var(--cyan-glow);
+      background: var(--dragon-blue);
+      color: #ffffff;
+      box-shadow: 0 0 14px rgba(2, 132, 199, 0.35);
     }
 
     /* NEWS SECTION */
@@ -498,142 +529,158 @@
       gap: 18px;
     }
     .news-card {
-      background: var(--bg-surface);
-      border: 1px solid var(--border-color);
-      border-radius: 8px;
-      padding: 20px;
+      background: #ffffff;
+      border: 1px solid #cbd5e1;
+      border-radius: 10px;
+      padding: 22px;
       position: relative;
       overflow: hidden;
-      transition: border 0.2s;
+      transition: all 0.2s;
+      box-shadow: 0 4px 14px rgba(15, 23, 42, 0.04);
     }
     .news-card:hover {
-      border-color: var(--cyan);
+      border-color: var(--dragon-blue);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(2, 132, 199, 0.1);
     }
     .news-tag {
       font-family: 'Share Tech Mono', monospace;
-      font-size: 0.75rem;
-      color: var(--cyan);
+      font-size: 0.78rem;
+      color: var(--dragon-blue);
+      font-weight: 800;
       margin-bottom: 6px;
       display: inline-block;
     }
     .news-card h3 {
       font-family: 'Orbitron', sans-serif;
-      font-size: 1.1rem;
-      color: #fff;
+      font-size: 1.15rem;
+      color: #0f172a;
       margin-bottom: 8px;
       line-height: 1.3;
+      font-weight: 800;
     }
     .news-card p {
-      color: var(--text-muted);
-      font-size: 0.92rem;
-      line-height: 1.5;
+      color: #475569;
+      font-size: 0.95rem;
+      line-height: 1.55;
     }
     .news-date {
       margin-top: 14px;
-      font-size: 0.75rem;
+      font-size: 0.78rem;
       color: #64748b;
       font-family: 'Share Tech Mono', monospace;
+      font-weight: 600;
     }
 
     /* ABOUT US SECTION */
     .about-box {
-      background: var(--bg-surface);
-      border: 1px solid var(--border-color);
-      border-radius: 12px;
-      padding: 32px;
+      background: #ffffff;
+      border: 1px solid #cbd5e1;
+      border-radius: 14px;
+      padding: 34px;
       position: relative;
       line-height: 1.7;
+      box-shadow: 0 6px 20px rgba(15, 23, 42, 0.05);
     }
     .about-quote {
       font-size: 1.25rem;
-      font-weight: 600;
-      color: #fff;
+      font-weight: 700;
+      color: #0f172a;
       margin-bottom: 18px;
-      border-left: 3px solid var(--cyan);
-      padding-left: 16px;
+      border-left: 4px solid var(--dragon-blue);
+      padding-left: 18px;
+      background: #f8fafc;
+      padding-top: 8px;
+      padding-bottom: 8px;
+      border-radius: 0 6px 6px 0;
     }
     .about-p {
-      color: var(--text-muted);
+      color: #334155;
       font-size: 1.05rem;
       margin-bottom: 16px;
+      font-weight: 600;
     }
     .about-pillars {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
       gap: 16px;
       margin-top: 24px;
-      border-top: 1px solid var(--border-color);
-      padding-top: 20px;
+      border-top: 2px solid #e2e8f0;
+      padding-top: 22px;
     }
     .pillar-item {
-      background: #090e1a;
-      border: 1px solid var(--border-color);
-      border-radius: 6px;
-      padding: 14px;
+      background: #f8fafc;
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+      padding: 16px;
     }
     .pillar-item h4 {
       font-family: 'Orbitron', sans-serif;
-      color: var(--cyan);
+      color: var(--dragon-blue);
       font-size: 0.95rem;
-      margin-bottom: 4px;
+      margin-bottom: 6px;
+      font-weight: 800;
     }
     .pillar-item p {
-      color: var(--text-muted);
-      font-size: 0.85rem;
+      color: #475569;
+      font-size: 0.88rem;
     }
 
     /* MEMBERS HIERARCHY */
     .tier-group {
-      background: var(--bg-surface);
-      border: 1px solid var(--border-color);
-      border-radius: 8px;
+      background: #ffffff;
+      border: 1px solid #cbd5e1;
+      border-radius: 10px;
       margin-bottom: 16px;
       overflow: hidden;
+      box-shadow: 0 2px 8px rgba(15, 23, 42, 0.03);
     }
     .tier-header {
-      background: #111a2c;
-      padding: 10px 18px;
+      background: #f1f5f9;
+      padding: 11px 18px;
       display: flex;
       justify-content: space-between;
       align-items: center;
       font-family: 'Orbitron', sans-serif;
       font-size: 0.92rem;
-      border-bottom: 1px solid var(--border-color);
+      font-weight: 800;
+      border-bottom: 1px solid #cbd5e1;
     }
-    .tier-header .title { color: var(--cyan); letter-spacing: 1px; }
-    .tier-header .insignia { font-family: 'Share Tech Mono', monospace; color: #fbbf24; font-size: 0.95rem; }
+    .tier-header .title { color: #0f172a; letter-spacing: 1.2px; }
+    .tier-header .insignia { font-family: 'Share Tech Mono', monospace; color: #d97706; font-size: 1rem; }
     .tier-content {
-      padding: 12px 16px;
+      padding: 14px 18px;
       display: flex;
       flex-wrap: wrap;
       gap: 10px;
+      background: #ffffff;
     }
     .member-pill {
-      background: var(--bg-card);
-      border: 1px solid var(--border-color);
-      padding: 7px 14px;
+      background: #f8fafc;
+      border: 1px solid #cbd5e1;
+      padding: 8px 16px;
       border-radius: 6px;
       display: flex;
       align-items: center;
       gap: 8px;
-      font-weight: 600;
+      font-weight: 700;
       cursor: pointer;
       transition: all 0.2s;
     }
     .member-pill:hover {
-      border-color: var(--cyan);
-      box-shadow: 0 0 12px var(--cyan-glow);
+      border-color: var(--dragon-blue);
+      box-shadow: 0 4px 12px rgba(2, 132, 199, 0.2);
       transform: translateY(-2px);
-      background: #16243d;
+      background: #f0f9ff;
     }
-    .member-pill .tag { color: #fff; font-size: 0.95rem; }
-    .member-pill .pill-race { font-size: 0.72rem; text-transform: uppercase; font-family: 'Orbitron', sans-serif; font-weight: 700; }
+    .member-pill .tag { color: #0f172a; font-size: 0.98rem; }
+    .member-pill .pill-race { font-size: 0.74rem; text-transform: uppercase; font-family: 'Orbitron', sans-serif; font-weight: 800; }
 
     /* DOSSIER MODAL */
     .modal-backdrop {
       position: fixed;
       top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(4, 7, 13, 0.85);
+      background: rgba(15, 23, 42, 0.65);
       backdrop-filter: blur(8px);
       z-index: 999;
       display: none;
@@ -648,10 +695,10 @@
       opacity: 1;
     }
     .dossier-card {
-      background: #0d1524;
-      border: 1px solid var(--cyan);
-      box-shadow: 0 0 35px rgba(0, 229, 255, 0.25), inset 0 0 20px rgba(0, 229, 255, 0.05);
-      border-radius: 12px;
+      background: #ffffff;
+      border: 2px solid var(--dragon-blue);
+      box-shadow: 0 20px 50px rgba(15, 23, 42, 0.25), 0 0 25px rgba(2, 132, 199, 0.2);
+      border-radius: 14px;
       width: 100%;
       max-width: 580px;
       overflow: hidden;
@@ -662,9 +709,9 @@
       to { transform: translateY(0) scale(1); opacity: 1; }
     }
     .dossier-header {
-      background: linear-gradient(90deg, #121e33, #0f192b);
-      border-bottom: 1px solid var(--border-color);
-      padding: 14px 18px;
+      background: linear-gradient(90deg, #f0f9ff, #e0f2fe);
+      border-bottom: 2px solid #bae6fd;
+      padding: 14px 20px;
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -672,33 +719,35 @@
     .dossier-header-title {
       font-family: 'Orbitron', sans-serif;
       font-size: 1.05rem;
-      color: #fff;
+      color: #0f172a;
       display: flex;
       align-items: center;
       gap: 10px;
       letter-spacing: 1.5px;
+      font-weight: 900;
     }
-    .dossier-header-title span { color: var(--cyan); }
+    .dossier-header-title span { color: var(--dragon-blue); }
     .btn-close-modal {
-      background: transparent;
-      border: 1px solid var(--border-color);
-      color: var(--text-muted);
-      width: 30px;
-      height: 30px;
+      background: #ffffff;
+      border: 1px solid #cbd5e1;
+      color: #64748b;
+      width: 32px;
+      height: 32px;
       border-radius: 6px;
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 1.2rem;
+      font-size: 1.3rem;
       transition: all 0.2s;
     }
     .btn-close-modal:hover {
       border-color: var(--loss);
       color: var(--loss);
+      background: #fef2f2;
     }
     .dossier-body {
-      padding: 22px;
+      padding: 24px;
     }
     .player-profile-summary {
       display: flex;
@@ -706,22 +755,22 @@
       align-items: flex-start;
       margin-bottom: 18px;
       padding-bottom: 16px;
-      border-bottom: 1px solid var(--border-color);
+      border-bottom: 2px solid #e2e8f0;
     }
     .player-name-big {
       font-family: 'Orbitron', sans-serif;
       font-size: 1.7rem;
       font-weight: 900;
-      color: #fff;
+      color: #0f172a;
       margin-bottom: 2px;
     }
     .player-rank-badge {
       display: inline-flex;
       align-items: center;
       gap: 6px;
-      color: #fbbf24;
-      font-size: 0.9rem;
-      font-weight: 700;
+      color: #b45309;
+      font-size: 0.92rem;
+      font-weight: 800;
       font-family: 'Share Tech Mono', monospace;
     }
     .info-grid {
@@ -731,50 +780,52 @@
       margin-bottom: 20px;
     }
     .info-box {
-      background: #111a2d;
-      border: 1px solid var(--border-color);
-      border-radius: 6px;
+      background: #f8fafc;
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
       padding: 10px 14px;
     }
     .info-box-label {
       font-size: 0.72rem;
-      color: var(--text-muted);
+      color: #64748b;
       text-transform: uppercase;
       font-family: 'Orbitron', sans-serif;
       letter-spacing: 1px;
       margin-bottom: 4px;
+      font-weight: 800;
     }
     .info-box-value {
-      color: #fff;
-      font-weight: 700;
-      font-size: 0.95rem;
+      color: #0f172a;
+      font-weight: 800;
+      font-size: 0.98rem;
       display: flex;
       align-items: center;
       gap: 8px;
     }
     .status-indicator {
       display: inline-block;
-      width: 9px;
-      height: 9px;
+      width: 10px;
+      height: 10px;
       border-radius: 50%;
       background: var(--win);
-      box-shadow: 0 0 8px var(--win);
+      box-shadow: 0 0 8px rgba(21, 128, 61, 0.6);
     }
     .status-indicator.inactive {
-      background: #64748b;
+      background: #94a3b8;
       box-shadow: none;
     }
     .league-stats-panel {
-      background: #10192a;
-      border: 1px solid rgba(0, 229, 255, 0.25);
-      border-radius: 8px;
-      padding: 14px;
+      background: #f0f9ff;
+      border: 1.5px solid #bae6fd;
+      border-radius: 10px;
+      padding: 16px;
     }
     .league-stats-title {
       font-family: 'Orbitron', sans-serif;
-      font-size: 0.85rem;
-      color: var(--cyan);
-      margin-bottom: 10px;
+      font-size: 0.88rem;
+      color: #0369a1;
+      font-weight: 800;
+      margin-bottom: 12px;
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -788,47 +839,51 @@
       text-align: center;
     }
     .stat-counter-box {
-      background: #090e1a;
-      border: 1px solid var(--border-color);
-      border-radius: 6px;
-      padding: 8px 4px;
+      background: #ffffff;
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+      padding: 10px 4px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.03);
     }
     .stat-counter-box .num {
       font-family: 'Orbitron', sans-serif;
-      font-size: 1.3rem;
+      font-size: 1.35rem;
       font-weight: 900;
-      color: #fff;
+      color: #0f172a;
     }
     .stat-counter-box .num.win { color: var(--win); }
     .stat-counter-box .lbl {
-      font-size: 0.68rem;
-      color: var(--text-muted);
+      font-size: 0.7rem;
+      color: #64748b;
       text-transform: uppercase;
       margin-top: 2px;
       font-family: 'Share Tech Mono', monospace;
+      font-weight: 700;
     }
     .match-history-log {
-      margin-top: 8px;
-      border-top: 1px dotted var(--border-color);
-      padding-top: 8px;
-      font-size: 0.82rem;
-      color: var(--text-muted);
+      margin-top: 10px;
+      border-top: 1px dotted #cbd5e1;
+      padding-top: 10px;
+      font-size: 0.86rem;
+      color: #475569;
     }
     .match-log-entry {
       display: flex;
       justify-content: space-between;
-      padding: 3px 0;
+      padding: 4px 0;
+      font-weight: 600;
     }
     .match-log-entry .res-win { color: var(--win); font-weight: bold; }
     .match-log-entry .res-loss { color: var(--loss); font-weight: bold; }
 
     footer {
-      border-top: 1px solid var(--border-color);
-      background: #05080e;
-      padding: 24px 20px;
+      border-top: 2px solid #cbd5e1;
+      background: #ffffff;
+      padding: 26px 20px;
       text-align: center;
-      color: var(--text-muted);
-      font-size: 0.85rem;
+      color: #64748b;
+      font-size: 0.88rem;
+      font-weight: 600;
       margin-top: 50px;
     }
 
@@ -851,7 +906,7 @@
   <header>
     <div class="nav-container">
       <a href="javascript:switchTab('overview')" class="logo-brand">
-        <img src="logo.jpg" alt="White Dragon Crest" class="crest-nav-img" onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 100 100\'><circle cx=\'50\' cy=\'50\' r=\'46\' fill=\'%230d1829\' stroke=\'%2300e5ff\' stroke-width=\'3\'/><polygon points=\'50,20 75,40 65,75 50,85 35,75 25,40\' fill=\'%2314243b\' stroke=\'%2300e5ff\' stroke-width=\'2\'/><text x=\'50\' y=\'55\' font-family=\'sans-serif\' font-size=\'18\' fill=\'%2300e5ff\' font-weight=\'bold\' text-anchor=\'middle\'>WD</text></svg>'">
+        <img src="logo.jpg" alt="White Dragon Crest" class="crest-nav-img" onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 100 100\'><circle cx=\'50\' cy=\'50\' r=\'46\' fill=\'%23ffffff\' stroke=\'%230284c7\' stroke-width=\'3\'/><polygon points=\'50,20 75,40 65,75 50,85 35,75 25,40\' fill=\'%23f0f9ff\' stroke=\'%230284c7\' stroke-width=\'2\'/><text x=\'50\' y=\'55\' font-family=\'sans-serif\' font-size=\'18\' fill=\'%230284c7\' font-weight=\'bold\' text-anchor=\'middle\'>WD</text></svg>'">
         <div class="brand-title">WHITE <span>DRAGON</span></div>
       </a>
       <ul class="nav-links">
@@ -872,7 +927,7 @@
     <div class="hero-panel">
       <div class="hero-title-group">
         <h1>WHITE <span>DRAGON</span> [WD]</h1>
-        <p class="hero-desc">Founded in 2021, StarCraft Remastered is a competitive StarCraft: Brood War clan competing in BWCL. Built on teamwork, dedication, and a love for the game, we continue to fight, improve, and represent our clan on the battlefield.</p>
+        <p class="hero-desc">Founded in 2021, White Dragon is an elite StarCraft: Brood War clan competing in BWCL. Built on teamwork, dedication, and competitive passion, representing our banner across the Koprulu Sector.</p>
         <div class="hero-quick-intel">
           <div class="intel-badge"><strong>EST:</strong> 2021</div>
           <div class="intel-badge"><strong>LEAGUE:</strong> BWCL S65 DIV-D (#3, 3-1)</div>
@@ -882,17 +937,17 @@
       </div>
       <div class="hero-emblem-preview">
         <img src="logo.jpg" alt="White Dragon Emblem" onerror="this.style.display='none'; document.getElementById('hero-fallback-svg').style.display='block';">
-        <svg id="hero-fallback-svg" viewBox="0 0 200 200" style="display:none; width:130px; height:130px; margin:0 auto;">
-          <circle cx="100" cy="100" r="95" fill="#09111e" stroke="#1e2c47" stroke-width="4"/>
-          <circle cx="100" cy="100" r="82" fill="none" stroke="#00e5ff" stroke-width="1.5" stroke-dasharray="6,4"/>
-          <polygon points="100,28 155,58 140,140 100,165 60,140 45,58" fill="#101d30" stroke="#00e5ff" stroke-width="2.5"/>
-          <path d="M 100,45 C 80,60 70,85 80,115 C 88,110 94,110 100,115 C 106,110 112,110 120,115 C 130,85 120,60 100,45 Z" fill="#e2e8f0"/>
-          <polygon points="86,78 95,82 88,85" fill="#00e5ff"/>
-          <polygon points="114,78 105,82 112,85" fill="#00e5ff"/>
-          <rect x="30" y="152" width="140" height="20" rx="4" fill="#0a1220" stroke="#00e5ff" stroke-width="2"/>
-          <text x="100" y="166" font-family="'Orbitron', sans-serif" font-size="10" fill="#00e5ff" font-weight="900" text-anchor="middle">WHITE DRAGON</text>
+        <svg id="hero-fallback-svg" viewBox="0 0 200 200" style="display:none; width:135px; height:135px; margin:0 auto;">
+          <circle cx="100" cy="100" r="95" fill="#f8fafc" stroke="#94a3b8" stroke-width="4"/>
+          <circle cx="100" cy="100" r="82" fill="none" stroke="#0284c7" stroke-width="2" stroke-dasharray="6,4"/>
+          <polygon points="100,28 155,58 140,140 100,165 60,140 45,58" fill="#e0f2fe" stroke="#0284c7" stroke-width="2.5"/>
+          <path d="M 100,45 C 80,60 70,85 80,115 C 88,110 94,110 100,115 C 106,110 112,110 120,115 C 130,85 120,60 100,45 Z" fill="#0f172a"/>
+          <polygon points="86,78 95,82 88,85" fill="#0284c7"/>
+          <polygon points="114,78 105,82 112,85" fill="#0284c7"/>
+          <rect x="30" y="152" width="140" height="20" rx="4" fill="#ffffff" stroke="#0284c7" stroke-width="2"/>
+          <text x="100" y="166" font-family="'Orbitron', sans-serif" font-size="10" fill="#0284c7" font-weight="900" text-anchor="middle">WHITE DRAGON</text>
         </svg>
-        <div style="font-family:'Orbitron', sans-serif; font-size:0.75rem; letter-spacing:1px; color:var(--cyan); margin-top:4px;">EST. 2021</div>
+        <div style="font-family:'Orbitron', sans-serif; font-size:0.75rem; letter-spacing:1px; color:var(--dragon-blue); margin-top:4px; font-weight:800;">EST. 2021</div>
       </div>
     </div>
   </section>
@@ -942,60 +997,60 @@
 
     <!-- 3 Quick Metrics -->
     <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap:16px; margin-bottom: 24px;">
-      <div class="card" style="border-left: 3px solid var(--cyan);">
-        <div style="font-family:'Orbitron', sans-serif; font-size:0.8rem; color:var(--text-muted); margin-bottom:4px;">BWCL S65 POSITION</div>
-        <div style="font-family:'Orbitron', sans-serif; font-size:1.8rem; font-weight:900; color:#fff;">3RD <span style="font-size:1rem; color:var(--cyan);">(19 PTS)</span></div>
-        <div style="color:var(--text-muted); font-size:0.85rem; margin-top:2px;">Clan Wars: 3W - 1L | Sets: 16-8</div>
+      <div class="card" style="border-left: 4px solid var(--dragon-blue);">
+        <div style="font-family:'Orbitron', sans-serif; font-size:0.8rem; color:var(--text-muted); margin-bottom:4px; font-weight:800;">BWCL S65 POSITION</div>
+        <div style="font-family:'Orbitron', sans-serif; font-size:1.8rem; font-weight:900; color:#0f172a;">3RD <span style="font-size:1.1rem; color:var(--dragon-blue);">(19 PTS)</span></div>
+        <div style="color:var(--text-muted); font-size:0.88rem; margin-top:2px; font-weight:600;">Clan Wars: 3W - 1L | Sets: 16-8</div>
       </div>
-      <div class="card" style="border-left: 3px solid var(--win);">
-        <div style="font-family:'Orbitron', sans-serif; font-size:0.8rem; color:var(--text-muted); margin-bottom:4px;">LAST RESULT</div>
+      <div class="card" style="border-left: 4px solid var(--win);">
+        <div style="font-family:'Orbitron', sans-serif; font-size:0.8rem; color:var(--text-muted); margin-bottom:4px; font-weight:800;">LAST RESULT</div>
         <div style="font-family:'Orbitron', sans-serif; font-size:1.8rem; font-weight:900; color:var(--win);">6 - 0 WIN</div>
-        <div style="color:var(--text-muted); font-size:0.85rem; margin-top:2px;">Week #4 Clean Sweep vs Shadow-2</div>
+        <div style="color:var(--text-muted); font-size:0.88rem; margin-top:2px; font-weight:600;">Week #4 Clean Sweep vs Shadow-2</div>
       </div>
-      <div class="card" style="border-left: 3px solid #fbbf24;">
-        <div style="font-family:'Orbitron', sans-serif; font-size:0.8rem; color:var(--text-muted); margin-bottom:4px;">NEXT CLAN WAR</div>
-        <div style="font-family:'Orbitron', sans-serif; font-size:1.4rem; font-weight:900; color:#fff; margin-top:4px;">WD vs dB)-3</div>
-        <div style="color:var(--text-muted); font-size:0.85rem; margin-top:2px;">Week #5 • Maps: Backrooms / Octagon</div>
+      <div class="card" style="border-left: 4px solid #d97706;">
+        <div style="font-family:'Orbitron', sans-serif; font-size:0.8rem; color:var(--text-muted); margin-bottom:4px; font-weight:800;">NEXT CLAN WAR</div>
+        <div style="font-family:'Orbitron', sans-serif; font-size:1.4rem; font-weight:900; color:#0f172a; margin-top:4px;">WD vs dB)-3</div>
+        <div style="color:var(--text-muted); font-size:0.88rem; margin-top:2px; font-weight:600;">Week #5 • Maps: Backrooms / Octagon</div>
       </div>
     </div>
 
     <!-- Two-column highlight: Roster summary + News teaser -->
     <div class="grid-2">
       <div class="card">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; border-bottom:1px solid var(--border-color); padding-bottom:8px;">
-          <span style="font-family:'Orbitron', sans-serif; font-weight:700; color:#fff; font-size:0.95rem;">WD-A ACTIVE SQUAD</span>
-          <a href="javascript:switchTab('roster')" style="color:var(--cyan); font-size:0.8rem; text-decoration:none; font-family:'Share Tech Mono', monospace;">VIEW FULL ROSTER &rarr;</a>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; border-bottom:2px solid #e2e8f0; padding-bottom:8px;">
+          <span style="font-family:'Orbitron', sans-serif; font-weight:800; color:#0f172a; font-size:0.95rem;">WD-A ACTIVE SQUAD</span>
+          <a href="javascript:switchTab('roster')" style="color:var(--dragon-blue); font-size:0.82rem; text-decoration:none; font-family:'Share Tech Mono', monospace; font-weight:bold;">VIEW FULL ROSTER &rarr;</a>
         </div>
-        <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom:12px;">Top active tournament starters representing White Dragon in Season 65:</p>
+        <p style="color:var(--text-muted); font-size:0.92rem; margin-bottom:12px;">Top active tournament starters representing White Dragon in Season 65:</p>
         <div style="display:flex; flex-direction:column; gap:8px;">
-          <div style="display:flex; justify-content:space-between; align-items:center; background:#0a101d; padding:8px 12px; border-radius:5px; border:1px solid var(--border-color); cursor:pointer;" onclick="openDossier('CheesyCake')">
-            <span><strong style="color:#fff;">CheesyCake[WD]</strong> <span class="race-badge race-terran" style="font-size:0.7rem; padding:2px 6px;">Terran</span></span>
-            <span style="color:var(--win); font-family:'Share Tech Mono', monospace; font-size:0.85rem;">4W - 0L 1v1</span>
+          <div style="display:flex; justify-content:space-between; align-items:center; background:#f8fafc; padding:10px 14px; border-radius:6px; border:1px solid #cbd5e1; cursor:pointer;" onclick="openDossier('CheesyCake')">
+            <span><strong style="color:#0f172a;">CheesyCake[WD]</strong> <span class="race-badge race-terran" style="font-size:0.7rem; padding:2px 7px;">Terran</span></span>
+            <span style="color:var(--win); font-family:'Share Tech Mono', monospace; font-size:0.88rem; font-weight:bold;">4W - 0L 1v1</span>
           </div>
-          <div style="display:flex; justify-content:space-between; align-items:center; background:#0a101d; padding:8px 12px; border-radius:5px; border:1px solid var(--border-color); cursor:pointer;" onclick="openDossier('Battousai')">
-            <span><strong style="color:#fff;">Battousai[WD]</strong> <span class="race-badge race-protoss" style="font-size:0.7rem; padding:2px 6px;">Protoss</span></span>
-            <span style="color:var(--win); font-family:'Share Tech Mono', monospace; font-size:0.85rem;">3W - 1L 1v1</span>
+          <div style="display:flex; justify-content:space-between; align-items:center; background:#f8fafc; padding:10px 14px; border-radius:6px; border:1px solid #cbd5e1; cursor:pointer;" onclick="openDossier('Battousai')">
+            <span><strong style="color:#0f172a;">Battousai[WD]</strong> <span class="race-badge race-protoss" style="font-size:0.7rem; padding:2px 7px;">Protoss</span></span>
+            <span style="color:var(--win); font-family:'Share Tech Mono', monospace; font-size:0.88rem; font-weight:bold;">3W - 1L 1v1</span>
           </div>
-          <div style="display:flex; justify-content:space-between; align-items:center; background:#0a101d; padding:8px 12px; border-radius:5px; border:1px solid var(--border-color); cursor:pointer;" onclick="openDossier('KaRDiNaL')">
-            <span><strong style="color:#fff;">KaRDiNaL[WD]</strong> <span class="race-badge race-terran" style="font-size:0.7rem; padding:2px 6px;">Terran</span></span>
-            <span style="color:#cbd5e1; font-family:'Share Tech Mono', monospace; font-size:0.85rem;">2W - 2L 1v1</span>
+          <div style="display:flex; justify-content:space-between; align-items:center; background:#f8fafc; padding:10px 14px; border-radius:6px; border:1px solid #cbd5e1; cursor:pointer;" onclick="openDossier('KaRDiNaL')">
+            <span><strong style="color:#0f172a;">KaRDiNaL[WD]</strong> <span class="race-badge race-terran" style="font-size:0.7rem; padding:2px 7px;">Terran</span></span>
+            <span style="color:#475569; font-family:'Share Tech Mono', monospace; font-size:0.88rem; font-weight:bold;">2W - 2L 1v1</span>
           </div>
-          <div style="display:flex; justify-content:space-between; align-items:center; background:#0a101d; padding:8px 12px; border-radius:5px; border:1px solid var(--border-color); cursor:pointer;" onclick="openDossier('aMeba')">
-            <span><strong style="color:#fff;">aMeba[WD]</strong> <span class="race-badge race-zerg" style="font-size:0.7rem; padding:2px 6px;">Zerg</span></span>
-            <span style="color:var(--win); font-family:'Share Tech Mono', monospace; font-size:0.85rem;">1W - 0L 1v1</span>
+          <div style="display:flex; justify-content:space-between; align-items:center; background:#f8fafc; padding:10px 14px; border-radius:6px; border:1px solid #cbd5e1; cursor:pointer;" onclick="openDossier('aMeba')">
+            <span><strong style="color:#0f172a;">aMeba[WD]</strong> <span class="race-badge race-zerg" style="font-size:0.7rem; padding:2px 7px;">Zerg</span></span>
+            <span style="color:var(--win); font-family:'Share Tech Mono', monospace; font-size:0.88rem; font-weight:bold;">1W - 0L 1v1</span>
           </div>
         </div>
       </div>
 
       <div class="card">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; border-bottom:1px solid var(--border-color); padding-bottom:8px;">
-          <span style="font-family:'Orbitron', sans-serif; font-weight:700; color:#fff; font-size:0.95rem;">LATEST TRANSMISSION</span>
-          <a href="javascript:switchTab('news')" style="color:var(--cyan); font-size:0.8rem; text-decoration:none; font-family:'Share Tech Mono', monospace;">ALL NEWS &rarr;</a>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; border-bottom:2px solid #e2e8f0; padding-bottom:8px;">
+          <span style="font-family:'Orbitron', sans-serif; font-weight:800; color:#0f172a; font-size:0.95rem;">LATEST TRANSMISSION</span>
+          <a href="javascript:switchTab('news')" style="color:var(--dragon-blue); font-size:0.82rem; text-decoration:none; font-family:'Share Tech Mono', monospace; font-weight:bold;">ALL NEWS &rarr;</a>
         </div>
-        <div style="background:#0a101d; padding:14px; border-radius:6px; border:1px solid var(--border-color);">
-          <span style="color:var(--cyan); font-size:0.75rem; font-family:'Share Tech Mono', monospace;">OCTOBER 25, 2026 // MATCH BULLETIN</span>
-          <h4 style="font-family:'Orbitron', sans-serif; color:#fff; font-size:1.05rem; margin:6px 0 8px;">6-0 Clean Sweep vs Shadow-2 in Week #4!</h4>
-          <p style="color:var(--text-muted); font-size:0.88rem; line-height:1.5;">White Dragon commanded the battlefield with four straight 2-0 singles wins by KaRDiNaL, Battousai, CheesyCake, and newcomer aMeba, sealed with a flawless 2-0 doubles set.</p>
+        <div style="background:#f8fafc; padding:16px; border-radius:8px; border:1px solid #cbd5e1;">
+          <span style="color:var(--dragon-blue); font-size:0.75rem; font-family:'Share Tech Mono', monospace; font-weight:bold;">OCTOBER 25, 2026 // MATCH BULLETIN</span>
+          <h4 style="font-family:'Orbitron', sans-serif; color:#0f172a; font-size:1.05rem; margin:6px 0 8px; font-weight:800;">6-0 Clean Sweep vs Shadow-2 in Week #4!</h4>
+          <p style="color:var(--text-muted); font-size:0.9rem; line-height:1.55;">White Dragon commanded the battlefield with four straight 2-0 singles wins by KaRDiNaL, Battousai, CheesyCake, and newcomer aMeba, sealed with a flawless 2-0 doubles set.</p>
         </div>
         <div style="margin-top:14px; text-align:right;">
           <a href="javascript:switchTab('replays')" class="btn-download-rep" style="display:inline-block;">DOWNLOAD WEEK 4 REPLAYS (.REP)</a>
@@ -1015,9 +1070,9 @@
 
     <!-- Squad Header: WD-A -->
     <div class="team-badge-header">
-      <span>TEAM: <strong style="color:var(--cyan);">WD-A</strong></span>
+      <span>TEAM: <strong>WD-A</strong></span>
       <span class="pill">BWCL S65 DIVISION D</span>
-      <span style="color:var(--text-muted); font-size:0.8rem; font-family:'Share Tech Mono', monospace;">[Main Competitive Squad]</span>
+      <span style="color:#475569; font-size:0.8rem; font-family:'Share Tech Mono', monospace;">[Main Competitive Squad]</span>
     </div>
 
     <table class="data-table">
@@ -1064,7 +1119,7 @@
           <td>4</td>
           <td>4 - 0</td>
           <td>19 - 5</td>
-          <td><strong style="color:var(--cyan);">23</strong></td>
+          <td><strong style="color:var(--dragon-blue);">23</strong></td>
         </tr>
         <tr>
           <td>2</td>
@@ -1072,15 +1127,15 @@
           <td>4</td>
           <td>3 - 1</td>
           <td>17 - 7</td>
-          <td><strong style="color:var(--cyan);">20</strong></td>
+          <td><strong style="color:var(--dragon-blue);">20</strong></td>
         </tr>
-        <tr style="background:rgba(0, 229, 255, 0.08); border-left: 3px solid var(--cyan);">
+        <tr style="background:#e0f2fe; border-left: 4px solid var(--dragon-blue);">
           <td><strong>3</strong></td>
-          <td><strong style="color:#fff;">White Dragon [WD]</strong></td>
+          <td><strong style="color:#0369a1;">White Dragon [WD]</strong></td>
           <td>4</td>
           <td>3 - 1</td>
           <td>16 - 8</td>
-          <td><strong style="color:var(--cyan);">19</strong></td>
+          <td><strong style="color:var(--dragon-blue);">19</strong></td>
         </tr>
         <tr>
           <td>4</td>
@@ -1126,7 +1181,7 @@
           <span class="week">WEEK #1 // 4TH OCT. 2026</span>
           <span class="score-win">WIN (4 : 2)</span>
         </div>
-        <div style="font-weight:700; margin-bottom:8px;">RED-3 vs White Dragon</div>
+        <div style="font-weight:800; color:#0f172a; margin-bottom:8px;">RED-3 vs White Dragon</div>
         <div class="set-row"><span>#1 1v1 KaRDiNaL[WD] 2 - 0 Red.Hot</span><span style="color:var(--win)">W</span></div>
         <div class="set-row"><span>#2 1v1 CheesyCake[WD] 2 - 0 Red-Navane</span><span style="color:var(--win)">W</span></div>
         <div class="set-row"><span>#3 1v1 Battousai[WD] 2 - 0 Red-SkRiK</span><span style="color:var(--win)">W</span></div>
@@ -1140,7 +1195,7 @@
           <span class="week">WEEK #2 // 11TH OCT. 2026</span>
           <span class="score-win">WIN (5 : 1)</span>
         </div>
-        <div style="font-weight:700; margin-bottom:8px;">White Dragon vs Cwt)-3</div>
+        <div style="font-weight:800; color:#0f172a; margin-bottom:8px;">White Dragon vs Cwt)-3</div>
         <div class="set-row"><span>#1 1v1 KaRDiNaL[WD] 1 - 2 Cwt|Surgen</span><span style="color:var(--loss)">L</span></div>
         <div class="set-row"><span>#2 1v1 CheesyCake[WD] 2 - 1 Cwt|MaF</span><span style="color:var(--win)">W</span></div>
         <div class="set-row"><span>#3 1v1 Battousai[WD] 2 - 0 Cwt|Budaak</span><span style="color:var(--win)">W</span></div>
@@ -1154,7 +1209,7 @@
           <span class="week">WEEK #3 // 18TH OCT. 2026</span>
           <span class="score-loss">LOSS (1 : 5)</span>
         </div>
-        <div style="font-weight:700; margin-bottom:8px;">SAS vs White Dragon</div>
+        <div style="font-weight:800; color:#0f172a; margin-bottom:8px;">SAS vs White Dragon</div>
         <div class="set-row"><span>#1 1v1 KaRDiNaL[WD] 1 - 2 non</span><span style="color:var(--loss)">L</span></div>
         <div class="set-row"><span>#2 1v1 Battousai[WD] 1 - 2 advil</span><span style="color:var(--loss)">L</span></div>
         <div class="set-row"><span>#3 1v1 CheesyCake[WD] 2 - 0 Ace</span><span style="color:var(--win)">W</span></div>
@@ -1168,7 +1223,7 @@
           <span class="week">WEEK #4 // 25TH OCT. 2026</span>
           <span class="score-win">CLEAN SWEEP (6 : 0)</span>
         </div>
-        <div style="font-weight:700; margin-bottom:8px;">White Dragon vs Shadow-2</div>
+        <div style="font-weight:800; color:#0f172a; margin-bottom:8px;">White Dragon vs Shadow-2</div>
         <div class="set-row"><span>#1 1v1 KaRDiNaL[WD] 2 - 0 Shadow|FankinGG</span><span style="color:var(--win)">W</span></div>
         <div class="set-row"><span>#2 1v1 Battousai[WD] 2 - 0 Shadow|Jacinta</span><span style="color:var(--win)">W</span></div>
         <div class="set-row"><span>#3 1v1 CheesyCake[WD] 2 - 0 Shadow|JD</span><span style="color:var(--win)">W</span></div>
@@ -1180,24 +1235,24 @@
     <!-- Upcoming Weeks -->
     <div style="margin-top:20px;" class="grid-2">
       <div class="card">
-        <div class="match-header"><span class="week">WEEK #5 // 1ST NOV. 2026</span><span style="color:var(--cyan)">UPCOMING</span></div>
-        <div style="font-weight:700;">White Dragon vs dB)-3</div>
-        <div style="color:var(--text-muted); font-size:0.85rem; margin-top:4px;">1n1 MOTW: Backrooms | 2n2 MOTW: Octagon</div>
+        <div class="match-header"><span class="week">WEEK #5 // 1ST NOV. 2026</span><span style="color:var(--dragon-blue)">UPCOMING</span></div>
+        <div style="font-weight:800; color:#0f172a;">White Dragon vs dB)-3</div>
+        <div style="color:var(--text-muted); font-size:0.88rem; margin-top:4px;">1n1 MOTW: Backrooms | 2n2 MOTW: Octagon</div>
       </div>
       <div class="card">
-        <div class="match-header"><span class="week">WEEK #6 // 8TH NOV. 2026</span><span style="color:var(--cyan)">UPCOMING</span></div>
-        <div style="font-weight:700;">White Dragon vs RED-3</div>
-        <div style="color:var(--text-muted); font-size:0.85rem; margin-top:4px;">1n1 MOTW: Nightmare | 2n2 MOTW: Exit Strategy</div>
+        <div class="match-header"><span class="week">WEEK #6 // 8TH NOV. 2026</span><span style="color:var(--dragon-blue)">UPCOMING</span></div>
+        <div style="font-weight:800; color:#0f172a;">White Dragon vs RED-3</div>
+        <div style="color:var(--text-muted); font-size:0.88rem; margin-top:4px;">1n1 MOTW: Nightmare | 2n2 MOTW: Exit Strategy</div>
       </div>
       <div class="card">
-        <div class="match-header"><span class="week">WEEK #7 // 15TH NOV. 2026</span><span style="color:var(--cyan)">UPCOMING</span></div>
-        <div style="font-weight:700;">Cwt)-3 vs White Dragon</div>
-        <div style="color:var(--text-muted); font-size:0.85rem; margin-top:4px;">1n1 MOTW: Attitude SE | 2n2 MOTW: Lost Temple A/B</div>
+        <div class="match-header"><span class="week">WEEK #7 // 15TH NOV. 2026</span><span style="color:var(--dragon-blue)">UPCOMING</span></div>
+        <div style="font-weight:800; color:#0f172a;">Cwt)-3 vs White Dragon</div>
+        <div style="color:var(--text-muted); font-size:0.88rem; margin-top:4px;">1n1 MOTW: Attitude SE | 2n2 MOTW: Lost Temple A/B</div>
       </div>
       <div class="card">
-        <div class="match-header"><span class="week">WEEK #8 // 22ND NOV. 2026</span><span style="color:var(--cyan)">UPCOMING</span></div>
-        <div style="font-weight:700;">SAS vs White Dragon</div>
-        <div style="color:var(--text-muted); font-size:0.85rem; margin-top:4px;">1n1 MOTW: Odyssey RE | 2n2 MOTW: KnockOut</div>
+        <div class="match-header"><span class="week">WEEK #8 // 22ND NOV. 2026</span><span style="color:var(--dragon-blue)">UPCOMING</span></div>
+        <div style="font-weight:800; color:#0f172a;">SAS vs White Dragon</div>
+        <div style="color:var(--text-muted); font-size:0.88rem; margin-top:4px;">1n1 MOTW: Odyssey RE | 2n2 MOTW: KnockOut</div>
       </div>
     </div>
   </section>
@@ -1360,7 +1415,7 @@
     <div class="dossier-card">
       <div class="dossier-header">
         <div class="dossier-header-title">
-          <span>// DOSSIER:</span> <span id="m-handle" style="color:#fff;">PLAYER</span>
+          <span>// DOSSIER:</span> <span id="m-handle" style="color:#0f172a;">PLAYER</span>
         </div>
         <button class="btn-close-modal" onclick="closeModal()" title="Close">&times;</button>
       </div>
@@ -1378,7 +1433,7 @@
         <div class="info-grid">
           <div class="info-box">
             <div class="info-box-label">Team Designation</div>
-            <div class="info-box-value" id="m-team" style="color:var(--cyan);">WD-A (Player)</div>
+            <div class="info-box-value" id="m-team" style="color:var(--dragon-blue);">WD-A (Player)</div>
           </div>
           <div class="info-box">
             <div class="info-box-label">Nationality</div>
@@ -1390,7 +1445,6 @@
             <div class="info-box-label">Preferred Race</div>
             <div class="info-box-value" id="m-race-text">Terran</div>
           </div>
-          <!-- REPLACED CLAN GATEWAY WITH STATUS (ACTIVE / INACTIVE) -->
           <div class="info-box">
             <div class="info-box-label">Status</div>
             <div class="info-box-value" id="m-status-box">
@@ -1404,7 +1458,7 @@
         <div class="league-stats-panel">
           <div class="league-stats-title">
             <span>BWCL S65 DIV-D RECORD</span>
-            <span style="font-size:0.75rem; color:#8899b3;" id="m-status-tag">ACTIVE TOURNAMENT ROSTER</span>
+            <span style="font-size:0.75rem; color:#0369a1; font-weight:800;" id="m-status-tag">ACTIVE TOURNAMENT ROSTER</span>
           </div>
           <div class="stat-counters">
             <div class="stat-counter-box">
@@ -1430,17 +1484,17 @@
 
   <footer>
     <p>© 2021–2026 White Dragon [WD] Clan. StarCraft® and StarCraft: Remastered are registered trademarks of Blizzard Entertainment.</p>
-    <p style="margin-top:4px; color:#475569;">Competitive Brood War eSports | Channel: Op White-Dragon (US West)</p>
+    <p style="margin-top:4px; color:#64748b;">Competitive Brood War eSports | Channel: Op White-Dragon (US West)</p>
   </footer>
 
   <script>
     // Flag SVGs
     const flags = {
-      germany: `<svg class="flag-icon" viewBox="0 0 5 3" style="display:inline-block; vertical-align:middle; width:24px; height:16px; border-radius:2px; box-shadow:0 0 4px rgba(0,0,0,0.6); margin-right:8px;"><rect width="5" height="3" y="0" x="0" fill="#000"/><rect width="5" height="2" y="1" x="0" fill="#dd0000"/><rect width="5" height="1" y="2" x="0" fill="#ffce00"/></svg>`,
-      canada: `<svg class="flag-icon" viewBox="0 0 1000 500" style="display:inline-block; vertical-align:middle; width:24px; height:16px; border-radius:2px; box-shadow:0 0 4px rgba(0,0,0,0.6); margin-right:8px;"><rect width="1000" height="500" fill="#ff0000"/><rect x="250" width="500" height="500" fill="#ffffff"/><path d="M 500,430 L 493,353 C 485,354 457,358 450,348 C 445,340 449,328 440,323 C 430,317 416,323 408,311 C 401,300 407,279 397,272 C 388,265 372,274 364,264 C 354,251 364,228 350,223 C 342,220 334,226 325,224 C 322,223 322,216 327,214 C 344,208 360,203 378,198 C 384,196 386,189 383,184 C 378,175 363,165 371,154 C 375,149 387,155 394,158 C 402,161 411,167 419,165 C 423,164 423,158 421,154 C 411,136 397,118 412,98 C 418,90 427,99 433,103 C 448,114 463,126 478,137 C 484,141 489,137 488,130 C 486,112 473,81 489,68 C 495,63 500,69 504,74 C 512,85 507,114 513,128 C 515,134 520,135 524,131 C 539,120 553,109 568,98 C 574,94 582,88 588,96 C 603,116 589,134 579,152 C 577,156 577,162 581,163 C 589,165 598,159 606,156 C 613,153 625,147 629,152 C 637,163 622,173 617,182 C 614,187 616,194 622,196 C 640,201 656,206 673,212 C 678,214 678,221 675,222 C 666,224 658,218 650,221 C 636,226 646,249 636,262 C 628,272 612,263 603,270 C 593,277 599,298 592,309 C 584,321 570,315 560,321 C 551,326 555,338 550,346 C 543,356 515,352 507,351 L 500,430 Z" fill="#ff0000"/></svg>`,
-      usa: `<svg class="flag-icon" viewBox="0 0 7410 3900" style="display:inline-block; vertical-align:middle; width:24px; height:16px; border-radius:2px; box-shadow:0 0 4px rgba(0,0,0,0.6); margin-right:8px;"><rect width="7410" height="3900" fill="#b22234"/><path d="M0,450H7410M0,1050H7410M0,1650H7410M0,2250H7410M0,2850H7410M0,3450H7410" stroke="#fff" stroke-width="300"/><rect width="2964" height="2100" fill="#3c3b6e"/><g fill="#fff"><g id="s18"><g id="s9"><g id="s5"><g id="s4"><path id="s" d="M247,90 317,307 134,173h226L177,307z"/><use href="#s" y="420"/><use href="#s" y="840"/><use href="#s" y="1260"/></g><use href="#s" y="1680"/></g><use href="#s4" x="247" y="210"/></g><use href="#s9" x="494"/></g><use href="#s18" x="988"/><use href="#s9" x="1976"/><use href="#s5" x="2470"/></g></svg>`,
-      philippines: `<svg class="flag-icon" viewBox="0 0 1200 600" style="display:inline-block; vertical-align:middle; width:24px; height:16px; border-radius:2px; box-shadow:0 0 4px rgba(0,0,0,0.6); margin-right:8px;"><rect width="1200" height="300" fill="#0038a8"/><rect y="300" width="1200" height="300" fill="#ce1126"/><polygon points="0,0 519.6,300 0,600" fill="#ffffff"/><g transform="translate(173.2, 300)" fill="#fcd116"><circle r="60"/><g id="ray"><polygon points="0,-130 14,-75 0,-85 -14,-75"/><polygon points="0,-125 7,-75 -7,-75"/></g><use href="#ray" transform="rotate(45)"/><use href="#ray" transform="rotate(90)"/><use href="#ray" transform="rotate(135)"/><use href="#ray" transform="rotate(180)"/><use href="#ray" transform="rotate(225)"/><use href="#ray" transform="rotate(270)"/><use href="#ray" transform="rotate(315)"/><polygon id="ph-star" points="0,-15 4.6,-3.5 16.5,-3.5 6.9,3.5 10.6,15 0,7.9 -10.6,15 -6.9,3.5 -16.5,-3.5 -4.6,-3.5"/><use href="#ph-star" transform="translate(260, 0) scale(1.6)"/><use href="#ph-star" transform="translate(-90, -180) scale(1.6)"/><use href="#ph-star" transform="translate(-90, 180) scale(1.6)"/></g></svg>`,
-      mexico: `<svg class="flag-icon" viewBox="0 0 980 560" style="display:inline-block; vertical-align:middle; width:24px; height:16px; border-radius:2px; box-shadow:0 0 4px rgba(0,0,0,0.6); margin-right:8px;"><rect width="326.6" height="560" fill="#006847"/><rect x="326.6" width="326.8" height="560" fill="#ffffff"/><rect x="653.4" width="326.6" height="560" fill="#ce1126"/><g transform="translate(490, 280)"><ellipse cx="0" cy="5" rx="48" ry="42" fill="#5c3818"/><ellipse cx="0" cy="2" rx="40" ry="32" fill="#b07d39"/><ellipse cx="-4" cy="-12" rx="20" ry="16" fill="#4d3216"/><path d="M-8,-24 Q-2,-30 6,-26 Q2,-18 -4,-18 Z" fill="#30200e"/><path d="M-2,-26 Q12,-32 16,-20 Q12,-16 6,-20 Z" fill="#d99b26"/><path d="M-35,30 Q0,55 35,30 Q25,60 0,60 Q-25,60 -35,30 Z" fill="#205a28"/><path d="M-10,32 Q0,38 10,32 Q5,48 -5,48 Z" fill="#b22234"/></g></svg>`,
+      germany: `<svg class="flag-icon" viewBox="0 0 5 3" style="display:inline-block; vertical-align:middle; width:24px; height:16px; border-radius:2px; box-shadow:0 0 4px rgba(0,0,0,0.3); margin-right:8px;"><rect width="5" height="3" y="0" x="0" fill="#000"/><rect width="5" height="2" y="1" x="0" fill="#dd0000"/><rect width="5" height="1" y="2" x="0" fill="#ffce00"/></svg>`,
+      canada: `<svg class="flag-icon" viewBox="0 0 1000 500" style="display:inline-block; vertical-align:middle; width:24px; height:16px; border-radius:2px; box-shadow:0 0 4px rgba(0,0,0,0.3); margin-right:8px;"><rect width="1000" height="500" fill="#ff0000"/><rect x="250" width="500" height="500" fill="#ffffff"/><path d="M 500,430 L 493,353 C 485,354 457,358 450,348 C 445,340 449,328 440,323 C 430,317 416,323 408,311 C 401,300 407,279 397,272 C 388,265 372,274 364,264 C 354,251 364,228 350,223 C 342,220 334,226 325,224 C 322,223 322,216 327,214 C 344,208 360,203 378,198 C 384,196 386,189 383,184 C 378,175 363,165 371,154 C 375,149 387,155 394,158 C 402,161 411,167 419,165 C 423,164 423,158 421,154 C 411,136 397,118 412,98 C 418,90 427,99 433,103 C 448,114 463,126 478,137 C 484,141 489,137 488,130 C 486,112 473,81 489,68 C 495,63 500,69 504,74 C 512,85 507,114 513,128 C 515,134 520,135 524,131 C 539,120 553,109 568,98 C 574,94 582,88 588,96 C 603,116 589,134 579,152 C 577,156 577,162 581,163 C 589,165 598,159 606,156 C 613,153 625,147 629,152 C 637,163 622,173 617,182 C 614,187 616,194 622,196 C 640,201 656,206 673,212 C 678,214 678,221 675,222 C 666,224 658,218 650,221 C 636,226 646,249 636,262 C 628,272 612,263 603,270 C 593,277 599,298 592,309 C 584,321 570,315 560,321 C 551,326 555,338 550,346 C 543,356 515,352 507,351 L 500,430 Z" fill="#ff0000"/></svg>`,
+      usa: `<svg class="flag-icon" viewBox="0 0 7410 3900" style="display:inline-block; vertical-align:middle; width:24px; height:16px; border-radius:2px; box-shadow:0 0 4px rgba(0,0,0,0.3); margin-right:8px;"><rect width="7410" height="3900" fill="#b22234"/><path d="M0,450H7410M0,1050H7410M0,1650H7410M0,2250H7410M0,2850H7410M0,3450H7410" stroke="#fff" stroke-width="300"/><rect width="2964" height="2100" fill="#3c3b6e"/><g fill="#fff"><g id="s18"><g id="s9"><g id="s5"><g id="s4"><path id="s" d="M247,90 317,307 134,173h226L177,307z"/><use href="#s" y="420"/><use href="#s" y="840"/><use href="#s" y="1260"/></g><use href="#s" y="1680"/></g><use href="#s4" x="247" y="210"/></g><use href="#s9" x="494"/></g><use href="#s18" x="988"/><use href="#s9" x="1976"/><use href="#s5" x="2470"/></g></svg>`,
+      philippines: `<svg class="flag-icon" viewBox="0 0 1200 600" style="display:inline-block; vertical-align:middle; width:24px; height:16px; border-radius:2px; box-shadow:0 0 4px rgba(0,0,0,0.3); margin-right:8px;"><rect width="1200" height="300" fill="#0038a8"/><rect y="300" width="1200" height="300" fill="#ce1126"/><polygon points="0,0 519.6,300 0,600" fill="#ffffff"/><g transform="translate(173.2, 300)" fill="#fcd116"><circle r="60"/><g id="ray"><polygon points="0,-130 14,-75 0,-85 -14,-75"/><polygon points="0,-125 7,-75 -7,-75"/></g><use href="#ray" transform="rotate(45)"/><use href="#ray" transform="rotate(90)"/><use href="#ray" transform="rotate(135)"/><use href="#ray" transform="rotate(180)"/><use href="#ray" transform="rotate(225)"/><use href="#ray" transform="rotate(270)"/><use href="#ray" transform="rotate(315)"/><polygon id="ph-star" points="0,-15 4.6,-3.5 16.5,-3.5 6.9,3.5 10.6,15 0,7.9 -10.6,15 -6.9,3.5 -16.5,-3.5 -4.6,-3.5"/><use href="#ph-star" transform="translate(260, 0) scale(1.6)"/><use href="#ph-star" transform="translate(-90, -180) scale(1.6)"/><use href="#ph-star" transform="translate(-90, 180) scale(1.6)"/></g></svg>`,
+      mexico: `<svg class="flag-icon" viewBox="0 0 980 560" style="display:inline-block; vertical-align:middle; width:24px; height:16px; border-radius:2px; box-shadow:0 0 4px rgba(0,0,0,0.3); margin-right:8px;"><rect width="326.6" height="560" fill="#006847"/><rect x="326.6" width="326.8" height="560" fill="#ffffff"/><rect x="653.4" width="326.6" height="560" fill="#ce1126"/><g transform="translate(490, 280)"><ellipse cx="0" cy="5" rx="48" ry="42" fill="#5c3818"/><ellipse cx="0" cy="2" rx="40" ry="32" fill="#b07d39"/><ellipse cx="-4" cy="-12" rx="20" ry="16" fill="#4d3216"/><path d="M-8,-24 Q-2,-30 6,-26 Q2,-18 -4,-18 Z" fill="#30200e"/><path d="M-2,-26 Q12,-32 16,-20 Q12,-16 6,-20 Z" fill="#d99b26"/><path d="M-35,30 Q0,55 35,30 Q25,60 0,60 Q-25,60 -35,30 Z" fill="#205a28"/><path d="M-10,32 Q0,38 10,32 Q5,48 -5,48 Z" fill="#b22234"/></g></svg>`,
       global: `<span style="display:inline-block; width:24px; height:16px; text-align:center; vertical-align:middle; font-size:12px; margin-right:8px;">🌐</span>`
     };
 
@@ -1569,7 +1623,7 @@
       tr.innerHTML = `
         <td><span class="player-tag">${p.name} <span class="click-hint">INTEL</span></span></td>
         <td>${roleBadge}</td>
-        <td><strong style="color:var(--cyan);">WD-A</strong></td>
+        <td><strong style="color:var(--dragon-blue);">WD-A</strong></td>
         <td>White Dragon</td>
         <td>${flagSvg} ${p.country}</td>
         <td><span class="race-badge ${raceClass}">${p.race}</span></td>
@@ -1598,7 +1652,7 @@
       pill.className = 'member-pill';
       pill.onclick = () => openDossier(p.id);
 
-      const raceColor = p.race === 'Terran' ? '#60a5fa' : (p.race === 'Protoss' ? '#fbbf24' : '#c084fc');
+      const raceColor = p.race === 'Terran' ? '#1d4ed8' : (p.race === 'Protoss' ? '#b45309' : '#7e22ce');
       pill.innerHTML = `
         <span class="tag">${p.name}</span>
         <span class="pill-race" style="color:${raceColor}">[${p.race[0]}]</span>
@@ -1606,14 +1660,12 @@
       container.appendChild(pill);
     });
 
-    // Tab Navigation Logic (Makes site übersichtlich)
+    // Tab Navigation Logic
     function switchTab(tabName) {
-      // Hide all sections
       document.querySelectorAll('.section-wrap').forEach(el => el.classList.remove('active-tab'));
       document.querySelectorAll('.nav-tab-btn').forEach(el => el.classList.remove('active'));
       document.querySelectorAll('.dash-btn').forEach(el => el.classList.remove('active'));
 
-      // Show requested tab
       const targetSection = document.getElementById('tab-' + tabName);
       if (targetSection) targetSection.classList.add('active-tab');
 
@@ -1623,7 +1675,6 @@
       const dashBtn = document.getElementById('dash-' + tabName);
       if (dashBtn) dashBtn.classList.add('active');
 
-      // Scroll smoothly to section if not overview
       if (tabName !== 'overview') {
         window.scrollTo({ top: 380, behavior: 'smooth' });
       } else {
@@ -1644,7 +1695,6 @@
       document.getElementById('m-country-name').innerText = p.country;
       document.getElementById('m-flag').innerHTML = flags[p.flagKey] || flags.global;
 
-      // Status Indicator (Active / Inactive)
       const isActive = p.status === 'Active';
       const statusDot = document.getElementById('m-status-dot');
       const statusText = document.getElementById('m-status-text');
@@ -1654,7 +1704,7 @@
         statusText.innerText = 'Active';
       } else {
         statusDot.className = 'status-indicator inactive';
-        statusText.style.color = '#94a3b8';
+        statusText.style.color = '#64748b';
         statusText.innerText = 'Inactive';
       }
 
@@ -1669,7 +1719,7 @@
       // Match History
       const histContainer = document.getElementById('m-history-log');
       if (p.history && p.history.length > 0) {
-        let rows = '<div style="font-weight:700; color:var(--cyan); margin-bottom:4px; font-size:0.78rem; letter-spacing:1px;">BWCL DIVISION D SETS:</div>';
+        let rows = '<div style="font-weight:800; color:var(--dragon-blue); margin-bottom:4px; font-size:0.8rem; letter-spacing:1px;">BWCL DIVISION D SETS:</div>';
         p.history.forEach(h => {
           const resClass = h.win ? 'res-win' : 'res-loss';
           rows += `
