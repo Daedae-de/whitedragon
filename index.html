@@ -1417,14 +1417,82 @@
   </section>
 
   <!-- ==================== 5. REPLAYS TAB ==================== -->
+    <!-- ==================== 5. REPLAYS TAB ==================== -->
   <section id="tab-replays" class="section-wrap">
     <div class="section-head">
       <div>
-        <h2>CLAN WAR <span>REPLAYS</span> // BWCL S65</h2>
-        <div class="section-subtitle">Download official Brood War replay packages (.rep) for analysis and cast.</div>
+        <h2>CLAN WAR <span>REPLAYS</span> // ARCHIVE & UPLOAD</h2>
+        <div class="section-subtitle">Download official Brood War replay packages (.rep) or submit your own clan matches.</div>
       </div>
     </div>
 
+    <!-- REPLAY UPLOAD TERMINAL -->
+    <div class="card" style="margin-bottom: 22px; border: 1.5px solid var(--cyan); background: linear-gradient(135deg, rgba(14, 25, 45, 0.94) 0%, rgba(9, 16, 30, 0.98) 100%); box-shadow: 0 0 25px rgba(0, 229, 255, 0.18);">
+      <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+        <span style="display: inline-block; width: 8px; height: 8px; background: var(--cyan); border-radius: 50%; box-shadow: 0 0 8px var(--cyan);"></span>
+        <span style="font-family: 'Orbitron', sans-serif; font-size: 0.82rem; font-weight: 800; color: var(--cyan); letter-spacing: 1.5px; text-transform: uppercase;">TRANSMIT CLAN REPLAY (.REP / .ZIP)</span>
+      </div>
+      <p style="color: #cbd5e1; font-size: 0.95rem; margin-bottom: 16px; line-height: 1.55;">
+        Upload your BWCL tournament sets, clan war games, or casual in-house replays. Stored replays will be listed below for instant download.
+      </p>
+
+      <!-- Drag & Drop Zone -->
+      <div id="drop-zone" onclick="document.getElementById('rep-file-input').click()" style="border: 2px dashed rgba(56, 189, 248, 0.45); border-radius: 10px; padding: 24px; text-align: center; cursor: pointer; background: rgba(7, 12, 22, 0.6); transition: all 0.2s;" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event)">
+        <input type="file" id="rep-file-input" accept=".rep,.zip" style="display: none;" onchange="handleFileSelect(event)">
+        <div style="font-size: 2rem; color: var(--cyan); margin-bottom: 6px;">📂</div>
+        <div style="font-family: 'Orbitron', sans-serif; font-size: 0.92rem; font-weight: 800; color: #fff; margin-bottom: 4px;">
+          CLICK OR DRAG & DROP REPLAY HERE
+        </div>
+        <div style="color: var(--text-muted); font-size: 0.8rem; font-family: 'Share Tech Mono', monospace;">
+          Supports StarCraft: Remastered replay files (.rep) and archives (.zip)
+        </div>
+      </div>
+
+      <!-- File Details & Metadata Form (appears after selecting file) -->
+      <div id="upload-form" style="display: none; margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--border-color);">
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; margin-bottom: 14px;">
+          <div>
+            <label style="display: block; font-family: 'Orbitron', sans-serif; font-size: 0.72rem; color: var(--text-muted); margin-bottom: 4px; text-transform: uppercase;">Match Title</label>
+            <input type="text" id="rep-title-input" placeholder="e.g. BWCL S65 W5 vs dB)-3" style="width: 100%; background: #070a12; border: 1px solid var(--border-color); color: #fff; padding: 8px 12px; border-radius: 6px; font-family: 'Rajdhani', sans-serif; font-size: 0.95rem;">
+          </div>
+          <div>
+            <label style="display: block; font-family: 'Orbitron', sans-serif; font-size: 0.72rem; color: var(--text-muted); margin-bottom: 4px; text-transform: uppercase;">Players / Matchup</label>
+            <input type="text" id="rep-players-input" placeholder="e.g. CheesyCake[WD] vs ..." style="width: 100%; background: #070a12; border: 1px solid var(--border-color); color: #fff; padding: 8px 12px; border-radius: 6px; font-family: 'Rajdhani', sans-serif; font-size: 0.95rem;">
+          </div>
+          <div>
+            <label style="display: block; font-family: 'Orbitron', sans-serif; font-size: 0.72rem; color: var(--text-muted); margin-bottom: 4px; text-transform: uppercase;">Map Name</label>
+            <input type="text" id="rep-map-input" placeholder="e.g. Backrooms / Lost Temple" style="width: 100%; background: #070a12; border: 1px solid var(--border-color); color: #fff; padding: 8px 12px; border-radius: 6px; font-family: 'Rajdhani', sans-serif; font-size: 0.95rem;">
+          </div>
+        </div>
+
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+          <div id="file-info-text" style="font-family: 'Share Tech Mono', monospace; font-size: 0.85rem; color: var(--cyan);"></div>
+          <div style="display: flex; gap: 8px;">
+            <button onclick="saveReplay()" class="btn-download-rep" style="background: var(--cyan); color: #070a12; cursor: pointer;">
+              💾 SAVE TO CLAN VAULT
+            </button>
+            <button onclick="cancelUpload()" class="btn-download-rep" style="background: transparent; border-color: var(--text-dim); color: var(--text-muted); cursor: pointer;">
+              CANCEL
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- REPLAY LIST HEADING -->
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+      <h3 style="font-family: 'Orbitron', sans-serif; font-size: 1.05rem; color: #fff; font-weight: 800;">
+        ACTIVE CLAN ARCHIVES (<span id="rep-count" style="color: var(--cyan);">3</span>)
+      </h3>
+      <button onclick="clearUserReplays()" id="btn-clear-reps" style="display: none; background: transparent; border: 1px solid var(--loss); color: var(--loss); padding: 4px 10px; border-radius: 4px; font-size: 0.72rem; font-family: 'Orbitron', sans-serif; cursor: pointer;">
+        CLEAR UPLOADED
+      </button>
+    </div>
+
+    <!-- DYNAMIC USER UPLOADED REPLAYS -->
+    <div id="user-replays-list"></div>
+
+    <!-- DEFAULT OFFICIAL BWCL REPLAYS -->
     <div class="replay-card">
       <div class="replay-meta">
         <span class="replay-title">BWCL S65 Week #4: White Dragon vs Shadow-2 [6 - 0]</span>
@@ -1945,6 +2013,170 @@
         prompt('Copy Clan Tryout Brief:', text);
       }
     }
+
+    
+    // ========================================================
+    // REPLAY UPLOAD & VAULT MANAGEMENT
+    // ========================================================
+    var currentSelectedFile = null;
+
+    function handleDragOver(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      document.getElementById('drop-zone').style.borderColor = 'var(--cyan)';
+      document.getElementById('drop-zone').style.background = 'rgba(0, 229, 255, 0.1)';
+    }
+
+    function handleDragLeave(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      document.getElementById('drop-zone').style.borderColor = 'rgba(56, 189, 248, 0.45)';
+      document.getElementById('drop-zone').style.background = 'rgba(7, 12, 22, 0.6)';
+    }
+
+    function handleDrop(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      handleDragLeave(e);
+      if (e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+        processFile(e.dataTransfer.files[0]);
+      }
+    }
+
+    function handleFileSelect(e) {
+      if (e.target.files && e.target.files.length > 0) {
+        processFile(e.target.files[0]);
+      }
+    }
+
+    function processFile(file) {
+      currentSelectedFile = file;
+      var kb = (file.size / 1024).toFixed(1);
+      document.getElementById('file-info-text').innerText = 'Selected: ' + file.name + ' (' + kb + ' KB)';
+      if (!document.getElementById('rep-title-input').value) {
+        document.getElementById('rep-title-input').value = file.name.replace(/\.[^/.]+$/, '');
+      }
+      document.getElementById('upload-form').style.display = 'block';
+    }
+
+    function cancelUpload() {
+      currentSelectedFile = null;
+      document.getElementById('rep-file-input').value = '';
+      document.getElementById('rep-title-input').value = '';
+      document.getElementById('rep-players-input').value = '';
+      document.getElementById('rep-map-input').value = '';
+      document.getElementById('upload-form').style.display = 'none';
+    }
+
+    function saveReplay() {
+      if (!currentSelectedFile) {
+        alert('Please choose a .rep or .zip file first.');
+        return;
+      }
+
+      var reader = new FileReader();
+      reader.onload = function(e) {
+        var base64Data = e.target.result;
+        var title = document.getElementById('rep-title-input').value.trim() || currentSelectedFile.name;
+        var players = document.getElementById('rep-players-input').value.trim() || 'White Dragon Commander Match';
+        var map = document.getElementById('rep-map-input').value.trim() || 'Koprulu Sector Map';
+        var dateStr = new Date().toLocaleDateString();
+
+        var replayItem = {
+          id: 'rep_' + Date.now(),
+          title: title,
+          players: players,
+          map: map,
+          fileName: currentSelectedFile.name,
+          fileSize: (currentSelectedFile.size / 1024).toFixed(1) + ' KB',
+          date: dateStr,
+          data: base64Data
+        };
+
+        var existing = [];
+        try {
+          existing = JSON.parse(localStorage.getItem('wd_replays') || '[]');
+        } catch(err) {
+          existing = [];
+        }
+
+        existing.unshift(replayItem);
+        try {
+          localStorage.setItem('wd_replays', JSON.stringify(existing));
+        } catch(err) {
+          console.warn('Storage limit reached, saving without persistence.');
+        }
+
+        renderUserReplays();
+        cancelUpload();
+        alert('Replay saved to your Clan Vault successfully!');
+      };
+
+      reader.readAsDataURL(currentSelectedFile);
+    }
+
+    function downloadSavedReplay(replayId) {
+      try {
+        var existing = JSON.parse(localStorage.getItem('wd_replays') || '[]');
+        var item = existing.find(function(r) { return r.id === replayId; });
+        if (item && item.data) {
+          var a = document.createElement('a');
+          a.href = item.data;
+          a.download = item.fileName || 'Replay.rep';
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+        } else {
+          alert('Replay data not found.');
+        }
+      } catch(err) {
+        alert('Error downloading replay.');
+      }
+    }
+
+    function renderUserReplays() {
+      var container = document.getElementById('user-replays-list');
+      if (!container) return;
+
+      var existing = [];
+      try {
+        existing = JSON.parse(localStorage.getItem('wd_replays') || '[]');
+      } catch(err) {
+        existing = [];
+      }
+
+      container.innerHTML = '';
+      var totalCount = 3 + existing.length;
+      var countEl = document.getElementById('rep-count');
+      if (countEl) countEl.innerText = totalCount;
+
+      var clearBtn = document.getElementById('btn-clear-reps');
+      if (clearBtn) {
+        clearBtn.style.display = existing.length > 0 ? 'inline-block' : 'none';
+      }
+
+      existing.forEach(function(item) {
+        var card = document.createElement('div');
+        card.className = 'replay-card';
+        card.style.borderLeft = '4px solid var(--cyan)';
+        card.innerHTML = 
+          '<div class="replay-meta">' +
+            '<span class="replay-title">' + item.title + ' <span style="font-size:0.7rem; color:var(--cyan); border:1px solid var(--cyan); padding:1px 6px; border-radius:3px; margin-left:6px; font-family:monospace;">USER UPLOAD</span></span>' +
+            '<span class="replay-sub">' + item.players + ' | Map: ' + item.map + ' (' + item.fileSize + ' • ' + item.date + ')</span>' +
+          '</div>' +
+          '<button onclick="downloadSavedReplay(\'' + item.id + '\')" class="btn-download-rep">DOWNLOAD (.REP)</button>';
+        container.appendChild(card);
+      });
+    }
+
+    function clearUserReplays() {
+      if (confirm('Are you sure you want to clear your uploaded replays from this browser?')) {
+        localStorage.removeItem('wd_replays');
+        renderUserReplays();
+      }
+    }
+
+    renderUserReplays();
 
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') closeModal();
