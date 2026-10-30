@@ -3,9 +3,6 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <meta name="description" content="White Dragon [WD] is a friendly StarCraft: Remastered clan competing in the Brood War Clan League (BWCL). Join our community!">
-  <meta name="keywords" content="StarCraft Remastered, BWCL, Clan, White Dragon, Brood War, US West, Starcraft Broodwar Clan, Op White-Dragon, Brood War Clan League, StarCraft eSports, WD Clan">
-  <meta name="google-site-verification" content="google91d2baccfec24917.html" />
   <title>White Dragon [WD] | StarCraft: Remastered Clan</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -249,7 +246,7 @@
       margin: 0 auto 24px;
       padding: 0 16px;
       display: grid;
-      grid-template-columns: repeat(8, 1fr);
+      grid-template-columns: repeat(9, 1fr);
       gap: 10px;
       position: relative;
       z-index: 1;
@@ -1100,6 +1097,7 @@
         <li><button class="nav-tab-btn" id="btn-tab-bwcl" onclick="switchTab('bwcl')">Clan League</button></li>
         <li><button class="nav-tab-btn" id="btn-tab-matches" onclick="switchTab('matches')">Matches</button></li>
         <li><button class="nav-tab-btn" id="btn-tab-replays" onclick="switchTab('replays')">Replays</button></li>
+        <li><button class="nav-tab-btn" id="btn-tab-downloads" onclick="switchTab('downloads')">Downloads</button></li>
         <li><button class="nav-tab-btn" id="btn-tab-news" onclick="switchTab('news')">News</button></li>
         <li><button class="nav-tab-btn" id="btn-tab-members" onclick="switchTab('members')">Members</button></li>
         <li><button class="nav-tab-btn" id="btn-tab-about" onclick="switchTab('about')">About Us</button></li>
@@ -1163,6 +1161,11 @@
       <span class="dash-icon">💾</span>
       <span class="dash-label">REPLAYS</span>
       <span class="dash-sub">.rep Packs</span>
+    </div>
+    <div class="dash-btn" id="dash-downloads" onclick="switchTab('downloads')">
+      <span class="dash-icon">📦</span>
+      <span class="dash-label">DOWNLOADS</span>
+      <span class="dash-sub">Map Packs</span>
     </div>
     <div class="dash-btn" id="dash-news" onclick="switchTab('news')">
       <span class="dash-icon">📡</span>
@@ -1611,6 +1614,86 @@
     </div>
   </section>
 
+  
+  <!-- ==================== DOWNLOADS TAB (MAP PACKS) ==================== -->
+  <section id="tab-downloads" class="section-wrap">
+    <div class="section-head">
+      <div>
+        <h2>MAP PACKS & <span>DOWNLOADS</span></h2>
+        <div class="section-subtitle">Official BWCL map pool archives, custom strategy maps, and clan resources.</div>
+      </div>
+    </div>
+
+    <!-- MAP UPLOAD TERMINAL -->
+    <div class="card" style="margin-bottom: 22px; border: 1.5px solid var(--cyan); background: linear-gradient(135deg, rgba(14, 25, 45, 0.94) 0%, rgba(9, 16, 30, 0.98) 100%); box-shadow: 0 0 25px rgba(0, 229, 255, 0.18);">
+      <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+        <span style="display: inline-block; width: 8px; height: 8px; background: var(--cyan); border-radius: 50%; box-shadow: 0 0 8px var(--cyan);"></span>
+        <span style="font-family: 'Orbitron', sans-serif; font-size: 0.82rem; font-weight: 800; color: var(--cyan); letter-spacing: 1.5px; text-transform: uppercase;">UPLOAD MAP PACK OR CUSTOM MAP (.SCX / .ZIP)</span>
+      </div>
+      <p style="color: #cbd5e1; font-size: 0.95rem; margin-bottom: 16px; line-height: 1.55;">
+        Upload tournament map packs (BWCL S65 maps like Backrooms, Octagon, etc.) or custom maps for clan practice sessions.
+      </p>
+
+      <!-- Drag & Drop Zone -->
+      <div id="map-drop-zone" onclick="document.getElementById('map-file-input').click()" style="border: 2px dashed rgba(56, 189, 248, 0.45); border-radius: 10px; padding: 24px; text-align: center; cursor: pointer; background: rgba(7, 12, 22, 0.6); transition: all 0.2s;" ondragover="handleMapDragOver(event)" ondragleave="handleMapDragLeave(event)" ondrop="handleMapDrop(event)">
+        <input type="file" id="map-file-input" accept=".scx,.sod,.zip,.rar" style="display: none;" onchange="handleMapFileSelect(event)">
+        <div style="font-size: 2rem; color: var(--cyan); margin-bottom: 6px;">📦</div>
+        <div style="font-family: 'Orbitron', sans-serif; font-size: 0.92rem; font-weight: 800; color: #fff; margin-bottom: 4px;">
+          CLICK OR DRAG & DROP MAP FILE HERE
+        </div>
+        <div style="color: var(--text-muted); font-size: 0.8rem; font-family: 'Share Tech Mono', monospace;">
+          Supports StarCraft map files (.scx) and archives (.zip / .rar)
+        </div>
+      </div>
+
+      <!-- File Details & Metadata Form -->
+      <div id="map-upload-form" style="display: none; margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--border-color);">
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; margin-bottom: 14px;">
+          <div>
+            <label style="display: block; font-family: 'Orbitron', sans-serif; font-size: 0.72rem; color: var(--text-muted); margin-bottom: 4px; text-transform: uppercase;">Pack Title</label>
+            <input type="text" id="map-title-input" placeholder="e.g. BWCL S65 Official Map Pack" style="width: 100%; background: #070a12; border: 1px solid var(--border-color); color: #fff; padding: 8px 12px; border-radius: 6px; font-family: 'Rajdhani', sans-serif; font-size: 0.95rem;">
+          </div>
+          <div>
+            <label style="display: block; font-family: 'Orbitron', sans-serif; font-size: 0.72rem; color: var(--text-muted); margin-bottom: 4px; text-transform: uppercase;">Description / Details</label>
+            <input type="text" id="map-desc-input" placeholder="e.g. Backrooms, Octagon, Nightmare..." style="width: 100%; background: #070a12; border: 1px solid var(--border-color); color: #fff; padding: 8px 12px; border-radius: 6px; font-family: 'Rajdhani', sans-serif; font-size: 0.95rem;">
+          </div>
+        </div>
+
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+          <div id="map-file-info-text" style="font-family: 'Share Tech Mono', monospace; font-size: 0.85rem; color: var(--cyan);"></div>
+          <div style="display: flex; gap: 8px;">
+            <button onclick="saveMapDownload()" class="btn-download-rep" style="background: var(--cyan); color: #070a12; cursor: pointer;">
+              📦 SAVE MAP PACK
+            </button>
+            <button onclick="cancelMapUpload()" class="btn-download-rep" style="background: transparent; border-color: var(--text-dim); color: var(--text-muted); cursor: pointer;">
+              CANCEL
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DOWNLOAD LIST HEADING -->
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+      <h3 style="font-family: 'Orbitron', sans-serif; font-size: 1.05rem; color: #fff; font-weight: 800;">
+        AVAILABLE MAP PACKS (<span id="map-count" style="color: var(--cyan);">0</span>)
+      </h3>
+      <button onclick="clearUserMaps()" id="btn-clear-maps" style="display: none; background: transparent; border: 1px solid var(--loss); color: var(--loss); padding: 4px 10px; border-radius: 4px; font-size: 0.72rem; font-family: 'Orbitron', sans-serif; cursor: pointer;">
+        CLEAR MAPS
+      </button>
+    </div>
+
+    <!-- DYNAMIC USER UPLOADED MAPS -->
+    <div id="user-maps-list"></div>
+    <div id="no-maps-msg" class="card" style="text-align: center; padding: 28px 20px; color: var(--text-muted);">
+      <div style="font-size: 1.8rem; margin-bottom: 6px; color: var(--cyan);">📦</div>
+      <div style="font-family: 'Orbitron', sans-serif; font-size: 0.95rem; color: #fff; font-weight: 700; margin-bottom: 4px;">NO MAP PACKS UPLOADED YET</div>
+      <p style="font-size: 0.88rem; max-width: 500px; margin: 0 auto; color: #94a3b8;">
+        Upload tournament map packages (.scx / .zip) above so clan members can download them for practice.
+      </p>
+    </div>
+  </section>
+
   <!-- ==================== 6. NEWS TAB ==================== -->
   <section id="tab-news" class="section-wrap">
     <div class="section-head">
@@ -1832,8 +1915,7 @@
 
   <script>
     // Flag SVGs
-    
-            function getRaceBadgeHtml(race) {
+    function getRaceBadgeHtml(race) {
       if (!race) race = 'Terran';
       var r = race.toLowerCase();
       if (r.startsWith('t')) {
@@ -1856,19 +1938,11 @@
       global: `<span style="display:inline-block; width:24px; height:16px; text-align:center; vertical-align:middle; font-size:12px; margin-right:8px;">🌐</span>`
     };
 
-    // Database with STATUS (Active / Inactive) and Team WD-A
     const membersData = [
-      // Founders
       { id: 'RobFATKraft', name: 'RobFATKraft[WD]', role: 'Captain', rank: 'Founders', insignia: '🏰⋆༺𓆩♱𓆪༻⋆👑⋆༺𓆩♱𓆪༻⋆🏰', team: 'WD-A', status: 'Active', race: 'Protoss', avatar: '', country: 'USA', flagKey: 'usa', w1: '0-0', w2: '0-0', pts: 0, history: [] },
       { id: 'DeathOrb', name: 'DeathOrb[WD]', role: 'Captain', rank: 'Founders', insignia: '🏰⋆༺𓆩♱𓆪༻⋆👑⋆༺𓆩♱𓆪༻⋆🏰', team: 'WD-A', status: 'Active', race: 'Protoss', avatar: '', country: 'USA', flagKey: 'usa', w1: '0-0', w2: '0-0', pts: 0, history: [] },
-      
-      // High Council
       { id: 'zDAwgZ', name: 'z’DAwgZ[WD]', role: 'Squadleader', rank: 'High Council', insignia: '⋆༺𓆩♛👑🧙‍♂️👑♛𓆪༻⋆ ', team: 'WD-A', status: 'Active', race: 'Terran', avatar: '', country: 'Canada', flagKey: 'canada', w1: '0-0', w2: '0-0', pts: 0, history: [] },
-
-      // Generals
       { id: 'LunarPop', name: 'LunarPop[WD]', role: 'Captain', rank: 'Generals', insignia: '⚔️✖️🛡️✖️⚔️', team: 'WD-A', status: 'Active', race: 'Protoss', avatar: 'profile_Lunarpop.jpg', country: 'Canada', flagKey: 'canada', w1: '0-0', w2: '0-0', pts: 0, history: [] },
-
-      // Colonel
       { id: 'KaRDiNaL', name: 'KaRDiNaL[WD]', rank: 'Colonel', insignia: '🗡️⛊✠‍💂‍✠‍⛊🗡️', team: 'WD-A', status: 'Active', race: 'Terran', country: 'Canada', flagKey: 'canada', w1: '2 - 2', w2: '0 - 0', pts: 2, 
         history: [
           { week: 'Week #1', set: '1v1 vs Red.Hot', res: 'WIN', score: '2 - 0', win: true },
@@ -1877,20 +1951,14 @@
           { week: 'Week #4', set: '1v1 vs Shadow|FankinGG', res: 'WIN', score: '2 - 0', win: true }
         ]
       },
-
-      // Captains
       { id: 'RaiNMaN', name: 'RaiNMaN[WD]', rank: 'Captains', insignia: '⛨༺♰༻⛵༺♰༻⛨ ', team: 'WD Squad', status: 'Active', race: 'Terran', avatar: '', country: 'Global', flagKey: 'global', w1: '0-0', w2: '0-0', pts: 0, history: [] },
       { id: 'BlueSpikes', name: 'BlueSpikes[WD]', rank: 'Captains', insignia: '⛨༺♰༻⛵༺♰༻⛨ ', team: 'WD Squad', status: 'Active', race: 'Protoss', avatar: '', country: 'Global', flagKey: 'global', w1: '0-0', w2: '0-0', pts: 0, history: [] },
-
-      // Officers
       { id: 'Vult', name: 'Vult[WD]', rank: 'Officers', insignia: '⛨🗡️⚔︎🗡️⛨', team: 'WD Squad', status: 'Active', race: 'Terran', avatar: '', country: 'Global', flagKey: 'global', w1: '0-0', w2: '0-0', pts: 0, history: [] },
       { id: 'FinaLe', name: 'FinaLe[WD]', rank: 'Officers', insignia: '⛨🗡️⚔︎🗡️⛨', team: 'WD Squad', status: 'Active', race: 'Protoss', avatar: '', country: 'Global', flagKey: 'global', w1: '0-0', w2: '0-0', pts: 0, history: [] },
       { id: 'Wolf', name: 'Wolf[WD]', rank: 'Officers', insignia: '⛨🗡️⚔︎🗡️⛨', team: 'WD Squad', status: 'Active', race: 'Zerg', avatar: '', country: 'Global', flagKey: 'global', w1: '0-0', w2: '0-0', pts: 0, history: [] },
       { id: 'bull3y3s', name: 'bull3y3s[WD]', rank: 'Officers', insignia: '⛨🗡️⚔︎🗡️⛨', team: 'WD Squad', status: 'Active', race: 'Terran', avatar: '', country: 'Global', flagKey: 'global', w1: '0-0', w2: '0-0', pts: 0, history: [] },
       { id: 'Erw', name: 'Erw~!![WD]', rank: 'Officers', insignia: '⛨🗡️⚔︎🗡️⛨', team: 'WD Squad', status: 'Active', race: 'Protoss', avatar: '', country: 'Global', flagKey: 'global', w1: '0-0', w2: '0-0', pts: 0, history: [] },
       { id: 'YumKaax', name: 'YumKaax[WD]', rank: 'Officers', insignia: '⛨🗡️⚔︎🗡️⛨', team: 'WD Squad', status: 'Active', race: 'Zerg', avatar: '', country: 'Global', flagKey: 'global', w1: '0-0', w2: '0-0', pts: 0, history: [] },
-
-      // Corporals
       { id: 'carcar', name: 'carcar[WD]', rank: 'Corporals', insignia: '📯⚔︎🏹⚔︎📯', team: 'WD Squad', status: 'Active', race: 'Terran', avatar: '', country: 'Global', flagKey: 'global', w1: '0-0', w2: '0-0', pts: 0, history: [] },
       { id: 'Banditzerg', name: 'Banditzerg[WD]', rank: 'Corporals', insignia: '📯⚔︎🏹⚔︎📯', team: 'WD Squad', status: 'Active', race: 'Zerg', avatar: '', country: 'Global', flagKey: 'global', w1: '0-0', w2: '0-0', pts: 0, history: [] },
       { id: 'pjcs', name: 'pjcs[WD]', rank: 'Corporals', insignia: '📯⚔︎🏹⚔︎📯', team: 'WD Squad', status: 'Active', race: 'Terran', avatar: '', country: 'Global', flagKey: 'global', w1: '0-0', w2: '0-0', pts: 0, history: [] },
@@ -1901,8 +1969,6 @@
       { id: 'loordofries', name: 'loordofries(WD)', rank: 'Corporals', insignia: '📯⚔︎🏹⚔︎📯', team: 'WD Squad', status: 'Active', race: 'Protoss', avatar: '', country: 'Global', flagKey: 'global', w1: '0-0', w2: '0-0', pts: 0, history: [] },
       { id: 'Penguin', name: 'Penguin[WD]', rank: 'Corporals', insignia: '📯⚔︎🏹⚔︎📯', team: 'WD Squad', status: 'Active', race: 'Zerg', avatar: '', country: 'Global', flagKey: 'global', w1: '0-0', w2: '0-0', pts: 0, history: [] },
       { id: 'Atitus', name: 'Atitus[WD]', rank: 'Corporals', insignia: '📯⚔︎🏹⚔︎📯', team: 'WD Squad', status: 'Active', race: 'Terran', avatar: '', country: 'Global', flagKey: 'global', w1: '0-0', w2: '0-0', pts: 0, history: [] },
-
-      // Privates & WD-A active starters
       { id: 'CheesyCake', name: 'CheesyCake[WD]', rank: 'Privates', insignia: '🤺🪖♟️🪖🤺', team: 'WD-A', status: 'Active', race: 'Terran', country: 'Germany', flagKey: 'germany', w1: '4 - 0', w2: '2 - 2', pts: 6,
         history: [
           { week: 'Week #1', set: '1v1 vs Red-Navane', res: 'WIN', score: '2 - 0', win: true },
@@ -1955,7 +2021,6 @@
       { id: 'ZioN', name: 'ZioN[WD]', rank: 'Privates', insignia: '🤺🪖♟️🪖🤺', team: 'WD Squad', status: 'Active', race: 'Zerg', avatar: '', country: 'Global', flagKey: 'global', w1: '0-0', w2: '0-0', pts: 0, history: [] }
     ];
 
-    // Build Roster Table (WD-A)
     const rosterIds = ['CheesyCake', 'Battousai', 'Miwaco', 'KaRDiNaL', 'JaxM', 'zDAwgZ', 'Kimchi', 'DeathOrb', 'LunarPop', 'RobFATKraft', 'aMeba'];
     const rosterTbody = document.getElementById('roster-tbody');
 
@@ -1979,7 +2044,7 @@
       }
 
       const miniAvatar = p.avatar ? 
-        '<img src="' + p.avatar + '" class="table-avatar" onerror="this.style.display=\'none\'">' : '';
+        `<img src="${p.avatar}" class="table-avatar" onerror="this.style.display=\'none\'">` : '';
       tr.innerHTML = `
         <td><span class="player-tag">${miniAvatar}${p.name} <span class="click-hint">INTEL</span></span></td>
         <td>${roleBadge}</td>
@@ -1991,7 +2056,6 @@
       rosterTbody.appendChild(tr);
     });
 
-    // Populate Members by tier
     const tiers = {
       'Founders': 'tier-founders',
       'High Council': 'tier-high-council',
@@ -2014,7 +2078,7 @@
 
       const raceColor = p.race === 'Terran' ? '#60a5fa' : (p.race === 'Protoss' ? '#fbbf24' : '#c084fc');
       const pillAvatar = p.avatar ? 
-        '<img src="' + p.avatar + '" class="pill-avatar" onerror="this.style.display=\'none\'">' : '';
+        `<img src="${p.avatar}" class="pill-avatar" onerror="this.style.display=\'none\'">` : '';
       pill.innerHTML = `
         <span class="tag">${pillAvatar}${p.name}</span>
         <span class="pill-race" style="color:${raceColor}">[${p.race[0]}]</span>
@@ -2022,30 +2086,73 @@
       container.appendChild(pill);
     });
 
-    // Tab Navigation Logic
-    function switchTab(tabName) {
-      document.querySelectorAll('.section-wrap').forEach(el => el.classList.remove('active-tab'));
-      document.querySelectorAll('.nav-tab-btn').forEach(el => el.classList.remove('active'));
-      document.querySelectorAll('.dash-btn').forEach(el => el.classList.remove('active'));
+    function switchTab(tabName, updateHistory) {
+      if (updateHistory === undefined) updateHistory = true;
+      
+      var sections = document.querySelectorAll('.section-wrap');
+      for (var i = 0; i < sections.length; i++) {
+        sections[i].classList.remove('active-tab');
+      }
 
-      const targetSection = document.getElementById('tab-' + tabName);
+      var navBtns = document.querySelectorAll('.nav-tab-btn');
+      for (var j = 0; j < navBtns.length; j++) {
+        navBtns[j].classList.remove('active');
+      }
+
+      var dashBtns = document.querySelectorAll('.dash-btn');
+      for (var k = 0; k < dashBtns.length; k++) {
+        dashBtns[k].classList.remove('active');
+      }
+
+      var targetSection = document.getElementById('tab-' + tabName);
       if (targetSection) targetSection.classList.add('active-tab');
 
-      const navBtn = document.getElementById('btn-tab-' + tabName);
+      var navBtn = document.getElementById('btn-tab-' + tabName);
       if (navBtn) navBtn.classList.add('active');
 
-      const dashBtn = document.getElementById('dash-' + tabName);
+      var dashBtn = document.getElementById('dash-' + tabName);
       if (dashBtn) dashBtn.classList.add('active');
 
+      if (updateHistory) {
+        try {
+          if (window.location.protocol !== 'file:') {
+            if (tabName === 'overview') {
+              history.pushState(null, '', window.location.pathname + window.location.search);
+            } else {
+              history.pushState(null, '', '#' + tabName);
+            }
+          } else {
+            window.location.hash = tabName === 'overview' ? '' : tabName;
+          }
+        } catch(e) {
+          try { window.location.hash = tabName === 'overview' ? '' : tabName; } catch(err) {}
+        }
+      }
+
       if (tabName !== 'overview') {
-        const targetOffset = targetSection ? targetSection.offsetTop - 70 : 380;
+        var targetOffset = targetSection ? targetSection.offsetTop - 70 : 380;
         window.scrollTo({ top: targetOffset, behavior: 'smooth' });
       } else {
         window.scrollTo({ top: 0, behavior: 'smooth' });
       }
     }
 
-    // Modal Control
+    window.addEventListener('popstate', function() {
+      var hash = window.location.hash.replace('#', '');
+      if (hash && document.getElementById('tab-' + hash)) {
+        switchTab(hash, false);
+      } else {
+        switchTab('overview', false);
+      }
+    });
+
+    window.addEventListener('DOMContentLoaded', function() {
+      var hash = window.location.hash.replace('#', '');
+      if (hash && document.getElementById('tab-' + hash)) {
+        switchTab(hash, false);
+      }
+    });
+
     function openDossier(memberId) {
       const p = membersData.find(m => m.id === memberId);
       if (!p) return;
@@ -2083,12 +2190,10 @@
       const raceClass = p.race === 'Terran' ? 'race-terran' : (p.race === 'Protoss' ? 'race-protoss' : 'race-zerg');
       document.getElementById('m-race-badge').innerHTML = getRaceBadgeHtml(p.race);
 
-      // Stats
       document.getElementById('m-1v1-stat').innerText = p.w1 || '0 - 0';
       document.getElementById('m-2v2-stat').innerText = p.w2 || '0 - 0';
       document.getElementById('m-pts-stat').innerText = (p.pts || 0) + ' PTS';
 
-      // Match History
       const histContainer = document.getElementById('m-history-log');
       if (p.history && p.history.length > 0) {
         let rows = '<div style="font-weight:800; color:var(--cyan); margin-bottom:4px; font-size:0.8rem; letter-spacing:1px;">BWCL DIVISION D SETS:</div>';
@@ -2119,7 +2224,7 @@
       if (e.target.id === 'dossierModal') closeModal();
     }
 
-                function copySingleText(textToCopy, label) {
+    function copySingleText(textToCopy, label) {
       if (navigator.clipboard && navigator.clipboard.writeText) {
         navigator.clipboard.writeText(textToCopy).then(function() {
           alert('Copied ' + label + ' to clipboard: ' + textToCopy);
@@ -2149,10 +2254,7 @@
       }
     }
 
-    
-    // ========================================================
-    // REPLAY UPLOAD & VAULT MANAGEMENT
-    // ========================================================
+    // Replay Upload Vault
     var currentSelectedFile = null;
 
     function handleDragOver(e) {
@@ -2208,7 +2310,6 @@
         alert('Please choose a .rep or .zip file first.');
         return;
       }
-
       var reader = new FileReader();
       reader.onload = function(e) {
         var base64Data = e.target.result;
@@ -2238,15 +2339,12 @@
         existing.unshift(replayItem);
         try {
           localStorage.setItem('wd_replays', JSON.stringify(existing));
-        } catch(err) {
-          console.warn('Storage limit reached, saving without persistence.');
-        }
+        } catch(err) {}
 
         renderUserReplays();
         cancelUpload();
         alert('Replay saved to your Clan Vault successfully!');
       };
-
       reader.readAsDataURL(currentSelectedFile);
     }
 
@@ -2269,8 +2367,7 @@
       }
     }
 
-        function downloadMatchReplay(week, matchName) {
-      // Check if user has uploaded a replay matching this week
+    function downloadMatchReplay(week, matchName) {
       try {
         var existing = JSON.parse(localStorage.getItem('wd_replays') || '[]');
         var matchRep = existing.find(function(r) {
@@ -2283,9 +2380,7 @@
         }
       } catch(e) {}
 
-      // Default prompt or notification
-      var msg = 'Replay pack for ' + week + ' (' + matchName + ') will be available here once uploaded by clan staff.' + String.fromCharCode(10) + String.fromCharCode(10) +
-                'Want to upload a replay file for this match now?';
+      var msg = 'Replay pack for ' + week + ' (' + matchName + ') will be available here once uploaded by clan staff.\n\nWant to upload a replay file for this match now?';
       if (confirm(msg)) {
         switchTab('replays');
         var titleInp = document.getElementById('rep-title-input');
@@ -2324,12 +2419,19 @@
         var card = document.createElement('div');
         card.className = 'replay-card';
         card.style.borderLeft = '4px solid var(--cyan)';
-        card.innerHTML = 
-          '<div class="replay-meta">' +
-            '<span class="replay-title">' + item.title + ' <span style="font-size:0.7rem; color:var(--cyan); border:1px solid var(--cyan); padding:1px 6px; border-radius:3px; margin-left:6px; font-family:monospace;">USER UPLOAD</span></span>' +
-            '<span class="replay-sub">' + item.players + ' | Map: ' + item.map + ' (' + item.fileSize + ' • ' + item.date + ')</span>' +
-          '</div>' +
-          '<button onclick="downloadSavedReplay(\'' + item.id + '\')" class="btn-download-rep">DOWNLOAD (.REP)</button>';
+        
+        var metaDiv = document.createElement('div');
+        metaDiv.className = 'replay-meta';
+        metaDiv.innerHTML = '<span class="replay-title">' + item.title + ' <span style="font-size:0.7rem; color:var(--cyan); border:1px solid var(--cyan); padding:1px 6px; border-radius:3px; margin-left:6px; font-family:monospace;">USER UPLOAD</span></span>' +
+                            '<span class="replay-sub">' + item.players + ' | Map: ' + item.map + ' (' + item.fileSize + ' • ' + item.date + ')</span>';
+        card.appendChild(metaDiv);
+
+        var dlBtn = document.createElement('button');
+        dlBtn.className = 'btn-download-rep';
+        dlBtn.innerText = 'DOWNLOAD (.REP)';
+        dlBtn.onclick = function() { downloadSavedReplay(item.id); };
+        card.appendChild(dlBtn);
+
         container.appendChild(card);
       });
     }
@@ -2343,10 +2445,172 @@
 
     renderUserReplays();
 
-    
-    // ========================================================
-    // PROFILE PICTURE LIGHTBOX / MAGNIFIER
-    // ========================================================
+    // Map Packs Vault
+    var currentSelectedMapFile = null;
+
+    function handleMapDragOver(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      document.getElementById('map-drop-zone').style.borderColor = 'var(--cyan)';
+      document.getElementById('map-drop-zone').style.background = 'rgba(0, 229, 255, 0.1)';
+    }
+
+    function handleMapDragLeave(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      document.getElementById('map-drop-zone').style.borderColor = 'rgba(56, 189, 248, 0.45)';
+      document.getElementById('map-drop-zone').style.background = 'rgba(7, 12, 22, 0.6)';
+    }
+
+    function handleMapDrop(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      handleMapDragLeave(e);
+      if (e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+        processMapFile(e.dataTransfer.files[0]);
+      }
+    }
+
+    function handleMapFileSelect(e) {
+      if (e.target.files && e.target.files.length > 0) {
+        processMapFile(e.target.files[0]);
+      }
+    }
+
+    function processMapFile(file) {
+      currentSelectedMapFile = file;
+      var kb = (file.size / 1024).toFixed(1);
+      document.getElementById('map-file-info-text').innerText = 'Selected: ' + file.name + ' (' + kb + ' KB)';
+      if (!document.getElementById('map-title-input').value) {
+        document.getElementById('map-title-input').value = file.name.replace(/\.[^/.]+$/, '');
+      }
+      document.getElementById('map-upload-form').style.display = 'block';
+    }
+
+    function cancelMapUpload() {
+      currentSelectedMapFile = null;
+      document.getElementById('map-file-input').value = '';
+      document.getElementById('map-title-input').value = '';
+      document.getElementById('map-desc-input').value = '';
+      document.getElementById('map-upload-form').style.display = 'none';
+    }
+
+    function saveMapDownload() {
+      if (!currentSelectedMapFile) {
+        alert('Please choose a map (.scx) or archive (.zip/.rar) file first.');
+        return;
+      }
+      var reader = new FileReader();
+      reader.onload = function(e) {
+        var base64Data = e.target.result;
+        var title = document.getElementById('map-title-input').value.trim() || currentSelectedMapFile.name;
+        var desc = document.getElementById('map-desc-input').value.trim() || 'Official StarCraft Custom Map';
+        var dateStr = new Date().toLocaleDateString();
+
+        var mapItem = {
+          id: 'map_' + Date.now(),
+          title: title,
+          desc: desc,
+          fileName: currentSelectedMapFile.name,
+          fileSize: (currentSelectedMapFile.size / 1024).toFixed(1) + ' KB',
+          date: dateStr,
+          data: base64Data
+        };
+
+        var existing = [];
+        try {
+          existing = JSON.parse(localStorage.getItem('wd_maps') || '[]');
+        } catch(err) {
+          existing = [];
+        }
+
+        existing.unshift(mapItem);
+        try {
+          localStorage.setItem('wd_maps', JSON.stringify(existing));
+        } catch(err) {}
+
+        renderUserMaps();
+        cancelMapUpload();
+        alert('Map pack saved successfully!');
+      };
+      reader.readAsDataURL(currentSelectedMapFile);
+    }
+
+    function downloadSavedMap(mapId) {
+      try {
+        var existing = JSON.parse(localStorage.getItem('wd_maps') || '[]');
+        var item = existing.find(function(m) { return m.id === mapId; });
+        if (item && item.data) {
+          var a = document.createElement('a');
+          a.href = item.data;
+          a.download = item.fileName || 'MapPack.scx';
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+        } else {
+          alert('Map file not found.');
+        }
+      } catch(err) {
+        alert('Error downloading map.');
+      }
+    }
+
+    function renderUserMaps() {
+      var container = document.getElementById('user-maps-list');
+      var emptyMsg = document.getElementById('no-maps-msg');
+      if (!container) return;
+
+      var existing = [];
+      try {
+        existing = JSON.parse(localStorage.getItem('wd_maps') || '[]');
+      } catch(err) {
+        existing = [];
+      }
+
+      container.innerHTML = '';
+      var countEl = document.getElementById('map-count');
+      if (countEl) countEl.innerText = existing.length;
+
+      if (emptyMsg) {
+        emptyMsg.style.display = existing.length === 0 ? 'block' : 'none';
+      }
+
+      var clearBtn = document.getElementById('btn-clear-maps');
+      if (clearBtn) {
+        clearBtn.style.display = existing.length > 0 ? 'inline-block' : 'none';
+      }
+
+      existing.forEach(function(item) {
+        var card = document.createElement('div');
+        card.className = 'replay-card';
+        card.style.borderLeft = '4px solid var(--cyan)';
+
+        var metaDiv = document.createElement('div');
+        metaDiv.className = 'replay-meta';
+        metaDiv.innerHTML = '<span class="replay-title">' + item.title + ' <span style="font-size:0.7rem; color:var(--cyan); border:1px solid var(--cyan); padding:1px 6px; border-radius:3px; margin-left:6px; font-family:monospace;">MAP PACK</span></span>' +
+                            '<span class="replay-sub">' + item.desc + ' (' + item.fileSize + ' • ' + item.date + ')</span>';
+        card.appendChild(metaDiv);
+
+        var dlBtn = document.createElement('button');
+        dlBtn.className = 'btn-download-rep';
+        dlBtn.innerText = 'DOWNLOAD (.SCX)';
+        dlBtn.onclick = function() { downloadSavedMap(item.id); };
+        card.appendChild(dlBtn);
+
+        container.appendChild(card);
+      });
+    }
+
+    function clearUserMaps() {
+      if (confirm('Are you sure you want to clear uploaded map packs?')) {
+        localStorage.removeItem('wd_maps');
+        renderUserMaps();
+      }
+    }
+
+    renderUserMaps();
+
+    // Profile Lightbox
     function openAvatarLightbox(imgSrc) {
       if (!imgSrc) return;
       var lb = document.getElementById('avatarLightbox');
@@ -2367,6 +2631,7 @@
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') closeModal();
     });
+
   </script>
 </body>
 </html>
