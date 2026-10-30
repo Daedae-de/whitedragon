@@ -1078,6 +1078,44 @@
       vertical-align: middle;
       margin-right: 6px;
     }
+    /* FLOATING BOTTOM-RIGHT PRIVACY TAB */
+    .privacy-floating-btn {
+      position: fixed;
+      bottom: 18px;
+      right: 18px;
+      z-index: 850;
+      background: rgba(13, 21, 39, 0.92);
+      border: 1px solid var(--cyan);
+      color: var(--cyan);
+      padding: 7px 16px;
+      border-radius: 20px;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 0.74rem;
+      font-weight: 800;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      box-shadow: 0 4px 18px rgba(0, 229, 255, 0.28);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      backdrop-filter: blur(10px);
+      transition: all 0.25s ease;
+    }
+    .privacy-floating-btn:hover {
+      background: var(--cyan);
+      color: #070a12;
+      box-shadow: 0 0 22px var(--cyan-glow);
+      transform: translateY(-2px);
+    }
+    @media (max-width: 600px) {
+      .privacy-floating-btn {
+        bottom: 12px;
+        right: 12px;
+        padding: 5px 12px;
+        font-size: 0.68rem;
+      }
+    }
   </style>
 </head>
 <body>
@@ -1615,46 +1653,55 @@
   </section>
 
   
-  <!-- ==================== DOWNLOADS TAB (MAP PACKS) ==================== -->
+  <!-- ==================== DOWNLOADS TAB (RESOURCES & MAPS) ==================== -->
   <section id="tab-downloads" class="section-wrap">
     <div class="section-head">
       <div>
-        <h2>MAP PACKS & <span>DOWNLOADS</span></h2>
-        <div class="section-subtitle">Official BWCL map pool archives, custom strategy maps, and clan resources.</div>
+        <h2>CLAN <span>DOWNLOADS</span> // VAULT</h2>
+        <div class="section-subtitle">Official BWCL map pools, individual maps, StarCraft utilities, and clan software.</div>
       </div>
     </div>
 
-    <!-- MAP UPLOAD TERMINAL -->
+    <!-- UPLOAD TERMINAL -->
     <div class="card" style="margin-bottom: 22px; border: 1.5px solid var(--cyan); background: linear-gradient(135deg, rgba(14, 25, 45, 0.94) 0%, rgba(9, 16, 30, 0.98) 100%); box-shadow: 0 0 25px rgba(0, 229, 255, 0.18);">
       <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
         <span style="display: inline-block; width: 8px; height: 8px; background: var(--cyan); border-radius: 50%; box-shadow: 0 0 8px var(--cyan);"></span>
-        <span style="font-family: 'Orbitron', sans-serif; font-size: 0.82rem; font-weight: 800; color: var(--cyan); letter-spacing: 1.5px; text-transform: uppercase;">UPLOAD MAP PACK OR CUSTOM MAP (.SCX / .ZIP)</span>
+        <span style="font-family: 'Orbitron', sans-serif; font-size: 0.82rem; font-weight: 800; color: var(--cyan); letter-spacing: 1.5px; text-transform: uppercase;">TRANSMIT FILE TO CLAN VAULT</span>
       </div>
       <p style="color: #cbd5e1; font-size: 0.95rem; margin-bottom: 16px; line-height: 1.55;">
-        Upload tournament map packs (BWCL S65 maps like Backrooms, Octagon, etc.) or custom maps for clan practice sessions.
+        Upload tournament map packs, single custom maps, StarCraft utilities, or helpful software. Stored downloads are accessible below.
       </p>
 
       <!-- Drag & Drop Zone -->
       <div id="map-drop-zone" onclick="document.getElementById('map-file-input').click()" style="border: 2px dashed rgba(56, 189, 248, 0.45); border-radius: 10px; padding: 24px; text-align: center; cursor: pointer; background: rgba(7, 12, 22, 0.6); transition: all 0.2s;" ondragover="handleMapDragOver(event)" ondragleave="handleMapDragLeave(event)" ondrop="handleMapDrop(event)">
-        <input type="file" id="map-file-input" accept=".scx,.sod,.zip,.rar" style="display: none;" onchange="handleMapFileSelect(event)">
+        <input type="file" id="map-file-input" style="display: none;" onchange="handleMapFileSelect(event)">
         <div style="font-size: 2rem; color: var(--cyan); margin-bottom: 6px;">📦</div>
         <div style="font-family: 'Orbitron', sans-serif; font-size: 0.92rem; font-weight: 800; color: #fff; margin-bottom: 4px;">
-          CLICK OR DRAG & DROP MAP FILE HERE
+          CLICK OR DRAG & DROP FILE HERE
         </div>
         <div style="color: var(--text-muted); font-size: 0.8rem; font-family: 'Share Tech Mono', monospace;">
-          Supports StarCraft map files (.scx) and archives (.zip / .rar)
+          Supports Map Packs (.zip, .rar), StarCraft Maps (.scx, .scm), and Software / Tools (.exe, .zip)
         </div>
       </div>
 
       <!-- File Details & Metadata Form -->
       <div id="map-upload-form" style="display: none; margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--border-color);">
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; margin-bottom: 14px;">
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-bottom: 14px;">
           <div>
-            <label style="display: block; font-family: 'Orbitron', sans-serif; font-size: 0.72rem; color: var(--text-muted); margin-bottom: 4px; text-transform: uppercase;">Pack Title</label>
+            <label style="display: block; font-family: 'Orbitron', sans-serif; font-size: 0.72rem; color: var(--text-muted); margin-bottom: 4px; text-transform: uppercase;">Category</label>
+            <select id="map-category-input" style="width: 100%; background: #070a12; border: 1px solid var(--border-color); color: var(--cyan); padding: 8px 12px; border-radius: 6px; font-family: 'Rajdhani', sans-serif; font-size: 0.95rem; font-weight: 700;">
+              <option value="Map Pack">📦 Map Pack</option>
+              <option value="Map">🗺️ Single Map (.scx)</option>
+              <option value="Software">⚙️ Software / Tool</option>
+              <option value="Other">📁 Other Resource</option>
+            </select>
+          </div>
+          <div>
+            <label style="display: block; font-family: 'Orbitron', sans-serif; font-size: 0.72rem; color: var(--text-muted); margin-bottom: 4px; text-transform: uppercase;">Title</label>
             <input type="text" id="map-title-input" placeholder="e.g. BWCL S65 Official Map Pack" style="width: 100%; background: #070a12; border: 1px solid var(--border-color); color: #fff; padding: 8px 12px; border-radius: 6px; font-family: 'Rajdhani', sans-serif; font-size: 0.95rem;">
           </div>
           <div>
-            <label style="display: block; font-family: 'Orbitron', sans-serif; font-size: 0.72rem; color: var(--text-muted); margin-bottom: 4px; text-transform: uppercase;">Description / Details</label>
+            <label style="display: block; font-family: 'Orbitron', sans-serif; font-size: 0.72rem; color: var(--text-muted); margin-bottom: 4px; text-transform: uppercase;">Description / Notes</label>
             <input type="text" id="map-desc-input" placeholder="e.g. Backrooms, Octagon, Nightmare..." style="width: 100%; background: #070a12; border: 1px solid var(--border-color); color: #fff; padding: 8px 12px; border-radius: 6px; font-family: 'Rajdhani', sans-serif; font-size: 0.95rem;">
           </div>
         </div>
@@ -1663,7 +1710,7 @@
           <div id="map-file-info-text" style="font-family: 'Share Tech Mono', monospace; font-size: 0.85rem; color: var(--cyan);"></div>
           <div style="display: flex; gap: 8px;">
             <button onclick="saveMapDownload()" class="btn-download-rep" style="background: var(--cyan); color: #070a12; cursor: pointer;">
-              📦 SAVE MAP PACK
+              💾 SAVE DOWNLOAD
             </button>
             <button onclick="cancelMapUpload()" class="btn-download-rep" style="background: transparent; border-color: var(--text-dim); color: var(--text-muted); cursor: pointer;">
               CANCEL
@@ -1673,23 +1720,27 @@
       </div>
     </div>
 
-    <!-- DOWNLOAD LIST HEADING -->
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-      <h3 style="font-family: 'Orbitron', sans-serif; font-size: 1.05rem; color: #fff; font-weight: 800;">
-        AVAILABLE MAP PACKS (<span id="map-count" style="color: var(--cyan);">0</span>)
-      </h3>
+    <!-- FILTER BUTTONS & HEADING -->
+    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 14px;">
+      <div style="display: flex; gap: 6px; flex-wrap: wrap;" id="dl-filter-buttons">
+        <button onclick="filterDownloads('All')" class="nav-tab-btn active" id="filter-dl-All" style="padding: 5px 12px; font-size: 0.78rem;">ALL (<span id="count-all">0</span>)</button>
+        <button onclick="filterDownloads('Map Pack')" class="nav-tab-btn" id="filter-dl-MapPack" style="padding: 5px 12px; font-size: 0.78rem;">📦 MAP PACKS (<span id="count-mappack">0</span>)</button>
+        <button onclick="filterDownloads('Map')" class="nav-tab-btn" id="filter-dl-Map" style="padding: 5px 12px; font-size: 0.78rem;">🗺️ MAPS (<span id="count-map">0</span>)</button>
+        <button onclick="filterDownloads('Software')" class="nav-tab-btn" id="filter-dl-Software" style="padding: 5px 12px; font-size: 0.78rem;">⚙️ SOFTWARE (<span id="count-software">0</span>)</button>
+        <button onclick="filterDownloads('Other')" class="nav-tab-btn" id="filter-dl-Other" style="padding: 5px 12px; font-size: 0.78rem;">📁 OTHER (<span id="count-other">0</span>)</button>
+      </div>
       <button onclick="clearUserMaps()" id="btn-clear-maps" style="display: none; background: transparent; border: 1px solid var(--loss); color: var(--loss); padding: 4px 10px; border-radius: 4px; font-size: 0.72rem; font-family: 'Orbitron', sans-serif; cursor: pointer;">
-        CLEAR MAPS
+        CLEAR DOWNLOADS
       </button>
     </div>
 
-    <!-- DYNAMIC USER UPLOADED MAPS -->
+    <!-- DYNAMIC USER UPLOADED MAPS & FILES -->
     <div id="user-maps-list"></div>
     <div id="no-maps-msg" class="card" style="text-align: center; padding: 28px 20px; color: var(--text-muted);">
       <div style="font-size: 1.8rem; margin-bottom: 6px; color: var(--cyan);">📦</div>
-      <div style="font-family: 'Orbitron', sans-serif; font-size: 0.95rem; color: #fff; font-weight: 700; margin-bottom: 4px;">NO MAP PACKS UPLOADED YET</div>
+      <div style="font-family: 'Orbitron', sans-serif; font-size: 0.95rem; color: #fff; font-weight: 700; margin-bottom: 4px;">NO DOWNLOADS IN THIS CATEGORY YET</div>
       <p style="font-size: 0.88rem; max-width: 500px; margin: 0 auto; color: #94a3b8;">
-        Upload tournament map packages (.scx / .zip) above so clan members can download them for practice.
+        Upload tournament map packages, custom maps, or StarCraft software using the terminal above.
       </p>
     </div>
   </section>
@@ -1900,6 +1951,65 @@
   </div>
 
   
+
+  <!-- FLOATING PRIVACY TAB (BOTTOM-RIGHT) -->
+  <button id="floatingPrivacyBtn" onclick="openPrivacyModal()" class="privacy-floating-btn" title="View Privacy Information">
+    <span>🔒</span> <span>Privacy</span>
+  </button>
+
+  <!-- PRIVACY MODAL POPUP -->
+  <div class="modal-backdrop" id="privacyModal" onclick="handlePrivacyBackdropClick(event)">
+    <div class="dossier-card" style="max-width: 620px;">
+      <div class="dossier-header">
+        <div class="dossier-header-title">
+          <span>🔒 PRIVACY //</span> <span>WHITE DRAGON CLAN</span>
+        </div>
+        <button class="btn-close-modal" onclick="closePrivacyModal()" title="Close">&times;</button>
+      </div>
+      <div class="dossier-body">
+        <div style="margin-bottom: 16px; border-bottom: 1px solid var(--border-color); padding-bottom: 12px;">
+          <h3 style="font-family:'Orbitron', sans-serif; font-size:1.15rem; color:#fff; margin-bottom:4px;">Privacy | White Dragon Clan</h3>
+          <p style="color:var(--cyan); font-family:'Share Tech Mono', monospace; font-size:0.85rem; font-weight:bold;">Important information about privacy using this site!</p>
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 14px; color: #cbd5e1; font-size: 0.94rem; line-height: 1.6;">
+          <div style="background: rgba(7, 12, 22, 0.7); border: 1px solid var(--border-color); border-radius: 8px; padding: 12px 14px;">
+            <div style="font-family:'Orbitron', sans-serif; font-size:0.8rem; color:var(--cyan); font-weight:800; margin-bottom:4px;">💾 1. CLIENT-SIDE LOCAL STORAGE</div>
+            <p>Any match replays (.rep) or map packs (.scx / .zip) you upload through our terminal are kept <strong>directly inside your own web browser</strong> via local storage (localStorage). They are not sold, transmitted to third-party ad networks, or mined for personal data.</p>
+          </div>
+
+          <div style="background: rgba(7, 12, 22, 0.7); border: 1px solid var(--border-color); border-radius: 8px; padding: 12px 14px;">
+            <div style="font-family:'Orbitron', sans-serif; font-size:0.8rem; color:var(--cyan); font-weight:800; margin-bottom:4px;">🛡️ 2. NO COMMERCIAL TRACKING & NO COOKIE PROFILING</div>
+            <p>White Dragon [WD] operates as an independent, non-profit StarCraft eSports gaming community. We do not use intrusive commercial advertising trackers or marketing analytics to track your personal identity.</p>
+          </div>
+
+          <div style="background: rgba(7, 12, 22, 0.7); border: 1px solid var(--border-color); border-radius: 8px; padding: 12px 14px;">
+            <div style="font-family:'Orbitron', sans-serif; font-size:0.8rem; color:var(--cyan); font-weight:800; margin-bottom:4px;">🌐 3. EXTERNAL LINKS (DISCORD & BLIZZARD)</div>
+            <p>Our website provides direct links to Discord and Battle.net for recruitment and match coordination. Interaction with those external platforms is subject to their respective terms and privacy policies.</p>
+          </div>
+
+         <div style="background: rgba(7, 12, 22, 0.7); border: 1px solid var(--border-color); border-radius: 8px; padding: 12px 14px;">
+  <div style="font-family:'Orbitron', sans-serif; font-size:0.8rem; color:var(--cyan); font-weight:800; margin-bottom:4px;">💬 4. COMMUNITY PRIVACY CONTACT</div>
+  <p style="margin-bottom: 8px;">If you have any questions or would like your player alias or member profile removed from our public roster, message web administrators directly on Discord or contact us via email:</p>
+  <div style="display: flex; flex-wrap: wrap; gap: 8px; align-items: center;">
+    <a href="https://discord.com/users/492046348946898946" target="_blank" rel="noopener noreferrer" style="color: #fbbf24; font-family: 'Share Tech Mono', monospace; font-size: 0.88rem; text-decoration: none; font-weight: bold; background: rgba(245, 158, 11, 0.15); border: 1px solid rgba(245, 158, 11, 0.6); padding: 5px 12px; border-radius: 4px; display: inline-flex; align-items: center; gap: 6px;">
+      💬 Discord: <strong>Cheesecake[WD]</strong> ↗
+    </a>
+    <a href="mailto:daehyeon0206@gmail.com" style="color: var(--cyan); font-family: 'Share Tech Mono', monospace; font-size: 0.88rem; text-decoration: none; font-weight: bold; background: rgba(0, 229, 255, 0.12); border: 1px solid var(--cyan); padding: 5px 12px; border-radius: 4px; display: inline-flex; align-items: center; gap: 6px;">
+      ✉️ daehyeon0206@gmail.com
+    </a>
+  </div>
+</div>
+
+        <div style="margin-top: 18px; text-align: right;">
+          <button onclick="closePrivacyModal()" class="btn-download-rep" style="padding: 8px 18px; cursor: pointer;">
+            UNDERSTOOD & CLOSE
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- PROFILE PICTURE LIGHTBOX MODAL -->
   <div id="avatarLightbox" onclick="closeAvatarLightbox()" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(4,7,13,0.92); backdrop-filter:blur(12px); z-index:9999; display:none; align-items:center; justify-content:center; padding:20px; cursor:pointer;">
     <div style="position:relative; max-width:90vw; max-height:90vh;" onclick="event.stopPropagation()">
@@ -2445,21 +2555,28 @@
 
     renderUserReplays();
 
-    // Map Packs Vault
+        // Downloads & Resources Vault Management (Maps, Software, Map Packs)
     var currentSelectedMapFile = null;
+    var currentDownloadFilter = 'All';
 
     function handleMapDragOver(e) {
       e.preventDefault();
       e.stopPropagation();
-      document.getElementById('map-drop-zone').style.borderColor = 'var(--cyan)';
-      document.getElementById('map-drop-zone').style.background = 'rgba(0, 229, 255, 0.1)';
+      var zone = document.getElementById('map-drop-zone');
+      if (zone) {
+        zone.style.borderColor = 'var(--cyan)';
+        zone.style.background = 'rgba(0, 229, 255, 0.1)';
+      }
     }
 
     function handleMapDragLeave(e) {
       e.preventDefault();
       e.stopPropagation();
-      document.getElementById('map-drop-zone').style.borderColor = 'rgba(56, 189, 248, 0.45)';
-      document.getElementById('map-drop-zone').style.background = 'rgba(7, 12, 22, 0.6)';
+      var zone = document.getElementById('map-drop-zone');
+      if (zone) {
+        zone.style.borderColor = 'rgba(56, 189, 248, 0.45)';
+        zone.style.background = 'rgba(7, 12, 22, 0.6)';
+      }
     }
 
     function handleMapDrop(e) {
@@ -2480,37 +2597,67 @@
     function processMapFile(file) {
       currentSelectedMapFile = file;
       var kb = (file.size / 1024).toFixed(1);
-      document.getElementById('map-file-info-text').innerText = 'Selected: ' + file.name + ' (' + kb + ' KB)';
-      if (!document.getElementById('map-title-input').value) {
-        document.getElementById('map-title-input').value = file.name.replace(/\.[^/.]+$/, '');
+      var infoText = document.getElementById('map-file-info-text');
+      if (infoText) {
+        infoText.innerText = 'Selected: ' + file.name + ' (' + kb + ' KB)';
       }
-      document.getElementById('map-upload-form').style.display = 'block';
+      var titleInput = document.getElementById('map-title-input');
+      if (titleInput && !titleInput.value) {
+        titleInput.value = file.name.replace(/\.[^/.]+$/, '');
+      }
+
+      // Auto-detect likely category from extension
+      var catSelect = document.getElementById('map-category-input');
+      if (catSelect) {
+        var ext = file.name.split('.').pop().toLowerCase();
+        if (ext === 'scx' || ext === 'scm') {
+          catSelect.value = 'Map';
+        } else if (ext === 'exe' || ext === 'msi') {
+          catSelect.value = 'Software';
+        } else if (ext === 'zip' || ext === 'rar' || ext === '7z') {
+          catSelect.value = 'Map Pack';
+        }
+      }
+
+      var form = document.getElementById('map-upload-form');
+      if (form) form.style.display = 'block';
     }
 
     function cancelMapUpload() {
       currentSelectedMapFile = null;
-      document.getElementById('map-file-input').value = '';
-      document.getElementById('map-title-input').value = '';
-      document.getElementById('map-desc-input').value = '';
-      document.getElementById('map-upload-form').style.display = 'none';
+      var fileInp = document.getElementById('map-file-input');
+      if (fileInp) fileInp.value = '';
+      var titleInp = document.getElementById('map-title-input');
+      if (titleInp) titleInp.value = '';
+      var descInp = document.getElementById('map-desc-input');
+      if (descInp) descInp.value = '';
+      var form = document.getElementById('map-upload-form');
+      if (form) form.style.display = 'none';
     }
 
     function saveMapDownload() {
       if (!currentSelectedMapFile) {
-        alert('Please choose a map (.scx) or archive (.zip/.rar) file first.');
+        alert('Please choose a file to upload first.');
         return;
       }
+
       var reader = new FileReader();
       reader.onload = function(e) {
         var base64Data = e.target.result;
-        var title = document.getElementById('map-title-input').value.trim() || currentSelectedMapFile.name;
-        var desc = document.getElementById('map-desc-input').value.trim() || 'Official StarCraft Custom Map';
+        var titleInp = document.getElementById('map-title-input');
+        var descInp = document.getElementById('map-desc-input');
+        var catSelect = document.getElementById('map-category-input');
+
+        var title = (titleInp && titleInp.value.trim()) || currentSelectedMapFile.name;
+        var desc = (descInp && descInp.value.trim()) || 'StarCraft Resource File';
+        var category = (catSelect && catSelect.value) || 'Map Pack';
         var dateStr = new Date().toLocaleDateString();
 
-        var mapItem = {
-          id: 'map_' + Date.now(),
+        var downloadItem = {
+          id: 'dl_' + Date.now(),
           title: title,
           desc: desc,
+          category: category,
           fileName: currentSelectedMapFile.name,
           fileSize: (currentSelectedMapFile.size / 1024).toFixed(1) + ' KB',
           date: dateStr,
@@ -2519,39 +2666,60 @@
 
         var existing = [];
         try {
-          existing = JSON.parse(localStorage.getItem('wd_maps') || '[]');
+          existing = JSON.parse(localStorage.getItem('wd_downloads_vault') || '[]');
         } catch(err) {
           existing = [];
         }
 
-        existing.unshift(mapItem);
+        existing.unshift(downloadItem);
         try {
-          localStorage.setItem('wd_maps', JSON.stringify(existing));
-        } catch(err) {}
+          localStorage.setItem('wd_downloads_vault', JSON.stringify(existing));
+        } catch(err) {
+          console.warn('Browser storage quota reached.');
+        }
 
         renderUserMaps();
         cancelMapUpload();
-        alert('Map pack saved successfully!');
+        alert('File saved to Clan Downloads Vault successfully!');
       };
+
       reader.readAsDataURL(currentSelectedMapFile);
     }
 
-    function downloadSavedMap(mapId) {
+    function filterDownloads(cat) {
+      currentDownloadFilter = cat;
+      var buttons = document.querySelectorAll('#dl-filter-buttons .nav-tab-btn');
+      for (var i = 0; i < buttons.length; i++) {
+        buttons[i].classList.remove('active');
+      }
+      var filterBtnId = 'filter-dl-' + cat.replace(/\s+/g, '');
+      var activeBtn = document.getElementById(filterBtnId);
+      if (activeBtn) activeBtn.classList.add('active');
+      renderUserMaps();
+    }
+
+    function downloadSavedMap(downloadId) {
       try {
-        var existing = JSON.parse(localStorage.getItem('wd_maps') || '[]');
-        var item = existing.find(function(m) { return m.id === mapId; });
+        var existing = JSON.parse(localStorage.getItem('wd_downloads_vault') || '[]');
+        var item = null;
+        for (var i = 0; i < existing.length; i++) {
+          if (existing[i].id === downloadId) {
+            item = existing[i];
+            break;
+          }
+        }
         if (item && item.data) {
           var a = document.createElement('a');
           a.href = item.data;
-          a.download = item.fileName || 'MapPack.scx';
+          a.download = item.fileName || 'Download.zip';
           document.body.appendChild(a);
           a.click();
           document.body.removeChild(a);
         } else {
-          alert('Map file not found.');
+          alert('Download file data not found.');
         }
       } catch(err) {
-        alert('Error downloading map.');
+        alert('Error downloading file.');
       }
     }
 
@@ -2562,48 +2730,89 @@
 
       var existing = [];
       try {
-        existing = JSON.parse(localStorage.getItem('wd_maps') || '[]');
+        existing = JSON.parse(localStorage.getItem('wd_downloads_vault') || '[]');
       } catch(err) {
         existing = [];
       }
 
-      container.innerHTML = '';
-      var countEl = document.getElementById('map-count');
-      if (countEl) countEl.innerText = existing.length;
-
-      if (emptyMsg) {
-        emptyMsg.style.display = existing.length === 0 ? 'block' : 'none';
+      // Update category counters
+      var countAll = existing.length;
+      var countMapPack = 0, countMap = 0, countSoftware = 0, countOther = 0;
+      for (var k = 0; k < existing.length; k++) {
+        var c = existing[k].category;
+        if (c === 'Map Pack') countMapPack++;
+        else if (c === 'Map') countMap++;
+        else if (c === 'Software') countSoftware++;
+        else countOther++;
       }
+
+      var elAll = document.getElementById('count-all');
+      if (elAll) elAll.innerText = countAll;
+      var elMP = document.getElementById('count-mappack');
+      if (elMP) elMP.innerText = countMapPack;
+      var elM = document.getElementById('count-map');
+      if (elM) elM.innerText = countMap;
+      var elS = document.getElementById('count-software');
+      if (elS) elS.innerText = countSoftware;
+      var elO = document.getElementById('count-other');
+      if (elO) elO.innerText = countOther;
 
       var clearBtn = document.getElementById('btn-clear-maps');
       if (clearBtn) {
         clearBtn.style.display = existing.length > 0 ? 'inline-block' : 'none';
       }
 
-      existing.forEach(function(item) {
+      // Filter items
+      var filtered = [];
+      for (var m = 0; m < existing.length; m++) {
+        if (currentDownloadFilter === 'All' || existing[m].category === currentDownloadFilter) {
+          filtered.push(existing[m]);
+        }
+      }
+
+      container.innerHTML = '';
+      if (emptyMsg) {
+        emptyMsg.style.display = filtered.length === 0 ? 'block' : 'none';
+      }
+
+      // Category color styles
+      var catBadges = {
+        'Map Pack': { icon: '📦', color: 'var(--cyan)', border: '1px solid var(--cyan)' },
+        'Map': { icon: '🗺️', color: 'var(--win)', border: '1px solid var(--win)' },
+        'Software': { icon: '⚙️', color: '#fbbf24', border: '1px solid #fbbf24' },
+        'Other': { icon: '📁', color: '#c084fc', border: '1px solid #c084fc' }
+      };
+
+      for (var n = 0; n < filtered.length; n++) {
+        var item = filtered[n];
+        var badgeInfo = catBadges[item.category] || catBadges['Other'];
+
         var card = document.createElement('div');
         card.className = 'replay-card';
-        card.style.borderLeft = '4px solid var(--cyan)';
+        card.style.borderLeft = '4px solid ' + badgeInfo.color;
 
         var metaDiv = document.createElement('div');
         metaDiv.className = 'replay-meta';
-        metaDiv.innerHTML = '<span class="replay-title">' + item.title + ' <span style="font-size:0.7rem; color:var(--cyan); border:1px solid var(--cyan); padding:1px 6px; border-radius:3px; margin-left:6px; font-family:monospace;">MAP PACK</span></span>' +
+        metaDiv.innerHTML = '<span class="replay-title">' + item.title + ' ' +
+                            '<span style="font-size:0.68rem; color:' + badgeInfo.color + '; border:' + badgeInfo.border + '; padding:1px 6px; border-radius:4px; margin-left:6px; font-family:monospace; text-transform:uppercase;">' + badgeInfo.icon + ' ' + item.category + '</span></span>' +
                             '<span class="replay-sub">' + item.desc + ' (' + item.fileSize + ' • ' + item.date + ')</span>';
         card.appendChild(metaDiv);
 
         var dlBtn = document.createElement('button');
         dlBtn.className = 'btn-download-rep';
-        dlBtn.innerText = 'DOWNLOAD (.SCX)';
-        dlBtn.onclick = function() { downloadSavedMap(item.id); };
+        dlBtn.innerText = 'DOWNLOAD';
+        (function(idToDownload) {
+          dlBtn.onclick = function() { downloadSavedMap(idToDownload); };
+        })(item.id);
         card.appendChild(dlBtn);
 
         container.appendChild(card);
-      });
+      }
     }
 
     function clearUserMaps() {
-      if (confirm('Are you sure you want to clear uploaded map packs?')) {
-        localStorage.removeItem('wd_maps');
+      if (confirm('Are you sure you want to clear your uploaded files from this browser?')) {
+        localStorage.removeItem('wd_downloads_vault');
         renderUserMaps();
       }
     }
@@ -2628,7 +2837,23 @@
       }
     }
 
+        // Privacy Modal Control
+    function openPrivacyModal() {
+      var modal = document.getElementById('privacyModal');
+      if (modal) modal.classList.add('active');
+    }
+
+    function closePrivacyModal() {
+      var modal = document.getElementById('privacyModal');
+      if (modal) modal.classList.remove('active');
+    }
+
+    function handlePrivacyBackdropClick(e) {
+      if (e.target.id === 'privacyModal') closePrivacyModal();
+    }
+
     document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') closePrivacyModal();
       if (e.key === 'Escape') closeModal();
     });
 
