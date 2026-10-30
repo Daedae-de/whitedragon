@@ -1035,6 +1035,8 @@
     }
       /* MEMBER AVATAR STYLES */
     .player-avatar-wrap {
+      cursor: zoom-in;
+      transition: transform 0.2s, box-shadow 0.2s;
       width: 64px;
       height: 64px;
       border-radius: 8px;
@@ -1746,7 +1748,7 @@
       <div class="dossier-body">
         <div class="player-profile-summary">
           <div class="player-identity">
-            <div class="player-avatar-wrap">
+            <div class="player-avatar-wrap" onclick="openAvatarLightbox(document.getElementById('m-avatar').src)" title="Click to magnify profile picture">
               <img id="m-avatar" src="" alt="Avatar" class="player-avatar-img">
             </div>
             <div>
@@ -1808,6 +1810,15 @@
           </div>
         </div>
       </div>
+    </div>
+  </div>
+
+  
+  <!-- PROFILE PICTURE LIGHTBOX MODAL -->
+  <div id="avatarLightbox" onclick="closeAvatarLightbox()" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(4,7,13,0.92); backdrop-filter:blur(12px); z-index:9999; display:none; align-items:center; justify-content:center; padding:20px; cursor:pointer;">
+    <div style="position:relative; max-width:90vw; max-height:90vh;" onclick="event.stopPropagation()">
+      <button onclick="closeAvatarLightbox()" style="position:absolute; top:-40px; right:0; background:transparent; border:1px solid var(--cyan); color:var(--cyan); width:36px; height:36px; border-radius:6px; font-size:1.4rem; cursor:pointer; display:flex; align-items:center; justify-content:center;">&times;</button>
+      <img id="lightboxImg" src="" alt="Magnified Profile Picture" style="max-width:100%; max-height:85vh; border-radius:12px; border:2px solid var(--cyan); box-shadow:0 0 50px rgba(0,229,255,0.4); object-fit:contain; display:block;">
     </div>
   </div>
 
@@ -2328,6 +2339,27 @@
     }
 
     renderUserReplays();
+
+    
+    // ========================================================
+    // PROFILE PICTURE LIGHTBOX / MAGNIFIER
+    // ========================================================
+    function openAvatarLightbox(imgSrc) {
+      if (!imgSrc) return;
+      var lb = document.getElementById('avatarLightbox');
+      var lbImg = document.getElementById('lightboxImg');
+      if (lb && lbImg) {
+        lbImg.src = imgSrc;
+        lb.style.display = 'flex';
+      }
+    }
+
+    function closeAvatarLightbox() {
+      var lb = document.getElementById('avatarLightbox');
+      if (lb) {
+        lb.style.display = 'none';
+      }
+    }
 
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') closeModal();
