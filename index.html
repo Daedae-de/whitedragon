@@ -1501,17 +1501,17 @@
     // Database with STATUS (Active / Inactive) and Team WD-A
     const membersData = [
       // Founders
-      { id: 'RobFATKraft', name: 'RobFATKraft[WD]', role: 'Captain', rank: 'Founders', insignia: '⋆༺𓆩♱𓆪༻⋆⋆༺𓆩♱𓆪༻⋆', team: 'WD-A (Reserve)', status: 'Active', race: 'Protoss', country: 'USA', flagKey: 'usa', w1: '0-0', w2: '0-0', pts: 0, history: [] },
-      
+      { id: 'RobFATKraft', name: 'RobFATKraft[WD]', role: 'Captain', rank: 'Founders', insignia: '⋆༺𓆩♱𓆪༻⋆⋆༺𓆩♱𓆪༻⋆', team: 'WD-A (Captain)', status: 'Active', race: 'Protoss', country: 'USA', flagKey: 'usa', w1: '0-0', w2: '0-0', pts: 0, history: [] },
+      { id: 'DeathOrb', name: 'DeathOrb[WD]', role: 'Captain', rank: 'CO-Founders', insignia: '⋆༺𓆩♱𓆪༻⋆⋆༺𓆩♱𓆪༻⋆', team: 'WD-A (Captain)', status: 'Active', race: 'Protoss', country: 'USA', flagKey: 'usa', w1: '0-0', w2: '0-0', pts: 0, history: [] },
       // High Council
-      { id: 'DeathOrb', name: 'DeathOrb[WD]', role: 'Captain', rank: 'High Council', insignia: '⋆༺𓆩♛♛𓆪༻⋆', team: 'WD-A (Reserve)', status: 'Active', race: 'Protoss', country: 'USA', flagKey: 'usa', w1: '0-0', w2: '0-0', pts: 0, history: [] },
-      { id: 'zDAwgZ', name: 'z’DAwgZ[WD]', role: 'Squadleader', rank: 'High Council', insignia: '⋆༺𓆩♛♛𓆪༻⋆', team: 'WD-A (Starter)', status: 'Active', race: 'Terran', country: 'Canada', flagKey: 'canada', w1: '0-0', w2: '0-0', pts: 0, history: [] },
+      
+      { id: 'zDAwgZ', name: 'z’DAwgZ[WD]', role: 'Squadleader', rank: 'High Council', insignia: '⋆༺𓆩♛♛𓆪༻⋆', team: 'WD-A (Squad Leader)', status: 'Active', race: 'Terran', country: 'Canada', flagKey: 'canada', w1: '0-0', w2: '0-0', pts: 0, history: [] },
 
       // Generals
-      { id: 'LunarPop', name: 'LunarPop[WD]', role: 'Captain', rank: 'Generals', insignia: '', team: 'WD-A (Reserve)', status: 'Active', race: 'Protoss', country: 'Canada', flagKey: 'canada', w1: '0-0', w2: '0-0', pts: 0, history: [] },
+      { id: 'LunarPop', name: 'LunarPop[WD]', role: 'Captain', rank: 'Generals', insignia: '', team: 'WD-A (Captain)', status: 'Active', race: 'Protoss', country: 'Canada', flagKey: 'canada', w1: '0-0', w2: '0-0', pts: 0, history: [] },
 
       // Colonel
-      { id: 'KaRDiNaL', name: 'KaRDiNaL[WD]', rank: 'Colonel', insignia: '⛊✠‍💂‍✠‍⛊', team: 'WD-A (Starter)', status: 'Active', race: 'Terran', country: 'Canada', flagKey: 'canada', w1: '2 - 2', w2: '0 - 0', pts: 2, 
+      { id: 'KaRDiNaL', name: 'KaRDiNaL[WD]', rank: 'Colonel', insignia: '⛊✠‍💂‍✠‍⛊', team: 'WD-A', status: 'Active', race: 'Terran', country: 'Canada', flagKey: 'canada', w1: '2 - 2', w2: '0 - 0', pts: 2, 
         history: [
           { week: 'Week #1', set: '1v1 vs Red.Hot', res: 'WIN', score: '2 - 0', win: true },
           { week: 'Week #2', set: '1v1 vs Cwt|Surgen', res: 'LOSS', score: '1 - 2', win: false },
@@ -1545,7 +1545,7 @@
       { id: 'Atitus', name: 'Atitus[WD]', rank: 'Corporals', insignia: '⚔︎⚔︎', team: 'WD Squad', status: 'Active', race: 'Terran', country: 'Global', flagKey: 'global', w1: '0-0', w2: '0-0', pts: 0, history: [] },
 
       // Privates & WD-A active starters
-      { id: 'CheesyCake', name: 'CheesyCake[WD]', rank: 'Privates', insignia: '', team: 'WD-A (Starter)', status: 'Active', race: 'Terran', country: 'Germany', flagKey: 'germany', w1: '4 - 0', w2: '2 - 2', pts: 6,
+      { id: 'CheesyCake', name: 'CheesyCake[WD]', rank: 'Privates', insignia: '', team: 'WD-A', status: 'Active', race: 'Terran', country: 'Germany', flagKey: 'germany', w1: '4 - 0', w2: '2 - 2', pts: 6,
         history: [
           { week: 'Week #1', set: '1v1 vs Red-Navane', res: 'WIN', score: '2 - 0', win: true },
           { week: 'Week #1', set: '2v2 w/ Battousai vs Navane/SkRiK', res: 'LOSS', score: '1 - 2', win: false },
@@ -1557,7 +1557,7 @@
           { week: 'Week #4', set: '2v2 w/ aMeba vs Guty/JD', res: 'WIN', score: '2 - 0', win: true }
         ]
       },
-      { id: 'Battousai', name: 'Battousai[WD]', rank: 'Privates', insignia: '', team: 'WD-A (Starter)', status: 'Active', race: 'Protoss', country: 'Canada', flagKey: 'canada', w1: '3 - 1', w2: '0 - 1', pts: 3,
+      { id: 'Battousai', name: 'Battousai[WD]', rank: 'Privates', insignia: '', team: 'WD-A', status: 'Active', race: 'Protoss', country: 'Canada', flagKey: 'canada', w1: '3 - 1', w2: '0 - 1', pts: 3,
         history: [
           { week: 'Week #1', set: '1v1 vs Red-SkRiK', res: 'WIN', score: '2 - 0', win: true },
           { week: 'Week #1', set: '2v2 w/ CheesyCake vs Navane/SkRiK', res: 'LOSS', score: '1 - 2', win: false },
@@ -1566,7 +1566,7 @@
           { week: 'Week #4', set: '1v1 vs Shadow|Jacinta', res: 'WIN', score: '2 - 0', win: true }
         ]
       },
-      { id: 'Miwaco', name: 'Miwaco[WD]', rank: 'Privates', insignia: '', team: 'WD-A (Starter)', status: 'Active', race: 'Terran', country: 'USA', flagKey: 'usa', w1: '1 - 1', w2: '1 - 1', pts: 2,
+      { id: 'Miwaco', name: 'Miwaco[WD]', rank: 'Privates', insignia: '', team: 'WD-A', status: 'Active', race: 'Terran', country: 'USA', flagKey: 'usa', w1: '1 - 1', w2: '1 - 1', pts: 2,
         history: [
           { week: 'Week #2', set: '1v1 vs Cwt|SiD', res: 'WIN', score: '2 - 0', win: true },
           { week: 'Week #2', set: '2v2 w/ CheesyCake vs MaF/Surgen', res: 'WIN', score: '2 - 0', win: true },
@@ -1574,19 +1574,19 @@
           { week: 'Week #3', set: '2v2 w/ CheesyCake vs pez/non', res: 'LOSS', score: '0 - 2', win: false }
         ]
       },
-      { id: 'aMeba', name: 'aMeba[WD]', rank: 'Privates', insignia: '', team: 'WD-A (Starter)', status: 'Active', race: 'Zerg', country: 'Mexico', flagKey: 'mexico', w1: '1 - 0', w2: '1 - 0', pts: 2,
+      { id: 'aMeba', name: 'aMeba[WD]', rank: 'Privates', insignia: '', team: 'WD-A', status: 'Active', race: 'Zerg', country: 'Mexico', flagKey: 'mexico', w1: '1 - 0', w2: '1 - 0', pts: 2,
         history: [
           { week: 'Week #4', set: '1v1 vs Shadow|LaBestia', res: 'WIN', score: '2 - 0', win: true },
           { week: 'Week #4', set: '2v2 w/ CheesyCake vs Guty/JD', res: 'WIN', score: '2 - 0', win: true }
         ]
       },
-      { id: 'SonOfMalice', name: 'SonOfMalice[WD]', rank: 'Privates', insignia: '', team: 'WD-A (Reserve)', status: 'Active', race: 'Terran', country: 'USA', flagKey: 'usa', w1: '0 - 1', w2: '0 - 0', pts: 0,
+      { id: 'SonOfMalice', name: 'SonOfMalice[WD]', rank: 'Privates', insignia: '', team: 'WD-A', status: 'Active', race: 'Terran', country: 'USA', flagKey: 'usa', w1: '0 - 1', w2: '0 - 0', pts: 0,
         history: [
           { week: 'Week #1', set: '1v1 vs Red-Quim', res: 'LOSS', score: '0 - 2', win: false }
         ]
       },
-      { id: 'JaxM', name: 'JaxM[WD]', rank: 'Privates', insignia: '', team: 'WD-A (Starter)', status: 'Active', race: 'Terran', country: 'Philippines', flagKey: 'philippines', w1: '0-0', w2: '0-0', pts: 0, history: [] },
-      { id: 'Kimchi', name: 'Kimchi[WD]', rank: 'Privates', insignia: '', team: 'WD-A (Starter)', status: 'Active', race: 'Terran', country: 'USA', flagKey: 'usa', w1: '0-0', w2: '0-0', pts: 0, history: [] },
+      { id: 'JaxM', name: 'JaxM[WD]', rank: 'Privates', insignia: '', team: 'WD-A', status: 'Active', race: 'Terran', country: 'Philippines', flagKey: 'philippines', w1: '0-0', w2: '0-0', pts: 0, history: [] },
+      { id: 'Kimchi', name: 'Kimchi[WD]', rank: 'Privates', insignia: '', team: 'WD-A', status: 'Active', race: 'Terran', country: 'USA', flagKey: 'usa', w1: '0-0', w2: '0-0', pts: 0, history: [] },
       { id: 'Buldrokkas', name: 'Buldrokkas[WD]', rank: 'Privates', insignia: '', team: 'WD Squad', status: 'Active', race: 'Protoss', country: 'Global', flagKey: 'global', w1: '0-0', w2: '0-0', pts: 0, history: [] },
       { id: 'Cobra_Pilot', name: 'Cobra_Pilot[WD]', rank: 'Privates', insignia: '', team: 'WD Squad', status: 'Active', race: 'Terran', country: 'Global', flagKey: 'global', w1: '0-0', w2: '0-0', pts: 0, history: [] },
       { id: 'KING_TURTLE', name: 'KING_TURTLE[WD]', rank: 'Privates', insignia: '', team: 'WD Squad', status: 'Active', race: 'Protoss', country: 'Global', flagKey: 'global', w1: '0-0', w2: '0-0', pts: 0, history: [] },
