@@ -1012,6 +1012,27 @@
       .dossier-body { padding: 14px; }
       .dossier-card { max-height: 94vh; }
     }
+      .match-rep-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(0, 229, 255, 0.12);
+      border: 1px solid var(--cyan);
+      color: var(--cyan);
+      padding: 4px 10px;
+      border-radius: 5px;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 0.72rem;
+      font-weight: 800;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+    .match-rep-badge:hover {
+      background: var(--cyan);
+      color: #070a12;
+      box-shadow: 0 0 12px var(--cyan-glow);
+    }
   </style>
 </head>
 <body>
@@ -1325,11 +1346,12 @@
   </section>
 
   <!-- ==================== 4. MATCHES TAB ==================== -->
+    <!-- ==================== 4. MATCHES TAB ==================== -->
   <section id="tab-matches" class="section-wrap">
     <div class="section-head">
       <div>
         <h2>BWCL 65 // <span>MATCH RESULTS & SCHEDULE</span></h2>
-        <div class="section-subtitle">Official scorecards for Weeks 1-4 and upcoming schedule for Weeks 5-8.</div>
+        <div class="section-subtitle">Official scorecards for Weeks 1-4 and upcoming schedule. Download replays directly from each match.</div>
       </div>
     </div>
 
@@ -1346,6 +1368,12 @@
         <div class="set-row"><span>#3 1v1 Battousai[WD] 2 - 0 Red-SkRiK</span><span style="color:var(--win)">W</span></div>
         <div class="set-row"><span>#4 1v1 SonOfMalice[WD] 0 - 2 Red-Quim</span><span style="color:var(--loss)">L</span></div>
         <div class="set-row"><span>#1 2v2 Battousai & CheesyCake 1 - 2 Red-Navane & SkRiK</span><span style="color:var(--loss)">L</span></div>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 10px; padding-top: 8px; border-top: 1px dotted rgba(56, 189, 248, 0.2);">
+          <span style="font-size: 0.74rem; color: var(--text-dim); font-family: 'Share Tech Mono', monospace;">BWCL S65 // 4-2 CW</span>
+          <button onclick="downloadMatchReplay('Week 1', 'RED-3 vs White Dragon')" class="match-rep-badge" title="Download Week 1 Replays">
+            <span>💾</span> <span>REPLAY (.REP)</span>
+          </button>
+        </div>
       </div>
 
       <!-- Week 2 -->
@@ -1360,6 +1388,12 @@
         <div class="set-row"><span>#3 1v1 Battousai[WD] 2 - 0 Cwt|Budaak</span><span style="color:var(--win)">W</span></div>
         <div class="set-row"><span>#4 1v1 Miwaco[WD] 2 - 0 Cwt|SiD</span><span style="color:var(--win)">W</span></div>
         <div class="set-row"><span>#1 2v2 Miwaco & CheesyCake 2 - 0 Cwt|MaF & Surgen</span><span style="color:var(--win)">W</span></div>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 10px; padding-top: 8px; border-top: 1px dotted rgba(56, 189, 248, 0.2);">
+          <span style="font-size: 0.74rem; color: var(--text-dim); font-family: 'Share Tech Mono', monospace;">BWCL S65 // 5-1 CW</span>
+          <button onclick="downloadMatchReplay('Week 2', 'White Dragon vs Cwt)-3')" class="match-rep-badge" title="Download Week 2 Replays">
+            <span>💾</span> <span>REPLAY (.REP)</span>
+          </button>
+        </div>
       </div>
 
       <!-- Week 3 -->
@@ -1374,6 +1408,12 @@
         <div class="set-row"><span>#3 1v1 CheesyCake[WD] 2 - 0 Ace</span><span style="color:var(--win)">W</span></div>
         <div class="set-row"><span>#4 1v1 Miwaco[WD] 1 - 2 vorti</span><span style="color:var(--loss)">L</span></div>
         <div class="set-row"><span>#1 2v2 CheesyCake & Miwaco 0 - 2 pez & non</span><span style="color:var(--loss)">L</span></div>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 10px; padding-top: 8px; border-top: 1px dotted rgba(56, 189, 248, 0.2);">
+          <span style="font-size: 0.74rem; color: var(--text-dim); font-family: 'Share Tech Mono', monospace;">BWCL S65 // 1-5 CW</span>
+          <button onclick="downloadMatchReplay('Week 3', 'SAS vs White Dragon')" class="match-rep-badge" title="Download Week 3 Replays">
+            <span>💾</span> <span>REPLAY (.REP)</span>
+          </button>
+        </div>
       </div>
 
       <!-- Week 4 -->
@@ -1388,6 +1428,12 @@
         <div class="set-row"><span>#3 1v1 CheesyCake[WD] 2 - 0 Shadow|JD</span><span style="color:var(--win)">W</span></div>
         <div class="set-row"><span>#4 1v1 aMeba[WD] 2 - 0 Shadow|LaBestia</span><span style="color:var(--win)">W</span></div>
         <div class="set-row"><span>#1 2v2 aMeba & CheesyCake 2 - 0 Shadow|Guty & JD</span><span style="color:var(--win)">W</span></div>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 10px; padding-top: 8px; border-top: 1px dotted rgba(56, 189, 248, 0.2);">
+          <span style="font-size: 0.74rem; color: var(--text-dim); font-family: 'Share Tech Mono', monospace;">BWCL S65 // 6-0 Clean Sweep</span>
+          <button onclick="downloadMatchReplay('Week 4', 'White Dragon vs Shadow-2')" class="match-rep-badge" title="Download Week 4 Replays">
+            <span>💾</span> <span>REPLAY (.REP)</span>
+          </button>
+        </div>
       </div>
     </div>
 
@@ -1397,32 +1443,49 @@
         <div class="match-header"><span class="week">WEEK #5 // 1ST NOV. 2026</span><span style="color:var(--cyan)">UPCOMING</span></div>
         <div style="font-weight:800; color:#fff;">White Dragon vs dB)-3</div>
         <div style="color:var(--text-muted); font-size:0.86rem; margin-top:4px;">1n1 MOTW: Backrooms | 2n2 MOTW: Octagon</div>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 10px; padding-top: 8px; border-top: 1px dotted rgba(56, 189, 248, 0.2);">
+          <span style="font-size: 0.74rem; color: var(--text-dim); font-family: 'Share Tech Mono', monospace;">Scheduled</span>
+          <span style="font-size: 0.72rem; color: var(--text-dim); font-family: 'Share Tech Mono', monospace;">Replay after match</span>
+        </div>
       </div>
       <div class="card">
         <div class="match-header"><span class="week">WEEK #6 // 8TH NOV. 2026</span><span style="color:var(--cyan)">UPCOMING</span></div>
         <div style="font-weight:800; color:#fff;">White Dragon vs RED-3</div>
         <div style="color:var(--text-muted); font-size:0.86rem; margin-top:4px;">1n1 MOTW: Nightmare | 2n2 MOTW: Exit Strategy</div>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 10px; padding-top: 8px; border-top: 1px dotted rgba(56, 189, 248, 0.2);">
+          <span style="font-size: 0.74rem; color: var(--text-dim); font-family: 'Share Tech Mono', monospace;">Scheduled</span>
+          <span style="font-size: 0.72rem; color: var(--text-dim); font-family: 'Share Tech Mono', monospace;">Replay after match</span>
+        </div>
       </div>
       <div class="card">
         <div class="match-header"><span class="week">WEEK #7 // 15TH NOV. 2026</span><span style="color:var(--cyan)">UPCOMING</span></div>
         <div style="font-weight:800; color:#fff;">Cwt)-3 vs White Dragon</div>
         <div style="color:var(--text-muted); font-size:0.86rem; margin-top:4px;">1n1 MOTW: Attitude SE | 2n2 MOTW: Lost Temple A/B</div>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 10px; padding-top: 8px; border-top: 1px dotted rgba(56, 189, 248, 0.2);">
+          <span style="font-size: 0.74rem; color: var(--text-dim); font-family: 'Share Tech Mono', monospace;">Scheduled</span>
+          <span style="font-size: 0.72rem; color: var(--text-dim); font-family: 'Share Tech Mono', monospace;">Replay after match</span>
+        </div>
       </div>
       <div class="card">
         <div class="match-header"><span class="week">WEEK #8 // 22ND NOV. 2026</span><span style="color:var(--cyan)">UPCOMING</span></div>
         <div style="font-weight:800; color:#fff;">SAS vs White Dragon</div>
         <div style="color:var(--text-muted); font-size:0.86rem; margin-top:4px;">1n1 MOTW: Odyssey RE | 2n2 MOTW: KnockOut</div>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 10px; padding-top: 8px; border-top: 1px dotted rgba(56, 189, 248, 0.2);">
+          <span style="font-size: 0.74rem; color: var(--text-dim); font-family: 'Share Tech Mono', monospace;">Scheduled</span>
+          <span style="font-size: 0.72rem; color: var(--text-dim); font-family: 'Share Tech Mono', monospace;">Replay after match</span>
+        </div>
       </div>
     </div>
   </section>
 
   <!-- ==================== 5. REPLAYS TAB ==================== -->
     <!-- ==================== 5. REPLAYS TAB ==================== -->
+    <!-- ==================== 5. REPLAYS TAB ==================== -->
   <section id="tab-replays" class="section-wrap">
     <div class="section-head">
       <div>
         <h2>CLAN WAR <span>REPLAYS</span> // ARCHIVE & UPLOAD</h2>
-        <div class="section-subtitle">Download official Brood War replay packages (.rep) or submit your own clan matches.</div>
+        <div class="section-subtitle">Official Brood War replay packages (.rep) and match submissions.</div>
       </div>
     </div>
 
@@ -1433,7 +1496,7 @@
         <span style="font-family: 'Orbitron', sans-serif; font-size: 0.82rem; font-weight: 800; color: var(--cyan); letter-spacing: 1.5px; text-transform: uppercase;">TRANSMIT CLAN REPLAY (.REP / .ZIP)</span>
       </div>
       <p style="color: #cbd5e1; font-size: 0.95rem; margin-bottom: 16px; line-height: 1.55;">
-        Upload your BWCL tournament sets, clan war games, or casual in-house replays. Stored replays will be listed below for instant download.
+        Upload your BWCL tournament sets, clan war games, or casual in-house replays. Stored replays will be available for instant download below.
       </p>
 
       <!-- Drag & Drop Zone -->
@@ -1448,7 +1511,7 @@
         </div>
       </div>
 
-      <!-- File Details & Metadata Form (appears after selecting file) -->
+      <!-- File Details & Metadata Form -->
       <div id="upload-form" style="display: none; margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--border-color);">
         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; margin-bottom: 14px;">
           <div>
@@ -1482,7 +1545,7 @@
     <!-- REPLAY LIST HEADING -->
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
       <h3 style="font-family: 'Orbitron', sans-serif; font-size: 1.05rem; color: #fff; font-weight: 800;">
-        ACTIVE CLAN ARCHIVES (<span id="rep-count" style="color: var(--cyan);">3</span>)
+        ACTIVE CLAN ARCHIVES (<span id="rep-count" style="color: var(--cyan);">0</span>)
       </h3>
       <button onclick="clearUserReplays()" id="btn-clear-reps" style="display: none; background: transparent; border: 1px solid var(--loss); color: var(--loss); padding: 4px 10px; border-radius: 4px; font-size: 0.72rem; font-family: 'Orbitron', sans-serif; cursor: pointer;">
         CLEAR UPLOADED
@@ -1491,30 +1554,12 @@
 
     <!-- DYNAMIC USER UPLOADED REPLAYS -->
     <div id="user-replays-list"></div>
-
-    <!-- DEFAULT OFFICIAL BWCL REPLAYS -->
-    <div class="replay-card">
-      <div class="replay-meta">
-        <span class="replay-title">BWCL S65 Week #4: White Dragon vs Shadow-2 [6 - 0]</span>
-        <span class="replay-sub">Sets: KaRDiNaL, Battousai, CheesyCake, aMeba | Map: Colorless Fate & Backrooms</span>
-      </div>
-      <a href="javascript:alert('Downloading BWCL_S65_W4_WD_vs_Shadow2_Replays.zip...')" class="btn-download-rep">DOWNLOAD PACK (.REP)</a>
-    </div>
-
-    <div class="replay-card">
-      <div class="replay-meta">
-        <span class="replay-title">BWCL S65 Week #2: White Dragon vs Cwt)-3 [5 - 1]</span>
-        <span class="replay-sub">Sets: KaRDiNaL, CheesyCake, Battousai, Miwaco | Map: Aiolos & Attitude SE</span>
-      </div>
-      <a href="javascript:alert('Downloading BWCL_S65_W2_WD_vs_Cwt3_Replays.zip...')" class="btn-download-rep">DOWNLOAD PACK (.REP)</a>
-    </div>
-
-    <div class="replay-card">
-      <div class="replay-meta">
-        <span class="replay-title">BWCL S65 Week #1: RED-3 vs White Dragon [2 - 4]</span>
-        <span class="replay-sub">Sets: KaRDiNaL, CheesyCake, Battousai, SonOfMalice | Map: KnockOut & Radeon</span>
-      </div>
-      <a href="javascript:alert('Downloading BWCL_S65_W1_RED3_vs_WD_Replays.zip...')" class="btn-download-rep">DOWNLOAD PACK (.REP)</a>
+    <div id="no-replays-msg" class="card" style="text-align: center; padding: 28px 20px; color: var(--text-muted);">
+      <div style="font-size: 1.8rem; margin-bottom: 6px; color: var(--cyan);">💾</div>
+      <div style="font-family: 'Orbitron', sans-serif; font-size: 0.95rem; color: #fff; font-weight: 700; margin-bottom: 4px;">NO REPLAY PACKS ARCHIVED YET</div>
+      <p style="font-size: 0.88rem; max-width: 500px; margin: 0 auto; color: #94a3b8;">
+        Replays will be uploaded after each official clan war. You can also upload match .rep files anytime using the terminal above.
+      </p>
     </div>
   </section>
 
@@ -1725,6 +1770,21 @@
 
   <script>
     // Flag SVGs
+    
+    function getRaceBadgeHtml(race) {
+      if (!race) race = 'Terran';
+      var r = race.toLowerCase();
+      if (r.startsWith('t')) {
+        return '<span class="race-badge race-terran"><svg viewBox="0 0 24 24" width="13" height="13" style="vertical-align:middle; fill:currentColor;"><path d="M12 2L3 6v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V6l-9-4zm0 2.18l7 3.11v4.71c0 4.41-3.07 8.54-7 9.72-3.93-1.18-7-5.31-7-9.72V7.29l7-3.11z"/></svg> Terran</span>';
+      } else if (r.startsWith('p')) {
+        return '<span class="race-badge race-protoss"><svg viewBox="0 0 24 24" width="13" height="13" style="vertical-align:middle; fill:currentColor;"><path d="M12 2L1 21h22L12 2zm0 3.83L19.53 19H4.47L12 5.83z"/></svg> Protoss</span>';
+      } else if (r.startsWith('z')) {
+        return '<span class="race-badge race-zerg"><svg viewBox="0 0 24 24" width="13" height="13" style="vertical-align:middle; fill:currentColor;"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg> Zerg</span>';
+      } else {
+        return '<span class="race-badge race-random" style="background:rgba(0,229,255,0.2);color:#00e5ff;border:1px solid rgba(0,229,255,0.5);"><svg viewBox="0 0 24 24" width="13" height="13" style="vertical-align:middle; fill:currentColor;"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 14l-5-5 1.41-1.41L12 14.17l3.59-3.58L17 12l-5 5z"/></svg> Random</span>';
+      }
+    }
+
     const flags = {
       germany: `<svg class="flag-icon" viewBox="0 0 5 3" style="display:inline-block; vertical-align:middle; width:24px; height:16px; border-radius:2px; box-shadow:0 0 4px rgba(0,0,0,0.5); margin-right:8px;"><rect width="5" height="3" y="0" x="0" fill="#000"/><rect width="5" height="2" y="1" x="0" fill="#dd0000"/><rect width="5" height="1" y="2" x="0" fill="#ffce00"/></svg>`,
       canada: `<svg class="flag-icon" viewBox="0 0 1000 500" style="display:inline-block; vertical-align:middle; width:24px; height:16px; border-radius:2px; box-shadow:0 0 4px rgba(0,0,0,0.5); margin-right:8px;"><rect width="1000" height="500" fill="#ff0000"/><rect x="250" width="500" height="500" fill="#ffffff"/><path d="M 500,430 L 493,353 C 485,354 457,358 450,348 C 445,340 449,328 440,323 C 430,317 416,323 408,311 C 401,300 407,279 397,272 C 388,265 372,274 364,264 C 354,251 364,228 350,223 C 342,220 334,226 325,224 C 322,223 322,216 327,214 C 344,208 360,203 378,198 C 384,196 386,189 383,184 C 378,175 363,165 371,154 C 375,149 387,155 394,158 C 402,161 411,167 419,165 C 423,164 423,158 421,154 C 411,136 397,118 412,98 C 418,90 427,99 433,103 C 448,114 463,126 478,137 C 484,141 489,137 488,130 C 486,112 473,81 489,68 C 495,63 500,69 504,74 C 512,85 507,114 513,128 C 515,134 520,135 524,131 C 539,120 553,109 568,98 C 574,94 582,88 588,96 C 603,116 589,134 579,152 C 577,156 577,162 581,163 C 589,165 598,159 606,156 C 613,153 625,147 629,152 C 637,163 622,173 617,182 C 614,187 616,194 622,196 C 640,201 656,206 673,212 C 678,214 678,221 675,222 C 666,224 658,218 650,221 C 636,226 646,249 636,262 C 628,272 612,263 603,270 C 593,277 599,298 592,309 C 584,321 570,315 560,321 C 551,326 555,338 550,346 C 543,356 515,352 507,351 L 500,430 Z" fill="#ff0000"/></svg>`,
@@ -1862,7 +1922,7 @@
         <td><strong style="color:var(--cyan);">WD-A</strong></td>
         <td>White Dragon</td>
         <td>${flagSvg} ${p.country}</td>
-        <td><span class="race-badge ${raceClass}">${p.race}</span></td>
+        <td>${getRaceBadgeHtml(p.race)}</td>
       `;
       rosterTbody.appendChild(tr);
     });
@@ -1946,7 +2006,7 @@
       }
 
       const raceClass = p.race === 'Terran' ? 'race-terran' : (p.race === 'Protoss' ? 'race-protoss' : 'race-zerg');
-      document.getElementById('m-race-badge').innerHTML = `<span class="race-badge ${raceClass}">${p.race}</span>`;
+      document.getElementById('m-race-badge').innerHTML = getRaceBadgeHtml(p.race);
 
       // Stats
       document.getElementById('m-1v1-stat').innerText = p.w1 || '0 - 0';
@@ -2134,8 +2194,35 @@
       }
     }
 
+        function downloadMatchReplay(week, matchName) {
+      // Check if user has uploaded a replay matching this week
+      try {
+        var existing = JSON.parse(localStorage.getItem('wd_replays') || '[]');
+        var matchRep = existing.find(function(r) {
+          return (r.title && r.title.toLowerCase().indexOf(week.toLowerCase()) !== -1) ||
+                 (r.players && r.players.toLowerCase().indexOf(week.toLowerCase()) !== -1);
+        });
+        if (matchRep && matchRep.data) {
+          downloadSavedReplay(matchRep.id);
+          return;
+        }
+      } catch(e) {}
+
+      // Default prompt or notification
+      var msg = 'Replay pack for ' + week + ' (' + matchName + ') will be available here once uploaded by clan staff.' + String.fromCharCode(10) + String.fromCharCode(10) +
+                'Want to upload a replay file for this match now?';
+      if (confirm(msg)) {
+        switchTab('replays');
+        var titleInp = document.getElementById('rep-title-input');
+        if (titleInp) titleInp.value = 'BWCL S65 ' + week + ': ' + matchName;
+        var fileInp = document.getElementById('rep-file-input');
+        if (fileInp) fileInp.click();
+      }
+    }
+
     function renderUserReplays() {
       var container = document.getElementById('user-replays-list');
+      var emptyMsg = document.getElementById('no-replays-msg');
       if (!container) return;
 
       var existing = [];
@@ -2146,9 +2233,12 @@
       }
 
       container.innerHTML = '';
-      var totalCount = 3 + existing.length;
       var countEl = document.getElementById('rep-count');
-      if (countEl) countEl.innerText = totalCount;
+      if (countEl) countEl.innerText = existing.length;
+
+      if (emptyMsg) {
+        emptyMsg.style.display = existing.length === 0 ? 'block' : 'none';
+      }
 
       var clearBtn = document.getElementById('btn-clear-reps');
       if (clearBtn) {
