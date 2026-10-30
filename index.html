@@ -1913,26 +1913,33 @@
       if (e.target.id === 'dossierModal') closeModal();
     }
 
-        function copySingleText(textToCopy, label) {
-      navigator.clipboard.writeText(textToCopy).then(() => {
-        alert("Copied " + label + " to clipboard: " + textToCopy);
-      }).catch(() => {
-        prompt("Copy " + label + ":", textToCopy);
-      });
+                function copySingleText(textToCopy, label) {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(textToCopy).then(function() {
+          alert('Copied ' + label + ' to clipboard: ' + textToCopy);
+        }).catch(function() {
+          prompt('Copy ' + label + ':', textToCopy);
+        });
+      } else {
+        prompt('Copy ' + label + ':', textToCopy);
+      }
     }
 
-        function copyJoinInfo() {
-      const text = "White Dragon [WD] Clan Tryouts:
-- Battle.net Gateway: US West
-- Channel: Op White-Dragon
-- Discord Admins: Death~Orb / RobFATKraft";
-      navigator.clipboard.writeText(text).then(() => {
-        alert("Copied Full Clan Tryout Brief to clipboard!
-
-" + text);
-      }).catch(() => {
-        prompt("Copy Clan Tryout Brief:", text);
-      });
+    function copyJoinInfo() {
+      var nl = String.fromCharCode(10);
+      var text = 'White Dragon [WD] Clan Tryouts:' + nl +
+        '- Battle.net Gateway: US West' + nl +
+        '- Channel: Op White-Dragon' + nl +
+        '- Discord Admins: Death~Orb / RobFATKraft';
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(function() {
+          alert('Copied Full Clan Tryout Brief to clipboard!' + nl + nl + text);
+        }).catch(function() {
+          prompt('Copy Clan Tryout Brief:', text);
+        });
+      } else {
+        prompt('Copy Clan Tryout Brief:', text);
+      }
     }
 
     document.addEventListener('keydown', (e) => {
