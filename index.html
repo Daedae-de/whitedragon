@@ -1921,11 +1921,11 @@
       });
     }
 
-    function copyJoinInfo() {
+        function copyJoinInfo() {
       const text = "White Dragon [WD] Clan Tryouts:
-• Battle.net Gateway: US West
-• Channel: Op White-Dragon
-• Discord Admins: Death~Orb / RobFATKraft";
+- Battle.net Gateway: US West
+- Channel: Op White-Dragon
+- Discord Admins: Death~Orb / RobFATKraft";
       navigator.clipboard.writeText(text).then(() => {
         alert("Copied Full Clan Tryout Brief to clipboard!
 
@@ -1934,8 +1934,6 @@
         prompt("Copy Clan Tryout Brief:", text);
       });
     }
-
-    
 
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') closeModal();
