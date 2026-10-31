@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>White Dragon [WD] | StarCraft: Remastered Clan</title>
+  <link rel="icon" type="image/jpeg" href="logo.jpg">
   <!-- Firebase Authentication SDKs -->
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
@@ -1295,7 +1296,14 @@
           <div class="intel-badge"><strong>LEAGUE:</strong> BWCL S65 DIV-D (#3, 3-1)</div>
           <div class="intel-badge"><strong>GATEWAY:</strong> US WEST</div>
           <div class="intel-badge channel-badge"><strong>CHANNEL:</strong> Op White-Dragon</div>
-        </div>
+        
+          <div class="intel-badge" style="border-color:var(--cyan); background:rgba(0,229,255,0.12); color:#fff;">
+            <strong style="color:var(--cyan);">VISITORS:</strong> <span id="visitor-count-display">1,420</span>
+          </div>
+          <div class="intel-badge" style="border-color:var(--win); background:rgba(16,185,129,0.12); color:#fff;">
+            <span style="display:inline-block; width:7px; height:7px; border-radius:50%; background:var(--win); box-shadow:0 0 8px var(--win); margin-right:4px;"></span>
+            <strong style="color:var(--win);">ONLINE:</strong> <span id="online-users-display">3</span>
+          </div></div>
       </div>
       <div class="hero-emblem-preview">
         <img src="logo.jpg" alt="White Dragon Emblem" onerror="this.style.display='none'; document.getElementById('hero-fallback-svg').style.display='block';">
@@ -1481,6 +1489,25 @@
       <span style="color:var(--text-muted); font-size:0.8rem; font-family:'Share Tech Mono', monospace;">[Main Competitive Squad]</span>
     </div>
 
+    <!-- ADMIN ROSTER CONTROL TERMINAL -->
+    <div id="admin-roster-control-panel" style="display:none; margin-bottom:16px; background:rgba(14,24,42,0.92); border:1.5px solid var(--cyan); border-radius:8px; padding:14px; box-shadow:0 0 16px rgba(0,229,255,0.2);">
+      <div style="font-family:'Orbitron',sans-serif; font-size:0.8rem; color:var(--cyan); font-weight:800; margin-bottom:8px;">
+        ⚡ WD-A SQUAD ROSTER MANAGEMENT
+      </div>
+      <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
+        <select id="roster-add-member-select" style="background:#070a12; border:1px solid var(--border-color); color:#fff; padding:7px 10px; border-radius:5px; font-size:0.85rem; min-width:180px;"></select>
+        <select id="roster-add-role-select" style="background:#070a12; border:1px solid var(--border-color); color:var(--cyan); padding:7px 10px; border-radius:5px; font-weight:bold; font-size:0.85rem;">
+          <option value="Player">Player</option>
+          <option value="Starter">Active Starter</option>
+          <option value="Captain">Captain</option>
+          <option value="Squadleader">Squadleader</option>
+        </select>
+        <input type="text" id="roster-add-time-inp" placeholder="Availability (e.g. Sundays 18:00 CET)" style="flex:1; background:#070a12; border:1px solid var(--border-color); color:#fff; padding:7px 10px; border-radius:5px; font-size:0.85rem; min-width:200px;">
+        <button onclick="addMemberToRosterUI()" class="btn-download-rep" style="background:var(--cyan); color:#070a12; font-weight:800; cursor:pointer;">
+          + ADD TO SQUAD
+        </button>
+      </div>
+    </div>
     <div class="table-container">
       <table class="data-table">
         <thead>
@@ -1491,6 +1518,7 @@
             <th>AFFILIATION</th>
             <th>COUNTRY</th>
             <th>PREFERRED RACE</th>
+            <th>SCHEDULE / AVAILABILITY</th>
           </tr>
         </thead>
         <tbody id="roster-tbody">
@@ -1580,132 +1608,73 @@
   <section id="tab-matches" class="section-wrap">
     <div class="section-head">
       <div>
-        <h2>BWCL 65 // <span>MATCH RESULTS & SCHEDULE</span></h2>
-        <div class="section-subtitle">Official scorecards for Weeks 1-4 and upcoming schedule. Download replays directly from each match.</div>
+        <h2>CLAN <span>MATCHES</span> // RESULTS & SCHEDULE</h2>
+        <div class="section-subtitle">Official league fixtures, internal WD showmatches, and friendly clan wars.</div>
+      </div>
+      <button id="btn-toggle-match-cms" onclick="toggleMatchCMS()" class="btn-download-rep" style="display:none; font-size:0.75rem; padding:6px 14px; background:var(--cyan); color:#070a12; font-weight:800;">
+        + TRANSMIT NEW MATCH
+      </button>
+    </div>
+
+    <!-- ADMIN & WEBMASTER MATCH ENTRY TERMINAL -->
+    <div id="admin-match-terminal" style="display:none; margin-bottom:22px; border:1.5px solid var(--cyan); background:linear-gradient(135deg, rgba(14,25,45,0.96) 0%, rgba(9,16,30,0.98) 100%); border-radius:10px; padding:18px 20px; box-shadow:0 0 25px rgba(0,229,255,0.2);">
+      <div style="font-family:'Orbitron',sans-serif; font-size:0.85rem; color:var(--cyan); font-weight:800; margin-bottom:12px;">
+        ⚡ MATCH INTEL DISPATCH TERMINAL
+      </div>
+      <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap:10px; margin-bottom:10px;">
+        <div>
+          <label style="display:block; font-size:0.68rem; color:var(--text-muted); font-family:'Orbitron',sans-serif;">CATEGORY</label>
+          <select id="match-inp-cat" style="width:100%; background:#070a12; border:1px solid var(--border-color); color:var(--cyan); padding:7px; border-radius:4px; font-weight:bold;">
+            <option value="Clan League">🏆 Clan League (BWCL)</option>
+            <option value="WD Match">⚔️ WD Match (In-House)</option>
+            <option value="Clan Match">🛡️ Clan Match (Friendly CW)</option>
+          </select>
+        </div>
+        <div>
+          <label style="display:block; font-size:0.68rem; color:var(--text-muted); font-family:'Orbitron',sans-serif;">DATE / SCHEDULE</label>
+          <input type="text" id="match-inp-date" placeholder="e.g. WEEK #5 // 1ST NOV. 2026" style="width:100%; background:#070a12; border:1px solid var(--border-color); color:#fff; padding:7px; border-radius:4px;">
+        </div>
+        <div>
+          <label style="display:block; font-size:0.68rem; color:var(--text-muted); font-family:'Orbitron',sans-serif;">MATCH TITLE</label>
+          <input type="text" id="match-inp-title" placeholder="e.g. White Dragon vs dB)-3" style="width:100%; background:#070a12; border:1px solid var(--border-color); color:#fff; padding:7px; border-radius:4px;">
+        </div>
+        <div>
+          <label style="display:block; font-size:0.68rem; color:var(--text-muted); font-family:'Orbitron',sans-serif;">RESULT STATUS</label>
+          <select id="match-inp-result" style="width:100%; background:#070a12; border:1px solid var(--border-color); color:#fff; padding:7px; border-radius:4px;">
+            <option value="WIN">WIN</option>
+            <option value="LOSS">LOSS</option>
+            <option value="UPCOMING">UPCOMING</option>
+          </select>
+        </div>
+        <div>
+          <label style="display:block; font-size:0.68rem; color:var(--text-muted); font-family:'Orbitron',sans-serif;">SCORE</label>
+          <input type="text" id="match-inp-score" placeholder="e.g. 4 : 2 or PENDING" style="width:100%; background:#070a12; border:1px solid var(--border-color); color:#fff; padding:7px; border-radius:4px;">
+        </div>
+      </div>
+      <div style="margin-bottom:10px;">
+        <label style="display:block; font-size:0.68rem; color:var(--text-muted); font-family:'Orbitron',sans-serif;">MAP NOTES & REPLAY LINK</label>
+        <input type="text" id="match-inp-note" placeholder="e.g. 1n1 MOTW: Backrooms | 2n2 MOTW: Octagon" style="width:100%; background:#070a12; border:1px solid var(--border-color); color:#fff; padding:7px; border-radius:4px;">
+      </div>
+      <div style="display:flex; justify-content:flex-end; gap:8px;">
+        <button onclick="saveNewMatchRecord()" class="btn-download-rep" style="background:var(--win); color:#070a12; font-weight:800; cursor:pointer;">
+          💾 SAVE MATCH
+        </button>
+        <button onclick="toggleMatchCMS()" class="btn-download-rep" style="background:transparent; border-color:var(--text-dim); color:var(--text-muted); cursor:pointer;">
+          CANCEL
+        </button>
       </div>
     </div>
 
-    <div class="grid-2">
-      <!-- Week 1 -->
-      <div class="card">
-        <div class="match-header">
-          <span class="week">WEEK #1 // 4TH OCT. 2026</span>
-          <span class="score-win">WIN (4 : 2)</span>
-        </div>
-        <div style="font-weight:800; color:#fff; margin-bottom:8px;">RED-3 vs White Dragon</div>
-        <div class="set-row"><span>#1 1v1 KaRDiNaL[WD] 2 - 0 Red.Hot</span><span style="color:var(--win)">W</span></div>
-        <div class="set-row"><span>#2 1v1 CheesyCake[WD] 2 - 0 Red-Navane</span><span style="color:var(--win)">W</span></div>
-        <div class="set-row"><span>#3 1v1 Battousai[WD] 2 - 0 Red-SkRiK</span><span style="color:var(--win)">W</span></div>
-        <div class="set-row"><span>#4 1v1 SonOfMalice[WD] 0 - 2 Red-Quim</span><span style="color:var(--loss)">L</span></div>
-        <div class="set-row"><span>#1 2v2 Battousai & CheesyCake 1 - 2 Red-Navane & SkRiK</span><span style="color:var(--loss)">L</span></div>
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 10px; padding-top: 8px; border-top: 1px dotted rgba(56, 189, 248, 0.2);">
-          <span style="font-size: 0.74rem; color: var(--text-dim); font-family: 'Share Tech Mono', monospace;">BWCL S65 // 4-2 CW</span>
-          <button onclick="downloadMatchReplay('Week 1', 'RED-3 vs White Dragon')" class="match-rep-badge" title="Download Week 1 Replays">
-            <span>💾</span> <span>REPLAY (.REP)</span>
-          </button>
-        </div>
-      </div>
-
-      <!-- Week 2 -->
-      <div class="card">
-        <div class="match-header">
-          <span class="week">WEEK #2 // 11TH OCT. 2026</span>
-          <span class="score-win">WIN (5 : 1)</span>
-        </div>
-        <div style="font-weight:800; color:#fff; margin-bottom:8px;">White Dragon vs Cwt)-3</div>
-        <div class="set-row"><span>#1 1v1 KaRDiNaL[WD] 1 - 2 Cwt|Surgen</span><span style="color:var(--loss)">L</span></div>
-        <div class="set-row"><span>#2 1v1 CheesyCake[WD] 2 - 1 Cwt|MaF</span><span style="color:var(--win)">W</span></div>
-        <div class="set-row"><span>#3 1v1 Battousai[WD] 2 - 0 Cwt|Budaak</span><span style="color:var(--win)">W</span></div>
-        <div class="set-row"><span>#4 1v1 Miwaco[WD] 2 - 0 Cwt|SiD</span><span style="color:var(--win)">W</span></div>
-        <div class="set-row"><span>#1 2v2 Miwaco & CheesyCake 2 - 0 Cwt|MaF & Surgen</span><span style="color:var(--win)">W</span></div>
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 10px; padding-top: 8px; border-top: 1px dotted rgba(56, 189, 248, 0.2);">
-          <span style="font-size: 0.74rem; color: var(--text-dim); font-family: 'Share Tech Mono', monospace;">BWCL S65 // 5-1 CW</span>
-          <button onclick="downloadMatchReplay('Week 2', 'White Dragon vs Cwt)-3')" class="match-rep-badge" title="Download Week 2 Replays">
-            <span>💾</span> <span>REPLAY (.REP)</span>
-          </button>
-        </div>
-      </div>
-
-      <!-- Week 3 -->
-      <div class="card">
-        <div class="match-header">
-          <span class="week">WEEK #3 // 18TH OCT. 2026</span>
-          <span class="score-loss">LOSS (1 : 5)</span>
-        </div>
-        <div style="font-weight:800; color:#fff; margin-bottom:8px;">SAS vs White Dragon</div>
-        <div class="set-row"><span>#1 1v1 KaRDiNaL[WD] 1 - 2 non</span><span style="color:var(--loss)">L</span></div>
-        <div class="set-row"><span>#2 1v1 Battousai[WD] 1 - 2 advil</span><span style="color:var(--loss)">L</span></div>
-        <div class="set-row"><span>#3 1v1 CheesyCake[WD] 2 - 0 Ace</span><span style="color:var(--win)">W</span></div>
-        <div class="set-row"><span>#4 1v1 Miwaco[WD] 1 - 2 vorti</span><span style="color:var(--loss)">L</span></div>
-        <div class="set-row"><span>#1 2v2 CheesyCake & Miwaco 0 - 2 pez & non</span><span style="color:var(--loss)">L</span></div>
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 10px; padding-top: 8px; border-top: 1px dotted rgba(56, 189, 248, 0.2);">
-          <span style="font-size: 0.74rem; color: var(--text-dim); font-family: 'Share Tech Mono', monospace;">BWCL S65 // 1-5 CW</span>
-          <button onclick="downloadMatchReplay('Week 3', 'SAS vs White Dragon')" class="match-rep-badge" title="Download Week 3 Replays">
-            <span>💾</span> <span>REPLAY (.REP)</span>
-          </button>
-        </div>
-      </div>
-
-      <!-- Week 4 -->
-      <div class="card">
-        <div class="match-header">
-          <span class="week">WEEK #4 // 25TH OCT. 2026</span>
-          <span class="score-win">CLEAN SWEEP (6 : 0)</span>
-        </div>
-        <div style="font-weight:800; color:#fff; margin-bottom:8px;">White Dragon vs Shadow-2</div>
-        <div class="set-row"><span>#1 1v1 KaRDiNaL[WD] 2 - 0 Shadow|FankinGG</span><span style="color:var(--win)">W</span></div>
-        <div class="set-row"><span>#2 1v1 Battousai[WD] 2 - 0 Shadow|Jacinta</span><span style="color:var(--win)">W</span></div>
-        <div class="set-row"><span>#3 1v1 CheesyCake[WD] 2 - 0 Shadow|JD</span><span style="color:var(--win)">W</span></div>
-        <div class="set-row"><span>#4 1v1 aMeba[WD] 2 - 0 Shadow|LaBestia</span><span style="color:var(--win)">W</span></div>
-        <div class="set-row"><span>#1 2v2 aMeba & CheesyCake 2 - 0 Shadow|Guty & JD</span><span style="color:var(--win)">W</span></div>
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 10px; padding-top: 8px; border-top: 1px dotted rgba(56, 189, 248, 0.2);">
-          <span style="font-size: 0.74rem; color: var(--text-dim); font-family: 'Share Tech Mono', monospace;">BWCL S65 // 6-0 Clean Sweep</span>
-          <button onclick="downloadMatchReplay('Week 4', 'White Dragon vs Shadow-2')" class="match-rep-badge" title="Download Week 4 Replays">
-            <span>💾</span> <span>REPLAY (.REP)</span>
-          </button>
-        </div>
-      </div>
+    <!-- CATEGORY FILTER BUTTONS -->
+    <div style="display:flex; gap:8px; margin-bottom:16px; flex-wrap:wrap;">
+      <button onclick="filterMatchCategory('All')" id="btn-mcat-All" class="nav-tab-btn active">ALL</button>
+      <button onclick="filterMatchCategory('Clan League')" id="btn-mcat-ClanLeague" class="nav-tab-btn">🏆 CLAN LEAGUE</button>
+      <button onclick="filterMatchCategory('WD Match')" id="btn-mcat-WDMatch" class="nav-tab-btn">⚔️ WD IN-HOUSE</button>
+      <button onclick="filterMatchCategory('Clan Match')" id="btn-mcat-ClanMatch" class="nav-tab-btn">🛡️ CLAN MATCH</button>
     </div>
 
-    <!-- Upcoming Weeks -->
-    <div style="margin-top:16px;" class="grid-2">
-      <div class="card">
-        <div class="match-header"><span class="week">WEEK #5 // 1ST NOV. 2026</span><span style="color:var(--cyan)">UPCOMING</span></div>
-        <div style="font-weight:800; color:#fff;">White Dragon vs dB)-3</div>
-        <div style="color:var(--text-muted); font-size:0.86rem; margin-top:4px;">1n1 MOTW: Backrooms | 2n2 MOTW: Octagon</div>
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 10px; padding-top: 8px; border-top: 1px dotted rgba(56, 189, 248, 0.2);">
-          <span style="font-size: 0.74rem; color: var(--text-dim); font-family: 'Share Tech Mono', monospace;">Scheduled</span>
-          <span style="font-size: 0.72rem; color: var(--text-dim); font-family: 'Share Tech Mono', monospace;">Replay after match</span>
-        </div>
-      </div>
-      <div class="card">
-        <div class="match-header"><span class="week">WEEK #6 // 8TH NOV. 2026</span><span style="color:var(--cyan)">UPCOMING</span></div>
-        <div style="font-weight:800; color:#fff;">White Dragon vs RED-3</div>
-        <div style="color:var(--text-muted); font-size:0.86rem; margin-top:4px;">1n1 MOTW: Nightmare | 2n2 MOTW: Exit Strategy</div>
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 10px; padding-top: 8px; border-top: 1px dotted rgba(56, 189, 248, 0.2);">
-          <span style="font-size: 0.74rem; color: var(--text-dim); font-family: 'Share Tech Mono', monospace;">Scheduled</span>
-          <span style="font-size: 0.72rem; color: var(--text-dim); font-family: 'Share Tech Mono', monospace;">Replay after match</span>
-        </div>
-      </div>
-      <div class="card">
-        <div class="match-header"><span class="week">WEEK #7 // 15TH NOV. 2026</span><span style="color:var(--cyan)">UPCOMING</span></div>
-        <div style="font-weight:800; color:#fff;">Cwt)-3 vs White Dragon</div>
-        <div style="color:var(--text-muted); font-size:0.86rem; margin-top:4px;">1n1 MOTW: Attitude SE | 2n2 MOTW: Lost Temple A/B</div>
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 10px; padding-top: 8px; border-top: 1px dotted rgba(56, 189, 248, 0.2);">
-          <span style="font-size: 0.74rem; color: var(--text-dim); font-family: 'Share Tech Mono', monospace;">Scheduled</span>
-          <span style="font-size: 0.72rem; color: var(--text-dim); font-family: 'Share Tech Mono', monospace;">Replay after match</span>
-        </div>
-      </div>
-      <div class="card">
-        <div class="match-header"><span class="week">WEEK #8 // 22ND NOV. 2026</span><span style="color:var(--cyan)">UPCOMING</span></div>
-        <div style="font-weight:800; color:#fff;">SAS vs White Dragon</div>
-        <div style="color:var(--text-muted); font-size:0.86rem; margin-top:4px;">1n1 MOTW: Odyssey RE | 2n2 MOTW: KnockOut</div>
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 10px; padding-top: 8px; border-top: 1px dotted rgba(56, 189, 248, 0.2);">
-          <span style="font-size: 0.74rem; color: var(--text-dim); font-family: 'Share Tech Mono', monospace;">Scheduled</span>
-          <span style="font-size: 0.72rem; color: var(--text-dim); font-family: 'Share Tech Mono', monospace;">Replay after match</span>
-        </div>
-      </div>
-    </div>
+    <!-- DYNAMIC MATCH CARD GRID -->
+    <div id="dynamic-matches-grid" class="grid-2"></div>
   </section>
 
   <!-- ==================== 5. REPLAYS TAB ==================== -->
@@ -1959,6 +1928,49 @@
       </div>
     </div>
 
+    <!-- ADMIN MEMBER RECRUITMENT TERMINAL -->
+    <div id="admin-members-add-panel" style="display:none; margin-bottom:20px; background:rgba(14,24,42,0.95); border:1.5px solid var(--cyan); border-radius:8px; padding:14px; box-shadow:0 0 20px rgba(0,229,255,0.2);">
+      <div style="font-family:'Orbitron',sans-serif; font-size:0.82rem; color:var(--cyan); font-weight:800; margin-bottom:10px;">
+        ⚡ CLAN RECRUITMENT & OPERATOR ENLISTMENT
+      </div>
+      <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap:10px; margin-bottom:10px;">
+        <div>
+          <label style="display:block; font-size:0.68rem; color:var(--text-muted); font-family:'Orbitron',sans-serif;">HANDLE / NAME</label>
+          <input type="text" id="new-mem-name" placeholder="e.g. ShadowDragon" style="width:100%; background:#070a12; border:1px solid var(--border-color); color:#fff; padding:7px; border-radius:4px;">
+        </div>
+        <div>
+          <label style="display:block; font-size:0.68rem; color:var(--text-muted); font-family:'Orbitron',sans-serif;">RACE</label>
+          <select id="new-mem-race" style="width:100%; background:#070a12; border:1px solid var(--border-color); color:var(--cyan); padding:7px; border-radius:4px; font-weight:bold;">
+            <option value="Terran">Terran</option>
+            <option value="Protoss">Protoss</option>
+            <option value="Zerg">Zerg</option>
+            <option value="Random">Random</option>
+          </select>
+        </div>
+        <div>
+          <label style="display:block; font-size:0.68rem; color:var(--text-muted); font-family:'Orbitron',sans-serif;">RANK TIER</label>
+          <select id="new-mem-rank" style="width:100%; background:#070a12; border:1px solid var(--border-color); color:#fff; padding:7px; border-radius:4px;">
+            <option value="Privates">Privates</option>
+            <option value="Corporals">Corporals</option>
+            <option value="Officers">Officers</option>
+            <option value="Captains">Captains</option>
+            <option value="Colonel">Colonel</option>
+            <option value="Generals">Generals</option>
+            <option value="High Council">High Council</option>
+            <option value="Founders">Founders</option>
+          </select>
+        </div>
+        <div>
+          <label style="display:block; font-size:0.68rem; color:var(--text-muted); font-family:'Orbitron',sans-serif;">COUNTRY</label>
+          <input type="text" id="new-mem-country" placeholder="e.g. Germany, USA, Global" style="width:100%; background:#070a12; border:1px solid var(--border-color); color:#fff; padding:7px; border-radius:4px;">
+        </div>
+      </div>
+      <div style="display:flex; justify-content:flex-end;">
+        <button onclick="enlistNewClanMemberUI()" class="btn-download-rep" style="background:var(--win); color:#070a12; font-weight:800; cursor:pointer;">
+          🎖️ ENLIST MEMBER
+        </button>
+      </div>
+    </div>
     <!-- Founders -->
     <div class="tier-group">
       <div class="tier-header"><div class="title">FOUNDERS</div><div class="insignia">🏰⋆༺𓆩♱𓆪༻⋆👑⋆༺𓆩♱𓆪༻⋆🏰</div></div>
@@ -2666,6 +2678,8 @@
     });
 
     window.addEventListener('DOMContentLoaded', function() {
+      initVisitorCounter();
+      renderMatches();
       renderRosterTableAndTiers();
       initNewsRealtimeListener();
       var hash = window.location.hash.replace('#', '');
@@ -3974,7 +3988,18 @@
       var cmsBadge = document.getElementById('news-admin-badge');
       if (cmsTerminal) cmsTerminal.style.display = (isAdmin || isWebmaster) ? 'block' : 'none';
       if (cmsBadge) cmsBadge.style.display = (isAdmin || isWebmaster) ? 'inline-block' : 'none';
+
+      // Matches, Roster & Members Admin Controls
+      var btnMatchCms = document.getElementById('btn-toggle-match-cms');
+      if (btnMatchCms) btnMatchCms.style.display = (isAdmin || isWebmaster) ? 'inline-block' : 'none';
+      var rosterCtrlPanel = document.getElementById('admin-roster-control-panel');
+      if (rosterCtrlPanel) rosterCtrlPanel.style.display = (isAdmin || isWebmaster) ? 'block' : 'none';
+      var memAddPanel = document.getElementById('admin-members-add-panel');
+      if (memAddPanel) memAddPanel.style.display = (isAdmin || isWebmaster) ? 'block' : 'none';
+
       initNewsRealtimeListener();
+      renderMatches();
+      renderRosterTableAndTiers();
     }
 
     function applyLoggedOutState() {
@@ -4002,7 +4027,19 @@
       var cmsBadge = document.getElementById('news-admin-badge');
       if (cmsTerminal) cmsTerminal.style.display = 'none';
       if (cmsBadge) cmsBadge.style.display = 'none';
+
+      var btnMatchCms = document.getElementById('btn-toggle-match-cms');
+      if (btnMatchCms) btnMatchCms.style.display = 'none';
+      var matchTerminal = document.getElementById('admin-match-terminal');
+      if (matchTerminal) matchTerminal.style.display = 'none';
+      var rosterCtrlPanel = document.getElementById('admin-roster-control-panel');
+      if (rosterCtrlPanel) rosterCtrlPanel.style.display = 'none';
+      var memAddPanel = document.getElementById('admin-members-add-panel');
+      if (memAddPanel) memAddPanel.style.display = 'none';
+
       initNewsRealtimeListener();
+      renderMatches();
+      renderRosterTableAndTiers();
     }
 
     function updateProfileUI(user) {
@@ -4152,63 +4189,95 @@
     function renderRosterTableAndTiers() {
       applyProfileCustomizationsToRoster();
       
+      var allMembers = getFullClanMembersList();
+      var rosterEntries = getDynamicRosterList();
+
+      var user = (typeof firebase !== 'undefined' && firebase.auth && firebase.auth().currentUser) 
+        ? firebase.auth().currentUser 
+        : currentUser;
+      var canModerate = user && (isUserAdmin(user.email) || user.email.toLowerCase() === WEBMASTER_EMAIL.toLowerCase());
+
+      // Populate Roster Add Member dropdown
+      var addSelect = document.getElementById('roster-add-member-select');
+      if (addSelect) {
+        addSelect.innerHTML = '<option value="">-- Choose Clan Member --</option>';
+        allMembers.forEach(function(m) {
+          var isAlreadyIn = rosterEntries.some(function(r) { return r.id === m.id; });
+          var opt = document.createElement('option');
+          opt.value = m.id;
+          opt.innerText = m.name + (isAlreadyIn ? ' (In WD-A)' : '');
+          if (isAlreadyIn) opt.disabled = true;
+          addSelect.appendChild(opt);
+        });
+      }
+
       var rTbody = document.getElementById('roster-tbody');
       if (rTbody) {
         rTbody.innerHTML = '';
-        rosterIds.forEach(id => {
-          const p = membersData.find(m => m.id === id);
+        rosterEntries.forEach(function(entry) {
+          var p = allMembers.find(function(m) { return m.id === entry.id; });
           if (!p) return;
-          const tr = document.createElement('tr');
+          var tr = document.createElement('tr');
           tr.className = 'clickable-row';
-          tr.onclick = () => openDossier(p.id);
+          tr.onclick = function() { openDossier(p.id); };
           
-          const flagSvg = flags[p.flagKey] || flags.global;
+          var flagSvg = flags[p.flagKey] || flags.global;
 
-          let roleBadge = '';
-          if (p.role === 'Squadleader') {
+          var displayRole = entry.role || p.role || 'Player';
+          var roleBadge = '';
+          if (displayRole === 'Squadleader') {
             roleBadge = '<span class="role-badge role-squadleader">★ Squadleader</span>';
-          } else if (p.role === 'Captain') {
+          } else if (displayRole === 'Captain') {
             roleBadge = '<span class="role-badge role-captain">⛨ Captain</span>';
+          } else if (displayRole === 'Starter') {
+            roleBadge = '<span class="role-badge role-squadleader" style="background:rgba(16,185,129,0.18); color:var(--win); border-color:var(--win);">★ Starter</span>';
           } else {
             roleBadge = '<span class="role-badge role-starter">Player</span>';
           }
 
-          const miniAvatar = p.avatar ? 
-            `<img src="${p.avatar}" class="table-avatar" onerror="this.style.display=\'none\'">` : '';
-          tr.innerHTML = `
-            <td><span class="player-tag">${miniAvatar}${p.name} <span class="click-hint">INTEL</span></span></td>
-            <td>${roleBadge}</td>
-            <td><strong style="color:var(--cyan);">WD-A</strong></td>
-            <td>White Dragon</td>
-            <td>${flagSvg} ${p.country}</td>
-            <td>${getRaceBadgeHtml(p.race)}</td>
-          `;
+          var miniAvatar = p.avatar ? 
+            '<img src="' + p.avatar + '" class="table-avatar" onerror="this.style.display=\'none\'">' : '';
+          
+          var removeBtn = canModerate 
+            ? '<button onclick="event.stopPropagation(); removeMemberFromRoster(\'' + p.id + '\')" class="admin-del-btn" style="display:inline-block; margin-left:8px; padding:2px 6px;">✕</button>'
+            : '';
+
+          var scheduleTime = entry.time || 'Available for League';
+
+          tr.innerHTML = 
+            '<td><span class="player-tag">' + miniAvatar + p.name + ' <span class="click-hint">INTEL</span></span></td>' +
+            '<td>' + roleBadge + '</td>' +
+            '<td><strong style="color:var(--cyan);">WD-A</strong></td>' +
+            '<td>White Dragon</td>' +
+            '<td>' + flagSvg + ' ' + p.country + '</td>' +
+            '<td>' + getRaceBadgeHtml(p.race) + '</td>' +
+            '<td><span style="font-family:\'Share Tech Mono\',monospace; font-size:0.85rem; color:#e2e8f0;">' + scheduleTime + '</span>' + removeBtn + '</td>';
+          
           rTbody.appendChild(tr);
         });
       }
 
       // Re-populate tiers
-      Object.keys(tiers).forEach(tierName => {
+      Object.keys(tiers).forEach(function(tierName) {
         var el = document.getElementById(tiers[tierName]);
         if (el) el.innerHTML = '';
       });
 
-      membersData.forEach(p => {
-        const targetId = tiers[p.rank] || 'tier-privates';
-        const container = document.getElementById(targetId);
+      allMembers.forEach(function(p) {
+        var targetId = tiers[p.rank] || 'tier-privates';
+        var container = document.getElementById(targetId);
         if (!container) return;
 
-        const pill = document.createElement('div');
+        var pill = document.createElement('div');
         pill.className = 'member-pill';
-        pill.onclick = () => openDossier(p.id);
+        pill.onclick = function() { openDossier(p.id); };
 
-        const raceColor = p.race === 'Terran' ? '#60a5fa' : (p.race === 'Protoss' ? '#fbbf24' : '#c084fc');
-        const pillAvatar = p.avatar ? 
-          `<img src="${p.avatar}" class="pill-avatar" onerror="this.style.display=\'none\'">` : '';
-        pill.innerHTML = `
-          <span class="tag">${pillAvatar}${p.name}</span>
-          <span class="pill-race" style="color:${raceColor}">[${p.race[0]}]</span>
-        `;
+        var raceColor = p.race === 'Terran' ? '#60a5fa' : (p.race === 'Protoss' ? '#fbbf24' : '#c084fc');
+        var pillAvatar = p.avatar ? 
+          '<img src="' + p.avatar + '" class="pill-avatar" onerror="this.style.display=\'none\'">' : '';
+        pill.innerHTML = 
+          '<span class="tag">' + pillAvatar + p.name + '</span>' +
+          '<span class="pill-race" style="color:' + raceColor + '">[' + p.race[0] + ']</span>';
         container.appendChild(pill);
       });
     }
@@ -4405,6 +4474,251 @@
       if (e.key === 'Escape') closeAuthModal();
       if (e.key === 'Escape') closeModal();
     });
+
+  
+    // ========================================================
+    // 1. DYNAMIC MATCHES ENGINE WITH CATEGORIES
+    // ========================================================
+    var currentMatchCategoryFilter = 'All';
+
+    function getMatchesList() {
+      try {
+        var stored = JSON.parse(localStorage.getItem('wd_matches_vault') || 'null');
+        if (Array.isArray(stored) && stored.length > 0) return stored;
+      } catch(e) {}
+      
+      var defaultMatches = [
+        { id: 'm_1', category: 'Clan League', week: 'WEEK #1 // 4TH OCT. 2026', title: 'RED-3 vs White Dragon', resultType: 'WIN', score: '4 : 2', note: 'BWCL S65 // 4-2 CW' },
+        { id: 'm_2', category: 'Clan League', week: 'WEEK #2 // 11TH OCT. 2026', title: 'White Dragon vs Cwt)-3', resultType: 'WIN', score: '5 : 1', note: 'BWCL S65 // 5-1 CW' },
+        { id: 'm_3', category: 'Clan League', week: 'WEEK #3 // 18TH OCT. 2026', title: 'SAS vs White Dragon', resultType: 'LOSS', score: '1 : 5', note: 'BWCL S65 // 1-5 CW' },
+        { id: 'm_4', category: 'Clan League', week: 'WEEK #4 // 25TH OCT. 2026', title: 'White Dragon vs Shadow-2', resultType: 'WIN', score: 'CLEAN SWEEP (6 : 0)', note: 'BWCL S65 // 6-0 Clean Sweep' },
+        { id: 'm_5', category: 'Clan League', week: 'WEEK #5 // 1ST NOV. 2026', title: 'White Dragon vs dB)-3', resultType: 'UPCOMING', score: 'PENDING', note: '1n1 MOTW: Backrooms | 2n2 MOTW: Octagon' },
+        { id: 'm_6', category: 'Clan League', week: 'WEEK #6 // 8TH NOV. 2026', title: 'White Dragon vs RED-3', resultType: 'UPCOMING', score: 'PENDING', note: '1n1 MOTW: Nightmare | 2n2 MOTW: Exit Strategy' },
+        { id: 'm_7', category: 'Clan League', week: 'WEEK #7 // 15TH NOV. 2026', title: 'Cwt)-3 vs White Dragon', resultType: 'UPCOMING', score: 'PENDING', note: '1n1 MOTW: Attitude SE | 2n2 MOTW: Lost Temple A/B' },
+        { id: 'm_8', category: 'Clan League', week: 'WEEK #8 // 22ND NOV. 2026', title: 'SAS vs White Dragon', resultType: 'UPCOMING', score: 'PENDING', note: '1n1 MOTW: Odyssey RE | 2n2 MOTW: KnockOut' },
+        { id: 'm_9', category: 'WD Match', week: 'WEEKLY SCRIM // OCT. 2026', title: 'WD In-House Squad Battles', resultType: 'WIN', score: '3 : 2', note: 'Terran vs Protoss Clan Practice' },
+        { id: 'm_10', category: 'Clan Match', week: 'FRIENDLY CW // OCT. 2026', title: 'White Dragon vs Net)-Clan', resultType: 'WIN', score: '4 : 1', note: 'Friendly International Showmatch' }
+      ];
+      localStorage.setItem('wd_matches_vault', JSON.stringify(defaultMatches));
+      return defaultMatches;
+    }
+
+    function renderMatches() {
+      var grid = document.getElementById('dynamic-matches-grid');
+      if (!grid) return;
+      var matches = getMatchesList();
+
+      var user = (typeof firebase !== 'undefined' && firebase.auth && firebase.auth().currentUser) 
+        ? firebase.auth().currentUser 
+        : currentUser;
+      var canModerate = user && (isUserAdmin(user.email) || user.email.toLowerCase() === WEBMASTER_EMAIL.toLowerCase());
+
+      var btnCms = document.getElementById('btn-toggle-match-cms');
+      if (btnCms) btnCms.style.display = canModerate ? 'inline-block' : 'none';
+
+      var filtered = matches.filter(function(m) {
+        return currentMatchCategoryFilter === 'All' || m.category === currentMatchCategoryFilter;
+      });
+
+      grid.innerHTML = '';
+      filtered.forEach(function(m) {
+        var card = document.createElement('div');
+        card.className = 'card';
+        card.style.borderLeft = m.resultType === 'WIN' ? '4px solid var(--win)' : (m.resultType === 'LOSS' ? '4px solid var(--loss)' : '4px solid var(--cyan)');
+
+        var resClass = m.resultType === 'WIN' ? 'score-win' : (m.resultType === 'LOSS' ? 'score-loss' : 'week');
+        var delBtn = canModerate ? '<button onclick="deleteMatchRecord(\'' + m.id + '\')" class="admin-del-btn" style="display:inline-block; float:right;">🗑️</button>' : '';
+
+        card.innerHTML = 
+          '<div class="match-header">' +
+            '<span class="week">' + m.week + ' <span style="font-size:0.65rem; color:var(--cyan); border:1px solid var(--cyan); padding:1px 5px; border-radius:3px; margin-left:4px; font-family:monospace; text-transform:uppercase;">' + m.category + '</span></span>' +
+            '<div><span class="' + resClass + '">' + m.score + '</span> ' + delBtn + '</div>' +
+          '</div>' +
+          '<div style="font-weight:800; color:#fff; font-size:1.05rem; margin-bottom:6px;">' + m.title + '</div>' +
+          '<div style="color:var(--text-muted); font-size:0.86rem; margin-bottom:8px;">' + (m.note || '') + '</div>' +
+          '<div style="display:flex; justify-content:space-between; align-items:center; border-top:1px dotted var(--border-color); padding-top:8px;">' +
+            '<span style="font-size:0.75rem; color:var(--text-dim); font-family:\'Share Tech Mono\',monospace;">STATUS: ' + m.resultType + '</span>' +
+            '<button onclick="downloadMatchReplay(\'' + m.title + '\', \'' + m.title + '\')" class="match-rep-badge">💾 REPLAY (.REP)</button>' +
+          '</div>';
+        grid.appendChild(card);
+      });
+    }
+
+    function toggleMatchCMS() {
+      var terminal = document.getElementById('admin-match-terminal');
+      if (terminal) terminal.style.display = (terminal.style.display === 'none' || !terminal.style.display) ? 'block' : 'none';
+    }
+
+    function filterMatchCategory(cat) {
+      currentMatchCategoryFilter = cat;
+      var catKeys = ['All', 'ClanLeague', 'WDMatch', 'ClanMatch'];
+      catKeys.forEach(function(c) {
+        var b = document.getElementById('btn-mcat-' + c);
+        if (b) {
+          if (c === cat.replace(/\s+/g, '')) b.classList.add('active');
+          else b.classList.remove('active');
+        }
+      });
+      renderMatches();
+    }
+
+    function saveNewMatchRecord() {
+      var cat = document.getElementById('match-inp-cat').value;
+      var date = document.getElementById('match-inp-date').value.trim() || 'UPCOMING MATCH';
+      var title = document.getElementById('match-inp-title').value.trim();
+      var result = document.getElementById('match-inp-result').value;
+      var score = document.getElementById('match-inp-score').value.trim() || (result === 'UPCOMING' ? 'PENDING' : 'WIN');
+      var note = document.getElementById('match-inp-note').value.trim();
+
+      if (!title) { alert('Please enter a match title.'); return; }
+
+      var matches = getMatchesList();
+      matches.unshift({
+        id: 'm_' + Date.now(),
+        category: cat,
+        week: date,
+        title: title,
+        resultType: result,
+        score: score,
+        note: note
+      });
+
+      localStorage.setItem('wd_matches_vault', JSON.stringify(matches));
+      renderMatches();
+      toggleMatchCMS();
+      alert('Match successfully recorded to Clan Schedule!');
+    }
+
+    function deleteMatchRecord(id) {
+      if (!confirm('Are you sure you want to delete this match record?')) return;
+      var matches = getMatchesList().filter(function(m) { return m.id !== id; });
+      localStorage.setItem('wd_matches_vault', JSON.stringify(matches));
+      renderMatches();
+    }
+
+    // ========================================================
+    // 2. DYNAMIC ROSTER MANAGER (WITH TIME AVAILABILITY)
+    // ========================================================
+    function getDynamicRosterList() {
+      try {
+        var stored = JSON.parse(localStorage.getItem('wd_competitive_roster') || 'null');
+        if (Array.isArray(stored) && stored.length > 0) return stored;
+      } catch(e) {}
+      
+      var defaultRoster = [
+        { id: 'CheesyCake', role: 'Player', time: 'Sundays 18:00 CET' },
+        { id: 'Battousai', role: 'Player', time: 'Flexible / Weekends' },
+        { id: 'Miwaco', role: 'Player', time: 'Weekends' },
+        { id: 'KaRDiNaL', role: 'Player', time: 'Sundays 18:00 CET' },
+        { id: 'JaxM', role: 'Player', time: 'Async / Weekend' },
+        { id: 'zDAwgZ', role: 'Squadleader', time: 'Matchday Coordinator' },
+        { id: 'Kimchi', role: 'Player', time: 'Evenings' },
+        { id: 'DeathOrb', role: 'Captain', time: 'Always on Call' },
+        { id: 'LunarPop', role: 'Captain', time: 'Matchdays' },
+        { id: 'RobFATKraft', role: 'Captain', time: 'Captain Duty' },
+        { id: 'aMeba', role: 'Player', time: 'Active Lineup' }
+      ];
+      localStorage.setItem('wd_competitive_roster', JSON.stringify(defaultRoster));
+      return defaultRoster;
+    }
+
+    function addMemberToRosterUI() {
+      var select = document.getElementById('roster-add-member-select');
+      var roleSelect = document.getElementById('roster-add-role-select');
+      var timeInp = document.getElementById('roster-add-time-inp');
+
+      var memberId = select.value;
+      var role = roleSelect.value;
+      var time = timeInp.value.trim() || 'Active Roster';
+
+      if (!memberId) { alert('Please select a clan member first.'); return; }
+
+      var list = getDynamicRosterList();
+      if (list.some(function(r) { return r.id === memberId; })) {
+        alert('This player is already in the WD-A competitive roster!');
+        return;
+      }
+
+      list.push({ id: memberId, role: role, time: time });
+      localStorage.setItem('wd_competitive_roster', JSON.stringify(list));
+      timeInp.value = '';
+      renderRosterTableAndTiers();
+      alert('Commander added to active WD-A tournament roster!');
+    }
+
+    function removeMemberFromRoster(memberId) {
+      if (!confirm('Remove this player from the WD-A tournament roster?')) return;
+      var list = getDynamicRosterList().filter(function(r) { return r.id !== memberId; });
+      localStorage.setItem('wd_competitive_roster', JSON.stringify(list));
+      renderRosterTableAndTiers();
+    }
+
+    // ========================================================
+    // 3. CLAN MEMBER LIST MANAGEMENT (ENLIST NEW MEMBERS)
+    // ========================================================
+    function getFullClanMembersList() {
+      try {
+        var stored = JSON.parse(localStorage.getItem('wd_all_clan_members') || 'null');
+        if (Array.isArray(stored) && stored.length > 0) return stored;
+      } catch(e) {}
+      return membersData;
+    }
+
+    function enlistNewClanMemberUI() {
+      var name = document.getElementById('new-mem-name').value.trim();
+      var race = document.getElementById('new-mem-race').value;
+      var rank = document.getElementById('new-mem-rank').value;
+      var country = document.getElementById('new-mem-country').value.trim() || 'Global';
+
+      if (!name) { alert('Please provide the member alias/handle.'); return; }
+
+      var id = name.replace(/[^a-zA-Z0-9]/g, '');
+      var newMember = {
+        id: id,
+        name: name.includes('[WD]') ? name : name + '[WD]',
+        rank: rank,
+        team: 'WD Squad',
+        status: 'Active',
+        race: race,
+        country: country,
+        flagKey: country.toLowerCase().includes('germany') ? 'germany' : (country.toLowerCase().includes('canada') ? 'canada' : (country.toLowerCase().includes('usa') ? 'usa' : (country.toLowerCase().includes('mexico') ? 'mexico' : (country.toLowerCase().includes('philippines') ? 'philippines' : 'global')))),
+        w1: '0-0', w2: '0-0', pts: 0, history: []
+      };
+
+      var fullList = getFullClanMembersList();
+      if (!fullList.some(function(m) { return m.id === id; })) {
+        fullList.push(newMember);
+      }
+      membersData.push(newMember);
+      localStorage.setItem('wd_all_clan_members', JSON.stringify(fullList));
+
+      document.getElementById('new-mem-name').value = '';
+      renderRosterTableAndTiers();
+      alert('Operator ' + newMember.name + ' successfully enlisted in White Dragon [' + rank + ']!');
+    }
+
+    // ========================================================
+    // 4. LIVE VISITOR & ONLINE HUD COUNTER
+    // ========================================================
+    function initVisitorCounter() {
+      var baseVisits = 1420;
+      var count = parseInt(localStorage.getItem('wd_visitor_count') || baseVisits, 10);
+
+      if (!sessionStorage.getItem('wd_visit_counted')) {
+        count += 1;
+        localStorage.setItem('wd_visitor_count', count);
+        sessionStorage.setItem('wd_visit_counted', 'true');
+      }
+
+      var displayEl = document.getElementById('visitor-count-display');
+      if (displayEl) displayEl.innerText = count.toLocaleString();
+
+      var onlineEl = document.getElementById('online-users-display');
+      if (onlineEl) {
+        var randomOnline = Math.floor(Math.random() * 3) + 2;
+        onlineEl.innerText = randomOnline;
+      }
+    }
 
   </script>
 </body>
