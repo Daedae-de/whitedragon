@@ -3142,37 +3142,128 @@
     }
 
     
-    // ========================================================
+// ========================================================
     // FIREBASE AUTHENTICATION & WEBMASTER CONTROL SYSTEM
     // ========================================================
-    // PASTE YOUR FIREBASE CONFIG HERE FROM FIREBASE CONSOLE:
-
     const firebaseConfig = {
-  apiKey: "AIzaSyBKX0Ho2F3CHN1Il2KnWbxpFx1xr_cjt9s",
-  authDomain: "whitedragon-clan.firebaseapp.com",
-  projectId: "whitedragon-clan",
-  storageBucket: "whitedragon-clan.firebasestorage.app",
-  messagingSenderId: "877941206720",
-  appId: "1:877941206720:web:19808489844952d0ba0725",
-  measurementId: "G-36978ZLJ1Q"
-  };
-    
-    var WEBMASTER_EMAIL = "daehyeon0206@gmail.com";
+      apiKey: "AIzaSyBKX0Ho2F3CHN1Il2KnwbxpFx1xr_cjt9s",
+      authDomain: "whitedragon-clan.firebaseapp.com",
+      projectId: "whitedragon-clan",
+      storageBucket: "whitedragon-clan.firebasestorage.app",
+      messagingSenderId: "877941206720",
+      appId: "1:877941206720:web:19808489844952d0ba0725",
+      measurementId: "G-36978ZLJ1Q"
+    };
+
+    const WEBMASTER_EMAIL = "daehyeon0206@gmail.com";
     var firebaseInitialized = false;
     var currentUser = null;
 
-try {
-  if (typeof firebase !== 'undefined' && firebaseConfig.apiKey && firebaseConfig.apiKey !== "YOUR_API_KEY") {
-    firebase.initializeApp(firebaseConfig);
-    firebaseInitialized = true;
-  }
-} catch(err) {
-  console.warn("Firebase config not loaded yet, using simulated auth.", err);
-}
+    // Webmaster Admin Management Engine
+    function getAdminList() {
+      var defaultAdmins = [WEBMASTER_EMAIL.toLowerCase(), "abecul323@outlook.com"];
+      try {
+        var stored = JSON.parse(localStorage.getItem('wd_admin_list') || 'null');
+        if (Array.isArray(stored)) {
+          if (!stored.includes(WEBMASTER_EMAIL.toLowerCase())) {
+            stored.unshift(WEBMASTER_EMAIL.toLowerCase());
+          }
+          return stored;
+        }
+      } catch(e) {}
+      localStorage.setItem('wd_admin_list', JSON.stringify(defaultAdmins));
+      return defaultAdmins;
+    }
 
-    var WEBMASTER_EMAIL = "daehyeon0206@gmail.com";
-    var firebaseInitialized = false;
-    var currentUser = null;
+    function isUserAdmin(email) {
+      if (!email) return false;
+      var clean = email.toLowerCase().trim();
+      var admins = getAdminList();
+      return admins.includes(clean);
+    }
+
+    function uiPromoteNewAdmin() {
+      var input = document.getElementById('new-admin-email-input');
+      var email = input ? input.value.trim().toLowerCase() : '';
+      if (!email || !email.includes('@')) {
+        alert("Please enter a valid email address.");
+        return;
+      }
+      var list = getAdminList();
+      if (list.includes(email)) {
+        alert(email + " already has Admin clearance!");
+        return;
+      }
+      list.push(email);
+      localStorage.setItem('wd_admin_list', JSON.stringify(list));
+      if (input) input.value = '';
+      renderAdminManagerList();
+      alert("Successfully granted Admin clearance to: " + email);
+    }
+
+    function uiRevokeAdmin(emailToRevoke) {
+      if (emailToRevoke.toLowerCase() === WEBMASTER_EMAIL.toLowerCase()) {
+        alert("Root Webmaster cannot be revoked.");
+        return;
+      }
+      if (!confirm("Revoke Admin clearance for " + emailToRevoke + "?")) return;
+      var list = getAdminList().filter(function(e) { return e.toLowerCase() !== emailToRevoke.toLowerCase(); });
+      localStorage.setItem('wd_admin_list', JSON.stringify(list));
+      renderAdminManagerList();
+    }
+
+    function renderAdminManagerList() {
+      var container = document.getElementById('active-admins-list');
+      if (!container) return;
+      var admins = getAdminList();
+      container.innerHTML = '';
+
+      admins.forEach(function(email) {
+        var isRoot = (email.toLowerCase() === WEBMASTER_EMAIL.toLowerCase());
+        var matched = membersData.find(function(m) {
+          return m.email && m.email.toLowerCase() === email.toLowerCase();
+        });
+        var displayName = matched ? matched.name + ' (' + email + ')' : email;
+
+        var row = document.createElement('div');
+        row.style.display = 'flex';
+        row.style.justifyContent = 'space-between';
+        row.style.alignItems = 'center';
+        row.style.background = 'rgba(7, 12, 22, 0.7)';
+        row.style.padding = '5px 8px';
+        row.style.borderRadius = '4px';
+        row.style.border = '1px solid var(--border-color)';
+        row.style.fontSize = '0.8rem';
+
+        var left = document.createElement('div');
+        left.innerHTML = (isRoot ? '<span style="color:var(--cyan); font-weight:bold;">★ [ROOT]</span> ' : '<span style="color:#fbbf24; font-weight:bold;">🛡️ [ADMIN]</span> ') +
+                         '<span style="color:#fff; font-family:\'Share Tech Mono\',monospace;">' + displayName + '</span>';
+        row.appendChild(left);
+
+        if (!isRoot) {
+          var revBtn = document.createElement('button');
+          revBtn.innerText = 'REVOKE';
+          revBtn.style.background = 'rgba(239,68,68,0.2)';
+          revBtn.style.border = '1px solid var(--loss)';
+          revBtn.style.color = 'var(--loss)';
+          revBtn.style.fontSize = '0.68rem';
+          revBtn.style.padding = '2px 6px';
+          revBtn.style.borderRadius = '3px';
+          revBtn.style.cursor = 'pointer';
+          revBtn.onclick = function() { uiRevokeAdmin(email); };
+          row.appendChild(revBtn);
+        } else {
+          var permTag = document.createElement('span');
+          permTag.innerText = 'PERMANENT';
+          permTag.style.color = 'var(--text-dim)';
+          permTag.style.fontSize = '0.65rem';
+          permTag.style.fontFamily = 'monospace';
+          row.appendChild(permTag);
+        }
+
+        container.appendChild(row);
+      });
+    }
 
     try {
       if (typeof firebase !== 'undefined' && firebaseConfig.apiKey && firebaseConfig.apiKey !== "YOUR_API_KEY") {
@@ -3187,218 +3278,132 @@ try {
       return firebaseInitialized && typeof firebase !== 'undefined' && firebase.auth;
     }
 
-    // Modal view switching
-    function switchAuthView(viewName) {
-      document.getElementById('view-login').style.display = viewName === 'login' ? 'block' : 'none';
-      document.getElementById('view-register').style.display = viewName === 'register' ? 'block' : 'none';
-      document.getElementById('view-forgot').style.display = viewName === 'forgot' ? 'block' : 'none';
-      document.getElementById('view-profile').style.display = viewName === 'profile' ? 'block' : 'none';
-
-      var tabHeader = document.getElementById('authTabs');
-      if (tabHeader) tabHeader.style.display = (viewName === 'login' || viewName === 'register') ? 'flex' : 'none';
-
-      var btnLogin = document.getElementById('btn-auth-login');
-      if (btnLogin) {
-        if (viewName === 'login') btnLogin.classList.add('active'); else btnLogin.classList.remove('active');
-      }
-      var btnReg = document.getElementById('btn-auth-register');
-      if (btnReg) {
-        if (viewName === 'register') btnReg.classList.add('active'); else btnReg.classList.remove('active');
-      }
-
-      var modalTitle = document.getElementById('authModalTitle');
-      if (modalTitle) {
-        if (viewName === 'login') modalTitle.innerText = 'ACCESS PORTAL';
-        else if (viewName === 'register') modalTitle.innerText = 'NEW OPERATOR RECRUITMENT';
-        else if (viewName === 'forgot') modalTitle.innerText = 'CREDENTIAL RECOVERY';
-        else if (viewName === 'profile') modalTitle.innerText = 'COMMANDER PROFILE';
-      }
-      clearAuthMessage();
-    }
-
-    function showAuthMessage(msg, isError) {
-      var box = document.getElementById('auth-status-msg');
-      if (!box) return;
-      box.style.display = 'block';
-      if (isError) {
-        box.style.background = 'rgba(239, 68, 68, 0.15)';
-        box.style.border = '1px solid var(--loss)';
-        box.style.color = '#fca5a5';
-      } else {
-        box.style.background = 'rgba(16, 185, 129, 0.15)';
-        box.style.border = '1px solid var(--win)';
-        box.style.color = '#6ee7b7';
-      }
-      box.innerText = msg;
-    }
-
-    function clearAuthMessage() {
-      var box = document.getElementById('auth-status-msg');
-      if (box) box.style.display = 'none';
-    }
-
-    function openAuthModal() {
-      var modal = document.getElementById('authModal');
-      if (!modal) return;
-      modal.classList.add('active');
-      if (currentUser) {
-        updateProfileUI(currentUser);
-        switchAuthView('profile');
-      } else {
-        switchAuthView('login');
-      }
-    }
-
-    function closeAuthModal() {
-      var modal = document.getElementById('authModal');
-      if (modal) modal.classList.remove('active');
-    }
-
-    function handleAuthBackdropClick(e) {
-      if (e.target.id === 'authModal') closeAuthModal();
-    }
-
-    // Register User with Email Verification
-    function registerUser() {
-      var email = (document.getElementById('reg-email').value || '').trim();
-      var pass = (document.getElementById('reg-pass').value || '').trim();
-
-      if (!email || !pass) {
-        showAuthMessage("Please provide both email and password.", true);
-        return;
-      }
-      if (pass.length < 6) {
-        showAuthMessage("Password must be at least 6 characters.", true);
-        return;
-      }
-
-      if (!isFirebaseReady()) {
-        // Fallback simulation if Firebase credentials are not yet entered
-        simulateRegistration(email);
-        return;
-      }
-
-      firebase.auth().createUserWithEmailAndPassword(email, pass)
-        .then(function(userCredential) {
-          var user = userCredential.user;
-          return user.sendEmailVerification().then(function() {
-            showAuthMessage("Registration successful! Verification email sent to " + email + ". Please check your inbox and confirm your link.", false);
-            setTimeout(function() {
-              switchAuthView('profile');
-            }, 1800);
-          });
-        })
-        .catch(function(error) {
-          showAuthMessage(error.message, true);
-        });
-    }
-
-    // Login User
-    function loginUser() {
-      var email = (document.getElementById('login-email').value || '').trim();
-      var pass = (document.getElementById('login-pass').value || '').trim();
-
-      if (!email || !pass) {
-        showAuthMessage("Please enter your email and password.", true);
-        return;
-      }
-
-      if (!isFirebaseReady()) {
-        simulateLogin(email);
-        return;
-      }
-
-      firebase.auth().signInWithEmailAndPassword(email, pass)
-        .then(function(userCredential) {
-          showAuthMessage("Authentication successful. Welcome Commander!", false);
-          setTimeout(function() {
-            closeAuthModal();
-          }, 800);
-        })
-        .catch(function(error) {
-          showAuthMessage(error.message, true);
-        });
-    }
-
-    // Password Reset Email
-    function sendPasswordReset() {
-      var email = (document.getElementById('forgot-email').value || '').trim();
-      if (!email) {
-        showAuthMessage("Please enter your email address.", true);
-        return;
-      }
-      if (!isFirebaseReady()) {
-        showAuthMessage("Password recovery instructions simulated for " + email + ". Check inbox.", false);
-        return;
-      }
-      firebase.auth().sendPasswordResetEmail(email)
-        .then(function() {
-          showAuthMessage("Password reset email sent to " + email + "!", false);
-        })
-        .catch(function(error) {
-          showAuthMessage(error.message, true);
-        });
-    }
-
-    function resendVerificationEmail() {
-      if (isFirebaseReady() && firebase.auth().currentUser) {
-        firebase.auth().currentUser.sendEmailVerification()
-          .then(function() {
-            showAuthMessage("New verification link dispatched to your inbox!", false);
-          })
-          .catch(function(err) {
-            showAuthMessage(err.message, true);
-          });
-      }
-    }
-
-    function signOutUser() {
-      if (isFirebaseReady()) {
-        firebase.auth().signOut().then(function() {
-          applyLoggedOutState();
-        });
-      } else {
-        localStorage.removeItem('wd_simulated_user');
-        applyLoggedOutState();
-      }
-      closeAuthModal();
-    }
-
-    // Update UI based on logged in state
     function applyLoggedInState(user) {
       currentUser = user;
       var isWebmaster = (user.email && user.email.toLowerCase() === WEBMASTER_EMAIL.toLowerCase());
+      var isAdmin = isUserAdmin(user.email);
 
-      // Update floating button
       var authBtn = document.getElementById('floatingAuthBtn');
       var authLabel = document.getElementById('authLabel');
       var authIcon = document.getElementById('authIcon');
       if (authBtn) {
         authBtn.classList.add('logged-in');
-        if (isWebmaster) authBtn.classList.add('webmaster-active');
+        if (isWebmaster || isAdmin) authBtn.classList.add('webmaster-active');
       }
       if (authLabel) {
-        authLabel.innerText = isWebmaster ? 'WEBMASTER' : 'COMMANDER';
+        authLabel.innerText = isWebmaster ? 'WEBMASTER' : (isAdmin ? 'ADMIN' : 'COMMANDER');
       }
       if (authIcon) {
-        authIcon.innerText = isWebmaster ? '⚡' : '🎖️';
+        authIcon.innerText = isWebmaster ? '⚡' : (isAdmin ? '🛡️' : '🎖️');
       }
 
-      // Update Webmaster Top Banner
       var wmBanner = document.getElementById('webmaster-banner');
       if (wmBanner) {
-        wmBanner.style.display = isWebmaster ? 'block' : 'none';
+        if (isAdmin || isWebmaster) {
+          wmBanner.style.display = 'block';
+          wmBanner.innerHTML = '<span class="tag-pulse"></span>' +
+            '<span>' + (isWebmaster ? 'COMMAND OVERRIDE ACTIVE // WEBMASTER ROOT ACCESS' : 'CLAN COMMAND // ADMIN CLEARANCE ACTIVE') + ': <strong style="color:var(--cyan);">' + user.email + '</strong></span>' +
+            '<button onclick="signOutUser()" style="margin-left:14px; background:rgba(239,68,68,0.2); border:1px solid var(--loss); color:#fff; padding:2px 8px; border-radius:4px; font-family:\'Share Tech Mono\',monospace; font-size:0.7rem; cursor:pointer;">SIGN OUT</button>';
+        } else {
+          wmBanner.style.display = 'none';
+        }
       }
 
-      // Apply body class for CSS visibility of admin delete buttons
-      if (isWebmaster) {
+      if (isAdmin || isWebmaster) {
         document.body.classList.add('is-webmaster');
       } else {
         document.body.classList.remove('is-webmaster');
       }
 
+      var adminPanel = document.getElementById('webmaster-admin-panel');
+      if (adminPanel) {
+        adminPanel.style.display = isWebmaster ? 'block' : 'none';
+        if (isWebmaster) renderAdminManagerList();
+      }
+
       updateProfileUI(user);
     }
+
+    function applyLoggedOutState() {
+      currentUser = null;
+      var authBtn = document.getElementById('floatingAuthBtn');
+      var authLabel = document.getElementById('authLabel');
+      var authIcon = document.getElementById('authIcon');
+      if (authBtn) {
+        authBtn.classList.remove('logged-in');
+        authBtn.classList.remove('webmaster-active');
+      }
+      if (authLabel) authLabel.innerText = 'Log In / Register';
+      if (authIcon) authIcon.innerText = '🔑';
+
+      var wmBanner = document.getElementById('webmaster-banner');
+      if (wmBanner) wmBanner.style.display = 'none';
+
+      var adminPanel = document.getElementById('webmaster-admin-panel');
+      if (adminPanel) adminPanel.style.display = 'none';
+
+      document.body.classList.remove('is-webmaster');
+      switchAuthView('login');
+    }
+
+    function updateProfileUI(user) {
+      var emailEl = document.getElementById('user-display-email');
+      var badgeEl = document.getElementById('user-role-badge');
+      var verStatus = document.getElementById('user-verified-status');
+      var resendBox = document.getElementById('resend-verification-box');
+      var authLabel = document.getElementById('authLabel');
+
+      var isWebmaster = (user.email && user.email.toLowerCase() === WEBMASTER_EMAIL.toLowerCase());
+      var isAdmin = isUserAdmin(user.email);
+
+      var matchedMember = membersData.find(function(m) {
+        return m.email && m.email.toLowerCase() === user.email.toLowerCase();
+      });
+
+      if (emailEl) {
+        if (matchedMember) {
+          emailEl.innerHTML = '<span style="color:var(--cyan); font-weight:bold;">' + matchedMember.name + '</span> <div style="font-size:0.75rem; color:var(--text-muted);">' + user.email + '</div>';
+        } else {
+          emailEl.innerText = user.email;
+        }
+      }
+
+      if (badgeEl) {
+        if (isWebmaster) {
+          badgeEl.className = 'role-badge role-squadleader';
+          badgeEl.innerText = '★ WEBMASTER (ROOT ACCESS)';
+          badgeEl.style.boxShadow = '0 0 14px var(--cyan)';
+        } else if (isAdmin) {
+          badgeEl.className = 'role-badge role-squadleader';
+          badgeEl.innerText = '🛡️ CLAN ADMIN (HIGH COUNCIL)';
+          badgeEl.style.boxShadow = '0 0 14px rgba(245, 158, 11, 0.6)';
+        } else if (matchedMember) {
+          badgeEl.className = 'role-badge role-starter';
+          badgeEl.innerText = (matchedMember.rank || 'MEMBER').toUpperCase();
+          badgeEl.style.boxShadow = 'none';
+        } else {
+          badgeEl.className = 'role-badge role-captain';
+          badgeEl.innerText = 'CLAN MEMBER';
+          badgeEl.style.boxShadow = 'none';
+        }
+      }
+
+      if (authLabel && matchedMember) {
+        if (isWebmaster) authLabel.innerText = 'WEBMASTER';
+        else if (isAdmin) authLabel.innerText = matchedMember.name.replace('[WD]', '');
+      }
+
+      if (verStatus) {
+        if (user.emailVerified) {
+          verStatus.innerHTML = '<span style="color:var(--win); font-weight:bold;">✓ Email Verified & Authenticated</span>';
+          if (resendBox) resendBox.style.display = 'none';
+        } else {
+          verStatus.innerHTML = '<span style="color:#fbbf24; font-weight:bold;">⏳ Email Verification Pending</span>';
+          if (resendBox) resendBox.style.display = 'block';
+        }
+      }
+    }
+  
 
     function applyLoggedOutState() {
       currentUser = null;
