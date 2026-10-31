@@ -1616,10 +1616,13 @@
       </button>
     </div>
 
-    <!-- ADMIN & WEBMASTER MATCH ENTRY TERMINAL -->
+        <!-- ADMIN & WEBMASTER MATCH ENTRY TERMINAL -->
     <div id="admin-match-terminal" style="display:none; margin-bottom:22px; border:1.5px solid var(--cyan); background:linear-gradient(135deg, rgba(14,25,45,0.96) 0%, rgba(9,16,30,0.98) 100%); border-radius:10px; padding:18px 20px; box-shadow:0 0 25px rgba(0,229,255,0.2);">
-      <div style="font-family:'Orbitron',sans-serif; font-size:0.85rem; color:var(--cyan); font-weight:800; margin-bottom:12px;">
-        ⚡ MATCH INTEL DISPATCH TERMINAL
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+        <div style="font-family:'Orbitron',sans-serif; font-size:0.85rem; color:var(--cyan); font-weight:800;" id="match-cms-heading">
+          ⚡ MATCH INTEL DISPATCH TERMINAL
+        </div>
+        <input type="hidden" id="match-edit-id" value="">
       </div>
       <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap:10px; margin-bottom:10px;">
         <div>
@@ -1648,18 +1651,27 @@
         </div>
         <div>
           <label style="display:block; font-size:0.68rem; color:var(--text-muted); font-family:'Orbitron',sans-serif;">SCORE</label>
-          <input type="text" id="match-inp-score" placeholder="e.g. 4 : 2 or PENDING" style="width:100%; background:#070a12; border:1px solid var(--border-color); color:#fff; padding:7px; border-radius:4px;">
+          <input type="text" id="match-inp-score" placeholder="e.g. WIN (4 : 2) or PENDING" style="width:100%; background:#070a12; border:1px solid var(--border-color); color:#fff; padding:7px; border-radius:4px;">
         </div>
       </div>
-      <div style="margin-bottom:10px;">
-        <label style="display:block; font-size:0.68rem; color:var(--text-muted); font-family:'Orbitron',sans-serif;">MAP NOTES & REPLAY LINK</label>
+
+      <div style="margin-bottom:12px;">
+        <label style="display:block; font-size:0.68rem; color:var(--text-muted); font-family:'Orbitron',sans-serif; margin-bottom:4px;">
+          DETAILED SETS & RACE INTEL (One line per set &bull; Use [T], [P], [Z], [R] for race badges &bull; End with | W or | L)
+        </label>
+        <textarea id="match-inp-sets" rows="5" placeholder="#1 1v1 [T] KaRDiNaL[WD] 2 - 0 Red.Hot [Z] | W&#10;#2 1v1 [T] CheesyCake[WD] 2 - 0 Red-Navane [P] | W&#10;#3 1v1 [P] Battousai[WD] 2 - 0 Red-SkRiK [T] | W&#10;#4 1v1 [T] SonOfMalice[WD] 0 - 2 Red-Quim [Z] | L&#10;#1 2v2 [P/T] Battousai & CheesyCake 1 - 2 Red-Navane & SkRiK [P/T] | L" style="width:100%; background:#070a12; border:1px solid var(--border-color); color:#fff; padding:8px 10px; border-radius:4px; font-family:'Share Tech Mono',monospace; font-size:0.85rem; line-height:1.45; resize:vertical;"></textarea>
+      </div>
+
+      <div style="margin-bottom:12px;">
+        <label style="display:block; font-size:0.68rem; color:var(--text-muted); font-family:'Orbitron',sans-serif; margin-bottom:4px;">MAP NOTES / MOTW BRIEF</label>
         <input type="text" id="match-inp-note" placeholder="e.g. 1n1 MOTW: Backrooms | 2n2 MOTW: Octagon" style="width:100%; background:#070a12; border:1px solid var(--border-color); color:#fff; padding:7px; border-radius:4px;">
       </div>
+
       <div style="display:flex; justify-content:flex-end; gap:8px;">
         <button onclick="saveNewMatchRecord()" class="btn-download-rep" style="background:var(--win); color:#070a12; font-weight:800; cursor:pointer;">
-          💾 SAVE MATCH
+          💾 SAVE MATCH SCORECARD
         </button>
-        <button onclick="toggleMatchCMS()" class="btn-download-rep" style="background:transparent; border-color:var(--text-dim); color:var(--text-muted); cursor:pointer;">
+        <button onclick="cancelMatchCMS()" class="btn-download-rep" style="background:transparent; border-color:var(--text-dim); color:var(--text-muted); cursor:pointer;">
           CANCEL
         </button>
       </div>
@@ -4477,9 +4489,48 @@
 
   
     // ========================================================
-    // 1. DYNAMIC MATCHES ENGINE WITH CATEGORIES
+    // 1. DYNAMIC MATCHES ENGINE WITH CATEGORIES & RACE SCORECARDS
     // ========================================================
     var currentMatchCategoryFilter = 'All';
+
+    function formatSetLineHtml(lineStr) {
+      if (!lineStr || !lineStr.trim()) return '';
+      var s = lineStr.trim();
+      var resBadge = '';
+      var textPart = s;
+
+      if (s.indexOf('|') !== -1) {
+        var parts = s.split('|');
+        textPart = parts[0].trim();
+        var outcome = parts[1].trim().toUpperCase();
+        if (outcome === 'W' || outcome === 'WIN') {
+          resBadge = '<span style="color:var(--win); font-weight:bold; font-family:\'Share Tech Mono\',monospace;">W</span>';
+        } else if (outcome === 'L' || outcome === 'LOSS') {
+          resBadge = '<span style="color:var(--loss); font-weight:bold; font-family:\'Share Tech Mono\',monospace;">L</span>';
+        }
+      } else if (s.slice(-2).toUpperCase() === ' W') {
+        textPart = s.slice(0, -2).trim();
+        resBadge = '<span style="color:var(--win); font-weight:bold; font-family:\'Share Tech Mono\',monospace;">W</span>';
+      } else if (s.slice(-2).toUpperCase() === ' L') {
+        textPart = s.slice(0, -2).trim();
+        resBadge = '<span style="color:var(--loss); font-weight:bold; font-family:\'Share Tech Mono\',monospace;">L</span>';
+      }
+
+      // Convert race tokens to badges
+      textPart = textPart
+        .replace(/\[T\]|\(T\)/gi, '<span class="race-badge race-terran" style="font-size:0.62rem; padding:1px 5px; margin:0 3px;">T</span>')
+        .replace(/\[P\]|\(P\)/gi, '<span class="race-badge race-protoss" style="font-size:0.62rem; padding:1px 5px; margin:0 3px;">P</span>')
+        .replace(/\[Z\]|\(Z\)/gi, '<span class="race-badge race-zerg" style="font-size:0.62rem; padding:1px 5px; margin:0 3px;">Z</span>')
+        .replace(/\[R\]|\(R\)/gi, '<span class="race-badge" style="font-size:0.62rem; padding:1px 5px; margin:0 3px; background:rgba(0,229,255,0.2); color:#00e5ff; border:1px solid #00e5ff;">R</span>')
+        .replace(/\[P\/T\]|\(P\/T\)/gi, '<span class="race-badge race-protoss" style="font-size:0.62rem; padding:1px 4px; margin:0 1px;">P</span><span class="race-badge race-terran" style="font-size:0.62rem; padding:1px 4px; margin:0 1px;">T</span>')
+        .replace(/\[T\/P\]|\(T\/P\)/gi, '<span class="race-badge race-terran" style="font-size:0.62rem; padding:1px 4px; margin:0 1px;">T</span><span class="race-badge race-protoss" style="font-size:0.62rem; padding:1px 4px; margin:0 1px;">P</span>')
+        .replace(/\[Z\/T\]|\(Z\/T\)/gi, '<span class="race-badge race-zerg" style="font-size:0.62rem; padding:1px 4px; margin:0 1px;">Z</span><span class="race-badge race-terran" style="font-size:0.62rem; padding:1px 4px; margin:0 1px;">T</span>')
+        .replace(/\[T\/Z\]|\(T\/Z\)/gi, '<span class="race-badge race-terran" style="font-size:0.62rem; padding:1px 4px; margin:0 1px;">T</span><span class="race-badge race-zerg" style="font-size:0.62rem; padding:1px 4px; margin:0 1px;">Z</span>')
+        .replace(/\[Z\/P\]|\(Z\/P\)/gi, '<span class="race-badge race-zerg" style="font-size:0.62rem; padding:1px 4px; margin:0 1px;">Z</span><span class="race-badge race-protoss" style="font-size:0.62rem; padding:1px 4px; margin:0 1px;">P</span>')
+        .replace(/\[T\/T\]|\(T\/T\)/gi, '<span class="race-badge race-terran" style="font-size:0.62rem; padding:1px 4px; margin:0 1px;">T</span><span class="race-badge race-terran" style="font-size:0.62rem; padding:1px 4px; margin:0 1px;">T</span>');
+
+      return '<div class="set-row"><span>' + textPart + '</span>' + resBadge + '</div>';
+    }
 
     function getMatchesList() {
       try {
@@ -4488,16 +4539,142 @@
       } catch(e) {}
       
       var defaultMatches = [
-        { id: 'm_1', category: 'Clan League', week: 'WEEK #1 // 4TH OCT. 2026', title: 'RED-3 vs White Dragon', resultType: 'WIN', score: '4 : 2', note: 'BWCL S65 // 4-2 CW' },
-        { id: 'm_2', category: 'Clan League', week: 'WEEK #2 // 11TH OCT. 2026', title: 'White Dragon vs Cwt)-3', resultType: 'WIN', score: '5 : 1', note: 'BWCL S65 // 5-1 CW' },
-        { id: 'm_3', category: 'Clan League', week: 'WEEK #3 // 18TH OCT. 2026', title: 'SAS vs White Dragon', resultType: 'LOSS', score: '1 : 5', note: 'BWCL S65 // 1-5 CW' },
-        { id: 'm_4', category: 'Clan League', week: 'WEEK #4 // 25TH OCT. 2026', title: 'White Dragon vs Shadow-2', resultType: 'WIN', score: 'CLEAN SWEEP (6 : 0)', note: 'BWCL S65 // 6-0 Clean Sweep' },
-        { id: 'm_5', category: 'Clan League', week: 'WEEK #5 // 1ST NOV. 2026', title: 'White Dragon vs dB)-3', resultType: 'UPCOMING', score: 'PENDING', note: '1n1 MOTW: Backrooms | 2n2 MOTW: Octagon' },
-        { id: 'm_6', category: 'Clan League', week: 'WEEK #6 // 8TH NOV. 2026', title: 'White Dragon vs RED-3', resultType: 'UPCOMING', score: 'PENDING', note: '1n1 MOTW: Nightmare | 2n2 MOTW: Exit Strategy' },
-        { id: 'm_7', category: 'Clan League', week: 'WEEK #7 // 15TH NOV. 2026', title: 'Cwt)-3 vs White Dragon', resultType: 'UPCOMING', score: 'PENDING', note: '1n1 MOTW: Attitude SE | 2n2 MOTW: Lost Temple A/B' },
-        { id: 'm_8', category: 'Clan League', week: 'WEEK #8 // 22ND NOV. 2026', title: 'SAS vs White Dragon', resultType: 'UPCOMING', score: 'PENDING', note: '1n1 MOTW: Odyssey RE | 2n2 MOTW: KnockOut' },
-        { id: 'm_9', category: 'WD Match', week: 'WEEKLY SCRIM // OCT. 2026', title: 'WD In-House Squad Battles', resultType: 'WIN', score: '3 : 2', note: 'Terran vs Protoss Clan Practice' },
-        { id: 'm_10', category: 'Clan Match', week: 'FRIENDLY CW // OCT. 2026', title: 'White Dragon vs Net)-Clan', resultType: 'WIN', score: '4 : 1', note: 'Friendly International Showmatch' }
+        {
+          id: 'm_1',
+          category: 'Clan League',
+          week: 'WEEK #1 // 4TH OCT. 2026',
+          title: 'RED-3 vs White Dragon',
+          resultType: 'WIN',
+          score: 'WIN (4 : 2)',
+          sets: [
+            '#1 1v1 [T] KaRDiNaL[WD] 2 - 0 Red.Hot [Z] | W',
+            '#2 1v1 [T] CheesyCake[WD] 2 - 0 Red-Navane [P] | W',
+            '#3 1v1 [P] Battousai[WD] 2 - 0 Red-SkRiK [T] | W',
+            '#4 1v1 [T] SonOfMalice[WD] 0 - 2 Red-Quim [Z] | L',
+            '#1 2v2 [P/T] Battousai & CheesyCake 1 - 2 Red-Navane & SkRiK [P/T] | L'
+          ],
+          note: 'BWCL S65 // 4-2 CW'
+        },
+        {
+          id: 'm_2',
+          category: 'Clan League',
+          week: 'WEEK #2 // 11TH OCT. 2026',
+          title: 'White Dragon vs Cwt)-3',
+          resultType: 'WIN',
+          score: 'WIN (5 : 1)',
+          sets: [
+            '#1 1v1 [T] KaRDiNaL[WD] 1 - 2 Cwt|Surgen [Z] | L',
+            '#2 1v1 [T] CheesyCake[WD] 2 - 1 Cwt|MaF [T] | W',
+            '#3 1v1 [P] Battousai[WD] 2 - 0 Cwt|Budaak [Z] | W',
+            '#4 1v1 [T] Miwaco[WD] 2 - 0 Cwt|SiD [P] | W',
+            '#1 2v2 [T/T] Miwaco & CheesyCake 2 - 0 Cwt|MaF & Surgen [T/Z] | W'
+          ],
+          note: 'BWCL S65 // 5-1 CW'
+        },
+        {
+          id: 'm_3',
+          category: 'Clan League',
+          week: 'WEEK #3 // 18TH OCT. 2026',
+          title: 'SAS vs White Dragon',
+          resultType: 'LOSS',
+          score: 'LOSS (1 : 5)',
+          sets: [
+            '#1 1v1 [T] KaRDiNaL[WD] 1 - 2 non [P] | L',
+            '#2 1v1 [P] Battousai[WD] 1 - 2 advil [Z] | L',
+            '#3 1v1 [T] CheesyCake[WD] 2 - 0 Ace [P] | W',
+            '#4 1v1 [T] Miwaco[WD] 1 - 2 vorti [P] | L',
+            '#1 2v2 [T/T] CheesyCake & Miwaco 0 - 2 pez & non [Z/P] | L'
+          ],
+          note: 'BWCL S65 // 1-5 CW'
+        },
+        {
+          id: 'm_4',
+          category: 'Clan League',
+          week: 'WEEK #4 // 25TH OCT. 2026',
+          title: 'White Dragon vs Shadow-2',
+          resultType: 'WIN',
+          score: 'CLEAN SWEEP (6 : 0)',
+          sets: [
+            '#1 1v1 [T] KaRDiNaL[WD] 2 - 0 Shadow|FankinGG [T] | W',
+            '#2 1v1 [P] Battousai[WD] 2 - 0 Shadow|Jacinta [P] | W',
+            '#3 1v1 [T] CheesyCake[WD] 2 - 0 Shadow|JD [Z] | W',
+            '#4 1v1 [Z] aMeba[WD] 2 - 0 Shadow|LaBestia [Z] | W',
+            '#1 2v2 [Z/T] aMeba & CheesyCake 2 - 0 Shadow|Guty & JD [T/Z] | W'
+          ],
+          note: 'BWCL S65 // 6-0 Clean Sweep'
+        },
+        {
+          id: 'm_5',
+          category: 'Clan League',
+          week: 'WEEK #5 // 1ST NOV. 2026',
+          title: 'White Dragon vs dB)-3',
+          resultType: 'UPCOMING',
+          score: 'PENDING',
+          sets: [],
+          note: '1n1 MOTW: Backrooms | 2n2 MOTW: Octagon'
+        },
+        {
+          id: 'm_6',
+          category: 'Clan League',
+          week: 'WEEK #6 // 8TH NOV. 2026',
+          title: 'White Dragon vs RED-3',
+          resultType: 'UPCOMING',
+          score: 'PENDING',
+          sets: [],
+          note: '1n1 MOTW: Nightmare | 2n2 MOTW: Exit Strategy'
+        },
+        {
+          id: 'm_7',
+          category: 'Clan League',
+          week: 'WEEK #7 // 15TH NOV. 2026',
+          title: 'Cwt)-3 vs White Dragon',
+          resultType: 'UPCOMING',
+          score: 'PENDING',
+          sets: [],
+          note: '1n1 MOTW: Attitude SE | 2n2 MOTW: Lost Temple A/B'
+        },
+        {
+          id: 'm_8',
+          category: 'Clan League',
+          week: 'WEEK #8 // 22ND NOV. 2026',
+          title: 'SAS vs White Dragon',
+          resultType: 'UPCOMING',
+          score: 'PENDING',
+          sets: [],
+          note: '1n1 MOTW: Odyssey RE | 2n2 MOTW: KnockOut'
+        },
+        {
+          id: 'm_9',
+          category: 'WD Match',
+          week: 'WEEKLY IN-HOUSE // OCT. 2026',
+          title: 'White Dragon Blue vs White Dragon Gold',
+          resultType: 'WIN',
+          score: 'WIN (3 : 2)',
+          sets: [
+            '#1 1v1 [T] CheesyCake[WD] 2 - 1 Battousai[WD] [P] | W',
+            '#2 1v1 [Z] aMeba[WD] 2 - 0 KaRDiNaL[WD] [T] | W',
+            '#3 1v1 [P] LunarPop[WD] 1 - 2 Miwaco[WD] [T] | L',
+            '#4 1v1 [T] Kimchi[WD] 2 - 0 SonOfMalice[WD] [T] | W',
+            '#1 2v2 [P/T] DeathOrb & JaxM 1 - 2 zDAwgZ & RobFATKraft [T/P] | L'
+          ],
+          note: 'Clan Internal Practice & Map Scrimmage'
+        },
+        {
+          id: 'm_10',
+          category: 'Clan Match',
+          week: 'FRIENDLY CW // OCT. 2026',
+          title: 'White Dragon vs Net)-Clan',
+          resultType: 'WIN',
+          score: 'WIN (4 : 1)',
+          sets: [
+            '#1 1v1 [T] CheesyCake[WD] 2 - 0 Net)Viper [Z] | W',
+            '#2 1v1 [P] Battousai[WD] 2 - 0 Net)Templar [P] | W',
+            '#3 1v1 [T] KaRDiNaL[WD] 2 - 1 Net)Marine [T] | W',
+            '#4 1v1 [Z] aMeba[WD] 2 - 0 Net)Hydra [Z] | W',
+            '#1 2v2 [T/P] Miwaco & LunarPop 1 - 2 Net)Viper & Templar [Z/P] | L'
+          ],
+          note: 'International Friendly Showmatch'
+        }
       ];
       localStorage.setItem('wd_matches_vault', JSON.stringify(defaultMatches));
       return defaultMatches;
@@ -4527,26 +4704,84 @@
         card.style.borderLeft = m.resultType === 'WIN' ? '4px solid var(--win)' : (m.resultType === 'LOSS' ? '4px solid var(--loss)' : '4px solid var(--cyan)');
 
         var resClass = m.resultType === 'WIN' ? 'score-win' : (m.resultType === 'LOSS' ? 'score-loss' : 'week');
-        var delBtn = canModerate ? '<button onclick="deleteMatchRecord(\'' + m.id + '\')" class="admin-del-btn" style="display:inline-block; float:right;">🗑️</button>' : '';
+        
+        var adminActionBtns = canModerate ? 
+          '<div style="display:flex; gap:6px; align-items:center;">' +
+            '<button onclick="editMatchRecord(\'' + m.id + '\')" class="admin-del-btn" style="display:inline-block; border-color:var(--cyan); color:var(--cyan); background:rgba(0,229,255,0.15); margin:0;">✏️ EDIT</button>' +
+            '<button onclick="deleteMatchRecord(\'' + m.id + '\')" class="admin-del-btn" style="display:inline-block; margin:0;">🗑️</button>' +
+          '</div>' : '';
+
+        // Generate detailed sets HTML matching the scorecard design
+        var setsHtml = '';
+        if (m.sets && m.sets.length > 0) {
+          setsHtml = '<div style="margin: 10px 0 12px 0; border-top: 1px dotted rgba(56, 189, 248, 0.2);">';
+          m.sets.forEach(function(setLine) {
+            setsHtml += formatSetLineHtml(setLine);
+          });
+          setsHtml += '</div>';
+        } else if (m.resultType === 'UPCOMING') {
+          setsHtml = '<div style="margin: 10px 0 12px 0; padding: 10px 0; border-top: 1px dotted rgba(56, 189, 248, 0.2); font-size:0.86rem; color:var(--text-muted); font-style:italic;">' +
+            (m.note ? m.note : 'Lineup and set scores will be recorded upon clan war commencement.') +
+          '</div>';
+        }
 
         card.innerHTML = 
           '<div class="match-header">' +
             '<span class="week">' + m.week + ' <span style="font-size:0.65rem; color:var(--cyan); border:1px solid var(--cyan); padding:1px 5px; border-radius:3px; margin-left:4px; font-family:monospace; text-transform:uppercase;">' + m.category + '</span></span>' +
-            '<div><span class="' + resClass + '">' + m.score + '</span> ' + delBtn + '</div>' +
+            '<div style="display:flex; align-items:center; gap:10px;"><span class="' + resClass + '">' + m.score + '</span>' + adminActionBtns + '</div>' +
           '</div>' +
-          '<div style="font-weight:800; color:#fff; font-size:1.05rem; margin-bottom:6px;">' + m.title + '</div>' +
-          '<div style="color:var(--text-muted); font-size:0.86rem; margin-bottom:8px;">' + (m.note || '') + '</div>' +
-          '<div style="display:flex; justify-content:space-between; align-items:center; border-top:1px dotted var(--border-color); padding-top:8px;">' +
-            '<span style="font-size:0.75rem; color:var(--text-dim); font-family:\'Share Tech Mono\',monospace;">STATUS: ' + m.resultType + '</span>' +
+          '<div style="font-weight:800; color:#fff; font-size:1.05rem; margin-bottom:4px;">' + m.title + '</div>' +
+          setsHtml +
+          '<div style="display:flex; justify-content:space-between; align-items:center; border-top:1px dotted var(--border-color); padding-top:8px; font-size:0.75rem; color:var(--text-dim);">' +
+            '<span style="font-family:\'Share Tech Mono\',monospace;">' + (m.note || 'STATUS: ' + m.resultType) + '</span>' +
             '<button onclick="downloadMatchReplay(\'' + m.title + '\', \'' + m.title + '\')" class="match-rep-badge">💾 REPLAY (.REP)</button>' +
           '</div>';
+        
         grid.appendChild(card);
       });
     }
 
     function toggleMatchCMS() {
       var terminal = document.getElementById('admin-match-terminal');
-      if (terminal) terminal.style.display = (terminal.style.display === 'none' || !terminal.style.display) ? 'block' : 'none';
+      if (!terminal) return;
+      var isOpening = (terminal.style.display === 'none' || !terminal.style.display);
+      terminal.style.display = isOpening ? 'block' : 'none';
+
+      if (isOpening) {
+        document.getElementById('match-edit-id').value = '';
+        document.getElementById('match-cms-heading').innerText = '⚡ MATCH INTEL DISPATCH TERMINAL // NEW FIXTURE';
+        document.getElementById('match-inp-title').value = '';
+        document.getElementById('match-inp-date').value = '';
+        document.getElementById('match-inp-score').value = '';
+        document.getElementById('match-inp-note').value = '';
+        document.getElementById('match-inp-sets').value = '';
+      }
+    }
+
+    function cancelMatchCMS() {
+      var terminal = document.getElementById('admin-match-terminal');
+      if (terminal) terminal.style.display = 'none';
+    }
+
+    function editMatchRecord(id) {
+      var matches = getMatchesList();
+      var m = matches.find(function(match) { return match.id === id; });
+      if (!m) return;
+
+      var terminal = document.getElementById('admin-match-terminal');
+      if (terminal) terminal.style.display = 'block';
+
+      document.getElementById('match-edit-id').value = m.id;
+      document.getElementById('match-cms-heading').innerText = '⚡ EDIT MATCH INTEL // ' + m.title.toUpperCase();
+      document.getElementById('match-inp-cat').value = m.category || 'Clan League';
+      document.getElementById('match-inp-date').value = m.week || '';
+      document.getElementById('match-inp-title').value = m.title || '';
+      document.getElementById('match-inp-result').value = m.resultType || 'WIN';
+      document.getElementById('match-inp-score').value = m.score || '';
+      document.getElementById('match-inp-note').value = m.note || '';
+      document.getElementById('match-inp-sets').value = (m.sets && m.sets.length > 0) ? m.sets.join('\n') : '';
+
+      terminal.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
 
     function filterMatchCategory(cat) {
@@ -4563,30 +4798,52 @@
     }
 
     function saveNewMatchRecord() {
+      var editId = document.getElementById('match-edit-id').value;
       var cat = document.getElementById('match-inp-cat').value;
-      var date = document.getElementById('match-inp-date').value.trim() || 'UPCOMING MATCH';
+      var date = document.getElementById('match-inp-date').value.trim() || 'MATCH FIXTURE';
       var title = document.getElementById('match-inp-title').value.trim();
       var result = document.getElementById('match-inp-result').value;
       var score = document.getElementById('match-inp-score').value.trim() || (result === 'UPCOMING' ? 'PENDING' : 'WIN');
       var note = document.getElementById('match-inp-note').value.trim();
+      var setsText = document.getElementById('match-inp-sets').value.trim();
 
       if (!title) { alert('Please enter a match title.'); return; }
 
+      var setsArray = [];
+      if (setsText) {
+        setsArray = setsText.split('\n').map(function(line) { return line.trim(); }).filter(function(line) { return line.length > 0; });
+      }
+
       var matches = getMatchesList();
-      matches.unshift({
-        id: 'm_' + Date.now(),
-        category: cat,
-        week: date,
-        title: title,
-        resultType: result,
-        score: score,
-        note: note
-      });
+
+      if (editId) {
+        var idx = matches.findIndex(function(m) { return m.id === editId; });
+        if (idx !== -1) {
+          matches[idx].category = cat;
+          matches[idx].week = date;
+          matches[idx].title = title;
+          matches[idx].resultType = result;
+          matches[idx].score = score;
+          matches[idx].note = note;
+          matches[idx].sets = setsArray;
+        }
+      } else {
+        matches.unshift({
+          id: 'm_' + Date.now(),
+          category: cat,
+          week: date,
+          title: title,
+          resultType: result,
+          score: score,
+          note: note,
+          sets: setsArray
+        });
+      }
 
       localStorage.setItem('wd_matches_vault', JSON.stringify(matches));
       renderMatches();
-      toggleMatchCMS();
-      alert('Match successfully recorded to Clan Schedule!');
+      cancelMatchCMS();
+      alert('Match scorecard successfully updated!');
     }
 
     function deleteMatchRecord(id) {
