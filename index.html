@@ -4,6 +4,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>White Dragon [WD] | StarCraft: Remastered Clan</title>
+  <!-- Firebase Authentication SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;800;900&family=Rajdhani:wght@500;600;700;800&family=Share+Tech+Mono&display=swap" rel="stylesheet">
@@ -1116,6 +1119,142 @@
         font-size: 0.68rem;
       }
     }
+    /* FLOATING BOTTOM-RIGHT CONTROLS */
+    .floating-action-cluster {
+      position: fixed;
+      bottom: 18px;
+      right: 18px;
+      z-index: 850;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .auth-floating-btn {
+      background: rgba(13, 21, 39, 0.94);
+      border: 1px solid #fbbf24;
+      color: #fbbf24;
+      padding: 7px 16px;
+      border-radius: 20px;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 0.74rem;
+      font-weight: 800;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      box-shadow: 0 4px 18px rgba(245, 158, 11, 0.28);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      backdrop-filter: blur(10px);
+      transition: all 0.25s ease;
+    }
+    .auth-floating-btn:hover {
+      background: #fbbf24;
+      color: #070a12;
+      box-shadow: 0 0 22px rgba(245, 158, 11, 0.6);
+      transform: translateY(-2px);
+    }
+    .auth-floating-btn.logged-in {
+      border-color: var(--win);
+      color: var(--win);
+      box-shadow: 0 4px 18px rgba(16, 185, 129, 0.28);
+    }
+    .auth-floating-btn.logged-in.webmaster-active {
+      border-color: var(--cyan);
+      color: var(--cyan);
+      box-shadow: 0 4px 20px var(--cyan-glow);
+    }
+    .privacy-floating-btn {
+      position: static !important;
+      background: rgba(13, 21, 39, 0.92);
+      border: 1px solid var(--cyan);
+      color: var(--cyan);
+      padding: 7px 16px;
+      border-radius: 20px;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 0.74rem;
+      font-weight: 800;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      box-shadow: 0 4px 18px rgba(0, 229, 255, 0.28);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      backdrop-filter: blur(10px);
+      transition: all 0.25s ease;
+    }
+    .privacy-floating-btn:hover {
+      background: var(--cyan);
+      color: #070a12;
+      box-shadow: 0 0 22px var(--cyan-glow);
+      transform: translateY(-2px);
+    }
+    @media (max-width: 600px) {
+      .floating-action-cluster {
+        bottom: 12px;
+        right: 12px;
+        gap: 6px;
+      }
+      .auth-floating-btn, .privacy-floating-btn {
+        padding: 5px 12px;
+        font-size: 0.68rem;
+      }
+    }
+
+    /* WEBMASTER SUPER-ADMIN TOP BANNER */
+    #webmaster-banner {
+      display: none;
+      background: linear-gradient(90deg, #0f2744, #123e59, #0f2744);
+      border-bottom: 2px solid var(--cyan);
+      color: #fff;
+      padding: 8px 16px;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 0.78rem;
+      font-weight: 800;
+      text-align: center;
+      box-shadow: 0 2px 20px var(--cyan-glow);
+      position: relative;
+      z-index: 101;
+      letter-spacing: 1px;
+    }
+    #webmaster-banner span.tag-pulse {
+      display: inline-block;
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: var(--cyan);
+      box-shadow: 0 0 10px var(--cyan);
+      margin-right: 6px;
+      vertical-align: middle;
+      animation: pulse 1.5s infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(1.3); }
+    }
+    .admin-del-btn {
+      background: rgba(239, 68, 68, 0.15);
+      border: 1px solid var(--loss);
+      color: var(--loss);
+      padding: 4px 10px;
+      border-radius: 4px;
+      font-size: 0.7rem;
+      font-family: 'Orbitron', sans-serif;
+      cursor: pointer;
+      margin-left: 8px;
+      display: none;
+      transition: all 0.2s;
+    }
+    .admin-del-btn:hover {
+      background: var(--loss);
+      color: #fff;
+      box-shadow: 0 0 12px rgba(239, 68, 68, 0.5);
+    }
+    body.is-webmaster .admin-del-btn {
+      display: inline-block !important;
+    }
   </style>
 </head>
 <body>
@@ -1952,10 +2091,129 @@
 
   
 
-  <!-- FLOATING PRIVACY TAB (BOTTOM-RIGHT) -->
-  <button id="floatingPrivacyBtn" onclick="openPrivacyModal()" class="privacy-floating-btn" title="View Privacy Information">
-    <span>🔒</span> <span>Privacy</span>
-  </button>
+
+  <!-- WEBMASTER TOP BAR -->
+  <div id="webmaster-banner">
+    <span class="tag-pulse"></span>
+    <span>COMMAND OVERRIDE ACTIVE // WEBMASTER ROOT ACCESS: <strong style="color:var(--cyan);">daehyeon0206@gmail.com</strong> (CHEESYCAKE[WD])</span>
+    <button onclick="signOutUser()" style="margin-left:14px; background:rgba(239,68,68,0.2); border:1px solid var(--loss); color:#fff; padding:2px 8px; border-radius:4px; font-family:'Share Tech Mono',monospace; font-size:0.7rem; cursor:pointer;">SIGN OUT</button>
+  </div>
+
+  <!-- FLOATING CLUSTER (AUTH + PRIVACY) -->
+  <div class="floating-action-cluster">
+    <button id="floatingAuthBtn" onclick="openAuthModal()" class="auth-floating-btn" title="Clan Member & Webmaster Portal">
+      <span id="authIcon">🔑</span> <span id="authLabel">Log In / Register</span>
+    </button>
+    <button id="floatingPrivacyBtn" onclick="openPrivacyModal()" class="privacy-floating-btn" title="View Privacy Information">
+      <span>🔒</span> <span>Privacy</span>
+    </button>
+  </div>
+
+  <!-- AUTHENTICATION & REGISTRATION MODAL -->
+  <div class="modal-backdrop" id="authModal" onclick="handleAuthBackdropClick(event)">
+    <div class="dossier-card" style="max-width: 520px;">
+      <div class="dossier-header">
+        <div class="dossier-header-title">
+          <span>🛡️ CLAN TERMINAL //</span> <span id="authModalTitle">ACCESS PORTAL</span>
+        </div>
+        <button class="btn-close-modal" onclick="closeAuthModal()" title="Close">&times;</button>
+      </div>
+
+      <div class="dossier-body">
+        <!-- Tab Selector: Log In / Register -->
+        <div id="authTabs" style="display:flex; gap:8px; margin-bottom:16px; border-bottom:1px solid var(--border-color); padding-bottom:10px;">
+          <button onclick="switchAuthView('login')" id="btn-auth-login" class="nav-tab-btn active" style="flex:1; text-align:center;">LOG IN</button>
+          <button onclick="switchAuthView('register')" id="btn-auth-register" class="nav-tab-btn" style="flex:1; text-align:center;">REGISTER</button>
+        </div>
+
+        <!-- 1. LOGIN VIEW -->
+        <div id="view-login">
+          <div style="margin-bottom:12px;">
+            <label style="display:block; font-family:'Orbitron',sans-serif; font-size:0.72rem; color:var(--text-muted); margin-bottom:4px; text-transform:uppercase;">Email Address</label>
+            <input type="email" id="login-email" placeholder="name@example.com" style="width:100%; background:#070a12; border:1px solid var(--border-color); color:#fff; padding:10px 12px; border-radius:6px; font-family:'Rajdhani',sans-serif; font-size:1rem;">
+          </div>
+          <div style="margin-bottom:14px;">
+            <label style="display:block; font-family:'Orbitron',sans-serif; font-size:0.72rem; color:var(--text-muted); margin-bottom:4px; text-transform:uppercase;">Password</label>
+            <input type="password" id="login-pass" placeholder="••••••••" style="width:100%; background:#070a12; border:1px solid var(--border-color); color:#fff; padding:10px 12px; border-radius:6px; font-family:'Rajdhani',sans-serif; font-size:1rem;">
+          </div>
+          <button onclick="loginUser()" class="btn-download-rep" style="width:100%; justify-content:center; padding:11px; font-size:0.88rem; background:var(--cyan); color:#070a12; cursor:pointer;">
+            AUTHENTICATE & LOG IN
+          </button>
+          <div style="margin-top:10px; display:flex; justify-content:space-between; align-items:center;">
+            <a href="javascript:switchAuthView('forgot')" style="color:var(--text-dim); font-size:0.8rem; text-decoration:none; font-family:'Share Tech Mono',monospace;">Forgot Password?</a>
+            <span style="color:var(--cyan); font-size:0.78rem; font-family:'Share Tech Mono',monospace;">Webmaster Auto-Detect</span>
+          </div>
+        </div>
+
+        <!-- 2. REGISTER VIEW (WITH EMAIL VERIFICATION) -->
+        <div id="view-register" style="display:none;">
+          <div style="background:rgba(0,229,255,0.06); border:1px solid var(--border-color); border-radius:8px; padding:10px 12px; margin-bottom:14px;">
+            <div style="font-family:'Orbitron',sans-serif; font-size:0.76rem; color:var(--cyan); font-weight:800; margin-bottom:2px;">EMAIL VERIFICATION REQUIRED</div>
+            <p style="color:#cbd5e1; font-size:0.82rem; line-height:1.4;">Upon registration, a verification link / security email is automatically dispatched to your inbox to activate your clan clearance.</p>
+          </div>
+          <div style="margin-bottom:12px;">
+            <label style="display:block; font-family:'Orbitron',sans-serif; font-size:0.72rem; color:var(--text-muted); margin-bottom:4px; text-transform:uppercase;">Email Address</label>
+            <input type="email" id="reg-email" placeholder="name@example.com" style="width:100%; background:#070a12; border:1px solid var(--border-color); color:#fff; padding:10px 12px; border-radius:6px; font-family:'Rajdhani',sans-serif; font-size:1rem;">
+          </div>
+          <div style="margin-bottom:14px;">
+            <label style="display:block; font-family:'Orbitron',sans-serif; font-size:0.72rem; color:var(--text-muted); margin-bottom:4px; text-transform:uppercase;">Choose Password (Min. 6 chars)</label>
+            <input type="password" id="reg-pass" placeholder="••••••••" style="width:100%; background:#070a12; border:1px solid var(--border-color); color:#fff; padding:10px 12px; border-radius:6px; font-family:'Rajdhani',sans-serif; font-size:1rem;">
+          </div>
+          <button onclick="registerUser()" class="btn-download-rep" style="width:100%; justify-content:center; padding:11px; font-size:0.88rem; background:#fbbf24; color:#070a12; cursor:pointer;">
+            REGISTER & SEND VERIFICATION EMAIL
+          </button>
+        </div>
+
+        <!-- 3. FORGOT PASSWORD VIEW -->
+        <div id="view-forgot" style="display:none;">
+          <p style="color:#cbd5e1; font-size:0.88rem; margin-bottom:12px;">Enter your registered clan email address. A password recovery dispatch will be sent immediately.</p>
+          <div style="margin-bottom:14px;">
+            <label style="display:block; font-family:'Orbitron',sans-serif; font-size:0.72rem; color:var(--text-muted); margin-bottom:4px; text-transform:uppercase;">Email Address</label>
+            <input type="email" id="forgot-email" placeholder="name@example.com" style="width:100%; background:#070a12; border:1px solid var(--border-color); color:#fff; padding:10px 12px; border-radius:6px; font-family:'Rajdhani',sans-serif; font-size:1rem;">
+          </div>
+          <button onclick="sendPasswordReset()" class="btn-download-rep" style="width:100%; justify-content:center; padding:10px; font-size:0.85rem; cursor:pointer;">
+            SEND RECOVERY EMAIL
+          </button>
+          <div style="margin-top:12px; text-align:center;">
+            <a href="javascript:switchAuthView('login')" style="color:var(--cyan); font-size:0.82rem; text-decoration:none;">&larr; Return to Sign In</a>
+          </div>
+        </div>
+
+        <!-- 4. LOGGED IN / PROFILE VIEW -->
+        <div id="view-profile" style="display:none;">
+          <div style="background:rgba(7,12,22,0.8); border:1px solid var(--border-color); border-radius:8px; padding:16px; margin-bottom:16px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+              <span style="font-family:'Orbitron',sans-serif; font-size:0.8rem; color:var(--text-muted);">ACTIVE CLEARANCE</span>
+              <span id="user-role-badge" class="role-badge role-captain">MEMBER</span>
+            </div>
+            <div style="font-family:'Share Tech Mono',monospace; font-size:1.05rem; color:#fff; font-weight:bold; word-break:break-all;" id="user-display-email">user@example.com</div>
+            <div style="margin-top:8px; font-size:0.82rem;" id="user-verified-status">
+              <span style="color:var(--win);">✓ Email Verified</span>
+            </div>
+          </div>
+
+          <!-- Resend verification if not verified -->
+          <div id="resend-verification-box" style="display:none; margin-bottom:14px;">
+            <p style="color:#fbbf24; font-size:0.82rem; margin-bottom:6px;">⚠️ Your email is not verified yet. Check your inbox or click below to resend.</p>
+            <button onclick="resendVerificationEmail()" class="btn-download-rep" style="padding:6px 14px; font-size:0.75rem;">RESEND VERIFICATION LINK</button>
+          </div>
+
+          <div style="display:flex; gap:10px;">
+            <button onclick="signOutUser()" class="btn-download-rep" style="flex:1; justify-content:center; background:rgba(239,68,68,0.18); border-color:var(--loss); color:var(--loss); cursor:pointer;">
+              LOG OUT
+            </button>
+            <button onclick="closeAuthModal()" class="btn-download-rep" style="flex:1; justify-content:center; cursor:pointer;">
+              CLOSE
+            </button>
+          </div>
+        </div>
+
+        <!-- Status message banner -->
+        <div id="auth-status-msg" style="display:none; margin-top:14px; padding:10px 14px; border-radius:6px; font-size:0.86rem; font-family:'Share Tech Mono',monospace;"></div>
+      </div>
+    </div>
+  </div>
+
 
   <!-- PRIVACY MODAL POPUP -->
   <div class="modal-backdrop" id="privacyModal" onclick="handlePrivacyBackdropClick(event)">
@@ -1988,18 +2246,11 @@
             <p>Our website provides direct links to Discord and Battle.net for recruitment and match coordination. Interaction with those external platforms is subject to their respective terms and privacy policies.</p>
           </div>
 
-         <div style="background: rgba(7, 12, 22, 0.7); border: 1px solid var(--border-color); border-radius: 8px; padding: 12px 14px;">
-  <div style="font-family:'Orbitron', sans-serif; font-size:0.8rem; color:var(--cyan); font-weight:800; margin-bottom:4px;">💬 4. COMMUNITY PRIVACY CONTACT</div>
-  <p style="margin-bottom: 8px;">If you have any questions or would like your player alias or member profile removed from our public roster, message web administrators directly on Discord or contact us via email:</p>
-  <div style="display: flex; flex-wrap: wrap; gap: 8px; align-items: center;">
-    <a href="https://discord.com/users/492046348946898946" target="_blank" rel="noopener noreferrer" style="color: #fbbf24; font-family: 'Share Tech Mono', monospace; font-size: 0.88rem; text-decoration: none; font-weight: bold; background: rgba(245, 158, 11, 0.15); border: 1px solid rgba(245, 158, 11, 0.6); padding: 5px 12px; border-radius: 4px; display: inline-flex; align-items: center; gap: 6px;">
-      💬 Discord: <strong>Cheesecake[WD]</strong> ↗
-    </a>
-    <a href="mailto:daehyeon0206@gmail.com" style="color: var(--cyan); font-family: 'Share Tech Mono', monospace; font-size: 0.88rem; text-decoration: none; font-weight: bold; background: rgba(0, 229, 255, 0.12); border: 1px solid var(--cyan); padding: 5px 12px; border-radius: 4px; display: inline-flex; align-items: center; gap: 6px;">
-      ✉️ daehyeon0206@gmail.com
-    </a>
-  </div>
-</div>
+          <div style="background: rgba(7, 12, 22, 0.7); border: 1px solid var(--border-color); border-radius: 8px; padding: 12px 14px;">
+            <div style="font-family:'Orbitron', sans-serif; font-size:0.8rem; color:var(--cyan); font-weight:800; margin-bottom:4px;">💬 4. COMMUNITY PRIVACY CONTACT</div>
+            <p>If you have any questions or would like your player alias or member profile removed from our public roster, message clan administrators directly on Discord (Death~Orb or RobFATKraft).</p>
+          </div>
+        </div>
 
         <div style="margin-top: 18px; text-align: right;">
           <button onclick="closePrivacyModal()" class="btn-download-rep" style="padding: 8px 18px; cursor: pointer;">
@@ -2047,6 +2298,15 @@
       mexico: `<svg class="flag-icon" viewBox="0 0 980 560" style="display:inline-block; vertical-align:middle; width:24px; height:16px; border-radius:2px; box-shadow:0 0 4px rgba(0,0,0,0.5); margin-right:8px;"><rect width="326.6" height="560" fill="#006847"/><rect x="326.6" width="326.8" height="560" fill="#ffffff"/><rect x="653.4" width="326.6" height="560" fill="#ce1126"/><g transform="translate(490, 280)"><ellipse cx="0" cy="5" rx="48" ry="42" fill="#5c3818"/><ellipse cx="0" cy="2" rx="40" ry="32" fill="#b07d39"/><ellipse cx="-4" cy="-12" rx="20" ry="16" fill="#4d3216"/><path d="M-8,-24 Q-2,-30 6,-26 Q2,-18 -4,-18 Z" fill="#30200e"/><path d="M-2,-26 Q12,-32 16,-20 Q12,-16 6,-20 Z" fill="#d99b26"/><path d="M-35,30 Q0,55 35,30 Q25,60 0,60 Q-25,60 -35,30 Z" fill="#205a28"/><path d="M-10,32 Q0,38 10,32 Q5,48 -5,48 Z" fill="#b22234"/></g></svg>`,
       global: `<span style="display:inline-block; width:24px; height:16px; text-align:center; vertical-align:middle; font-size:12px; margin-right:8px;">🌐</span>`
     };
+
+var firebaseConfig = {
+  apiKey: "DEIN_API_KEY",
+  authDomain: "DEIN_PROJEKT.firebaseapp.com",
+  projectId: "DEIN_PROJEKT",
+  storageBucket: "DEIN_PROJEKT.appspot.com",
+  messagingSenderId: "DEINE_SENDER_ID",
+  appId: "DEINE_APP_ID"
+};
 
     const membersData = [
       { id: 'RobFATKraft', name: 'RobFATKraft[WD]', role: 'Captain', rank: 'Founders', insignia: '🏰⋆༺𓆩♱𓆪༻⋆👑⋆༺𓆩♱𓆪༻⋆🏰', team: 'WD-A', status: 'Active', race: 'Protoss', avatar: '', country: 'USA', flagKey: 'usa', w1: '0-0', w2: '0-0', pts: 0, history: [] },
@@ -2542,6 +2802,14 @@
         dlBtn.onclick = function() { downloadSavedReplay(item.id); };
         card.appendChild(dlBtn);
 
+        var adminBtn = document.createElement('button');
+        adminBtn.className = 'admin-del-btn';
+        adminBtn.innerText = '🗑️ REMOVE';
+        (function(repId) {
+          adminBtn.onclick = function() { adminDeleteReplay(repId); };
+        })(item.id);
+        card.appendChild(adminBtn);
+
         container.appendChild(card);
       });
     }
@@ -2806,6 +3074,14 @@
         })(item.id);
         card.appendChild(dlBtn);
 
+        var adminBtn = document.createElement('button');
+        adminBtn.className = 'admin-del-btn';
+        adminBtn.innerText = '🗑️ REMOVE';
+        (function(dlId) {
+          adminBtn.onclick = function() { adminDeleteDownload(dlId); };
+        })(item.id);
+        card.appendChild(adminBtn);
+
         container.appendChild(card);
       }
     }
@@ -2852,8 +3128,364 @@
       if (e.target.id === 'privacyModal') closePrivacyModal();
     }
 
+    
+    // ========================================================
+    // FIREBASE AUTHENTICATION & WEBMASTER CONTROL SYSTEM
+    // ========================================================
+    // PASTE YOUR FIREBASE CONFIG HERE FROM FIREBASE CONSOLE:
+    var firebaseConfig = {
+      apiKey: "YOUR_API_KEY",
+      authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+      projectId: "YOUR_PROJECT_ID",
+      storageBucket: "YOUR_PROJECT_ID.appspot.com",
+      messagingSenderId: "YOUR_SENDER_ID",
+      appId: "YOUR_APP_ID"
+    };
+
+    var WEBMASTER_EMAIL = "daehyeon0206@gmail.com";
+    var firebaseInitialized = false;
+    var currentUser = null;
+
+    try {
+      if (typeof firebase !== 'undefined' && firebaseConfig.apiKey && firebaseConfig.apiKey !== "YOUR_API_KEY") {
+        firebase.initializeApp(firebaseConfig);
+        firebaseInitialized = true;
+      }
+    } catch(err) {
+      console.warn("Firebase config not loaded yet, using simulated auth.", err);
+    }
+
+    function isFirebaseReady() {
+      return firebaseInitialized && typeof firebase !== 'undefined' && firebase.auth;
+    }
+
+    // Modal view switching
+    function switchAuthView(viewName) {
+      document.getElementById('view-login').style.display = viewName === 'login' ? 'block' : 'none';
+      document.getElementById('view-register').style.display = viewName === 'register' ? 'block' : 'none';
+      document.getElementById('view-forgot').style.display = viewName === 'forgot' ? 'block' : 'none';
+      document.getElementById('view-profile').style.display = viewName === 'profile' ? 'block' : 'none';
+
+      var tabHeader = document.getElementById('authTabs');
+      if (tabHeader) tabHeader.style.display = (viewName === 'login' || viewName === 'register') ? 'flex' : 'none';
+
+      var btnLogin = document.getElementById('btn-auth-login');
+      if (btnLogin) {
+        if (viewName === 'login') btnLogin.classList.add('active'); else btnLogin.classList.remove('active');
+      }
+      var btnReg = document.getElementById('btn-auth-register');
+      if (btnReg) {
+        if (viewName === 'register') btnReg.classList.add('active'); else btnReg.classList.remove('active');
+      }
+
+      var modalTitle = document.getElementById('authModalTitle');
+      if (modalTitle) {
+        if (viewName === 'login') modalTitle.innerText = 'ACCESS PORTAL';
+        else if (viewName === 'register') modalTitle.innerText = 'NEW OPERATOR RECRUITMENT';
+        else if (viewName === 'forgot') modalTitle.innerText = 'CREDENTIAL RECOVERY';
+        else if (viewName === 'profile') modalTitle.innerText = 'COMMANDER PROFILE';
+      }
+      clearAuthMessage();
+    }
+
+    function showAuthMessage(msg, isError) {
+      var box = document.getElementById('auth-status-msg');
+      if (!box) return;
+      box.style.display = 'block';
+      if (isError) {
+        box.style.background = 'rgba(239, 68, 68, 0.15)';
+        box.style.border = '1px solid var(--loss)';
+        box.style.color = '#fca5a5';
+      } else {
+        box.style.background = 'rgba(16, 185, 129, 0.15)';
+        box.style.border = '1px solid var(--win)';
+        box.style.color = '#6ee7b7';
+      }
+      box.innerText = msg;
+    }
+
+    function clearAuthMessage() {
+      var box = document.getElementById('auth-status-msg');
+      if (box) box.style.display = 'none';
+    }
+
+    function openAuthModal() {
+      var modal = document.getElementById('authModal');
+      if (!modal) return;
+      modal.classList.add('active');
+      if (currentUser) {
+        updateProfileUI(currentUser);
+        switchAuthView('profile');
+      } else {
+        switchAuthView('login');
+      }
+    }
+
+    function closeAuthModal() {
+      var modal = document.getElementById('authModal');
+      if (modal) modal.classList.remove('active');
+    }
+
+    function handleAuthBackdropClick(e) {
+      if (e.target.id === 'authModal') closeAuthModal();
+    }
+
+    // Register User with Email Verification
+    function registerUser() {
+      var email = (document.getElementById('reg-email').value || '').trim();
+      var pass = (document.getElementById('reg-pass').value || '').trim();
+
+      if (!email || !pass) {
+        showAuthMessage("Please provide both email and password.", true);
+        return;
+      }
+      if (pass.length < 6) {
+        showAuthMessage("Password must be at least 6 characters.", true);
+        return;
+      }
+
+      if (!isFirebaseReady()) {
+        // Fallback simulation if Firebase credentials are not yet entered
+        simulateRegistration(email);
+        return;
+      }
+
+      firebase.auth().createUserWithEmailAndPassword(email, pass)
+        .then(function(userCredential) {
+          var user = userCredential.user;
+          return user.sendEmailVerification().then(function() {
+            showAuthMessage("Registration successful! Verification email sent to " + email + ". Please check your inbox and confirm your link.", false);
+            setTimeout(function() {
+              switchAuthView('profile');
+            }, 1800);
+          });
+        })
+        .catch(function(error) {
+          showAuthMessage(error.message, true);
+        });
+    }
+
+    // Login User
+    function loginUser() {
+      var email = (document.getElementById('login-email').value || '').trim();
+      var pass = (document.getElementById('login-pass').value || '').trim();
+
+      if (!email || !pass) {
+        showAuthMessage("Please enter your email and password.", true);
+        return;
+      }
+
+      if (!isFirebaseReady()) {
+        simulateLogin(email);
+        return;
+      }
+
+      firebase.auth().signInWithEmailAndPassword(email, pass)
+        .then(function(userCredential) {
+          showAuthMessage("Authentication successful. Welcome Commander!", false);
+          setTimeout(function() {
+            closeAuthModal();
+          }, 800);
+        })
+        .catch(function(error) {
+          showAuthMessage(error.message, true);
+        });
+    }
+
+    // Password Reset Email
+    function sendPasswordReset() {
+      var email = (document.getElementById('forgot-email').value || '').trim();
+      if (!email) {
+        showAuthMessage("Please enter your email address.", true);
+        return;
+      }
+      if (!isFirebaseReady()) {
+        showAuthMessage("Password recovery instructions simulated for " + email + ". Check inbox.", false);
+        return;
+      }
+      firebase.auth().sendPasswordResetEmail(email)
+        .then(function() {
+          showAuthMessage("Password reset email sent to " + email + "!", false);
+        })
+        .catch(function(error) {
+          showAuthMessage(error.message, true);
+        });
+    }
+
+    function resendVerificationEmail() {
+      if (isFirebaseReady() && firebase.auth().currentUser) {
+        firebase.auth().currentUser.sendEmailVerification()
+          .then(function() {
+            showAuthMessage("New verification link dispatched to your inbox!", false);
+          })
+          .catch(function(err) {
+            showAuthMessage(err.message, true);
+          });
+      }
+    }
+
+    function signOutUser() {
+      if (isFirebaseReady()) {
+        firebase.auth().signOut().then(function() {
+          applyLoggedOutState();
+        });
+      } else {
+        localStorage.removeItem('wd_simulated_user');
+        applyLoggedOutState();
+      }
+      closeAuthModal();
+    }
+
+    // Update UI based on logged in state
+    function applyLoggedInState(user) {
+      currentUser = user;
+      var isWebmaster = (user.email && user.email.toLowerCase() === WEBMASTER_EMAIL.toLowerCase());
+
+      // Update floating button
+      var authBtn = document.getElementById('floatingAuthBtn');
+      var authLabel = document.getElementById('authLabel');
+      var authIcon = document.getElementById('authIcon');
+      if (authBtn) {
+        authBtn.classList.add('logged-in');
+        if (isWebmaster) authBtn.classList.add('webmaster-active');
+      }
+      if (authLabel) {
+        authLabel.innerText = isWebmaster ? 'WEBMASTER' : 'COMMANDER';
+      }
+      if (authIcon) {
+        authIcon.innerText = isWebmaster ? '⚡' : '🎖️';
+      }
+
+      // Update Webmaster Top Banner
+      var wmBanner = document.getElementById('webmaster-banner');
+      if (wmBanner) {
+        wmBanner.style.display = isWebmaster ? 'block' : 'none';
+      }
+
+      // Apply body class for CSS visibility of admin delete buttons
+      if (isWebmaster) {
+        document.body.classList.add('is-webmaster');
+      } else {
+        document.body.classList.remove('is-webmaster');
+      }
+
+      updateProfileUI(user);
+    }
+
+    function applyLoggedOutState() {
+      currentUser = null;
+      var authBtn = document.getElementById('floatingAuthBtn');
+      var authLabel = document.getElementById('authLabel');
+      var authIcon = document.getElementById('authIcon');
+      if (authBtn) {
+        authBtn.classList.remove('logged-in');
+        authBtn.classList.remove('webmaster-active');
+      }
+      if (authLabel) authLabel.innerText = 'Log In / Register';
+      if (authIcon) authIcon.innerText = '🔑';
+
+      var wmBanner = document.getElementById('webmaster-banner');
+      if (wmBanner) wmBanner.style.display = 'none';
+
+      document.body.classList.remove('is-webmaster');
+      switchAuthView('login');
+    }
+
+    function updateProfileUI(user) {
+      var emailEl = document.getElementById('user-display-email');
+      var badgeEl = document.getElementById('user-role-badge');
+      var verStatus = document.getElementById('user-verified-status');
+      var resendBox = document.getElementById('resend-verification-box');
+
+      var isWebmaster = (user.email && user.email.toLowerCase() === WEBMASTER_EMAIL.toLowerCase());
+
+      if (emailEl) emailEl.innerText = user.email;
+      if (badgeEl) {
+        if (isWebmaster) {
+          badgeEl.className = 'role-badge role-squadleader';
+          badgeEl.innerText = '★ WEBMASTER (ROOT ACCESS)';
+          badgeEl.style.boxShadow = '0 0 14px var(--cyan)';
+        } else {
+          badgeEl.className = 'role-badge role-captain';
+          badgeEl.innerText = 'CLAN MEMBER';
+          badgeEl.style.boxShadow = 'none';
+        }
+      }
+
+      if (verStatus) {
+        if (user.emailVerified) {
+          verStatus.innerHTML = '<span style="color:var(--win); font-weight:bold;">✓ Email Verified & Authenticated</span>';
+          if (resendBox) resendBox.style.display = 'none';
+        } else {
+          verStatus.innerHTML = '<span style="color:#fbbf24; font-weight:bold;">⏳ Email Verification Pending</span>';
+          if (resendBox) resendBox.style.display = 'block';
+        }
+      }
+    }
+
+    // Simulation helpers (runs before user puts real Firebase config keys)
+    function simulateRegistration(email) {
+      var simUser = { email: email, emailVerified: false };
+      localStorage.setItem('wd_simulated_user', JSON.stringify(simUser));
+      applyLoggedInState(simUser);
+      showAuthMessage("Simulation Mode: Verification email dispatched for " + email + ". Once you connect your Firebase project, real emails are delivered!", false);
+      setTimeout(function() { switchAuthView('profile'); }, 1400);
+    }
+
+    function simulateLogin(email) {
+      var simUser = { email: email, emailVerified: true };
+      localStorage.setItem('wd_simulated_user', JSON.stringify(simUser));
+      applyLoggedInState(simUser);
+      showAuthMessage("Signed in as " + email + (email.toLowerCase() === WEBMASTER_EMAIL.toLowerCase() ? " [WEBMASTER MODE ACTIVE]" : ""), false);
+      setTimeout(function() { closeAuthModal(); }, 1000);
+    }
+
+    // Initialize Auth Listeners on Load
+    window.addEventListener('DOMContentLoaded', function() {
+      if (isFirebaseReady()) {
+        firebase.auth().onAuthStateChanged(function(user) {
+          if (user) {
+            applyLoggedInState(user);
+          } else {
+            applyLoggedOutState();
+          }
+        });
+      } else {
+        var savedSim = localStorage.getItem('wd_simulated_user');
+        if (savedSim) {
+          try {
+            var u = JSON.parse(savedSim);
+            applyLoggedInState(u);
+          } catch(e) {}
+        }
+      }
+    });
+
+    // Webmaster Direct Delete Handlers
+    function adminDeleteReplay(repId) {
+      if (!confirm("WEBMASTER COMMAND: Are you sure you want to delete this replay from Clan Vault?")) return;
+      try {
+        var existing = JSON.parse(localStorage.getItem('wd_replays') || '[]');
+        existing = existing.filter(function(r) { return r.id !== repId; });
+        localStorage.setItem('wd_replays', JSON.stringify(existing));
+        renderUserReplays();
+      } catch(e) {}
+    }
+
+    function adminDeleteDownload(dlId) {
+      if (!confirm("WEBMASTER COMMAND: Are you sure you want to remove this download from Clan Vault?")) return;
+      try {
+        var existing = JSON.parse(localStorage.getItem('wd_downloads_vault') || '[]');
+        existing = existing.filter(function(d) { return d.id !== dlId; });
+        localStorage.setItem('wd_downloads_vault', JSON.stringify(existing));
+        renderUserMaps();
+      } catch(e) {}
+    }
+
+
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') closePrivacyModal();
+      if (e.key === 'Escape') closeAuthModal();
       if (e.key === 'Escape') closeModal();
     });
 
