@@ -2673,7 +2673,57 @@
       }
     }
 
-    // Replay Upload Vault
+    // ========================================================
+    // OPTION 2: BROWSER-NATIVE INDEXEDDB CLAN VAULT ENGINE
+    // (Bypasses localStorage 5MB quota & Firebase Blaze paid upgrade)
+    // ========================================================
+    const DB_NAME = 'WD_Clan_Vault_DB';
+    const DB_VERSION = 1;
+
+    function getVaultDB() {
+      return new Promise((resolve, reject) => {
+        const request = indexedDB.open(DB_NAME, DB_VERSION);
+        request.onupgradeneeded = function(e) {
+          const db = e.target.result;
+          if (!db.objectStoreNames.contains('downloads')) {
+            db.createObjectStore('downloads', { keyPath: 'id' });
+          }
+          if (!db.objectStoreNames.contains('replays')) {
+            db.createObjectStore('replays', { keyPath: 'id' });
+          }
+        };
+        request.onsuccess = () => resolve(request.result);
+        request.onerror = () => reject(request.error);
+      });
+    }
+
+    // ========================================================
+    // PHASE 1 ACCESS GATE: VERIFIED MEMBERS ONLY
+    // ========================================================
+    function ensureVerifiedAccess(actionName) {
+      var user = (typeof firebase !== 'undefined' && firebase.auth && firebase.auth().currentUser) 
+        ? firebase.auth().currentUser 
+        : currentUser;
+      
+      if (!user) {
+        alert("ACCESS DENIED // CLEARANCE REQUIRED:\n\nPlease log in to " + actionName + ".");
+        openAuthModal();
+        return false;
+      }
+      
+      if (!user.emailVerified) {
+        alert("CLEARANCE PENDING // EMAIL VERIFICATION REQUIRED:\n\nYour account (" + user.email + ") is not verified yet. Please check your inbox and verify your email to " + actionName + ".");
+        openAuthModal();
+        switchAuthView('profile');
+        return false;
+      }
+      
+      return true;
+    }
+
+    // ========================================================
+    // REPLAY UPLOAD VAULT (INDEXEDDB)
+    // ========================================================
     var currentSelectedFile = null;
 
     function handleDragOver(e) {
@@ -2705,30 +2755,6 @@
       }
     }
 
-    // ========================================================
-    // PHASE 1 ACCESS GATE: VERIFIED MEMBERS ONLY
-    // ========================================================
-    function ensureVerifiedAccess(actionName) {
-      var user = (typeof firebase !== 'undefined' && firebase.auth && firebase.auth().currentUser) 
-        ? firebase.auth().currentUser 
-        : currentUser;
-      
-      if (!user) {
-        alert("ACCESS DENIED // CLEARANCE REQUIRED:\n\nPlease log in to " + actionName + ".");
-        openAuthModal();
-        return false;
-      }
-      
-      if (!user.emailVerified) {
-        alert("CLEARANCE PENDING // EMAIL VERIFICATION REQUIRED:\n\nYour account (" + user.email + ") is not verified yet. Please check your inbox and verify your email to " + actionName + ".");
-        openAuthModal();
-        switchAuthView('profile');
-        return false;
-      }
-      
-      return true;
-    }
-
     function processFile(file) {
       if (!ensureVerifiedAccess("upload replays")) {
         cancelUpload();
@@ -2752,159 +2778,190 @@
       document.getElementById('upload-form').style.display = 'none';
     }
 
-    function saveReplay() {
+    async function saveReplay() {
       if (!ensureVerifiedAccess("save files to Clan Vault")) return;
       if (!currentSelectedFile) {
         alert('Please choose a .rep or .zip file first.');
         return;
       }
-      var reader = new FileReader();
-      reader.onload = function(e) {
-        var base64Data = e.target.result;
-        var title = document.getElementById('rep-title-input').value.trim() || currentSelectedFile.name;
-        var players = document.getElementById('rep-players-input').value.trim() || 'White Dragon Commander Match';
-        var map = document.getElementById('rep-map-input').value.trim() || 'Koprulu Sector Map';
-        var dateStr = new Date().toLocaleDateString();
 
-        var replayItem = {
-          id: 'rep_' + Date.now(),
-          title: title,
-          players: players,
-          map: map,
-          fileName: currentSelectedFile.name,
-          fileSize: (currentSelectedFile.size / 1024).toFixed(1) + ' KB',
-          date: dateStr,
-          uploader: currentUser ? currentUser.email : 'Verified Member',
-          data: base64Data
-        };
+      var file = currentSelectedFile;
+      var title = document.getElementById('rep-title-input').value.trim() || file.name;
+      var players = document.getElementById('rep-players-input').value.trim() || 'White Dragon Commander Match';
+      var map = document.getElementById('rep-map-input').value.trim() || 'Koprulu Sector Map';
+      var dateStr = new Date().toLocaleDateString();
 
-        var existing = [];
-        try {
-          existing = JSON.parse(localStorage.getItem('wd_replays') || '[]');
-        } catch(err) {
-          existing = [];
-        }
-
-        existing.unshift(replayItem);
-        try {
-          localStorage.setItem('wd_replays', JSON.stringify(existing));
-        } catch(err) {}
-
-        renderUserReplays();
-        cancelUpload();
-        alert('Replay saved to your Clan Vault successfully!');
+      var replayItem = {
+        id: 'rep_' + Date.now(),
+        title: title,
+        players: players,
+        map: map,
+        fileName: file.name,
+        fileSize: (file.size / 1024).toFixed(1) + ' KB',
+        date: dateStr,
+        uploader: currentUser ? currentUser.email : 'Verified Member',
+        fileBlob: file
       };
-      reader.readAsDataURL(currentSelectedFile);
+
+      try {
+        const db = await getVaultDB();
+        const tx = db.transaction('replays', 'readwrite');
+        tx.objectStore('replays').put(replayItem);
+        tx.oncomplete = function() {
+          renderUserReplays();
+          cancelUpload();
+          alert('Replay saved to Clan Vault successfully!');
+        };
+      } catch(err) {
+        console.error('Error saving replay to IndexedDB:', err);
+        alert('Failed to save replay: ' + err.message);
+      }
     }
 
-    function downloadSavedReplay(replayId) {
+    async function downloadSavedReplay(replayId) {
       if (!ensureVerifiedAccess("download replays")) return;
       try {
-        var existing = JSON.parse(localStorage.getItem('wd_replays') || '[]');
-        var item = existing.find(function(r) { return r.id === replayId; });
-        if (item && item.data) {
-          var a = document.createElement('a');
-          a.href = item.data;
-          a.download = item.fileName || 'Replay.rep';
-          document.body.appendChild(a);
-          a.click();
-          document.body.removeChild(a);
-        } else {
-          alert('Replay data not found.');
-        }
+        const db = await getVaultDB();
+        const tx = db.transaction('replays', 'readonly');
+        const req = tx.objectStore('replays').get(replayId);
+        req.onsuccess = function() {
+          var item = req.result;
+          if (item && item.fileBlob) {
+            var url = URL.createObjectURL(item.fileBlob);
+            var a = document.createElement('a');
+            a.href = url;
+            a.download = item.fileName || 'Replay.rep';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            setTimeout(() => URL.revokeObjectURL(url), 1000);
+          } else if (item && item.data) {
+            var a = document.createElement('a');
+            a.href = item.data;
+            a.download = item.fileName || 'Replay.rep';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+          } else {
+            alert('Replay data not found.');
+          }
+        };
       } catch(err) {
         alert('Error downloading replay.');
       }
     }
 
-    function downloadMatchReplay(week, matchName) {
+    async function downloadMatchReplay(week, matchName) {
       if (!ensureVerifiedAccess("download match replays")) return;
       try {
-        var existing = JSON.parse(localStorage.getItem('wd_replays') || '[]');
-        var matchRep = existing.find(function(r) {
-          return (r.title && r.title.toLowerCase().indexOf(week.toLowerCase()) !== -1) ||
-                 (r.players && r.players.toLowerCase().indexOf(week.toLowerCase()) !== -1);
-        });
-        if (matchRep && matchRep.data) {
-          downloadSavedReplay(matchRep.id);
-          return;
-        }
-      } catch(e) {}
+        const db = await getVaultDB();
+        const tx = db.transaction('replays', 'readonly');
+        const req = tx.objectStore('replays').getAll();
+        req.onsuccess = function() {
+          var list = req.result || [];
+          var matchRep = list.find(function(r) {
+            return (r.title && r.title.toLowerCase().indexOf(week.toLowerCase()) !== -1) ||
+                   (r.players && r.players.toLowerCase().indexOf(week.toLowerCase()) !== -1);
+          });
+          if (matchRep) {
+            downloadSavedReplay(matchRep.id);
+            return;
+          }
+          offerUploadPrompt();
+        };
+      } catch(e) {
+        offerUploadPrompt();
+      }
 
-      var msg = 'Replay pack for ' + week + ' (' + matchName + ') will be available here once uploaded by clan staff.\n\nWant to upload a replay file for this match now?';
-      if (confirm(msg)) {
-        switchTab('replays');
-        var titleInp = document.getElementById('rep-title-input');
-        if (titleInp) titleInp.value = 'BWCL S65 ' + week + ': ' + matchName;
-        var fileInp = document.getElementById('rep-file-input');
-        if (fileInp) fileInp.click();
+      function offerUploadPrompt() {
+        var msg = 'Replay pack for ' + week + ' (' + matchName + ') will be available here once uploaded by clan staff.\n\nWant to upload a replay file for this match now?';
+        if (confirm(msg)) {
+          switchTab('replays');
+          var titleInp = document.getElementById('rep-title-input');
+          if (titleInp) titleInp.value = 'BWCL S65 ' + week + ': ' + matchName;
+          var fileInp = document.getElementById('rep-file-input');
+          if (fileInp) fileInp.click();
+        }
       }
     }
 
-    function renderUserReplays() {
+    async function renderUserReplays() {
       var container = document.getElementById('user-replays-list');
       var emptyMsg = document.getElementById('no-replays-msg');
       if (!container) return;
 
-      var existing = [];
       try {
-        existing = JSON.parse(localStorage.getItem('wd_replays') || '[]');
+        const db = await getVaultDB();
+        const tx = db.transaction('replays', 'readonly');
+        const req = tx.objectStore('replays').getAll();
+        req.onsuccess = function() {
+          var existing = req.result || [];
+          container.innerHTML = '';
+          var countEl = document.getElementById('rep-count');
+          if (countEl) countEl.innerText = existing.length;
+
+          if (emptyMsg) {
+            emptyMsg.style.display = existing.length === 0 ? 'block' : 'none';
+          }
+
+          var clearBtn = document.getElementById('btn-clear-reps');
+          if (clearBtn) {
+            clearBtn.style.display = existing.length > 0 ? 'inline-block' : 'none';
+          }
+
+          existing.forEach(function(item) {
+            var card = document.createElement('div');
+            card.className = 'replay-card';
+            card.style.borderLeft = '4px solid var(--cyan)';
+            
+            var metaDiv = document.createElement('div');
+            metaDiv.className = 'replay-meta';
+            metaDiv.innerHTML = '<span class="replay-title">' + item.title + ' <span style="font-size:0.7rem; color:var(--cyan); border:1px solid var(--cyan); padding:1px 6px; border-radius:3px; margin-left:6px; font-family:monospace;">VAULT ARCHIVE</span></span>' +
+                                '<span class="replay-sub">' + item.players + ' | Map: ' + item.map + ' (' + item.fileSize + ' • ' + item.date + ')</span>';
+            card.appendChild(metaDiv);
+
+            var btnGroup = document.createElement('div');
+            btnGroup.style.display = 'flex';
+            btnGroup.style.alignItems = 'center';
+            btnGroup.style.gap = '8px';
+
+            var dlBtn = document.createElement('button');
+            dlBtn.className = 'btn-download-rep';
+            dlBtn.innerText = 'DOWNLOAD (.REP)';
+            dlBtn.onclick = function() { downloadSavedReplay(item.id); };
+            btnGroup.appendChild(dlBtn);
+
+            var adminBtn = document.createElement('button');
+            adminBtn.className = 'admin-del-btn';
+            adminBtn.innerText = '🗑️ REMOVE';
+            (function(repId) {
+              adminBtn.onclick = function() { adminDeleteReplay(repId); };
+            })(item.id);
+            btnGroup.appendChild(adminBtn);
+
+            card.appendChild(btnGroup);
+            container.appendChild(card);
+          });
+        };
       } catch(err) {
-        existing = [];
+        console.warn('Error rendering replays from IndexedDB:', err);
       }
-
-      container.innerHTML = '';
-      var countEl = document.getElementById('rep-count');
-      if (countEl) countEl.innerText = existing.length;
-
-      if (emptyMsg) {
-        emptyMsg.style.display = existing.length === 0 ? 'block' : 'none';
-      }
-
-      var clearBtn = document.getElementById('btn-clear-reps');
-      if (clearBtn) {
-        clearBtn.style.display = existing.length > 0 ? 'inline-block' : 'none';
-      }
-
-      existing.forEach(function(item) {
-        var card = document.createElement('div');
-        card.className = 'replay-card';
-        card.style.borderLeft = '4px solid var(--cyan)';
-        
-        var metaDiv = document.createElement('div');
-        metaDiv.className = 'replay-meta';
-        metaDiv.innerHTML = '<span class="replay-title">' + item.title + ' <span style="font-size:0.7rem; color:var(--cyan); border:1px solid var(--cyan); padding:1px 6px; border-radius:3px; margin-left:6px; font-family:monospace;">USER UPLOAD</span></span>' +
-                            '<span class="replay-sub">' + item.players + ' | Map: ' + item.map + ' (' + item.fileSize + ' • ' + item.date + ')</span>';
-        card.appendChild(metaDiv);
-
-        var dlBtn = document.createElement('button');
-        dlBtn.className = 'btn-download-rep';
-        dlBtn.innerText = 'DOWNLOAD (.REP)';
-        dlBtn.onclick = function() { downloadSavedReplay(item.id); };
-        card.appendChild(dlBtn);
-
-        var adminBtn = document.createElement('button');
-        adminBtn.className = 'admin-del-btn';
-        adminBtn.innerText = '🗑️ REMOVE';
-        (function(repId) {
-          adminBtn.onclick = function() { adminDeleteReplay(repId); };
-        })(item.id);
-        card.appendChild(adminBtn);
-
-        container.appendChild(card);
-      });
     }
 
-    function clearUserReplays() {
+    async function clearUserReplays() {
       if (confirm('Are you sure you want to clear your uploaded replays from this browser?')) {
-        localStorage.removeItem('wd_replays');
-        renderUserReplays();
+        try {
+          const db = await getVaultDB();
+          const tx = db.transaction('replays', 'readwrite');
+          tx.objectStore('replays').clear();
+          tx.oncomplete = () => renderUserReplays();
+        } catch(e) {}
       }
     }
 
-    renderUserReplays();
-
-        // Downloads & Resources Vault Management (Maps, Software, Map Packs)
+    // ========================================================
+    // DOWNLOADS & RESOURCES VAULT (INDEXEDDB)
+    // ========================================================
     var currentSelectedMapFile = null;
     var currentDownloadFilter = 'All';
 
@@ -2959,7 +3016,6 @@
         titleInput.value = file.name.replace(/\.[^/.]+$/, '');
       }
 
-      // Auto-detect likely category from extension
       var catSelect = document.getElementById('map-category-input');
       if (catSelect) {
         var ext = file.name.split('.').pop().toLowerCase();
@@ -2988,7 +3044,7 @@
       if (form) form.style.display = 'none';
     }
 
-    function saveMapDownload() {
+    async function saveMapDownload() {
       if (!ensureVerifiedAccess("save downloads to Clan Vault")) return;
       if (!currentSelectedMapFile) {
         alert('Please choose a file to upload first.');
@@ -3005,89 +3061,31 @@
       var category = (catSelect && catSelect.value) || 'Map Pack';
       var dateStr = new Date().toLocaleDateString();
 
-      var infoText = document.getElementById('map-file-info-text');
-      if (infoText) infoText.innerText = 'Uploading: ' + file.name + '... Please wait.';
+      var downloadItem = {
+        id: 'dl_' + Date.now(),
+        title: title,
+        desc: desc,
+        category: category,
+        fileName: file.name,
+        fileSize: (file.size / 1024).toFixed(1) + ' KB',
+        date: dateStr,
+        uploader: (currentUser ? currentUser.email : 'Verified Member'),
+        fileBlob: file
+      };
 
-      // Prioritize Cloud Storage upload to bypass browser 5MB quota
-      if (typeof firebase !== 'undefined' && firebase.storage) {
-        try {
-          var storageRef = firebase.storage().ref('clan_vault/downloads/' + Date.now() + '_' + file.name);
-          storageRef.put(file).then(function(snapshot) {
-            return snapshot.ref.getDownloadURL();
-          }).then(function(downloadURL) {
-            var downloadItem = {
-              id: 'dl_' + Date.now(),
-              title: title,
-              desc: desc,
-              category: category,
-              fileName: file.name,
-              fileSize: (file.size / 1024).toFixed(1) + ' KB',
-              date: dateStr,
-              uploader: (currentUser ? currentUser.email : 'Verified Member'),
-              url: downloadURL
-            };
-            storeDownloadMetadata(downloadItem);
-          }).catch(function(err) {
-            console.warn('Firebase Storage upload blocked or failed, falling back to local storage:', err);
-            storeDownloadLocalFallback(file, title, desc, category, dateStr);
-          });
-          return;
-        } catch(e) {
-          console.warn('Firebase Storage invocation failed:', e);
-        }
-      }
-
-      storeDownloadLocalFallback(file, title, desc, category, dateStr);
-    }
-
-    function storeDownloadMetadata(downloadItem) {
-      var existing = [];
       try {
-        existing = JSON.parse(localStorage.getItem('wd_downloads_vault') || '[]');
-      } catch(e) { existing = []; }
-
-      existing.unshift(downloadItem);
-      try {
-        localStorage.setItem('wd_downloads_vault', JSON.stringify(existing));
-        renderUserMaps();
-        cancelMapUpload();
-        alert('File uploaded to Clan Cloud Vault successfully!');
-      } catch(quotaErr) {
-        alert('Browser quota exceeded when storing download list.');
-      }
-    }
-
-    function storeDownloadLocalFallback(file, title, desc, category, dateStr) {
-      var reader = new FileReader();
-      reader.onload = function(e) {
-        var downloadItem = {
-          id: 'dl_' + Date.now(),
-          title: title,
-          desc: desc,
-          category: category,
-          fileName: file.name,
-          fileSize: (file.size / 1024).toFixed(1) + ' KB',
-          date: dateStr,
-          uploader: (currentUser ? currentUser.email : 'Verified Member'),
-          data: e.target.result
-        };
-
-        var existing = [];
-        try {
-          existing = JSON.parse(localStorage.getItem('wd_downloads_vault') || '[]');
-        } catch(err) { existing = []; }
-
-        existing.unshift(downloadItem);
-        try {
-          localStorage.setItem('wd_downloads_vault', JSON.stringify(existing));
+        const db = await getVaultDB();
+        const tx = db.transaction('downloads', 'readwrite');
+        tx.objectStore('downloads').put(downloadItem);
+        tx.oncomplete = function() {
           renderUserMaps();
           cancelMapUpload();
-          alert('File saved to Clan Downloads Vault successfully!');
-        } catch(quotaErr) {
-          alert('Upload failed: File is too large for local browser storage (' + (file.size / 1024 / 1024).toFixed(2) + ' MB). Cloud Storage upload also could not be reached.');
-        }
-      };
-      reader.readAsDataURL(file);
+          alert('File stored in Clan Downloads Vault successfully!');
+        };
+      } catch(err) {
+        console.error('Error saving download to IndexedDB:', err);
+        alert('Failed to store file: ' + err.message);
+      }
     }
 
     function filterDownloads(cat) {
@@ -3102,136 +3100,155 @@
       renderUserMaps();
     }
 
-    function downloadSavedMap(downloadId) {
+    async function downloadSavedMap(downloadId) {
       if (!ensureVerifiedAccess("download maps and tools")) return;
       try {
-        var existing = JSON.parse(localStorage.getItem('wd_downloads_vault') || '[]');
-        var item = existing.find(function(d) { return d.id === downloadId; });
-        if (!item) {
-          alert('Download file data not found.');
-          return;
-        }
-
-        if (item.url) {
-          window.open(item.url, '_blank');
-          return;
-        }
-
-        if (item.data) {
-          var a = document.createElement('a');
-          a.href = item.data;
-          a.download = item.fileName || 'Download.zip';
-          document.body.appendChild(a);
-          a.click();
-          document.body.removeChild(a);
-        }
+        const db = await getVaultDB();
+        const tx = db.transaction('downloads', 'readonly');
+        const req = tx.objectStore('downloads').get(downloadId);
+        req.onsuccess = function() {
+          var item = req.result;
+          if (item && item.fileBlob) {
+            var url = URL.createObjectURL(item.fileBlob);
+            var a = document.createElement('a');
+            a.href = url;
+            a.download = item.fileName || 'Download.zip';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            setTimeout(() => URL.revokeObjectURL(url), 1000);
+          } else if (item && item.url) {
+            window.open(item.url, '_blank');
+          } else if (item && item.data) {
+            var a = document.createElement('a');
+            a.href = item.data;
+            a.download = item.fileName || 'Download.zip';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+          } else {
+            alert('Download file data not found.');
+          }
+        };
       } catch(err) {
         alert('Error downloading file.');
       }
     }
 
-    function renderUserMaps() {
+    async function renderUserMaps() {
       var container = document.getElementById('user-maps-list');
       var emptyMsg = document.getElementById('no-maps-msg');
       if (!container) return;
 
-      var existing = [];
       try {
-        existing = JSON.parse(localStorage.getItem('wd_downloads_vault') || '[]');
+        const db = await getVaultDB();
+        const tx = db.transaction('downloads', 'readonly');
+        const req = tx.objectStore('downloads').getAll();
+        req.onsuccess = function() {
+          var existing = req.result || [];
+
+          var countAll = existing.length;
+          var countMapPack = 0, countMap = 0, countSoftware = 0, countOther = 0;
+          for (var k = 0; k < existing.length; k++) {
+            var c = existing[k].category;
+            if (c === 'Map Pack') countMapPack++;
+            else if (c === 'Map') countMap++;
+            else if (c === 'Software') countSoftware++;
+            else countOther++;
+          }
+
+          var elAll = document.getElementById('count-all');
+          if (elAll) elAll.innerText = countAll;
+          var elMP = document.getElementById('count-mappack');
+          if (elMP) elMP.innerText = countMapPack;
+          var elM = document.getElementById('count-map');
+          if (elM) elM.innerText = countMap;
+          var elS = document.getElementById('count-software');
+          if (elS) elS.innerText = countSoftware;
+          var elO = document.getElementById('count-other');
+          if (elO) elO.innerText = countOther;
+
+          var clearBtn = document.getElementById('btn-clear-maps');
+          if (clearBtn) {
+            clearBtn.style.display = existing.length > 0 ? 'inline-block' : 'none';
+          }
+
+          var filtered = [];
+          for (var m = 0; m < existing.length; m++) {
+            if (currentDownloadFilter === 'All' || existing[m].category === currentDownloadFilter) {
+              filtered.push(existing[m]);
+            }
+          }
+
+          container.innerHTML = '';
+          if (emptyMsg) {
+            emptyMsg.style.display = filtered.length === 0 ? 'block' : 'none';
+          }
+
+          var catBadges = {
+            'Map Pack': { icon: '📦', color: 'var(--cyan)', border: '1px solid var(--cyan)' },
+            'Map': { icon: '🗺️', color: 'var(--win)', border: '1px solid var(--win)' },
+            'Software': { icon: '⚙️', color: '#fbbf24', border: '1px solid #fbbf24' },
+            'Other': { icon: '📁', color: '#c084fc', border: '1px solid #c084fc' }
+          };
+
+          for (var n = 0; n < filtered.length; n++) {
+            var item = filtered[n];
+            var badgeInfo = catBadges[item.category] || catBadges['Other'];
+
+            var card = document.createElement('div');
+            card.className = 'replay-card';
+            card.style.borderLeft = '4px solid ' + badgeInfo.color;
+
+            var metaDiv = document.createElement('div');
+            metaDiv.className = 'replay-meta';
+            metaDiv.innerHTML = '<span class="replay-title">' + item.title + ' ' +
+                                '<span style="font-size:0.68rem; color:' + badgeInfo.color + '; border:' + badgeInfo.border + '; padding:1px 6px; border-radius:4px; margin-left:6px; font-family:monospace; text-transform:uppercase;">' + badgeInfo.icon + ' ' + item.category + '</span></span>' +
+                                '<span class="replay-sub">' + item.desc + ' (' + item.fileSize + ' • ' + item.date + ')</span>';
+            card.appendChild(metaDiv);
+
+            var btnGroup = document.createElement('div');
+            btnGroup.style.display = 'flex';
+            btnGroup.style.alignItems = 'center';
+            btnGroup.style.gap = '8px';
+
+            var dlBtn = document.createElement('button');
+            dlBtn.className = 'btn-download-rep';
+            dlBtn.innerText = 'DOWNLOAD';
+            (function(idToDownload) {
+              dlBtn.onclick = function() { downloadSavedMap(idToDownload); };
+            })(item.id);
+            btnGroup.appendChild(dlBtn);
+
+            var adminBtn = document.createElement('button');
+            adminBtn.className = 'admin-del-btn';
+            adminBtn.innerText = '🗑️ REMOVE';
+            (function(dlId) {
+              adminBtn.onclick = function() { adminDeleteDownload(dlId); };
+            })(item.id);
+            btnGroup.appendChild(adminBtn);
+
+            card.appendChild(btnGroup);
+            container.appendChild(card);
+          }
+        };
       } catch(err) {
-        existing = [];
-      }
-
-      // Update category counters
-      var countAll = existing.length;
-      var countMapPack = 0, countMap = 0, countSoftware = 0, countOther = 0;
-      for (var k = 0; k < existing.length; k++) {
-        var c = existing[k].category;
-        if (c === 'Map Pack') countMapPack++;
-        else if (c === 'Map') countMap++;
-        else if (c === 'Software') countSoftware++;
-        else countOther++;
-      }
-
-      var elAll = document.getElementById('count-all');
-      if (elAll) elAll.innerText = countAll;
-      var elMP = document.getElementById('count-mappack');
-      if (elMP) elMP.innerText = countMapPack;
-      var elM = document.getElementById('count-map');
-      if (elM) elM.innerText = countMap;
-      var elS = document.getElementById('count-software');
-      if (elS) elS.innerText = countSoftware;
-      var elO = document.getElementById('count-other');
-      if (elO) elO.innerText = countOther;
-
-      var clearBtn = document.getElementById('btn-clear-maps');
-      if (clearBtn) {
-        clearBtn.style.display = existing.length > 0 ? 'inline-block' : 'none';
-      }
-
-      // Filter items
-      var filtered = [];
-      for (var m = 0; m < existing.length; m++) {
-        if (currentDownloadFilter === 'All' || existing[m].category === currentDownloadFilter) {
-          filtered.push(existing[m]);
-        }
-      }
-
-      container.innerHTML = '';
-      if (emptyMsg) {
-        emptyMsg.style.display = filtered.length === 0 ? 'block' : 'none';
-      }
-
-      // Category color styles
-      var catBadges = {
-        'Map Pack': { icon: '📦', color: 'var(--cyan)', border: '1px solid var(--cyan)' },
-        'Map': { icon: '🗺️', color: 'var(--win)', border: '1px solid var(--win)' },
-        'Software': { icon: '⚙️', color: '#fbbf24', border: '1px solid #fbbf24' },
-        'Other': { icon: '📁', color: '#c084fc', border: '1px solid #c084fc' }
-      };
-
-      for (var n = 0; n < filtered.length; n++) {
-        var item = filtered[n];
-        var badgeInfo = catBadges[item.category] || catBadges['Other'];
-
-        var card = document.createElement('div');
-        card.className = 'replay-card';
-        card.style.borderLeft = '4px solid ' + badgeInfo.color;
-
-        var metaDiv = document.createElement('div');
-        metaDiv.className = 'replay-meta';
-        metaDiv.innerHTML = '<span class="replay-title">' + item.title + ' ' +
-                            '<span style="font-size:0.68rem; color:' + badgeInfo.color + '; border:' + badgeInfo.border + '; padding:1px 6px; border-radius:4px; margin-left:6px; font-family:monospace; text-transform:uppercase;">' + badgeInfo.icon + ' ' + item.category + '</span></span>' +
-                            '<span class="replay-sub">' + item.desc + ' (' + item.fileSize + ' • ' + item.date + ')</span>';
-        card.appendChild(metaDiv);
-
-        var dlBtn = document.createElement('button');
-        dlBtn.className = 'btn-download-rep';
-        dlBtn.innerText = 'DOWNLOAD';
-        (function(idToDownload) {
-          dlBtn.onclick = function() { downloadSavedMap(idToDownload); };
-        })(item.id);
-        card.appendChild(dlBtn);
-
-        var adminBtn = document.createElement('button');
-        adminBtn.className = 'admin-del-btn';
-        adminBtn.innerText = '🗑️ REMOVE';
-        (function(dlId) {
-          adminBtn.onclick = function() { adminDeleteDownload(dlId); };
-        })(item.id);
-        card.appendChild(adminBtn);
-
-        container.appendChild(card);
+        console.warn('Error rendering maps from IndexedDB:', err);
       }
     }
 
-    function clearUserMaps() {
+    async function clearUserMaps() {
       if (confirm('Are you sure you want to clear your uploaded files from this browser?')) {
-        localStorage.removeItem('wd_downloads_vault');
-        renderUserMaps();
+        try {
+          const db = await getVaultDB();
+          const tx = db.transaction('downloads', 'readwrite');
+          tx.objectStore('downloads').clear();
+          tx.oncomplete = () => renderUserMaps();
+        } catch(e) {}
       }
     }
 
+    renderUserReplays();
     renderUserMaps();
 
     // Profile Lightbox
@@ -3947,23 +3964,23 @@
     });
 
     // Webmaster Direct Delete Handlers
-    function adminDeleteReplay(repId) {
+    async function adminDeleteReplay(repId) {
       if (!confirm("WEBMASTER COMMAND: Are you sure you want to delete this replay from Clan Vault?")) return;
       try {
-        var existing = JSON.parse(localStorage.getItem('wd_replays') || '[]');
-        existing = existing.filter(function(r) { return r.id !== repId; });
-        localStorage.setItem('wd_replays', JSON.stringify(existing));
-        renderUserReplays();
+        const db = await getVaultDB();
+        const tx = db.transaction('replays', 'readwrite');
+        tx.objectStore('replays').delete(repId);
+        tx.oncomplete = () => renderUserReplays();
       } catch(e) {}
     }
 
-    function adminDeleteDownload(dlId) {
+    async function adminDeleteDownload(dlId) {
       if (!confirm("WEBMASTER COMMAND: Are you sure you want to remove this download from Clan Vault?")) return;
       try {
-        var existing = JSON.parse(localStorage.getItem('wd_downloads_vault') || '[]');
-        existing = existing.filter(function(d) { return d.id !== dlId; });
-        localStorage.setItem('wd_downloads_vault', JSON.stringify(existing));
-        renderUserMaps();
+        const db = await getVaultDB();
+        const tx = db.transaction('downloads', 'readwrite');
+        tx.objectStore('downloads').delete(dlId);
+        tx.oncomplete = () => renderUserMaps();
       } catch(e) {}
     }
 
