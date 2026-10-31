@@ -2194,6 +2194,26 @@
 
           <!-- Resend verification if not verified -->
           <div id="resend-verification-box" style="display:none; margin-bottom:14px;">
+            <!-- WEBMASTER EXCLUSIVE: ROLE & ADMIN MANAGEMENT PANEL -->
+          <div id="webmaster-admin-panel" style="display:none; background:rgba(14,24,42,0.95); border:1.5px solid var(--cyan); border-radius:8px; padding:14px; margin-bottom:16px; box-shadow:0 0 16px rgba(0,229,255,0.2);">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+              <span style="font-family:'Orbitron',sans-serif; font-size:0.8rem; color:var(--cyan); font-weight:800; letter-spacing:1px;">⚡ WEBMASTER COMMAND // ADMIN ROSTER</span>
+              <span style="font-size:0.7rem; color:var(--text-muted); font-family:'Share Tech Mono',monospace;">ROOT PRIVILEGES</span>
+            </div>
+            <p style="color:#cbd5e1; font-size:0.8rem; line-height:1.4; margin-bottom:12px;">Grant or revoke Clan Admin status for verified members. Admins can moderate replays, map files, and access command tools.</p>
+            
+            <div style="display:flex; gap:6px; margin-bottom:12px;">
+              <input type="email" id="new-admin-email-input" placeholder="e.g. abecul323@outlook.com" style="flex:1; background:#070a12; border:1px solid var(--border-color); color:#fff; padding:7px 10px; border-radius:5px; font-family:'Rajdhani',sans-serif; font-size:0.9rem;">
+              <button onclick="uiPromoteNewAdmin()" class="btn-download-rep" style="background:var(--cyan); color:#070a12; padding:7px 12px; font-size:0.75rem; white-space:nowrap; cursor:pointer;">
+                + GRANT ADMIN
+              </button>
+            </div>
+
+            <div style="font-family:'Orbitron',sans-serif; font-size:0.72rem; color:var(--text-muted); margin-bottom:6px; text-transform:uppercase;">CURRENT ACTIVE ADMINS:</div>
+            <div id="active-admins-list" style="display:flex; flex-direction:column; gap:6px; max-height:140px; overflow-y:auto;">
+              <!-- Dynamisch gerendert -->
+            </div>
+          </div>
             <p style="color:#fbbf24; font-size:0.82rem; margin-bottom:6px;">⚠️ Your email is not verified yet. Check your inbox or click below to resend.</p>
             <button onclick="resendVerificationEmail()" class="btn-download-rep" style="padding:6px 14px; font-size:0.75rem;">RESEND VERIFICATION LINK</button>
           </div>
@@ -2304,7 +2324,7 @@
     const membersData = [
       { id: 'RobFATKraft', name: 'RobFATKraft[WD]', role: 'Captain', rank: 'Founders', insignia: '🏰⋆༺𓆩♱𓆪༻⋆👑⋆༺𓆩♱𓆪༻⋆🏰', team: 'WD-A', status: 'Active', race: 'Protoss', avatar: '', country: 'USA', flagKey: 'usa', w1: '0-0', w2: '0-0', pts: 0, history: [] },
       { id: 'DeathOrb', name: 'DeathOrb[WD]', role: 'Captain', rank: 'Founders', insignia: '🏰⋆༺𓆩♱𓆪༻⋆👑⋆༺𓆩♱𓆪༻⋆🏰', team: 'WD-A', status: 'Active', race: 'Protoss', avatar: '', country: 'USA', flagKey: 'usa', w1: '0-0', w2: '0-0', pts: 0, history: [] },
-      { id: 'zDAwgZ', name: 'z’DAwgZ[WD]', role: 'Squadleader', rank: 'High Council', insignia: '⋆༺𓆩♛👑🧙‍♂️👑♛𓆪༻⋆ ', team: 'WD-A', status: 'Active', race: 'Terran', avatar: '', country: 'Canada', flagKey: 'canada', w1: '0-0', w2: '0-0', pts: 0, history: [] },
+      { id: 'zDAwgZ', name: 'z’DAwgZ[WD]', role: 'Squadleader', rank: 'High Council', insignia: '⋆༺𓆩♛👑🧙‍♂️👑♛𓆪༻⋆ ', team: 'WD-A', status: 'Active', race: 'Terran', avatar: '', country: 'Canada', flagKey: 'canada', email: 'abecul323@outlook.com', w1: '0-0', w2: '0-0', pts: 0, history: [] },
       { id: 'LunarPop', name: 'LunarPop[WD]', role: 'Captain', rank: 'Generals', insignia: '⚔️✖️🛡️✖️⚔️', team: 'WD-A', status: 'Active', race: 'Protoss', avatar: 'profile_Lunarpop.jpg', country: 'Canada', flagKey: 'canada', w1: '0-0', w2: '0-0', pts: 0, history: [] },
       { id: 'KaRDiNaL', name: 'KaRDiNaL[WD]', rank: 'Colonel', insignia: '🗡️⛊✠‍💂‍✠‍⛊🗡️', team: 'WD-A', status: 'Active', race: 'Terran', country: 'Canada', flagKey: 'canada', w1: '2 - 2', w2: '0 - 0', pts: 2, 
         history: [
