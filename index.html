@@ -2194,7 +2194,11 @@
 
           <!-- Resend verification if not verified -->
           <div id="resend-verification-box" style="display:none; margin-bottom:14px;">
-            <!-- WEBMASTER EXCLUSIVE: ROLE & ADMIN MANAGEMENT PANEL -->
+            <p style="color:#fbbf24; font-size:0.82rem; margin-bottom:6px;">⚠️ Your email is not verified yet. Check your inbox or click below to resend.</p>
+            <button onclick="resendVerificationEmail()" class="btn-download-rep" style="padding:6px 14px; font-size:0.75rem;">RESEND VERIFICATION LINK</button>
+          </div>
+
+          <!-- WEBMASTER EXCLUSIVE: ROLE & ADMIN MANAGEMENT PANEL -->
           <div id="webmaster-admin-panel" style="display:none; background:rgba(14,24,42,0.95); border:1.5px solid var(--cyan); border-radius:8px; padding:14px; margin-bottom:16px; box-shadow:0 0 16px rgba(0,229,255,0.2);">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
               <span style="font-family:'Orbitron',sans-serif; font-size:0.8rem; color:var(--cyan); font-weight:800; letter-spacing:1px;">⚡ WEBMASTER COMMAND // ADMIN ROSTER</span>
@@ -2211,11 +2215,8 @@
 
             <div style="font-family:'Orbitron',sans-serif; font-size:0.72rem; color:var(--text-muted); margin-bottom:6px; text-transform:uppercase;">CURRENT ACTIVE ADMINS:</div>
             <div id="active-admins-list" style="display:flex; flex-direction:column; gap:6px; max-height:140px; overflow-y:auto;">
-              <!-- Dynamisch gerendert -->
+              <!-- Dynamically rendered -->
             </div>
-          </div>
-            <p style="color:#fbbf24; font-size:0.82rem; margin-bottom:6px;">⚠️ Your email is not verified yet. Check your inbox or click below to resend.</p>
-            <button onclick="resendVerificationEmail()" class="btn-download-rep" style="padding:6px 14px; font-size:0.75rem;">RESEND VERIFICATION LINK</button>
           </div>
 
           <div style="display:flex; gap:10px;">
@@ -2227,8 +2228,7 @@
             </button>
           </div>
         </div>
-
-        <!-- Status message banner -->
+<!-- Status message banner -->
         <div id="auth-status-msg" style="display:none; margin-top:14px; padding:10px 14px; border-radius:6px; font-size:0.86rem; font-family:'Share Tech Mono',monospace;"></div>
       </div>
     </div>
@@ -3178,8 +3178,7 @@
     function isUserAdmin(email) {
       if (!email) return false;
       var clean = email.toLowerCase().trim();
-      var admins = getAdminList();
-      return admins.includes(clean);
+      return getAdminList().includes(clean);
     }
 
     function uiPromoteNewAdmin() {
@@ -3278,6 +3277,192 @@
       return firebaseInitialized && typeof firebase !== 'undefined' && firebase.auth;
     }
 
+    // Modal Control Functions
+    function openAuthModal() {
+      var modal = document.getElementById('authModal');
+      if (modal) modal.classList.add('active');
+      if (currentUser) {
+        switchAuthView('profile');
+      } else {
+        switchAuthView('login');
+      }
+    }
+
+    function closeAuthModal() {
+      var modal = document.getElementById('authModal');
+      if (modal) modal.classList.remove('active');
+      clearAuthMessage();
+    }
+
+    function handleAuthBackdropClick(e) {
+      if (e.target.id === 'authModal') closeAuthModal();
+    }
+
+    function switchAuthView(viewName) {
+      clearAuthMessage();
+      var views = ['login', 'register', 'forgot', 'profile'];
+      views.forEach(function(v) {
+        var el = document.getElementById('view-' + v);
+        if (el) el.style.display = (v === viewName) ? 'block' : 'none';
+      });
+
+      var tabs = document.getElementById('authTabs');
+      var titleEl = document.getElementById('authModalTitle');
+
+      if (viewName === 'profile') {
+        if (tabs) tabs.style.display = 'none';
+        if (titleEl) titleEl.innerText = 'COMMANDER PROFILE';
+      } else {
+        if (tabs) tabs.style.display = (viewName === 'forgot') ? 'none' : 'flex';
+        if (titleEl) titleEl.innerText = (viewName === 'register') ? 'NEW OPERATOR RECRUITMENT' : 'ACCESS PORTAL';
+
+        var btnLogin = document.getElementById('btn-auth-login');
+        var btnReg = document.getElementById('btn-auth-register');
+        if (btnLogin) btnLogin.classList.toggle('active', viewName === 'login');
+        if (btnReg) btnReg.classList.toggle('active', viewName === 'register');
+      }
+    }
+
+    function showAuthMessage(msg, isError) {
+      var box = document.getElementById('auth-status-msg');
+      if (!box) return;
+      box.innerText = msg;
+      box.style.display = 'block';
+      if (isError) {
+        box.style.background = 'rgba(239,68,68,0.18)';
+        box.style.border = '1px solid var(--loss)';
+        box.style.color = '#fca5a5';
+      } else {
+        box.style.background = 'rgba(16,185,129,0.18)';
+        box.style.border = '1px solid var(--win)';
+        box.style.color = '#6ee7b7';
+      }
+    }
+
+    function clearAuthMessage() {
+      var box = document.getElementById('auth-status-msg');
+      if (box) {
+        box.style.display = 'none';
+        box.innerText = '';
+      }
+    }
+
+    // Authentication Handlers
+    function registerUser() {
+      clearAuthMessage();
+      var email = (document.getElementById('reg-email').value || '').trim();
+      var pass = document.getElementById('reg-pass').value;
+
+      if (!email || !pass) {
+        showAuthMessage("Please provide both email and password.", true);
+        return;
+      }
+      if (pass.length < 6) {
+        showAuthMessage("Password must be at least 6 characters.", true);
+        return;
+      }
+
+      if (!isFirebaseReady()) {
+        simulateRegistration(email);
+        return;
+      }
+
+      showAuthMessage("Connecting to command mainframe...", false);
+      firebase.auth().createUserWithEmailAndPassword(email, pass)
+        .then(function(userCredential) {
+          return userCredential.user.sendEmailVerification().then(function() {
+            showAuthMessage("Verification email dispatched to " + email + ". Confirm your link!", false);
+            setTimeout(function() { switchAuthView('profile'); }, 1500);
+          });
+        })
+        .catch(function(err) {
+          showAuthMessage(err.message, true);
+        });
+    }
+
+    function loginUser() {
+      clearAuthMessage();
+      var email = (document.getElementById('login-email').value || '').trim();
+      var pass = document.getElementById('login-pass').value;
+
+      if (!email || !pass) {
+        showAuthMessage("Please provide both email and password.", true);
+        return;
+      }
+
+      if (!isFirebaseReady()) {
+        simulateLogin(email);
+        return;
+      }
+
+      showAuthMessage("Authenticating clearance...", false);
+      firebase.auth().signInWithEmailAndPassword(email, pass)
+        .then(function(userCredential) {
+          showAuthMessage("Welcome, Commander " + email, false);
+          setTimeout(function() { closeAuthModal(); }, 900);
+        })
+        .catch(function(err) {
+          showAuthMessage(err.message, true);
+        });
+    }
+
+    function sendPasswordReset() {
+      clearAuthMessage();
+      var email = (document.getElementById('forgot-email').value || '').trim();
+      if (!email) {
+        showAuthMessage("Please enter your registered email address.", true);
+        return;
+      }
+
+      if (!isFirebaseReady()) {
+        showAuthMessage("Password reset email sent to " + email, false);
+        return;
+      }
+
+      firebase.auth().sendPasswordResetEmail(email)
+        .then(function() {
+          showAuthMessage("Recovery dispatch successfully transmitted to " + email, false);
+        })
+        .catch(function(err) {
+          showAuthMessage(err.message, true);
+        });
+    }
+
+    function resendVerificationEmail() {
+      clearAuthMessage();
+      var user = firebaseInitialized ? firebase.auth().currentUser : currentUser;
+      if (!user) {
+        showAuthMessage("No operator currently signed in.", true);
+        return;
+      }
+
+      if (isFirebaseReady() && user.sendEmailVerification) {
+        user.sendEmailVerification()
+          .then(function() {
+            showAuthMessage("Verification link redispatched to " + user.email, false);
+          })
+          .catch(function(err) {
+            showAuthMessage(err.message, true);
+          });
+      } else {
+        showAuthMessage("Verification link redispatched to " + user.email, false);
+      }
+    }
+
+    function signOutUser() {
+      if (isFirebaseReady()) {
+        firebase.auth().signOut().then(function() {
+          applyLoggedOutState();
+          closeAuthModal();
+        });
+      } else {
+        localStorage.removeItem('wd_simulated_user');
+        applyLoggedOutState();
+        closeAuthModal();
+      }
+    }
+
+    // State Management
     function applyLoggedInState(user) {
       currentUser = user;
       var isWebmaster = (user.email && user.email.toLowerCase() === WEBMASTER_EMAIL.toLowerCase());
@@ -3403,60 +3588,7 @@
         }
       }
     }
-  
 
-    function applyLoggedOutState() {
-      currentUser = null;
-      var authBtn = document.getElementById('floatingAuthBtn');
-      var authLabel = document.getElementById('authLabel');
-      var authIcon = document.getElementById('authIcon');
-      if (authBtn) {
-        authBtn.classList.remove('logged-in');
-        authBtn.classList.remove('webmaster-active');
-      }
-      if (authLabel) authLabel.innerText = 'Log In / Register';
-      if (authIcon) authIcon.innerText = '🔑';
-
-      var wmBanner = document.getElementById('webmaster-banner');
-      if (wmBanner) wmBanner.style.display = 'none';
-
-      document.body.classList.remove('is-webmaster');
-      switchAuthView('login');
-    }
-
-    function updateProfileUI(user) {
-      var emailEl = document.getElementById('user-display-email');
-      var badgeEl = document.getElementById('user-role-badge');
-      var verStatus = document.getElementById('user-verified-status');
-      var resendBox = document.getElementById('resend-verification-box');
-
-      var isWebmaster = (user.email && user.email.toLowerCase() === WEBMASTER_EMAIL.toLowerCase());
-
-      if (emailEl) emailEl.innerText = user.email;
-      if (badgeEl) {
-        if (isWebmaster) {
-          badgeEl.className = 'role-badge role-squadleader';
-          badgeEl.innerText = '★ WEBMASTER (ROOT ACCESS)';
-          badgeEl.style.boxShadow = '0 0 14px var(--cyan)';
-        } else {
-          badgeEl.className = 'role-badge role-captain';
-          badgeEl.innerText = 'CLAN MEMBER';
-          badgeEl.style.boxShadow = 'none';
-        }
-      }
-
-      if (verStatus) {
-        if (user.emailVerified) {
-          verStatus.innerHTML = '<span style="color:var(--win); font-weight:bold;">✓ Email Verified & Authenticated</span>';
-          if (resendBox) resendBox.style.display = 'none';
-        } else {
-          verStatus.innerHTML = '<span style="color:#fbbf24; font-weight:bold;">⏳ Email Verification Pending</span>';
-          if (resendBox) resendBox.style.display = 'block';
-        }
-      }
-    }
-
-    // Simulation helpers (runs before user puts real Firebase config keys)
     function simulateRegistration(email) {
       var simUser = { email: email, emailVerified: false };
       localStorage.setItem('wd_simulated_user', JSON.stringify(simUser));
@@ -3514,7 +3646,6 @@
         renderUserMaps();
       } catch(e) {}
     }
-
 
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') closePrivacyModal();
