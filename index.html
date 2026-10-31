@@ -8,6 +8,7 @@
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-storage-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;800;900&family=Rajdhani:wght@500;600;700;800&family=Share+Tech+Mono&display=swap" rel="stylesheet">
@@ -1892,27 +1893,60 @@
         <h2>CLAN <span>NEWS</span> & TRANSMISSIONS</h2>
         <div class="section-subtitle">Announcements, match debriefs, and roster movements.</div>
       </div>
+      <div id="news-admin-badge" style="display:none; font-family:'Share Tech Mono',monospace; font-size:0.75rem; color:var(--cyan); background:rgba(0,229,255,0.12); padding:4px 10px; border-radius:4px; border:1px solid var(--cyan);">
+        ⚡ HIGH COMMAND CMS ACTIVE
+      </div>
     </div>
 
-    <div class="news-grid">
-      <div class="news-card">
-        <span class="news-tag">// BWCL RECAP</span>
-        <h3>Flawless 6-0 Victory Over Shadow-2</h3>
-        <p>White Dragon dominated Week #4 with stellar individual execution across all maps. KaRDiNaL, Battousai, CheesyCake, and new Mexican Zerg starter aMeba secured undefeated sets.</p>
-        <div class="news-date">OCTOBER 25, 2026 • TRANSMITTED BY HIGH COMMAND</div>
+    <!-- ADMIN EXCLUSIVE: IN-BROWSER CMS TRANSMISSION DISPATCH TERMINAL -->
+    <div id="admin-news-terminal" style="display:none; margin-bottom:24px; border:1.5px solid var(--cyan); background:linear-gradient(135deg, rgba(14, 25, 45, 0.96) 0%, rgba(9, 16, 30, 0.98) 100%); border-radius:10px; padding:18px 20px; box-shadow:0 0 25px rgba(0,229,255,0.2);">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; border-bottom:1px solid var(--border-color); padding-bottom:8px;">
+        <div style="display:flex; align-items:center; gap:8px;">
+          <span style="display:inline-block; width:8px; height:8px; background:var(--cyan); border-radius:50%; box-shadow:0 0 8px var(--cyan);"></span>
+          <span style="font-family:'Orbitron',sans-serif; font-size:0.88rem; font-weight:800; color:#fff; letter-spacing:1px;">TRANSMISSION DISPATCH TERMINAL // HIGH COMMAND CMS</span>
+        </div>
+        <span style="font-size:0.72rem; color:var(--text-muted); font-family:'Share Tech Mono',monospace;">LIVE BROADCAST</span>
       </div>
-      <div class="news-card">
-        <span class="news-tag">// ROSTER UPDATE</span>
-        <h3>aMeba[WD] Joins WD-A Active Lineup</h3>
-        <p>Mexican Zerg ace aMeba officially made his BWCL debut in Week #4, taking down Shadow|LaBestia 2-0 and partnering with CheesyCake for an electric 2-0 doubles victory.</p>
-        <div class="news-date">OCTOBER 24, 2026 • ROSTER COMMITTEE</div>
+      <p style="color:#cbd5e1; font-size:0.86rem; line-height:1.45; margin-bottom:14px;">
+        Publish official bulletins, league recaps, or clan notices directly to the White Dragon mainframe. Broadcasted transmissions sync instantly for all visitors.
+      </p>
+
+      <div style="display:grid; grid-template-columns: 2fr 1fr 1fr; gap:12px; margin-bottom:12px;">
+        <div>
+          <label style="display:block; font-family:'Orbitron',sans-serif; font-size:0.72rem; color:var(--text-muted); margin-bottom:4px; text-transform:uppercase;">Transmission Headline</label>
+          <input type="text" id="cms-news-title" placeholder="e.g. Victorious BWCL Week #5 Debrief vs dB)-3" style="width:100%; background:#070a12; border:1px solid var(--border-color); color:#fff; padding:8px 12px; border-radius:6px; font-family:'Rajdhani',sans-serif; font-size:0.95rem;">
+        </div>
+        <div>
+          <label style="display:block; font-family:'Orbitron',sans-serif; font-size:0.72rem; color:var(--text-muted); margin-bottom:4px; text-transform:uppercase;">Dispatch Classification</label>
+          <select id="cms-news-tag" style="width:100%; background:#070a12; border:1px solid var(--border-color); color:var(--cyan); padding:8px 12px; border-radius:6px; font-family:'Rajdhani',sans-serif; font-size:0.95rem; font-weight:700;">
+            <option value="// BWCL RECAP">// BWCL RECAP</option>
+            <option value="// ROSTER UPDATE">// ROSTER UPDATE</option>
+            <option value="// MISSION INTEL">// MISSION INTEL</option>
+            <option value="// CLAN NOTICE">// CLAN NOTICE</option>
+            <option value="// TOURNAMENT ALERT">// TOURNAMENT ALERT</option>
+          </select>
+        </div>
+        <div>
+          <label style="display:block; font-family:'Orbitron',sans-serif; font-size:0.72rem; color:var(--text-muted); margin-bottom:4px; text-transform:uppercase;">Author / Sign-off</label>
+          <input type="text" id="cms-news-author" placeholder="HIGH COMMAND" style="width:100%; background:#070a12; border:1px solid var(--border-color); color:#fff; padding:8px 12px; border-radius:6px; font-family:'Rajdhani',sans-serif; font-size:0.95rem;">
+        </div>
       </div>
-      <div class="news-card">
-        <span class="news-tag">// MISSION INTEL</span>
-        <h3>Approaching Week #5 Clash vs Division Leader dB)-3</h3>
-        <p>The squad is in intensive training for the pivotal Week #5 clash against top-ranked dB)-3 on Backrooms (1n1) and Octagon (2n2). Victory will propel WD into first place contention.</p>
-        <div class="news-date">OCTOBER 27, 2026 • TACTICAL DESK</div>
+
+      <div style="margin-bottom:14px;">
+        <label style="display:block; font-family:'Orbitron',sans-serif; font-size:0.72rem; color:var(--text-muted); margin-bottom:4px; text-transform:uppercase;">Transmission Content</label>
+        <textarea id="cms-news-body" rows="3" placeholder="Enter transmission debrief or announcement text..." style="width:100%; background:#070a12; border:1px solid var(--border-color); color:#fff; padding:10px 12px; border-radius:6px; font-family:'Rajdhani',sans-serif; font-size:0.95rem; line-height:1.5; resize:vertical;"></textarea>
       </div>
+
+      <div style="display:flex; justify-content:flex-end; gap:8px;">
+        <button onclick="publishClanNews()" class="btn-download-rep" style="background:var(--cyan); color:#070a12; cursor:pointer; font-weight:800; padding:8px 20px;">
+          📡 BROADCAST TRANSMISSION
+        </button>
+      </div>
+    </div>
+
+    <!-- DYNAMIC TRANSMISSION GRID -->
+    <div id="clan-news-grid" class="news-grid">
+      <!-- Rendered dynamically from Firestore / Local Fallback -->
     </div>
   </section>
 
@@ -2531,6 +2565,7 @@
     });
 
     window.addEventListener('DOMContentLoaded', function() {
+      initNewsRealtimeListener();
       var hash = window.location.hash.replace('#', '');
       if (hash && document.getElementById('tab-' + hash)) {
         switchTab(hash, false);
@@ -2960,50 +2995,99 @@
         return;
       }
 
+      var file = currentSelectedMapFile;
+      var titleInp = document.getElementById('map-title-input');
+      var descInp = document.getElementById('map-desc-input');
+      var catSelect = document.getElementById('map-category-input');
+
+      var title = (titleInp && titleInp.value.trim()) || file.name;
+      var desc = (descInp && descInp.value.trim()) || 'StarCraft Resource File';
+      var category = (catSelect && catSelect.value) || 'Map Pack';
+      var dateStr = new Date().toLocaleDateString();
+
+      var infoText = document.getElementById('map-file-info-text');
+      if (infoText) infoText.innerText = 'Uploading: ' + file.name + '... Please wait.';
+
+      // Prioritize Cloud Storage upload to bypass browser 5MB quota
+      if (typeof firebase !== 'undefined' && firebase.storage) {
+        try {
+          var storageRef = firebase.storage().ref('clan_vault/downloads/' + Date.now() + '_' + file.name);
+          storageRef.put(file).then(function(snapshot) {
+            return snapshot.ref.getDownloadURL();
+          }).then(function(downloadURL) {
+            var downloadItem = {
+              id: 'dl_' + Date.now(),
+              title: title,
+              desc: desc,
+              category: category,
+              fileName: file.name,
+              fileSize: (file.size / 1024).toFixed(1) + ' KB',
+              date: dateStr,
+              uploader: (currentUser ? currentUser.email : 'Verified Member'),
+              url: downloadURL
+            };
+            storeDownloadMetadata(downloadItem);
+          }).catch(function(err) {
+            console.warn('Firebase Storage upload blocked or failed, falling back to local storage:', err);
+            storeDownloadLocalFallback(file, title, desc, category, dateStr);
+          });
+          return;
+        } catch(e) {
+          console.warn('Firebase Storage invocation failed:', e);
+        }
+      }
+
+      storeDownloadLocalFallback(file, title, desc, category, dateStr);
+    }
+
+    function storeDownloadMetadata(downloadItem) {
+      var existing = [];
+      try {
+        existing = JSON.parse(localStorage.getItem('wd_downloads_vault') || '[]');
+      } catch(e) { existing = []; }
+
+      existing.unshift(downloadItem);
+      try {
+        localStorage.setItem('wd_downloads_vault', JSON.stringify(existing));
+        renderUserMaps();
+        cancelMapUpload();
+        alert('File uploaded to Clan Cloud Vault successfully!');
+      } catch(quotaErr) {
+        alert('Browser quota exceeded when storing download list.');
+      }
+    }
+
+    function storeDownloadLocalFallback(file, title, desc, category, dateStr) {
       var reader = new FileReader();
       reader.onload = function(e) {
-        var base64Data = e.target.result;
-        var titleInp = document.getElementById('map-title-input');
-        var descInp = document.getElementById('map-desc-input');
-        var catSelect = document.getElementById('map-category-input');
-
-        var title = (titleInp && titleInp.value.trim()) || currentSelectedMapFile.name;
-        var desc = (descInp && descInp.value.trim()) || 'StarCraft Resource File';
-        var category = (catSelect && catSelect.value) || 'Map Pack';
-        var dateStr = new Date().toLocaleDateString();
-
         var downloadItem = {
           id: 'dl_' + Date.now(),
           title: title,
           desc: desc,
           category: category,
-          fileName: currentSelectedMapFile.name,
-          fileSize: (currentSelectedMapFile.size / 1024).toFixed(1) + ' KB',
+          fileName: file.name,
+          fileSize: (file.size / 1024).toFixed(1) + ' KB',
           date: dateStr,
-          uploader: currentUser ? currentUser.email : 'Verified Member',
-          data: base64Data
+          uploader: (currentUser ? currentUser.email : 'Verified Member'),
+          data: e.target.result
         };
 
         var existing = [];
         try {
           existing = JSON.parse(localStorage.getItem('wd_downloads_vault') || '[]');
-        } catch(err) {
-          existing = [];
-        }
+        } catch(err) { existing = []; }
 
         existing.unshift(downloadItem);
         try {
           localStorage.setItem('wd_downloads_vault', JSON.stringify(existing));
-        } catch(err) {
-          console.warn('Browser storage quota reached.');
+          renderUserMaps();
+          cancelMapUpload();
+          alert('File saved to Clan Downloads Vault successfully!');
+        } catch(quotaErr) {
+          alert('Upload failed: File is too large for local browser storage (' + (file.size / 1024 / 1024).toFixed(2) + ' MB). Cloud Storage upload also could not be reached.');
         }
-
-        renderUserMaps();
-        cancelMapUpload();
-        alert('File saved to Clan Downloads Vault successfully!');
       };
-
-      reader.readAsDataURL(currentSelectedMapFile);
+      reader.readAsDataURL(file);
     }
 
     function filterDownloads(cat) {
@@ -3022,22 +3106,24 @@
       if (!ensureVerifiedAccess("download maps and tools")) return;
       try {
         var existing = JSON.parse(localStorage.getItem('wd_downloads_vault') || '[]');
-        var item = null;
-        for (var i = 0; i < existing.length; i++) {
-          if (existing[i].id === downloadId) {
-            item = existing[i];
-            break;
-          }
+        var item = existing.find(function(d) { return d.id === downloadId; });
+        if (!item) {
+          alert('Download file data not found.');
+          return;
         }
-        if (item && item.data) {
+
+        if (item.url) {
+          window.open(item.url, '_blank');
+          return;
+        }
+
+        if (item.data) {
           var a = document.createElement('a');
           a.href = item.data;
           a.download = item.fileName || 'Download.zip';
           document.body.appendChild(a);
           a.click();
           document.body.removeChild(a);
-        } else {
-          alert('Download file data not found.');
         }
       } catch(err) {
         alert('Error downloading file.');
@@ -3201,7 +3287,13 @@
 
     // Webmaster Admin Management Engine
     function getAdminList() {
-      var defaultAdmins = [WEBMASTER_EMAIL.toLowerCase(), "abecul323@outlook.com"];
+      var defaultAdmins = [
+        WEBMASTER_EMAIL.toLowerCase(),
+        "abecul323@outlook.com",
+        "deathorb@whitedragon.com",
+        "robfatkraft@whitedragon.com",
+        "lunarpop@whitedragon.com"
+      ];
       try {
         var stored = JSON.parse(localStorage.getItem('wd_admin_list') || 'null');
         if (Array.isArray(stored)) {
@@ -3213,6 +3305,182 @@
       } catch(e) {}
       localStorage.setItem('wd_admin_list', JSON.stringify(defaultAdmins));
       return defaultAdmins;
+    }
+
+    // ========================================================
+    // PHASE 2 DYNAMIC CLAN NEWS CMS LOGIC
+    // ========================================================
+    var defaultClanNews = [
+      {
+        id: "news_1",
+        title: "Flawless 6-0 Victory Over Shadow-2",
+        tag: "// BWCL RECAP",
+        body: "White Dragon dominated Week #4 with stellar individual execution across all maps. KaRDiNaL, Battousai, CheesyCake, and new Mexican Zerg starter aMeba secured undefeated sets.",
+        author: "HIGH COMMAND",
+        date: "OCTOBER 25, 2026",
+        createdAt: 1729860000000
+      },
+      {
+        id: "news_2",
+        title: "aMeba[WD] Joins WD-A Active Lineup",
+        tag: "// ROSTER UPDATE",
+        body: "Mexican Zerg ace aMeba officially made his BWCL debut in Week #4, taking down Shadow|LaBestia 2-0 and partnering with CheesyCake for an electric 2-0 doubles victory.",
+        author: "ROSTER COMMITTEE",
+        date: "OCTOBER 24, 2026",
+        createdAt: 1729773600000
+      },
+      {
+        id: "news_3",
+        title: "Approaching Week #5 Clash vs Division Leader dB)-3",
+        tag: "// MISSION INTEL",
+        body: "The squad is in intensive training for the pivotal Week #5 clash against top-ranked dB)-3 on Backrooms (1n1) and Octagon (2n2). Victory will propel WD into first place contention.",
+        author: "TACTICAL DESK",
+        date: "OCTOBER 27, 2026",
+        createdAt: 1730032800000
+      }
+    ];
+
+    function getLocalNewsArticles() {
+      try {
+        var stored = JSON.parse(localStorage.getItem('wd_clan_news') || 'null');
+        if (Array.isArray(stored) && stored.length > 0) return stored;
+      } catch(e) {}
+      localStorage.setItem('wd_clan_news', JSON.stringify(defaultClanNews));
+      return defaultClanNews;
+    }
+
+    function renderClanNews(articles) {
+      var grid = document.getElementById('clan-news-grid');
+      if (!grid) return;
+      grid.innerHTML = '';
+
+      var user = (typeof firebase !== 'undefined' && firebase.auth && firebase.auth().currentUser) 
+        ? firebase.auth().currentUser 
+        : currentUser;
+      var canModerate = user && (isUserAdmin(user.email) || user.email.toLowerCase() === WEBMASTER_EMAIL.toLowerCase());
+
+      articles.forEach(function(item) {
+        var card = document.createElement('div');
+        card.className = 'news-card';
+        
+        var delBtnHtml = canModerate 
+          ? '<button onclick="deleteClanNews(\'' + item.id + '\')" class="admin-del-btn" style="display:inline-block; float:right; margin-bottom:8px;">🗑️ REMOVE</button>'
+          : '';
+
+        card.innerHTML = delBtnHtml +
+          '<span class="news-tag">' + (item.tag || '// ANNOUNCEMENT') + '</span>' +
+          '<h3>' + item.title + '</h3>' +
+          '<p>' + item.body + '</p>' +
+          '<div class="news-date">' + (item.date || 'RECENT') + ' • TRANSMITTED BY ' + (item.author || 'HIGH COMMAND') + '</div>';
+        grid.appendChild(card);
+      });
+    }
+
+    function initNewsRealtimeListener() {
+      if (typeof firebase !== 'undefined' && firebase.firestore) {
+        try {
+          var db = firebase.firestore();
+          db.collection('clan_news').orderBy('createdAt', 'desc').onSnapshot(function(snapshot) {
+            if (!snapshot.empty) {
+              var liveArticles = [];
+              snapshot.forEach(function(doc) {
+                var d = doc.data();
+                d.id = doc.id;
+                liveArticles.push(d);
+              });
+              renderClanNews(liveArticles);
+              return;
+            } else {
+              renderClanNews(getLocalNewsArticles());
+            }
+          }, function(err) {
+            console.warn("Firestore sync unavailable, using local news vault:", err);
+            renderClanNews(getLocalNewsArticles());
+          });
+          return;
+        } catch(e) {
+          console.warn("Firestore onSnapshot error:", e);
+        }
+      }
+      renderClanNews(getLocalNewsArticles());
+    }
+
+    function publishClanNews() {
+      var user = (typeof firebase !== 'undefined' && firebase.auth && firebase.auth().currentUser) 
+        ? firebase.auth().currentUser 
+        : currentUser;
+
+      if (!user || !isUserAdmin(user.email)) {
+        alert("ACCESS DENIED // HIGH COMMAND CLEARANCE REQUIRED.");
+        return;
+      }
+
+      var titleInp = document.getElementById('cms-news-title');
+      var tagInp = document.getElementById('cms-news-tag');
+      var authorInp = document.getElementById('cms-news-author');
+      var bodyInp = document.getElementById('cms-news-body');
+
+      var title = titleInp ? titleInp.value.trim() : '';
+      var tag = tagInp ? tagInp.value : '// ANNOUNCEMENT';
+      var author = authorInp && authorInp.value.trim() ? authorInp.value.trim().toUpperCase() : 'HIGH COMMAND';
+      var body = bodyInp ? bodyInp.value.trim() : '';
+
+      if (!title || !body) {
+        alert("Please provide both a headline and transmission content.");
+        return;
+      }
+
+      var dateStr = new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }).toUpperCase();
+      var newArticle = {
+        title: title,
+        tag: tag,
+        author: author,
+        body: body,
+        date: dateStr,
+        createdAt: Date.now()
+      };
+
+      if (typeof firebase !== 'undefined' && firebase.firestore) {
+        try {
+          firebase.firestore().collection('clan_news').add(newArticle)
+            .then(function() {
+              if (titleInp) titleInp.value = '';
+              if (bodyInp) bodyInp.value = '';
+              alert("Transmission broadcasted globally via Cloud Firestore!");
+            })
+            .catch(function(err) {
+              console.warn("Firestore add failed, saving locally:", err);
+              saveNewsLocallyFallback(newArticle);
+            });
+          return;
+        } catch(e) {}
+      }
+      saveNewsLocallyFallback(newArticle);
+    }
+
+    function saveNewsLocallyFallback(article) {
+      article.id = "news_" + Date.now();
+      var news = getLocalNewsArticles();
+      news.unshift(article);
+      localStorage.setItem('wd_clan_news', JSON.stringify(news));
+      renderClanNews(news);
+      var titleInp = document.getElementById('cms-news-title');
+      var bodyInp = document.getElementById('cms-news-body');
+      if (titleInp) titleInp.value = '';
+      if (bodyInp) bodyInp.value = '';
+      alert("Transmission broadcasted to Clan Vault!");
+    }
+
+    function deleteClanNews(newsId) {
+      if (!confirm("Are you sure you want to delete this transmission?")) return;
+      if (typeof firebase !== 'undefined' && firebase.firestore) {
+        try {
+          firebase.firestore().collection('clan_news').doc(newsId).delete();
+        } catch(e) {}
+      }
+      var news = getLocalNewsArticles().filter(function(n) { return n.id !== newsId; });
+      localStorage.setItem('wd_clan_news', JSON.stringify(news));
+      renderClanNews(news);
     }
 
     function isUserAdmin(email) {
@@ -3547,6 +3815,12 @@
       }
 
       updateProfileUI(user);
+
+      var cmsTerminal = document.getElementById('admin-news-terminal');
+      var cmsBadge = document.getElementById('news-admin-badge');
+      if (cmsTerminal) cmsTerminal.style.display = (isAdmin || isWebmaster) ? 'block' : 'none';
+      if (cmsBadge) cmsBadge.style.display = (isAdmin || isWebmaster) ? 'inline-block' : 'none';
+      initNewsRealtimeListener();
     }
 
     function applyLoggedOutState() {
@@ -3569,6 +3843,12 @@
 
       document.body.classList.remove('is-webmaster');
       switchAuthView('login');
+
+      var cmsTerminal = document.getElementById('admin-news-terminal');
+      var cmsBadge = document.getElementById('news-admin-badge');
+      if (cmsTerminal) cmsTerminal.style.display = 'none';
+      if (cmsBadge) cmsBadge.style.display = 'none';
+      initNewsRealtimeListener();
     }
 
     function updateProfileUI(user) {
