@@ -2739,21 +2739,29 @@
         bioTextEl.innerText = p.bio || 'No additional intel recorded yet.';
       }
 
+            // Identity & Permission Verification
       var user = (typeof firebase !== 'undefined' && firebase.auth && firebase.auth().currentUser) 
         ? firebase.auth().currentUser 
         : currentUser;
 
+      var isWebmaster = user && user.email && (user.email.toLowerCase() === WEBMASTER_EMAIL.toLowerCase());
       var isSelf = user && p.email && (user.email.toLowerCase() === p.email.toLowerCase());
-      var isAdminUser = user && (isUserAdmin(user.email) || user.email.toLowerCase() === WEBMASTER_EMAIL.toLowerCase());
+      var isAdminUser = user && user.email && isUserAdmin(user.email) && !isWebmaster;
 
       var editBtn = document.getElementById('btn-edit-dossier');
       var editForm = document.getElementById('dossier-edit-form');
       if (editForm) editForm.style.display = 'none';
 
       if (editBtn) {
-        if (isSelf || isAdminUser) {
+        if (isWebmaster) {
           editBtn.style.display = 'inline-block';
-          editBtn.innerText = isAdminUser && !isSelf ? '⚡ MANAGE DOSSIER (ADMIN)' : '✏️ EDIT MY PROFILE';
+          editBtn.innerText = '⚡ WEBMASTER FULL OVERRIDE';
+        } else if (isSelf) {
+          editBtn.style.display = 'inline-block';
+          editBtn.innerText = '✏️ EDIT MY PROFILE';
+        } else if (isAdminUser) {
+          editBtn.style.display = 'inline-block';
+          editBtn.innerText = '🛡️ MANAGE RANK & ROLE (ADMIN)';
         } else {
           editBtn.style.display = 'none';
         }
@@ -4286,6 +4294,14 @@
         var p = membersData.find(function(m) { return m.id === currentInspectedMemberId; });
         if (!p) return;
 
+        var user = (typeof firebase !== 'undefined' && firebase.auth && firebase.auth().currentUser) 
+          ? firebase.auth().currentUser 
+          : currentUser;
+
+        var isWebmaster = user && user.email && (user.email.toLowerCase() === WEBMASTER_EMAIL.toLowerCase());
+        var isSelf = user && p.email && (user.email.toLowerCase() === p.email.toLowerCase());
+        var isAdminUser = user && user.email && isUserAdmin(user.email);
+
         var currentAvatar = p.avatar || '';
         document.getElementById('edit-avatar-url').value = currentAvatar;
         var prevImg = document.getElementById('edit-avatar-preview-img');
@@ -4298,25 +4314,30 @@
           }
         }
         var statEl = document.getElementById('edit-avatar-status');
-        if (statEl) {
-          statEl.style.display = 'none';
-          statEl.innerText = '';
-        }
+        if (statEl) statEl.style.display = 'none';
         var fInp = document.getElementById('edit-avatar-file-input');
         if (fInp) fInp.value = '';
 
         document.getElementById('edit-race-select').value = p.race || 'Terran';
         document.getElementById('edit-bio-text').value = p.bio || '';
 
-        var user = (typeof firebase !== 'undefined' && firebase.auth && firebase.auth().currentUser) 
-          ? firebase.auth().currentUser 
-          : currentUser;
-        var isAdminUser = user && (isUserAdmin(user.email) || user.email.toLowerCase() === WEBMASTER_EMAIL.toLowerCase());
+        // TIERED PERMISSIONS:
+        // Personal profile (Avatar, Race, Bio): only self or webmaster
+        var canEditPersonal = isSelf || isWebmaster;
+        document.getElementById('edit-avatar-url').disabled = !canEditPersonal;
+        document.getElementById('edit-race-select').disabled = !canEditPersonal;
+        document.getElementById('edit-bio-text').disabled = !canEditPersonal;
+        var uploadBtn = document.querySelector('#dossier-edit-form button[onclick*="edit-avatar-file-input"]');
+        if (uploadBtn) {
+          uploadBtn.style.display = canEditPersonal ? 'flex' : 'none';
+        }
 
+        // Hierarchy fields (Clan Rank & Role): only admin or webmaster (never regular self-members)
+        var canEditHierarchy = isAdminUser || isWebmaster;
         var adminFields = document.getElementById('admin-hierarchy-fields');
         if (adminFields) {
-          adminFields.style.display = isAdminUser ? 'block' : 'none';
-          if (isAdminUser) {
+          adminFields.style.display = canEditHierarchy ? 'block' : 'none';
+          if (canEditHierarchy) {
             document.getElementById('edit-rank-select').value = p.rank || 'Privates';
             document.getElementById('edit-role-select').value = p.role || 'Player';
           }
@@ -4345,22 +4366,28 @@
       var user = (typeof firebase !== 'undefined' && firebase.auth && firebase.auth().currentUser) 
         ? firebase.auth().currentUser 
         : currentUser;
-      var isSelf = user && p.email && (user.email.toLowerCase() === p.email.toLowerCase());
-      var isAdminUser = user && (isUserAdmin(user.email) || user.email.toLowerCase() === WEBMASTER_EMAIL.toLowerCase());
 
-      if (!isSelf && !isAdminUser) {
-        alert("ACCESS DENIED // Clearance insufficient to modify this operator dossier.");
+      var isWebmaster = user && user.email && (user.email.toLowerCase() === WEBMASTER_EMAIL.toLowerCase());
+      var isSelf = user && p.email && (user.email.toLowerCase() === p.email.toLowerCase());
+      var isAdminUser = user && user.email && isUserAdmin(user.email);
+
+      if (!isSelf && !isAdminUser && !isWebmaster) {
+        alert("ACCESS DENIED // You can only customize your own profile.");
         return;
       }
 
       var customs = getCustomProfiles();
       if (!customs[p.id]) customs[p.id] = {};
 
-      customs[p.id].avatar = document.getElementById('edit-avatar-url').value.trim();
-      customs[p.id].race = document.getElementById('edit-race-select').value;
-      customs[p.id].bio = document.getElementById('edit-bio-text').value.trim();
+      // 1. Personal fields: only self or webmaster can edit
+      if (isSelf || isWebmaster) {
+        customs[p.id].avatar = document.getElementById('edit-avatar-url').value.trim();
+        customs[p.id].race = document.getElementById('edit-race-select').value;
+        customs[p.id].bio = document.getElementById('edit-bio-text').value.trim();
+      }
 
-      if (isAdminUser) {
+      // 2. Hierarchy fields: only admin or webmaster can edit
+      if (isAdminUser || isWebmaster) {
         customs[p.id].rank = document.getElementById('edit-rank-select').value;
         customs[p.id].role = document.getElementById('edit-role-select').value;
       }
