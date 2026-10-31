@@ -7,6 +7,7 @@
   <!-- Firebase Authentication SDKs -->
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-storage-compat.js"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;800;900&family=Rajdhani:wght@500;600;700;800&family=Share+Tech+Mono&display=swap" rel="stylesheet">
@@ -2669,7 +2670,35 @@
       }
     }
 
+    // ========================================================
+    // PHASE 1 ACCESS GATE: VERIFIED MEMBERS ONLY
+    // ========================================================
+    function ensureVerifiedAccess(actionName) {
+      var user = (typeof firebase !== 'undefined' && firebase.auth && firebase.auth().currentUser) 
+        ? firebase.auth().currentUser 
+        : currentUser;
+      
+      if (!user) {
+        alert("ACCESS DENIED // CLEARANCE REQUIRED:\n\nPlease log in to " + actionName + ".");
+        openAuthModal();
+        return false;
+      }
+      
+      if (!user.emailVerified) {
+        alert("CLEARANCE PENDING // EMAIL VERIFICATION REQUIRED:\n\nYour account (" + user.email + ") is not verified yet. Please check your inbox and verify your email to " + actionName + ".");
+        openAuthModal();
+        switchAuthView('profile');
+        return false;
+      }
+      
+      return true;
+    }
+
     function processFile(file) {
+      if (!ensureVerifiedAccess("upload replays")) {
+        cancelUpload();
+        return;
+      }
       currentSelectedFile = file;
       var kb = (file.size / 1024).toFixed(1);
       document.getElementById('file-info-text').innerText = 'Selected: ' + file.name + ' (' + kb + ' KB)';
@@ -2689,6 +2718,7 @@
     }
 
     function saveReplay() {
+      if (!ensureVerifiedAccess("save files to Clan Vault")) return;
       if (!currentSelectedFile) {
         alert('Please choose a .rep or .zip file first.');
         return;
@@ -2709,6 +2739,7 @@
           fileName: currentSelectedFile.name,
           fileSize: (currentSelectedFile.size / 1024).toFixed(1) + ' KB',
           date: dateStr,
+          uploader: currentUser ? currentUser.email : 'Verified Member',
           data: base64Data
         };
 
@@ -2732,6 +2763,7 @@
     }
 
     function downloadSavedReplay(replayId) {
+      if (!ensureVerifiedAccess("download replays")) return;
       try {
         var existing = JSON.parse(localStorage.getItem('wd_replays') || '[]');
         var item = existing.find(function(r) { return r.id === replayId; });
@@ -2751,6 +2783,7 @@
     }
 
     function downloadMatchReplay(week, matchName) {
+      if (!ensureVerifiedAccess("download match replays")) return;
       try {
         var existing = JSON.parse(localStorage.getItem('wd_replays') || '[]');
         var matchRep = existing.find(function(r) {
@@ -2876,6 +2909,10 @@
     }
 
     function processMapFile(file) {
+      if (!ensureVerifiedAccess("upload maps or tools")) {
+        cancelMapUpload();
+        return;
+      }
       currentSelectedMapFile = file;
       var kb = (file.size / 1024).toFixed(1);
       var infoText = document.getElementById('map-file-info-text');
@@ -2917,6 +2954,7 @@
     }
 
     function saveMapDownload() {
+      if (!ensureVerifiedAccess("save downloads to Clan Vault")) return;
       if (!currentSelectedMapFile) {
         alert('Please choose a file to upload first.');
         return;
@@ -2942,6 +2980,7 @@
           fileName: currentSelectedMapFile.name,
           fileSize: (currentSelectedMapFile.size / 1024).toFixed(1) + ' KB',
           date: dateStr,
+          uploader: currentUser ? currentUser.email : 'Verified Member',
           data: base64Data
         };
 
@@ -2980,6 +3019,7 @@
     }
 
     function downloadSavedMap(downloadId) {
+      if (!ensureVerifiedAccess("download maps and tools")) return;
       try {
         var existing = JSON.parse(localStorage.getItem('wd_downloads_vault') || '[]');
         var item = null;
