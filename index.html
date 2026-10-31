@@ -2120,6 +2120,90 @@
             <div style="font-style:italic;">No recorded BWCL S65 Division D matches played yet.</div>
           </div>
         </div>
+
+        <!-- Commander Intel & Bio -->
+        <div id="m-bio-panel" style="margin-top:14px; background:rgba(7,12,22,0.7); border:1px solid var(--border-color); border-radius:8px; padding:12px 14px;">
+          <div style="font-family:'Orbitron',sans-serif; font-size:0.75rem; color:var(--cyan); font-weight:800; margin-bottom:4px; letter-spacing:1px;">
+            COMMANDER INTEL // BIO
+          </div>
+          <p id="m-bio-text" style="color:#cbd5e1; font-size:0.88rem; line-height:1.5; font-style:italic;">
+            No additional intel recorded yet.
+          </p>
+        </div>
+
+        <!-- Edit Profile Trigger Button -->
+        <div style="margin-top:16px; display:flex; justify-content:space-between; align-items:center;">
+          <button id="btn-edit-dossier" onclick="toggleDossierEditMode()" class="btn-download-rep" style="display:none; font-size:0.75rem; padding:6px 14px;">
+            ✏️ EDIT DOSSIER
+          </button>
+        </div>
+
+        <!-- Inline Editor Form -->
+        <div id="dossier-edit-form" style="display:none; margin-top:16px; border-top:1px solid var(--border-color); padding-top:14px;">
+          <div style="font-family:'Orbitron',sans-serif; font-size:0.8rem; color:#fbbf24; font-weight:800; margin-bottom:10px;">
+            UPDATE DOSSIER INTEL
+          </div>
+          
+          <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-bottom:10px;">
+            <div>
+              <label style="display:block; font-size:0.7rem; color:var(--text-muted); font-family:'Orbitron',sans-serif; margin-bottom:3px;">AVATAR IMAGE URL</label>
+              <input type="text" id="edit-avatar-url" placeholder="https://... or image.jpg" style="width:100%; background:#070a12; border:1px solid var(--border-color); color:#fff; padding:6px 10px; border-radius:4px; font-size:0.85rem;">
+            </div>
+            <div>
+              <label style="display:block; font-size:0.7rem; color:var(--text-muted); font-family:'Orbitron',sans-serif; margin-bottom:3px;">PREFERRED RACE</label>
+              <select id="edit-race-select" style="width:100%; background:#070a12; border:1px solid var(--border-color); color:var(--cyan); padding:6px 10px; border-radius:4px; font-weight:bold; font-size:0.85rem;">
+                <option value="Terran">Terran</option>
+                <option value="Protoss">Protoss</option>
+                <option value="Zerg">Zerg</option>
+                <option value="Random">Random</option>
+              </select>
+            </div>
+          </div>
+
+          <div style="margin-bottom:10px;">
+            <label style="display:block; font-size:0.7rem; color:var(--text-muted); font-family:'Orbitron',sans-serif; margin-bottom:3px;">BIO / HARDWARE / MATCHUPS</label>
+            <textarea id="edit-bio-text" rows="2" placeholder="Commander notes, favorite matchups, hotkeys..." style="width:100%; background:#070a12; border:1px solid var(--border-color); color:#fff; padding:8px 10px; border-radius:4px; font-size:0.85rem; resize:vertical;"></textarea>
+          </div>
+
+          <!-- ADMIN-ONLY HIERARCHY FIELDS -->
+          <div id="admin-hierarchy-fields" style="display:none; background:rgba(245,158,11,0.08); border:1px dashed #fbbf24; border-radius:6px; padding:10px; margin-bottom:12px;">
+            <div style="font-size:0.72rem; color:#fbbf24; font-weight:800; font-family:'Orbitron',sans-serif; margin-bottom:6px;">
+              ⚡ HIGH COMMAND OVERRIDE // HIERARCHY & RANK
+            </div>
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+              <div>
+                <label style="display:block; font-size:0.68rem; color:var(--text-muted); margin-bottom:2px;">CLAN RANK</label>
+                <select id="edit-rank-select" style="width:100%; background:#070a12; border:1px solid var(--border-color); color:#fff; padding:5px 8px; border-radius:4px; font-size:0.8rem;">
+                  <option value="Founders">Founders</option>
+                  <option value="High Council">High Council</option>
+                  <option value="Generals">Generals</option>
+                  <option value="Colonel">Colonel</option>
+                  <option value="Captains">Captains</option>
+                  <option value="Officers">Officers</option>
+                  <option value="Corporals">Corporals</option>
+                  <option value="Privates">Privates</option>
+                </select>
+              </div>
+              <div>
+                <label style="display:block; font-size:0.68rem; color:var(--text-muted); margin-bottom:2px;">FUNCTION / ROLE</label>
+                <select id="edit-role-select" style="width:100%; background:#070a12; border:1px solid var(--border-color); color:#fff; padding:5px 8px; border-radius:4px; font-size:0.8rem;">
+                  <option value="Player">Player</option>
+                  <option value="Captain">Captain</option>
+                  <option value="Squadleader">Squadleader</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div style="display:flex; justify-content:flex-end; gap:8px;">
+            <button onclick="saveDossierChanges()" class="btn-download-rep" style="background:var(--win); color:#070a12; font-weight:800; cursor:pointer;">
+              💾 SAVE CHANGES
+            </button>
+            <button onclick="cancelDossierEdit()" class="btn-download-rep" style="background:transparent; border-color:var(--text-dim); color:var(--text-muted); cursor:pointer;">
+              CANCEL
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -2565,6 +2649,7 @@
     });
 
     window.addEventListener('DOMContentLoaded', function() {
+      renderRosterTableAndTiers();
       initNewsRealtimeListener();
       var hash = window.location.hash.replace('#', '');
       if (hash && document.getElementById('tab-' + hash)) {
@@ -2573,6 +2658,8 @@
     });
 
     function openDossier(memberId) {
+      applyProfileCustomizationsToRoster();
+      currentInspectedMemberId = memberId;
       const p = membersData.find(m => m.id === memberId);
       if (!p) return;
 
@@ -2628,6 +2715,31 @@
         histContainer.innerHTML = rows;
       } else {
         histContainer.innerHTML = '<div style="font-style:italic; padding:4px 0;">No official BWCL sets recorded yet (Reserve / Active Training).</div>';
+      }
+
+      var bioTextEl = document.getElementById('m-bio-text');
+      if (bioTextEl) {
+        bioTextEl.innerText = p.bio || 'No additional intel recorded yet.';
+      }
+
+      var user = (typeof firebase !== 'undefined' && firebase.auth && firebase.auth().currentUser) 
+        ? firebase.auth().currentUser 
+        : currentUser;
+
+      var isSelf = user && p.email && (user.email.toLowerCase() === p.email.toLowerCase());
+      var isAdminUser = user && (isUserAdmin(user.email) || user.email.toLowerCase() === WEBMASTER_EMAIL.toLowerCase());
+
+      var editBtn = document.getElementById('btn-edit-dossier');
+      var editForm = document.getElementById('dossier-edit-form');
+      if (editForm) editForm.style.display = 'none';
+
+      if (editBtn) {
+        if (isSelf || isAdminUser) {
+          editBtn.style.display = 'inline-block';
+          editBtn.innerText = isAdminUser && !isSelf ? '⚡ MANAGE DOSSIER (ADMIN)' : '✏️ EDIT MY PROFILE';
+        } else {
+          editBtn.style.display = 'none';
+        }
       }
 
       const modal = document.getElementById('dossierModal');
@@ -3982,6 +4094,169 @@
         tx.objectStore('downloads').delete(dlId);
         tx.oncomplete = () => renderUserMaps();
       } catch(e) {}
+    }
+
+    
+    // ========================================================
+    // PHASE 3: PROFILE CUSTOMIZATION & HIERARCHY ENGINE
+    // ========================================================
+    var currentInspectedMemberId = null;
+
+    function getCustomProfiles() {
+      try {
+        return JSON.parse(localStorage.getItem('wd_custom_profiles') || '{}');
+      } catch(e) {
+        return {};
+      }
+    }
+
+    function applyProfileCustomizationsToRoster() {
+      var customs = getCustomProfiles();
+      membersData.forEach(function(member) {
+        if (customs[member.id]) {
+          var c = customs[member.id];
+          if (c.avatar !== undefined && c.avatar !== '') member.avatar = c.avatar;
+          if (c.race !== undefined && c.race !== '') member.race = c.race;
+          if (c.bio !== undefined) member.bio = c.bio;
+          if (c.rank !== undefined && c.rank !== '') member.rank = c.rank;
+          if (c.role !== undefined && c.role !== '') member.role = c.role;
+        }
+      });
+    }
+
+    function renderRosterTableAndTiers() {
+      applyProfileCustomizationsToRoster();
+      
+      var rTbody = document.getElementById('roster-tbody');
+      if (rTbody) {
+        rTbody.innerHTML = '';
+        rosterIds.forEach(id => {
+          const p = membersData.find(m => m.id === id);
+          if (!p) return;
+          const tr = document.createElement('tr');
+          tr.className = 'clickable-row';
+          tr.onclick = () => openDossier(p.id);
+          
+          const flagSvg = flags[p.flagKey] || flags.global;
+
+          let roleBadge = '';
+          if (p.role === 'Squadleader') {
+            roleBadge = '<span class="role-badge role-squadleader">★ Squadleader</span>';
+          } else if (p.role === 'Captain') {
+            roleBadge = '<span class="role-badge role-captain">⛨ Captain</span>';
+          } else {
+            roleBadge = '<span class="role-badge role-starter">Player</span>';
+          }
+
+          const miniAvatar = p.avatar ? 
+            `<img src="${p.avatar}" class="table-avatar" onerror="this.style.display=\'none\'">` : '';
+          tr.innerHTML = `
+            <td><span class="player-tag">${miniAvatar}${p.name} <span class="click-hint">INTEL</span></span></td>
+            <td>${roleBadge}</td>
+            <td><strong style="color:var(--cyan);">WD-A</strong></td>
+            <td>White Dragon</td>
+            <td>${flagSvg} ${p.country}</td>
+            <td>${getRaceBadgeHtml(p.race)}</td>
+          `;
+          rTbody.appendChild(tr);
+        });
+      }
+
+      // Re-populate tiers
+      Object.keys(tiers).forEach(tierName => {
+        var el = document.getElementById(tiers[tierName]);
+        if (el) el.innerHTML = '';
+      });
+
+      membersData.forEach(p => {
+        const targetId = tiers[p.rank] || 'tier-privates';
+        const container = document.getElementById(targetId);
+        if (!container) return;
+
+        const pill = document.createElement('div');
+        pill.className = 'member-pill';
+        pill.onclick = () => openDossier(p.id);
+
+        const raceColor = p.race === 'Terran' ? '#60a5fa' : (p.race === 'Protoss' ? '#fbbf24' : '#c084fc');
+        const pillAvatar = p.avatar ? 
+          `<img src="${p.avatar}" class="pill-avatar" onerror="this.style.display=\'none\'">` : '';
+        pill.innerHTML = `
+          <span class="tag">${pillAvatar}${p.name}</span>
+          <span class="pill-race" style="color:${raceColor}">[${p.race[0]}]</span>
+        `;
+        container.appendChild(pill);
+      });
+    }
+
+    function toggleDossierEditMode() {
+      var form = document.getElementById('dossier-edit-form');
+      if (!form) return;
+      var isOpening = (form.style.display === 'none' || !form.style.display);
+      form.style.display = isOpening ? 'block' : 'none';
+
+      if (isOpening && currentInspectedMemberId) {
+        var p = membersData.find(function(m) { return m.id === currentInspectedMemberId; });
+        if (!p) return;
+
+        document.getElementById('edit-avatar-url').value = p.avatar || '';
+        document.getElementById('edit-race-select').value = p.race || 'Terran';
+        document.getElementById('edit-bio-text').value = p.bio || '';
+
+        var user = (typeof firebase !== 'undefined' && firebase.auth && firebase.auth().currentUser) 
+          ? firebase.auth().currentUser 
+          : currentUser;
+        var isAdminUser = user && (isUserAdmin(user.email) || user.email.toLowerCase() === WEBMASTER_EMAIL.toLowerCase());
+
+        var adminFields = document.getElementById('admin-hierarchy-fields');
+        if (adminFields) {
+          adminFields.style.display = isAdminUser ? 'block' : 'none';
+          if (isAdminUser) {
+            document.getElementById('edit-rank-select').value = p.rank || 'Privates';
+            document.getElementById('edit-role-select').value = p.role || 'Player';
+          }
+        }
+      }
+    }
+
+    function cancelDossierEdit() {
+      var form = document.getElementById('dossier-edit-form');
+      if (form) form.style.display = 'none';
+    }
+
+    function saveDossierChanges() {
+      if (!currentInspectedMemberId) return;
+      var p = membersData.find(function(m) { return m.id === currentInspectedMemberId; });
+      if (!p) return;
+
+      var user = (typeof firebase !== 'undefined' && firebase.auth && firebase.auth().currentUser) 
+        ? firebase.auth().currentUser 
+        : currentUser;
+      var isSelf = user && p.email && (user.email.toLowerCase() === p.email.toLowerCase());
+      var isAdminUser = user && (isUserAdmin(user.email) || user.email.toLowerCase() === WEBMASTER_EMAIL.toLowerCase());
+
+      if (!isSelf && !isAdminUser) {
+        alert("ACCESS DENIED // Clearance insufficient to modify this operator dossier.");
+        return;
+      }
+
+      var customs = getCustomProfiles();
+      if (!customs[p.id]) customs[p.id] = {};
+
+      customs[p.id].avatar = document.getElementById('edit-avatar-url').value.trim();
+      customs[p.id].race = document.getElementById('edit-race-select').value;
+      customs[p.id].bio = document.getElementById('edit-bio-text').value.trim();
+
+      if (isAdminUser) {
+        customs[p.id].rank = document.getElementById('edit-rank-select').value;
+        customs[p.id].role = document.getElementById('edit-role-select').value;
+      }
+
+      localStorage.setItem('wd_custom_profiles', JSON.stringify(customs));
+      renderRosterTableAndTiers();
+
+      cancelDossierEdit();
+      openDossier(p.id);
+      alert("Dossier updated successfully!");
     }
 
     document.addEventListener('keydown', (e) => {
