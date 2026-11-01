@@ -5476,17 +5476,15 @@ window.addEventListener('DOMContentLoaded', function() {
         });
       });
 
-// Apply computed results
+      // Apply computed results
       allMembers.forEach(function(mem) {
-        if (mem._history && mem._history.length > 0) {
+        if (mem._history.length > 0) {
           mem.w1 = mem._w1_w + ' - ' + mem._w1_l;
           mem.w2 = mem._w2_w + ' - ' + mem._w2_l;
           mem.pts = mem._pts;
           mem.history = mem._history;
         }
       });
-      // Speichert die aktualisierten Match-Historien permanent ab
-      localStorage.setItem('wd_all_clan_members', JSON.stringify(allMembers));
     }
 
     // Populate the dropdown of members in the Set Builder
