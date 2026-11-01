@@ -1606,7 +1606,11 @@
             <th>POINTS</th>
           </tr>
         </thead>
-        <tbody>
+        <tbody id="bwcl-standings-tbody">
+        </tbody>
+      </table>
+    </div>
+  </section>
           <tr>
             <td>1</td>
             <td><strong>dB)-3</strong></td>
@@ -3146,17 +3150,72 @@
       }
     });
 
-   window.addEventListener('DOMContentLoaded', function() {
-      initVisitorCounter();
-      recalculateAllMemberScores();
-      renderMatches();
-      renderRosterTableAndTiers();
-      initNewsRealtimeListener();
-      var hash = window.location.hash.replace('#', '');
-      if (hash && document.getElementById('tab-' + hash)) {
-        switchTab(hash, false);
+ // Paste your Sheet ID and exact Tab Name here
+const BWCL_SHEET_ID = "19C8-zPecli6k6K0zKG1y5fNBjVzsZW4DsdjQRErJybI";
+const BWCL_TAB_GID  = "1763234843"; // The gid from your URL when clicking the tab
+
+async function fetchBWCLStandings() {
+  const url = `https://docs.google.com/spreadsheets/d/${BWCL_SHEET_ID}/gviz/tq?tqx=out:json&gid=${BWCL_TAB_GID}`;
+
+  try {
+    const response = await fetch(url);
+    const text = await response.text();
+
+    const jsonString = text.substring(text.indexOf("{"), text.lastIndexOf("}") + 1);
+    const data = JSON.parse(jsonString);
+
+    const tbody = document.getElementById("bwcl-standings-tbody");
+    if (!tbody) return;
+
+    tbody.innerHTML = "";
+
+    data.table.rows.forEach((row, index) => {
+      if (!row.c || !row.c[0]) return;
+
+      const pos = row.c[0] ? row.c[0].v : index + 1;
+      const clan = row.c[1] ? row.c[1].v : "";
+      const cwPlayed = row.c[2] ? row.c[2].v : 0;
+      const cwScore = row.c[3] ? row.c[3].v : "";
+      const setRecord = row.c[4] ? row.c[4].v : "";
+      const points = row.c[5] ? row.c[5].v : 0;
+
+      const isWhiteDragon = clan.toString().toLowerCase().includes("white dragon") || clan.toString().toLowerCase().includes("[wd]");
+
+      const tr = document.createElement("tr");
+      if (isWhiteDragon) {
+        tr.style.background = "rgba(0, 229, 255, 0.08)";
+        tr.style.borderLeft = "4px solid var(--cyan)";
       }
+
+      tr.innerHTML = `
+        <td>${isWhiteDragon ? `<strong>${pos}</strong>` : pos}</td>
+        <td><strong style="${isWhiteDragon ? 'color:#fff;' : ''}">${clan}</strong></td>
+        <td>${cwPlayed}</td>
+        <td>${cwScore}</td>
+        <td>${setRecord}</td>
+        <td><strong style="color:var(--cyan);">${points}</strong></td>
+      `;
+
+      tbody.appendChild(tr);
     });
+  } catch (err) {
+    console.warn("Could not load live BWCL sheet data:", err);
+  }
+}
+
+window.addEventListener('DOMContentLoaded', function() {
+  initVisitorCounter();
+  recalculateAllMemberScores();
+  renderMatches();
+  renderRosterTableAndTiers();
+  initNewsRealtimeListener();
+  fetchBWCLStandings();
+  
+  var hash = window.location.hash.replace('#', '');
+  if (hash && document.getElementById('tab-' + hash)) {
+    switchTab(hash, false);
+  }
+});
 
     function openDossier(memberId) {
       applyProfileCustomizationsToRoster();
