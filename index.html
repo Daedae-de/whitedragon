@@ -4433,8 +4433,28 @@
           if (c.bio !== undefined) member.bio = c.bio;
           if (c.rank !== undefined && c.rank !== '') member.rank = c.rank;
           if (c.role !== undefined && c.role !== '') member.role = c.role;
+          if (c.country !== undefined && c.country !== '') member.country = c.country;
+          if (c.flagKey !== undefined && c.flagKey !== '') member.flagKey = c.flagKey;
         }
       });
+      try {
+        var stored = JSON.parse(localStorage.getItem('wd_all_clan_members') || 'null');
+        if (Array.isArray(stored) && stored.length > 0) {
+          stored.forEach(function(member) {
+            if (customs[member.id]) {
+              var c = customs[member.id];
+              if (c.avatar !== undefined && c.avatar !== '') member.avatar = c.avatar;
+              if (c.race !== undefined && c.race !== '') member.race = c.race;
+              if (c.bio !== undefined) member.bio = c.bio;
+              if (c.rank !== undefined && c.rank !== '') member.rank = c.rank;
+              if (c.role !== undefined && c.role !== '') member.role = c.role;
+              if (c.country !== undefined && c.country !== '') member.country = c.country;
+              if (c.flagKey !== undefined && c.flagKey !== '') member.flagKey = c.flagKey;
+            }
+          });
+          localStorage.setItem('wd_all_clan_members', JSON.stringify(stored));
+        }
+      } catch(e) {}
     }
 
     function renderRosterTableAndTiers() {
@@ -4687,7 +4707,7 @@
       }
     }
 
-function toggleDossierEditMode() {
+        function toggleDossierEditMode() {
       var form = document.getElementById('dossier-edit-form');
       if (!form) return;
       var isOpening = (form.style.display === 'none' || !form.style.display);
@@ -4818,7 +4838,7 @@ function toggleDossierEditMode() {
       alert("Dossier updated successfully!");
     }
 
-    document.addEventListener('keydown', (e) => {
+  document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') closePrivacyModal();
       if (e.key === 'Escape') closeAuthModal();
       if (e.key === 'Escape') closeModal();
@@ -5515,11 +5535,27 @@ function toggleDossierEditMode() {
     // 3. CLAN MEMBER LIST MANAGEMENT (ENLIST NEW MEMBERS)
     // ========================================================
     function getFullClanMembersList() {
+      var list = membersData;
       try {
         var stored = JSON.parse(localStorage.getItem('wd_all_clan_members') || 'null');
-        if (Array.isArray(stored) && stored.length > 0) return stored;
+        if (Array.isArray(stored) && stored.length > 0) list = stored;
       } catch(e) {}
-      return membersData;
+
+      // Always merge saved custom profile overrides (rank, role, race, avatar, country, bio)
+      var customs = getCustomProfiles();
+      list.forEach(function(member) {
+        if (customs[member.id]) {
+          var c = customs[member.id];
+          if (c.avatar !== undefined && c.avatar !== '') member.avatar = c.avatar;
+          if (c.race !== undefined && c.race !== '') member.race = c.race;
+          if (c.bio !== undefined) member.bio = c.bio;
+          if (c.rank !== undefined && c.rank !== '') member.rank = c.rank;
+          if (c.role !== undefined && c.role !== '') member.role = c.role;
+          if (c.country !== undefined && c.country !== '') member.country = c.country;
+          if (c.flagKey !== undefined && c.flagKey !== '') member.flagKey = c.flagKey;
+        }
+      });
+      return list;
     }
 
     function enlistNewClanMemberUI() {
