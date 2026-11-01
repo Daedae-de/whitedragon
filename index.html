@@ -447,6 +447,9 @@
     .race-terran { background: rgba(59, 130, 246, 0.2); color: #60a5fa; border: 1px solid rgba(59, 130, 246, 0.5); }
     .race-protoss { background: rgba(245, 158, 11, 0.2); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.5); }
     .race-zerg { background: rgba(168, 85, 247, 0.2); color: #c084fc; border: 1px solid rgba(168, 85, 247, 0.5); }
+    /* Random in Red, UMS in Green */
+    .race-random { background: rgba(239, 68, 68, 0.2); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.5); }
+    .race-ums { background: rgba(16, 185, 129, 0.2); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.5); }
 
     .role-badge {
       display: inline-flex;
@@ -2055,11 +2058,12 @@
     </div>
 
     <!-- ADMIN MEMBER RECRUITMENT TERMINAL -->
-    <div id="admin-members-add-panel" style="display:none; margin-bottom:20px; background:rgba(14,24,42,0.95); border:1.5px solid var(--cyan); border-radius:8px; padding:14px; box-shadow:0 0 20px rgba(0,229,255,0.2);">
+    <div id="admin-members-add-panel" style="display:none; margin-bottom:20px; background:rgba(14,24,42,0.95); border:1.5px solid var(--cyan); border-radius:8px; padding:16px; box-shadow:0 0 20px rgba(0,229,255,0.2);">
+      <!-- Enlist Section -->
       <div style="font-family:'Orbitron',sans-serif; font-size:0.82rem; color:var(--cyan); font-weight:800; margin-bottom:10px;">
         ⚡ CLAN RECRUITMENT & OPERATOR ENLISTMENT
       </div>
-      <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap:10px; margin-bottom:10px;">
+      <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap:10px; margin-bottom:12px;">
         <div>
           <label style="display:block; font-size:0.68rem; color:var(--text-muted); font-family:'Orbitron',sans-serif;">HANDLE / NAME</label>
           <input type="text" id="new-mem-name" placeholder="e.g. ShadowDragon" style="width:100%; background:#070a12; border:1px solid var(--border-color); color:#fff; padding:7px; border-radius:4px;">
@@ -2067,10 +2071,11 @@
         <div>
           <label style="display:block; font-size:0.68rem; color:var(--text-muted); font-family:'Orbitron',sans-serif;">RACE</label>
           <select id="new-mem-race" style="width:100%; background:#070a12; border:1px solid var(--border-color); color:var(--cyan); padding:7px; border-radius:4px; font-weight:bold;">
-            <option value="Terran">Terran</option>
-            <option value="Protoss">Protoss</option>
-            <option value="Zerg">Zerg</option>
-            <option value="Random">Random</option>
+            <option value="Terran">Terran [T]</option>
+            <option value="Protoss">Protoss [P]</option>
+            <option value="Zerg">Zerg [Z]</option>
+            <option value="Random">Random [R]</option>
+            <option value="UMS">UMS</option>
           </select>
         </div>
         <div>
@@ -2091,12 +2096,29 @@
           <input type="text" id="new-mem-country" placeholder="e.g. Germany, USA, Global" style="width:100%; background:#070a12; border:1px solid var(--border-color); color:#fff; padding:7px; border-radius:4px;">
         </div>
       </div>
-      <div style="display:flex; justify-content:flex-end;">
+      <div style="display:flex; justify-content:flex-end; margin-bottom:14px;">
         <button onclick="enlistNewClanMemberUI()" class="btn-download-rep" style="background:var(--win); color:#070a12; font-weight:800; cursor:pointer;">
           🎖️ ENLIST MEMBER
         </button>
       </div>
+
+      <!-- Quick Expel Section for Admin/Webmaster -->
+      <div style="border-top:1px dashed rgba(239,68,68,0.4); padding-top:12px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+        <div>
+          <span style="font-family:'Orbitron',sans-serif; font-size:0.75rem; color:var(--loss); font-weight:800;">
+            ⚠️ EXPEL / REMOVE OPERATOR FROM CLAN
+          </span>
+          <div style="font-size:0.7rem; color:var(--text-muted);">Permanently removes a player from the roster and all tiers.</div>
+        </div>
+        <div style="display:flex; gap:8px; align-items:center;">
+          <select id="quick-expel-select" style="background:#070a12; border:1px solid var(--loss); color:#fff; padding:6px 10px; border-radius:4px; font-size:0.8rem;"></select>
+          <button onclick="quickExpelMemberUI()" class="btn-download-rep" style="background:rgba(239,68,68,0.25); border:1px solid var(--loss); color:#fff; font-weight:bold; cursor:pointer; padding:6px 14px;">
+            🗑️ REMOVE MEMBER
+          </button>
+        </div>
+      </div>
     </div>
+
     <!-- Founders -->
     <div class="tier-group">
       <div class="tier-header"><div class="title">FOUNDERS</div><div class="insignia">🏰⋆༺𓆩♱𓆪༻⋆👑⋆༺𓆩♱𓆪༻⋆🏰</div></div>
@@ -2307,10 +2329,20 @@
             <div>
               <label style="display:block; font-size:0.7rem; color:var(--text-muted); font-family:'Orbitron',sans-serif; margin-bottom:4px; text-transform:uppercase;">PREFERRED RACE</label>
               <select id="edit-race-select" style="width:100%; background:#070a12; border:1px solid var(--border-color); color:var(--cyan); padding:7px 10px; border-radius:4px; font-weight:bold; font-size:0.88rem;">
-                <option value="Terran">Terran</option>
-                <option value="Protoss">Protoss</option>
-                <option value="Zerg">Zerg</option>
-                <option value="Random">Random</option>
+                <option value="Terran">Terran [T]</option>
+                <option value="Protoss">Protoss [P]</option>
+                <option value="Zerg">Zerg [Z]</option>
+                <option value="Random">Random [R]</option>
+                <option value="UMS">UMS</option>
+              </select>
+              <label style="display:block; font-size:0.7rem; color:var(--text-muted); font-family:'Orbitron',sans-serif; margin:8px 0 4px; text-transform:uppercase;">NATIONALITY / COUNTRY</label>
+              <select id="edit-country-select" style="width:100%; background:#070a12; border:1px solid var(--border-color); color:#fbbf24; padding:7px 10px; border-radius:4px; font-weight:bold; font-size:0.88rem;">
+                <option value="Germany">Germany</option>
+                <option value="Canada">Canada</option>
+                <option value="USA">USA</option>
+                <option value="Mexico">Mexico</option>
+                <option value="Philippines">Philippines</option>
+                <option value="Global">Global / Other</option>
               </select>
             </div>
           </div>
@@ -2579,8 +2611,10 @@
         return '<span class="race-badge race-protoss" title="Protoss"><img src="images/protoss.jpg" alt="Protoss" class="race-icon-img" onerror="this.onerror=null;this.replaceWith(document.createElement(\'span\')).innerHTML=\'⚡\';"> Protoss</span>';
       } else if (r.startsWith('z')) {
         return '<span class="race-badge race-zerg" title="Zerg"><img src="images/zerg.jpg" alt="Zerg" class="race-icon-img" onerror="this.onerror=null;this.replaceWith(document.createElement(\'span\')).innerHTML=\'🕷️\';"> Zerg</span>';
+      } else if (r === 'ums') {
+        return '<span class="race-badge race-ums" title="UMS" style="background:rgba(16,185,129,0.2);color:#10b981;border:1px solid rgba(16,185,129,0.5);">🎮 UMS</span>';
       } else {
-        return '<span class="race-badge race-random" title="Random" style="background:rgba(0,229,255,0.2);color:#00e5ff;border:1px solid rgba(0,229,255,0.5);"><img src="images/random.jpg" alt="Random" class="race-icon-img" onerror="this.onerror=null;this.replaceWith(document.createElement(\'span\')).innerHTML=\'🎲\';"> Random</span>';
+        return '<span class="race-badge race-random" title="Random" style="background:rgba(239,68,68,0.2);color:#ef4444;border:1px solid rgba(239,68,68,0.5);"><img src="images/random.jpg" alt="Random" class="race-icon-img" onerror="this.onerror=null;this.replaceWith(document.createElement(\'span\')).innerHTML=\'🎲\';"> Random</span>';
       }
     }
 
@@ -2888,12 +2922,33 @@
       var isWebmaster = user && user.email && (user.email.toLowerCase() === WEBMASTER_EMAIL.toLowerCase());
       var isSelf = user && p.email && (user.email.toLowerCase() === p.email.toLowerCase());
       var isAdminUser = user && user.email && isUserAdmin(user.email) && !isWebmaster;
+      var canModerate = isWebmaster || (user && user.email && isUserAdmin(user.email));
 
       var editBtn = document.getElementById('btn-edit-dossier');
       var editForm = document.getElementById('dossier-edit-form');
       if (editForm) editForm.style.display = 'none';
 
       if (editBtn) {
+        var expelBtn = document.getElementById('btn-expel-dossier');
+      if (!expelBtn) {
+        expelBtn = document.createElement('button');
+        expelBtn.id = 'btn-expel-dossier';
+        expelBtn.className = 'admin-del-btn';
+        expelBtn.style.padding = '6px 14px';
+        expelBtn.style.fontSize = '0.75rem';
+        expelBtn.style.marginLeft = '8px';
+        if (editBtn && editBtn.parentNode) {
+          editBtn.parentNode.appendChild(expelBtn);
+        }
+      }
+
+      if (canModerate) {
+        expelBtn.style.display = 'inline-block';
+        expelBtn.innerHTML = '🗑️ EXPEL MEMBER';
+        expelBtn.onclick = function() { adminDeleteMember(p.id); };
+      } else {
+        expelBtn.style.display = 'none';
+      }
         if (isWebmaster) {
           editBtn.style.display = 'inline-block';
           editBtn.innerText = '⚡ WEBMASTER FULL OVERRIDE';
@@ -4325,6 +4380,16 @@
       var canModerate = user && (isUserAdmin(user.email) || user.email.toLowerCase() === WEBMASTER_EMAIL.toLowerCase());
 
       // Populate Roster Add Member dropdown
+      var expelSelect = document.getElementById('quick-expel-select');
+      if (expelSelect) {
+        expelSelect.innerHTML = '<option value="">-- Choose Member to Expel --</option>';
+        allMembers.forEach(function(m) {
+          var opt = document.createElement('option');
+          opt.value = m.id;
+          opt.innerText = m.name + ' (' + m.rank + ')';
+          expelSelect.appendChild(opt);
+        });
+      }
       var addSelect = document.getElementById('roster-add-member-select');
       if (addSelect) {
         addSelect.innerHTML = '<option value="">-- Choose Clan Member --</option>';
@@ -4399,16 +4464,89 @@
         pill.className = 'member-pill';
         pill.onclick = function() { openDossier(p.id); };
 
-        var raceColor = p.race === 'Terran' ? '#60a5fa' : (p.race === 'Protoss' ? '#fbbf24' : '#c084fc');
+        // Determine badge tag and color: Random = Red (#ef4444), UMS = Green (#10b981)
+        var raceLower = (p.race || '').toLowerCase();
+        var raceColor = '#60a5fa'; // default terran
+        var raceTag = '[T]';
+
+        if (raceLower.startsWith('t')) {
+          raceColor = '#60a5fa'; raceTag = '[T]';
+        } else if (raceLower.startsWith('p')) {
+          raceColor = '#fbbf24'; raceTag = '[P]';
+        } else if (raceLower.startsWith('z')) {
+          raceColor = '#c084fc'; raceTag = '[Z]';
+        } else if (raceLower === 'ums') {
+          raceColor = '#10b981'; raceTag = '[UMS]'; // Green
+        } else {
+          raceColor = '#ef4444'; raceTag = '[R]'; // Red
+        }
+
         var pillAvatar = p.avatar ? 
           '<img src="' + p.avatar + '" class="pill-avatar" onerror="this.style.display=\'none\'">' : '';
+
+        // Delete button visible on pill for Admin / Webmaster
+        var delBtnHtml = canModerate ?
+          '<span onclick="event.stopPropagation(); adminDeleteMember(\'' + p.id + '\')" title="Expel member" style="margin-left:6px; color:var(--loss); font-weight:bold; cursor:pointer; padding:0 3px;">✕</span>' : '';
+
         pill.innerHTML = 
           '<span class="tag">' + pillAvatar + p.name + '</span>' +
-          '<span class="pill-race" style="color:' + raceColor + '">[' + p.race[0] + ']</span>';
+          '<span class="pill-race" style="color:' + raceColor + '">' + raceTag + '</span>' +
+          delBtnHtml;
+
         container.appendChild(pill);
       });
     }
+    
 
+    function quickExpelMemberUI() {
+      var sel = document.getElementById('quick-expel-select');
+      if (!sel || !sel.value) {
+        alert("Please select a member to remove.");
+        return;
+      }
+      adminDeleteMember(sel.value);
+    }
+
+    function adminDeleteMember(memberId) {
+      var user = (typeof firebase !== 'undefined' && firebase.auth && firebase.auth().currentUser) 
+        ? firebase.auth().currentUser 
+        : currentUser;
+      var canModerate = user && (isUserAdmin(user.email) || (user.email && user.email.toLowerCase() === WEBMASTER_EMAIL.toLowerCase()));
+
+      if (!canModerate) {
+        alert("ACCESS DENIED // HIGH COMMAND CLEARANCE REQUIRED.");
+        return;
+      }
+
+      if (!confirm("EXPEL MEMBER: Are you sure you want to remove " + memberId + " from White Dragon clan records?")) {
+        return;
+      }
+
+      // 1. Remove from in-memory membersData
+      var idx = membersData.findIndex(function(m) { return m.id === memberId; });
+      if (idx !== -1) {
+        membersData.splice(idx, 1);
+      }
+
+      // 2. Remove from localStorage custom members
+      var fullList = getFullClanMembersList().filter(function(m) { return m.id !== memberId; });
+      localStorage.setItem('wd_all_clan_members', JSON.stringify(fullList));
+
+      // 3. Remove from competitive roster if enrolled
+      var rosterList = getDynamicRosterList().filter(function(r) { return r.id !== memberId; });
+      localStorage.setItem('wd_competitive_roster', JSON.stringify(rosterList));
+
+      // 4. Clean up any saved custom profile data
+      var customs = getCustomProfiles();
+      if (customs[memberId]) {
+        delete customs[memberId];
+        localStorage.setItem('wd_custom_profiles', JSON.stringify(customs));
+      }
+
+      closeModal();
+      renderRosterTableAndTiers();
+      alert("Commander " + memberId + " has been successfully removed from clan records.");
+    }
     function handleAvatarFileUpload(event) {
       var file = event.target.files && event.target.files[0];
       if (!file) return;
@@ -4516,6 +4654,11 @@
 
         document.getElementById('edit-race-select').value = p.race || 'Terran';
         document.getElementById('edit-bio-text').value = p.bio || '';
+        var countrySel = document.getElementById('edit-country-select');
+        if (countrySel) {
+          countrySel.value = p.country || 'Global';
+          countrySel.disabled = !canEditPersonal;
+        }
 
         // TIERED PERMISSIONS:
         // Personal profile (Avatar, Race, Bio): only self or webmaster
@@ -4580,6 +4723,11 @@
         customs[p.id].avatar = document.getElementById('edit-avatar-url').value.trim();
         customs[p.id].race = document.getElementById('edit-race-select').value;
         customs[p.id].bio = document.getElementById('edit-bio-text').value.trim();
+        var countrySel = document.getElementById('edit-country-select');
+        if (countrySel) {
+          customs[p.id].country = countrySel.value;
+          customs[p.id].flagKey = countrySel.value.toLowerCase().replace(/\s+/g, '');
+        }
       }
 
       // 2. Hierarchy fields: only admin or webmaster can edit
