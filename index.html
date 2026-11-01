@@ -35,6 +35,54 @@
       --win: #10b981;
       --loss: #ef4444;
     }
+    /* FLOATING BOTTOM-LEFT LIVE TRAFFIC HUD */
+    .traffic-floating-cluster {
+      position: fixed;
+      bottom: 18px;
+      left: 18px;
+      z-index: 850;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+      background: rgba(13, 21, 39, 0.92);
+      border: 1px solid var(--border-color);
+      border-radius: 20px;
+      padding: 6px 14px;
+      box-shadow: 0 4px 18px rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(10px);
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.76rem;
+    }
+    .traffic-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      color: #cbd5e1;
+    }
+    .traffic-item strong {
+      color: #fff;
+    }
+    .traffic-divider {
+      color: var(--text-dim);
+      margin: 0 2px;
+    }
+    @media (max-width: 600px) {
+      .traffic-floating-cluster {
+        bottom: 12px;
+        left: 12px;
+        padding: 5px 10px;
+        font-size: 0.68rem;
+      }
+    }
+
+    /* SQUAD TABS */
+    .squad-filter-bar {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 14px;
+      flex-wrap: wrap;
+    }
     * { box-sizing: border-box; margin: 0; padding: 0; }
     html { scroll-behavior: smooth; }
     body {
@@ -1300,13 +1348,7 @@
           <div class="intel-badge"><strong>GATEWAY:</strong> US WEST</div>
           <div class="intel-badge channel-badge"><strong>CHANNEL:</strong> Op White-Dragon</div>
         
-          <div class="intel-badge" style="border-color:var(--cyan); background:rgba(0,229,255,0.12); color:#fff;">
-            <strong style="color:var(--cyan);">VISITORS:</strong> <span id="visitor-count-display">1,420</span>
-          </div>
-          <div class="intel-badge" style="border-color:var(--win); background:rgba(16,185,129,0.12); color:#fff;">
-            <span style="display:inline-block; width:7px; height:7px; border-radius:50%; background:var(--win); box-shadow:0 0 8px var(--win); margin-right:4px;"></span>
-            <strong style="color:var(--win);">ONLINE:</strong> <span id="online-users-display">3</span>
-          </div></div>
+</div>
       </div>
       <div class="hero-emblem-preview">
         <img src="logo.jpg" alt="White Dragon Emblem" onerror="this.style.display='none'; document.getElementById('hero-fallback-svg').style.display='block';">
@@ -1365,7 +1407,7 @@
     <div class="dash-btn" id="dash-members" onclick="switchTab('members')">
       <span class="dash-icon">🎖️</span>
       <span class="dash-label">MEMBERS</span>
-      <span class="dash-sub">32 Commanders</span>
+      <span class="dash-sub" id="members-nav-count">32 Commanders</span>
     </div>
     <div class="dash-btn" id="dash-about" onclick="switchTab('about')">
       <span class="dash-icon">🛡️</span>
@@ -1476,41 +1518,55 @@
     </div>
   </section>
 
-  <!-- ==================== 2. ROSTER TAB (WD-A) ==================== -->
+  <!-- ==================== 2. ROSTER TAB (TEAMS WD-A, WD-B, WD-C) ==================== -->
   <section id="tab-roster" class="section-wrap">
     <div class="section-head">
       <div>
         <h2>CLAN <span>ROSTER</span> // TEAMS</h2>
-        <div class="section-subtitle">Official tournament squads representing White Dragon Clan. Click any player for full dossier.</div>
+        <div class="section-subtitle">Official competitive rosters representing White Dragon. Click any player for full dossier.</div>
       </div>
     </div>
 
-    <!-- Squad Header: WD-A -->
-    <div class="team-badge-header">
-      <span>TEAM: <strong>WD-A</strong></span>
-      <span class="pill">BWCL S65 DIVISION D</span>
-      <span style="color:var(--text-muted); font-size:0.8rem; font-family:'Share Tech Mono', monospace;">[Main Competitive Squad]</span>
+    <!-- Squad Selection Tabs -->
+    <div class="squad-filter-bar">
+      <button onclick="filterSquadView('WD-A')" id="btn-squad-WDA" class="nav-tab-btn active">🏆 WD-A SQUAD</button>
+      <button onclick="filterSquadView('WD-B')" id="btn-squad-WDB" class="nav-tab-btn">⚔️ WD-B SQUAD</button>
+      <button onclick="filterSquadView('WD-C')" id="btn-squad-WDC" class="nav-tab-btn">🛡️ WD-C SQUAD</button>
+      <button onclick="filterSquadView('ALL')" id="btn-squad-ALL" class="nav-tab-btn">ALL SQUADS</button>
+    </div>
+
+    <!-- Squad Header Badge -->
+    <div class="team-badge-header" id="current-squad-badge">
+      <span>TEAM: <strong id="roster-squad-title">WD-A</strong></span>
+      <span class="pill" id="roster-squad-pill">BWCL S65 DIVISION D</span>
+      <span style="color:var(--text-muted); font-size:0.8rem; font-family:'Share Tech Mono', monospace;" id="roster-squad-desc">[Main Competitive Squad]</span>
     </div>
 
     <!-- ADMIN ROSTER CONTROL TERMINAL -->
     <div id="admin-roster-control-panel" style="display:none; margin-bottom:16px; background:rgba(14,24,42,0.92); border:1.5px solid var(--cyan); border-radius:8px; padding:14px; box-shadow:0 0 16px rgba(0,229,255,0.2);">
       <div style="font-family:'Orbitron',sans-serif; font-size:0.8rem; color:var(--cyan); font-weight:800; margin-bottom:8px;">
-        ⚡ WD-A SQUAD ROSTER MANAGEMENT
+        ⚡ SQUAD ROSTER MANAGEMENT
       </div>
       <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
         <select id="roster-add-member-select" style="background:#070a12; border:1px solid var(--border-color); color:#fff; padding:7px 10px; border-radius:5px; font-size:0.85rem; min-width:180px;"></select>
-        <select id="roster-add-role-select" style="background:#070a12; border:1px solid var(--border-color); color:var(--cyan); padding:7px 10px; border-radius:5px; font-weight:bold; font-size:0.85rem;">
+        <select id="roster-add-squad-select" style="background:#070a12; border:1px solid var(--border-color); color:var(--cyan); padding:7px 10px; border-radius:5px; font-weight:bold; font-size:0.85rem;">
+          <option value="WD-A">Squad: WD-A</option>
+          <option value="WD-B">Squad: WD-B</option>
+          <option value="WD-C">Squad: WD-C</option>
+        </select>
+        <select id="roster-add-role-select" style="background:#070a12; border:1px solid var(--border-color); color:#fbbf24; padding:7px 10px; border-radius:5px; font-weight:bold; font-size:0.85rem;">
           <option value="Player">Player</option>
           <option value="Starter">Active Starter</option>
           <option value="Captain">Captain</option>
           <option value="Squadleader">Squadleader</option>
         </select>
-        <input type="text" id="roster-add-time-inp" placeholder="Availability (e.g. Sundays 18:00 CET)" style="flex:1; background:#070a12; border:1px solid var(--border-color); color:#fff; padding:7px 10px; border-radius:5px; font-size:0.85rem; min-width:200px;">
         <button onclick="addMemberToRosterUI()" class="btn-download-rep" style="background:var(--cyan); color:#070a12; font-weight:800; cursor:pointer;">
-          + ADD TO SQUAD
+          + ASSIGN TO SQUAD
         </button>
       </div>
     </div>
+
+    <!-- Streamlined Data Table -->
     <div class="table-container">
       <table class="data-table">
         <thead>
@@ -1518,10 +1574,8 @@
             <th>NICKNAME</th>
             <th>ROLE</th>
             <th>SQUAD</th>
-            <th>AFFILIATION</th>
             <th>COUNTRY</th>
             <th>PREFERRED RACE</th>
-            <th>SCHEDULE / AVAILABILITY</th>
           </tr>
         </thead>
         <tbody id="roster-tbody">
@@ -2050,10 +2104,10 @@
 
   <!-- ==================== 7. MEMBERS TAB ==================== -->
   <section id="tab-members" class="section-wrap">
-    <div class="section-head">
+ <div class="section-head">
       <div>
         <h2>CLAN <span>MEMBERS</span></h2>
-        <div class="section-subtitle">Complete 32-player member list by ranks. Click any member to open their dossier.</div>
+        <div class="section-subtitle">Complete <span id="members-subtitle-count">32</span>-player member list by ranks. Click any member to open their dossier.</div>
       </div>
     </div>
 
@@ -2595,9 +2649,26 @@
     </div>
   </div>
 
+  <!-- BOTTOM-LEFT LIVE TRAFFIC HUD -->
+  <div class="traffic-floating-cluster" id="traffic-monitor-hud">
+    <div class="traffic-item">
+      <span style="display:inline-block; width:7px; height:7px; border-radius:50%; background:var(--win); box-shadow:0 0 8px var(--win);"></span>
+      <span>ONLINE: <strong style="color:var(--win);" id="online-users-live">3</strong></span>
+    </div>
+    <span class="traffic-divider">|</span>
+    <div class="traffic-item">
+      <span>TODAY: <strong style="color:var(--cyan);" id="visitors-today-live">42</strong></span>
+    </div>
+    <span class="traffic-divider">|</span>
+    <div class="traffic-item">
+      <span>VISITORS: <strong style="color:#fff;" id="visitors-total-live">1,420</strong></span>
+    </div>
+  </div>
+
   <footer>
     <p>© 2021–2026 White Dragon [WD] Clan. StarCraft® and StarCraft: Remastered are registered trademarks of Blizzard Entertainment.</p>
     <p style="margin-top:4px; color:var(--text-dim);">Competitive Brood War eSports | Channel: Op White-Dragon (US West)</p>
+  
   </footer>
 
   <script>
@@ -2626,8 +2697,6 @@
       mexico: `<svg class="flag-icon" viewBox="0 0 980 560" style="display:inline-block; vertical-align:middle; width:24px; height:16px; border-radius:2px; box-shadow:0 0 4px rgba(0,0,0,0.5); margin-right:8px;"><rect width="326.6" height="560" fill="#006847"/><rect x="326.6" width="326.8" height="560" fill="#ffffff"/><rect x="653.4" width="326.6" height="560" fill="#ce1126"/><g transform="translate(490, 280)"><ellipse cx="0" cy="5" rx="48" ry="42" fill="#5c3818"/><ellipse cx="0" cy="2" rx="40" ry="32" fill="#b07d39"/><ellipse cx="-4" cy="-12" rx="20" ry="16" fill="#4d3216"/><path d="M-8,-24 Q-2,-30 6,-26 Q2,-18 -4,-18 Z" fill="#30200e"/><path d="M-2,-26 Q12,-32 16,-20 Q12,-16 6,-20 Z" fill="#d99b26"/><path d="M-35,30 Q0,55 35,30 Q25,60 0,60 Q-25,60 -35,30 Z" fill="#205a28"/><path d="M-10,32 Q0,38 10,32 Q5,48 -5,48 Z" fill="#b22234"/></g></svg>`,
       global: `<span style="display:inline-block; width:24px; height:16px; text-align:center; vertical-align:middle; font-size:12px; margin-right:8px;">🌐</span>`
     };
-
-
 
     const membersData = [
       { id: 'RobFATKraft', name: 'RobFATKraft[WD]', role: 'Captain', rank: 'Founders', insignia: '🏰⋆༺𓆩♱𓆪༻⋆👑⋆༺𓆩♱𓆪༻⋆🏰', team: 'WD-A', status: 'Active', race: 'Protoss', avatar: '', country: 'USA', flagKey: 'usa', w1: '0-0', w2: '0-0', pts: 0, history: [] },
@@ -5330,8 +5399,52 @@
     }
 
     // ========================================================
-    // 2. DYNAMIC ROSTER MANAGER (WITH TIME AVAILABILITY)
+    
     // ========================================================
+    // SQUAD FILTERING ENGINE (WD-A, WD-B, WD-C)
+    // ========================================================
+    var currentActiveSquad = 'WD-A';
+
+    function filterSquadView(squadKey) {
+      currentActiveSquad = squadKey;
+
+      ['WDA', 'WDB', 'WDC', 'ALL'].forEach(function(k) {
+        var btn = document.getElementById('btn-squad-' + k);
+        if (btn) {
+          if ((k === 'ALL' && squadKey === 'ALL') || ('WD-' + k.slice(-1) === squadKey)) {
+            btn.classList.add('active');
+          } else {
+            btn.classList.remove('active');
+          }
+        }
+      });
+
+      var titleEl = document.getElementById('roster-squad-title');
+      var pillEl = document.getElementById('roster-squad-pill');
+      var descEl = document.getElementById('roster-squad-desc');
+
+      if (squadKey === 'WD-A') {
+        if (titleEl) titleEl.innerText = 'WD-A';
+        if (pillEl) pillEl.innerText = 'BWCL S65 DIVISION D';
+        if (descEl) descEl.innerText = '[Main Competitive Squad]';
+      } else if (squadKey === 'WD-B') {
+        if (titleEl) titleEl.innerText = 'WD-B';
+        if (pillEl) pillEl.innerText = 'DEVELOPMENT DIVISION';
+        if (descEl) descEl.innerText = '[Secondary Competitive Lineup]';
+      } else if (squadKey === 'WD-C') {
+        if (titleEl) titleEl.innerText = 'WD-C';
+        if (pillEl) pillEl.innerText = 'ACADEMY & IN-HOUSE';
+        if (descEl) descEl.innerText = '[Practice & Casual Roster]';
+      } else {
+        if (titleEl) titleEl.innerText = 'ALL TEAMS';
+        if (pillEl) pillEl.innerText = 'COMBINED SQUADS';
+        if (descEl) descEl.innerText = '[All Active White Dragon Operators]';
+      }
+
+      renderRosterTableAndTiers();
+    }
+
+    // Dynamic Roster Storage with Squad Designations
     function getDynamicRosterList() {
       try {
         var stored = JSON.parse(localStorage.getItem('wd_competitive_roster') || 'null');
@@ -5339,17 +5452,23 @@
       } catch(e) {}
       
       var defaultRoster = [
-        { id: 'CheesyCake', role: 'Player', time: 'Sundays 18:00 CET' },
-        { id: 'Battousai', role: 'Player', time: 'Flexible / Weekends' },
-        { id: 'Miwaco', role: 'Player', time: 'Weekends' },
-        { id: 'KaRDiNaL', role: 'Player', time: 'Sundays 18:00 CET' },
-        { id: 'JaxM', role: 'Player', time: 'Async / Weekend' },
-        { id: 'zDAwgZ', role: 'Squadleader', time: 'Matchday Coordinator' },
-        { id: 'Kimchi', role: 'Player', time: 'Evenings' },
-        { id: 'DeathOrb', role: 'Captain', time: 'Always on Call' },
-        { id: 'LunarPop', role: 'Captain', time: 'Matchdays' },
-        { id: 'RobFATKraft', role: 'Captain', time: 'Captain Duty' },
-        { id: 'aMeba', role: 'Player', time: 'Active Lineup' }
+        { id: 'CheesyCake', squad: 'WD-A', role: 'Player' },
+        { id: 'Battousai', squad: 'WD-A', role: 'Player' },
+        { id: 'Miwaco', squad: 'WD-A', role: 'Player' },
+        { id: 'KaRDiNaL', squad: 'WD-A', role: 'Player' },
+        { id: 'aMeba', squad: 'WD-A', role: 'Player' },
+        { id: 'zDAwgZ', squad: 'WD-A', role: 'Squadleader' },
+        { id: 'DeathOrb', squad: 'WD-A', role: 'Captain' },
+        { id: 'LunarPop', squad: 'WD-A', role: 'Captain' },
+        { id: 'RobFATKraft', squad: 'WD-A', role: 'Captain' },
+        { id: 'JaxM', squad: 'WD-B', role: 'Captain' },
+        { id: 'Kimchi', squad: 'WD-B', role: 'Player' },
+        { id: 'SonOfMalice', squad: 'WD-B', role: 'Player' },
+        { id: 'RaiNMaN', squad: 'WD-B', role: 'Player' },
+        { id: 'BlueSpikes', squad: 'WD-B', role: 'Player' },
+        { id: 'Vult', squad: 'WD-C', role: 'Captain' },
+        { id: 'Wolf', squad: 'WD-C', role: 'Player' },
+        { id: 'carcar', squad: 'WD-C', role: 'Player' }
       ];
       localStorage.setItem('wd_competitive_roster', JSON.stringify(defaultRoster));
       return defaultRoster;
@@ -5357,30 +5476,31 @@
 
     function addMemberToRosterUI() {
       var select = document.getElementById('roster-add-member-select');
+      var squadSel = document.getElementById('roster-add-squad-select');
       var roleSelect = document.getElementById('roster-add-role-select');
-      var timeInp = document.getElementById('roster-add-time-inp');
 
       var memberId = select.value;
-      var role = roleSelect.value;
-      var time = timeInp.value.trim() || 'Active Roster';
+      var squad = squadSel ? squadSel.value : 'WD-A';
+      var role = roleSelect ? roleSelect.value : 'Player';
 
       if (!memberId) { alert('Please select a clan member first.'); return; }
 
       var list = getDynamicRosterList();
-      if (list.some(function(r) { return r.id === memberId; })) {
-        alert('This player is already in the WD-A competitive roster!');
-        return;
+      var existingIdx = list.findIndex(function(r) { return r.id === memberId; });
+      if (existingIdx !== -1) {
+        list[existingIdx].squad = squad;
+        list[existingIdx].role = role;
+      } else {
+        list.push({ id: memberId, squad: squad, role: role });
       }
 
-      list.push({ id: memberId, role: role, time: time });
       localStorage.setItem('wd_competitive_roster', JSON.stringify(list));
-      timeInp.value = '';
       renderRosterTableAndTiers();
-      alert('Commander added to active WD-A tournament roster!');
+      alert('Commander successfully assigned to ' + squad + '!');
     }
 
     function removeMemberFromRoster(memberId) {
-      if (!confirm('Remove this player from the WD-A tournament roster?')) return;
+      if (!confirm('Remove this player from the tournament squad?')) return;
       var list = getDynamicRosterList().filter(function(r) { return r.id !== memberId; });
       localStorage.setItem('wd_competitive_roster', JSON.stringify(list));
       renderRosterTableAndTiers();
@@ -5431,26 +5551,184 @@
     }
 
     // ========================================================
-    // 4. LIVE VISITOR & ONLINE HUD COUNTER
+    // 4. LIVE VISITOR & ONLINE PRESENCE ENGINE (BOTTOM-LEFT)
     // ========================================================
     function initVisitorCounter() {
       var baseVisits = 1420;
-      var count = parseInt(localStorage.getItem('wd_visitor_count') || baseVisits, 10);
+      var totalCount = parseInt(localStorage.getItem('wd_visitor_count') || baseVisits, 10);
+
+      // Track daily visitors
+      var todayKey = 'wd_visits_' + new Date().toISOString().slice(0, 10);
+      var todayCount = parseInt(localStorage.getItem(todayKey) || '42', 10);
 
       if (!sessionStorage.getItem('wd_visit_counted')) {
-        count += 1;
-        localStorage.setItem('wd_visitor_count', count);
+        totalCount += 1;
+        todayCount += 1;
+        localStorage.setItem('wd_visitor_count', totalCount);
+        localStorage.setItem(todayKey, todayCount);
         sessionStorage.setItem('wd_visit_counted', 'true');
       }
 
-      var displayEl = document.getElementById('visitor-count-display');
-      if (displayEl) displayEl.innerText = count.toLocaleString();
+      var totalEl = document.getElementById('visitors-total-live');
+      if (totalEl) totalEl.innerText = totalCount.toLocaleString();
 
-      var onlineEl = document.getElementById('online-users-display');
+      var todayEl = document.getElementById('visitors-today-live');
+      if (todayEl) todayEl.innerText = todayCount.toLocaleString();
+
+      // Live online presence counter with natural fluctuations
+      var onlineEl = document.getElementById('online-users-live');
       if (onlineEl) {
-        var randomOnline = Math.floor(Math.random() * 3) + 2;
-        onlineEl.innerText = randomOnline;
+        var liveOnline = Math.floor(Math.random() * 3) + 3; // 3 to 5 online
+        onlineEl.innerText = liveOnline;
+
+        // Periodic live heartbeat
+        setInterval(function() {
+          var delta = Math.floor(Math.random() * 3) - 1; // -1, 0, +1
+          var current = parseInt(onlineEl.innerText, 10) || 3;
+          var next = Math.max(2, Math.min(8, current + delta));
+          onlineEl.innerText = next;
+        }, 12000);
       }
+    }
+
+    // ========================================================
+    // RENDER ROSTER & DYNAMIC MEMBER COUNTS
+    // ========================================================
+    function renderRosterTableAndTiers() {
+      applyProfileCustomizationsToRoster();
+      
+      var allMembers = getFullClanMembersList();
+      var rosterEntries = getDynamicRosterList();
+
+      var user = (typeof firebase !== 'undefined' && firebase.auth && firebase.auth().currentUser) 
+        ? firebase.auth().currentUser 
+        : currentUser;
+      var canModerate = user && (isUserAdmin(user.email) || (user.email && user.email.toLowerCase() === WEBMASTER_EMAIL.toLowerCase()));
+
+      // 1. UPDATE DYNAMIC MEMBER COUNTS ACROSS SITE
+      var navCountEl = document.getElementById('members-nav-count');
+      if (navCountEl) navCountEl.innerText = allMembers.length + ' Commanders';
+      var subtitleCountEl = document.getElementById('members-subtitle-count');
+      if (subtitleCountEl) subtitleCountEl.innerText = allMembers.length;
+
+      // 2. POPULATE ADMIN DROPDOWNS
+      var expelSelect = document.getElementById('quick-expel-select');
+      if (expelSelect) {
+        expelSelect.innerHTML = '<option value="">-- Choose Member to Expel --</option>';
+        allMembers.forEach(function(m) {
+          var opt = document.createElement('option');
+          opt.value = m.id;
+          opt.innerText = m.name + ' (' + m.rank + ')';
+          expelSelect.appendChild(opt);
+        });
+      }
+
+      var addSelect = document.getElementById('roster-add-member-select');
+      if (addSelect) {
+        addSelect.innerHTML = '<option value="">-- Choose Clan Member --</option>';
+        allMembers.forEach(function(m) {
+          var opt = document.createElement('option');
+          opt.value = m.id;
+          opt.innerText = m.name;
+          addSelect.appendChild(opt);
+        });
+      }
+
+      // 3. RENDER CLEAN ROSTER TABLE (WITHOUT AFFILIATION & SCHEDULE)
+      var rTbody = document.getElementById('roster-tbody');
+      if (rTbody) {
+        rTbody.innerHTML = '';
+
+        var filteredRoster = rosterEntries.filter(function(entry) {
+          return currentActiveSquad === 'ALL' || (entry.squad || 'WD-A') === currentActiveSquad;
+        });
+
+        filteredRoster.forEach(function(entry) {
+          var p = allMembers.find(function(m) { return m.id === entry.id; });
+          if (!p) return;
+
+          var tr = document.createElement('tr');
+          tr.className = 'clickable-row';
+          tr.onclick = function() { openDossier(p.id); };
+          
+          var flagSvg = flags[p.flagKey] || flags.global;
+
+          var displayRole = entry.role || p.role || 'Player';
+          var roleBadge = '';
+          if (displayRole === 'Squadleader') {
+            roleBadge = '<span class="role-badge role-squadleader">★ Squadleader</span>';
+          } else if (displayRole === 'Captain') {
+            roleBadge = '<span class="role-badge role-captain">⛨ Captain</span>';
+          } else if (displayRole === 'Starter') {
+            roleBadge = '<span class="role-badge role-squadleader" style="background:rgba(16,185,129,0.18); color:var(--win); border-color:var(--win);">★ Starter</span>';
+          } else {
+            roleBadge = '<span class="role-badge role-starter">Player</span>';
+          }
+
+          var miniAvatar = p.avatar ? 
+            '<img src="' + p.avatar + '" class="table-avatar" onerror="this.style.display=\'none\">' : '';
+          
+          var removeBtn = canModerate 
+            ? '<button onclick="event.stopPropagation(); removeMemberFromRoster(\'' + p.id + '\')" class="admin-del-btn" style="display:inline-block; margin-left:8px; padding:2px 6px;">✕</button>'
+            : '';
+
+          var squadTag = entry.squad || 'WD-A';
+
+          tr.innerHTML = 
+            '<td><span class="player-tag">' + miniAvatar + p.name + ' <span class="click-hint">INTEL</span></span></td>' +
+            '<td>' + roleBadge + '</td>' +
+            '<td><strong style="color:var(--cyan);">' + squadTag + '</strong></td>' +
+            '<td>' + flagSvg + ' ' + p.country + removeBtn + '</td>' +
+            '<td>' + getRaceBadgeHtml(p.race) + '</td>';
+          
+          rTbody.appendChild(tr);
+        });
+      }
+
+      // 4. RENDER MEMBER PILLS ACROSS TIERS (WITH RED RANDOM & GREEN UMS)
+      Object.keys(tiers).forEach(function(tierName) {
+        var el = document.getElementById(tiers[tierName]);
+        if (el) el.innerHTML = '';
+      });
+
+      allMembers.forEach(function(p) {
+        var targetId = tiers[p.rank] || 'tier-privates';
+        var container = document.getElementById(targetId);
+        if (!container) return;
+
+        var pill = document.createElement('div');
+        pill.className = 'member-pill';
+        pill.onclick = function() { openDossier(p.id); };
+
+        var raceLower = (p.race || '').toLowerCase();
+        var raceColor = '#60a5fa';
+        var raceTag = '[T]';
+
+        if (raceLower.startsWith('t')) {
+          raceColor = '#60a5fa'; raceTag = '[T]';
+        } else if (raceLower.startsWith('p')) {
+          raceColor = '#fbbf24'; raceTag = '[P]';
+        } else if (raceLower.startsWith('z')) {
+          raceColor = '#c084fc'; raceTag = '[Z]';
+        } else if (raceLower === 'ums') {
+          raceColor = '#10b981'; raceTag = '[UMS]'; // Green UMS
+        } else {
+          raceColor = '#ef4444'; raceTag = '[R]'; // Red Random
+        }
+
+        var pillAvatar = p.avatar ? 
+          '<img src="' + p.avatar + '" class="pill-avatar" onerror="this.style.display=\'none\">' : '';
+
+        var delBtnHtml = canModerate ?
+          '<span onclick="event.stopPropagation(); adminDeleteMember(\'' + p.id + '\')" title="Expel member" style="margin-left:6px; color:var(--loss); font-weight:bold; cursor:pointer; padding:0 3px;">✕</span>' : '';
+
+        pill.innerHTML = 
+          '<span class="tag">' + pillAvatar + p.name + '</span>' +
+          '<span class="pill-race" style="color:' + raceColor + '">' + raceTag + '</span>' +
+          delBtnHtml;
+
+        container.appendChild(pill);
+      });
     }
 
   </script>
