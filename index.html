@@ -5798,7 +5798,7 @@
       return list;
     }
 
-    function enlistNewClanMemberUI() {
+   function enlistNewClanMemberUI() {
       var name = document.getElementById('new-mem-name').value.trim();
       var race = document.getElementById('new-mem-race').value;
       var rank = document.getElementById('new-mem-rank').value;
@@ -5807,6 +5807,11 @@
       if (!name) { alert('Please provide the member alias/handle.'); return; }
 
       var id = name.replace(/[^a-zA-Z0-9]/g, '');
+
+      // --- REPLACE YOUR OLD flagKey LOGIC WITH THIS ---
+      var cleanKey = country.toLowerCase().replace(/[^a-z]/g, '');
+      var flagKey = flags[cleanKey] ? cleanKey : 'global';
+
       var newMember = {
         id: id,
         name: name.includes('[WD]') ? name : name + '[WD]',
@@ -5815,7 +5820,7 @@
         status: 'Active',
         race: race,
         country: country,
-        flagKey: country.toLowerCase().includes('germany') ? 'germany' : (country.toLowerCase().includes('canada') ? 'canada' : (country.toLowerCase().includes('usa') ? 'usa' : (country.toLowerCase().includes('mexico') ? 'mexico' : (country.toLowerCase().includes('philippines') ? 'philippines' : 'global')))),
+        flagKey: flagKey,
         w1: '0-0', w2: '0-0', pts: 0, history: []
       };
 
