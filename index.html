@@ -3149,7 +3149,8 @@
 
  // Paste your Sheet ID and exact Tab Name here
 const BWCL_SHEET_ID = "19C8-zPecli6k6K0zKG1y5fNBjVzsZW4DsdjQRErJybI";
-const BWCL_TAB_GID  = "1763234843"; // The gid from your URL when clicking the tab
+// Die GID des Tabs "Rankings", auf dem die Punkte stehen:
+const BWCL_TAB_GID  = "1763234843";
 
 async function fetchBWCLStandings() {
   const url = `https://docs.google.com/spreadsheets/d/${BWCL_SHEET_ID}/gviz/tq?tqx=out:json&gid=${BWCL_TAB_GID}`;
@@ -3164,39 +3165,95 @@ async function fetchBWCLStandings() {
     const tbody = document.getElementById("bwcl-standings-tbody");
     if (!tbody) return;
 
-    tbody.innerHTML = "";
+    // Bekannte feste Metriken / Records zur Ergänzung
+    const clanDetails = {
+      "SAS":          { played: 5, score: "4 - 1", sets: "20 - 10" },
+      "dB)-3":        { played: 5, score: "4 - 1", sets: "19 - 11" },
+      "White Dragon": { played: 5, score: "4 - 1", sets: "18 - 12" },
+      "RED-3":        { played: 5, score: "1 - 4", sets: "10 - 20" },
+      "Cwt)-3":       { played: 5, score: "1 - 4", sets: "9 - 21" },
+      "Shadow-2":     { played: 5, score: "0 - 5", sets: "4 - 26" }
+    };
 
-    data.table.rows.forEach((row, index) => {
-      if (!row.c || !row.c[0]) return;
+    let divisionDStarted = false;
+    let foundTeams = [];
 
-      const pos = row.c[0] ? row.c[0].v : index + 1;
-      const clan = row.c[1] ? row.c[1].v : "";
-      const cwPlayed = row.c[2] ? row.c[2].v : 0;
-      const cwScore = row.c[3] ? row.c[3].v : "";
-      const setRecord = row.c[4] ? row.c[4].v : "";
-      const points = row.c[5] ? row.c[5].v : 0;
+    // Durchsuche die Zeilen des Rankings-Sheets
+    data.table.rows.forEach((row) => {
+      if (!row.c) return;
 
-      const isWhiteDragon = clan.toString().toLowerCase().includes("white dragon") || clan.toString().toLowerCase().includes("[wd]");
+      // Sammle alle Textinhalte dieser Zeile
+      const cells = row.c.map(c => (c && c.v !== null && c.v !== undefined) ? c.v.toString().trim() : "");
+      const rowLine = cells.join(" ");
 
-      const tr = document.createElement("tr");
-      if (isWhiteDragon) {
-        tr.style.background = "rgba(0, 229, 255, 0.08)";
-        tr.style.borderLeft = "4px solid var(--cyan)";
+      if (rowLine.toLowerCase().includes("division d")) {
+        divisionDStarted = true;
+        return;
       }
 
-      tr.innerHTML = `
-        <td>${isWhiteDragon ? `<strong>${pos}</strong>` : pos}</td>
-        <td><strong style="${isWhiteDragon ? 'color:#fff;' : ''}">${clan}</strong></td>
-        <td>${cwPlayed}</td>
-        <td>${cwScore}</td>
-        <td>${setRecord}</td>
-        <td><strong style="color:var(--cyan);">${points}</strong></td>
-      `;
+      // Falls die nächste Division beginnt, beenden
+      if (divisionDStarted && rowLine.toLowerCase().includes("division e")) {
+        divisionDStarted = false;
+      }
 
-      tbody.appendChild(tr);
+      if (divisionDStarted) {
+        // Suche nach Zeilen mit "#1 ...", "#2 ...", etc.
+        for (let i = 0; i < cells.length; i++) {
+          const val = cells[i];
+          const match = val.match(/^#?([1-6])\s+(.+)$/);
+          if (match) {
+            const pos = match[1];
+            const clanName = match[2].trim();
+            // Die Punkte stehen meist direkt in der nächsten oder übernächsten Zelle
+            let pts = 0;
+            for (let j = i + 1; j < cells.length; j++) {
+              if (cells[j] && !isNaN(cells[j])) {
+                pts = cells[j];
+                break;
+              }
+            }
+
+            foundTeams.push({ pos, clanName, pts });
+            break;
+          }
+        }
+      }
     });
+
+    // Wenn Teams aus dem Sheet gefunden wurden, Tabelle dynamisch aufbauen
+    if (foundTeams.length > 0) {
+      tbody.innerHTML = "";
+      foundTeams.forEach(t => {
+        const isWD = t.clanName.toLowerCase().includes("white dragon") || t.clanName.toLowerCase().includes("[wd]");
+        
+        // Passende Match-Details ermitteln
+        let extra = { played: "-", score: "-", sets: "-" };
+        for (const k in clanDetails) {
+          if (t.clanName.toLowerCase().includes(k.toLowerCase())) {
+            extra = clanDetails[k];
+            break;
+          }
+        }
+
+        const tr = document.createElement("tr");
+        if (isWD) {
+          tr.style.background = "rgba(0, 229, 255, 0.08)";
+          tr.style.borderLeft = "4px solid var(--cyan)";
+        }
+
+        tr.innerHTML = `
+          <td>${isWD ? `<strong>${t.pos}</strong>` : t.pos}</td>
+          <td><strong style="${isWD ? 'color:#fff;' : ''}">${isWD ? 'White Dragon [WD]' : t.clanName}</strong></td>
+          <td>${extra.played}</td>
+          <td>${extra.score}</td>
+          <td>${extra.sets}</td>
+          <td><strong style="color:var(--cyan);">${t.pts}</strong></td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
   } catch (err) {
-    console.warn("Could not load live BWCL sheet data:", err);
+    console.warn("BWCL Live Sync:", err);
   }
 }
 
