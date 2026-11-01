@@ -4687,14 +4687,16 @@
       }
     }
 
-    function toggleDossierEditMode() {
+function toggleDossierEditMode() {
       var form = document.getElementById('dossier-edit-form');
       if (!form) return;
       var isOpening = (form.style.display === 'none' || !form.style.display);
       form.style.display = isOpening ? 'block' : 'none';
 
       if (isOpening && currentInspectedMemberId) {
-        var p = membersData.find(function(m) { return m.id === currentInspectedMemberId; });
+        var allM = (typeof getFullClanMembersList === 'function') ? getFullClanMembersList() : membersData;
+        var p = allM.find(function(m) { return m.id === currentInspectedMemberId; });
+        if (!p) p = membersData.find(function(m) { return m.id === currentInspectedMemberId; });
         if (!p) return;
 
         var user = (typeof firebase !== 'undefined' && firebase.auth && firebase.auth().currentUser) 
@@ -4726,11 +4728,9 @@
         var countrySel = document.getElementById('edit-country-select');
         if (countrySel) {
           countrySel.value = p.country || 'Global';
-          countrySel.disabled = !canEditPersonal;
+          countrySel.disabled = !(isSelf || isWebmaster);
         }
 
-        // TIERED PERMISSIONS:
-        // Personal profile (Avatar, Race, Bio): only self or webmaster
         var canEditPersonal = isSelf || isWebmaster;
         document.getElementById('edit-avatar-url').disabled = !canEditPersonal;
         document.getElementById('edit-race-select').disabled = !canEditPersonal;
@@ -4740,7 +4740,6 @@
           uploadBtn.style.display = canEditPersonal ? 'flex' : 'none';
         }
 
-        // Hierarchy fields (Clan Rank & Role): only admin or webmaster (never regular self-members)
         var canEditHierarchy = isAdminUser || isWebmaster;
         var adminFields = document.getElementById('admin-hierarchy-fields');
         if (adminFields) {
@@ -4757,7 +4756,8 @@
       var form = document.getElementById('dossier-edit-form');
       if (form) form.style.display = 'none';
       if (currentInspectedMemberId) {
-        var p = membersData.find(function(m) { return m.id === currentInspectedMemberId; });
+        var allM = (typeof getFullClanMembersList === 'function') ? getFullClanMembersList() : membersData;
+        var p = allM.find(function(m) { return m.id === currentInspectedMemberId; });
         if (p) {
           var defaultAvatar = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%23070a12'/><circle cx='50' cy='38' r='20' fill='%2338bdf8'/><path d='M20,85 C20,62 34,58 50,58 C66,58 80,62 80,85 Z' fill='%230284c7'/></svg>";
           var mAv = document.getElementById('m-avatar');
@@ -4768,7 +4768,9 @@
 
     function saveDossierChanges() {
       if (!currentInspectedMemberId) return;
-      var p = membersData.find(function(m) { return m.id === currentInspectedMemberId; });
+      var allM = (typeof getFullClanMembersList === 'function') ? getFullClanMembersList() : membersData;
+      var p = allM.find(function(m) { return m.id === currentInspectedMemberId; });
+      if (!p) p = membersData.find(function(m) { return m.id === currentInspectedMemberId; });
       if (!p) return;
 
       var user = (typeof firebase !== 'undefined' && firebase.auth && firebase.auth().currentUser) 
@@ -4787,7 +4789,6 @@
       var customs = getCustomProfiles();
       if (!customs[p.id]) customs[p.id] = {};
 
-      // 1. Personal fields: only self or webmaster can edit
       if (isSelf || isWebmaster) {
         customs[p.id].avatar = document.getElementById('edit-avatar-url').value.trim();
         customs[p.id].race = document.getElementById('edit-race-select').value;
@@ -4799,13 +4800,17 @@
         }
       }
 
-      // 2. Hierarchy fields: only admin or webmaster can edit
       if (isAdminUser || isWebmaster) {
-        customs[p.id].rank = document.getElementById('edit-rank-select').value;
-        customs[p.id].role = document.getElementById('edit-role-select').value;
+        var newRank = document.getElementById('edit-rank-select').value;
+        var newRole = document.getElementById('edit-role-select').value;
+        customs[p.id].rank = newRank;
+        customs[p.id].role = newRole;
+        p.rank = newRank;
+        p.role = newRole;
       }
 
       localStorage.setItem('wd_custom_profiles', JSON.stringify(customs));
+      applyProfileCustomizationsToRoster();
       renderRosterTableAndTiers();
 
       cancelDossierEdit();
