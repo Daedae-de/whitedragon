@@ -3246,17 +3246,23 @@
     };
 
 window.addEventListener('DOMContentLoaded', function() {
-  initVisitorCounter();
-  recalculateAllMemberScores();
-  renderMatches();
-  renderRosterTableAndTiers();
-
-  // Alle 4 Realtime-Cloud-Dienste starten
-  initClanMembersRealtimeListener();
-  initMatchesRealtimeListener();
-  initVaultRealtimeListener();
-  initNewsRealtimeListener();
-  fetchBWCLStandings();
+      initVisitorCounter();
+      recalculateAllMemberScores();
+      renderMatches();
+      renderRosterTableAndTiers();
+      
+      // Realtime Cloud-Sync for all section
+      initNewsRealtimeListener();
+      initClanMembersRealtimeListener();
+      initVaultRealtimeListener();       
+      initMatchesRealtimeListener();
+      fetchBWCLStandings();
+      
+      var hash = window.location.hash.replace('#', '');
+      if (hash && document.getElementById('tab-' + hash)) {
+        switchTab(hash, false);
+      }
+    });
 
   var hash = window.location.hash.replace('#', '');
   if (hash && document.getElementById('tab-' + hash)) {
@@ -5425,29 +5431,29 @@ window.addEventListener('DOMContentLoaded', function() {
     // ========================================================
     var firestoreMatches = [];
 
-    function initMatchesRealtimeListener() {
+  function initMatchesRealtimeListener() {
       if (typeof firebase !== 'undefined' && firebase.firestore) {
         firebase.firestore().collection('clan_matches').onSnapshot(function(snapshot) {
           if (!snapshot.empty) {
-            var list = [];
+            var liveMatches = [];
             snapshot.forEach(function(doc) {
               var m = doc.data();
               m.id = doc.id;
-              list.push(m);
+              liveMatches.push(m);
             });
-            firestoreMatches = list;
-            renderMatches();
+            firestoreMatches = liveMatches;
+            renderMatches(); // Zeichnet die Matches sofort neu
           } else {
             seedDefaultMatchesToFirestore();
           }
         }, function(err) {
-          console.warn("Matches Cloud-Sync offline:", err);
+          console.warn("Matches Cloud-Sync offline, nutze Fallback:", err);
           renderMatches();
         });
       }
     }
 
-    function seedDefaultMatchesToFirestore() {
+  function seedDefaultMatchesToFirestore() {
       if (!firebase.firestore) return;
       var db = firebase.firestore();
       var batch = db.batch();
@@ -5455,11 +5461,11 @@ window.addEventListener('DOMContentLoaded', function() {
         var ref = db.collection('clan_matches').doc(m.id);
         batch.set(ref, m);
       });
-      batch.commit().catch(function(e) { console.error("Matches-Seed-Fehler:", e); });
+      batch.commit().catch(function(e) { console.error("Fehler beim Seeden der Matches:", e); });
     }
 
     // Deine bestehende getMatchesList()-Funktion (ersetzen mit dieser Version):
-    function getMatchesList() {
+  function getMatchesList() {
       if (firestoreMatches && firestoreMatches.length > 0) {
         return firestoreMatches;
       }
@@ -5469,6 +5475,7 @@ window.addEventListener('DOMContentLoaded', function() {
       } catch(e) {}
       return getDefaultMatchesArchive();
     }
+    
     // Auto-heals cached matches if the browser had cached old records without sets
     function getMatchesList() {
       var defaultMatches = getDefaultMatchesArchive();
