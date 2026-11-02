@@ -5803,7 +5803,7 @@ window.addEventListener('DOMContentLoaded', function() {
       renderMatches();
     }
 
-    function saveNewMatchRecord() {
+function saveNewMatchRecord() {
       var editId = document.getElementById('match-edit-id').value;
       var cat = document.getElementById('match-inp-cat').value;
       var date = document.getElementById('match-inp-date').value.trim() || 'MATCH FIXTURE';
@@ -5813,59 +5813,51 @@ window.addEventListener('DOMContentLoaded', function() {
       var note = document.getElementById('match-inp-note').value.trim();
       var setsText = document.getElementById('match-inp-sets').value.trim();
 
-      if (!title) { alert('Please enter a match title.'); return; }
+      if (!title) { alert('Bitte Match-Titel eingeben.'); return; }
 
       var setsArray = [];
       if (setsText) {
         setsArray = setsText.split('\n').map(function(line) { return line.trim(); }).filter(function(line) { return line.length > 0; });
       }
 
-      var matches = getMatchesList();
+      var matchId = editId || ('m_' + Date.now());
+      var matchRecord = {
+        id: matchId,
+        category: cat,
+        week: date,
+        title: title,
+        resultType: result,
+        score: score,
+        note: note,
+        sets: setsArray
+      };
 
-      if (editId) {
-        var idx = matches.findIndex(function(m) { return m.id === editId; });
-        if (idx !== -1) {
-          matches[idx].category = cat;
-          matches[idx].week = date;
-          matches[idx].title = title;
-          matches[idx].resultType = result;
-          matches[idx].score = score;
-          matches[idx].note = note;
-          matches[idx].sets = setsArray;
-        }
-      } else {
-        matches.unshift({
-          id: 'm_' + Date.now(),
-          category: cat,
-          week: date,
-          title: title,
-          resultType: result,
-          score: score,
-          note: note,
-          sets: setsArray
-        });
-      }
-        if (typeof firebase !== 'undefined' && firebase.firestore) {
-          firebase.firestore().collection('clan_matches').doc(matchId).set(matchRecord)
-            .then(function() {
-              cancelMatchCMS();
-              alert('Match-Scorecard in Firebase gespeichert und für alle synchronisiert!');
+      // Direkt in Firebase Firestore speichern / aktualisieren
+      if (typeof firebase !== 'undefined' && firebase.firestore) {
+        firebase.firestore().collection('clan_matches').doc(matchId).set(matchRecord)
+          .then(function() {
+            cancelMatchCMS();
+            alert('Match-Scorecard erfolgreich in Firebase gespeichert und für alle synchronisiert!');
           })
-            .catch(function(e) {
-              alert('Fehler beim Speichern in Cloud: ' + e.message);
+          .catch(function(e) {
+            alert('Fehler beim Speichern in Cloud: ' + e.message);
           });
       } else {
         var matches = getMatchesList();
-        matches.unshift(matchRecord);
+        if (editId) {
+          var idx = matches.findIndex(function(m) { return m.id === editId; });
+          if (idx !== -1) {
+            matches[idx] = matchRecord;
+          } else {
+            matches.unshift(matchRecord);
+          }
+        } else {
+          matches.unshift(matchRecord);
+        }
         localStorage.setItem('wd_matches_vault', JSON.stringify(matches));
         renderMatches();
         cancelMatchCMS();
       }
-      
-      localStorage.setItem('wd_matches_vault', JSON.stringify(matches));
-      renderMatches();
-      cancelMatchCMS();
-      alert('Match scorecard saved! All member points and set records have been automatically re-calculated.');
     }
 
     function deleteMatchRecord(id) {
