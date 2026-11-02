@@ -4972,7 +4972,55 @@ window.addEventListener('DOMContentLoaded', function() {
       adminDeleteMember(sel.value);
     }
 
-    function handleAvatarFileUpload(event) {
+    function adminDeleteMember(memberId) {
+      var user = (typeof firebase !== 'undefined' && firebase.auth && firebase.auth().currentUser) 
+        ? firebase.auth().currentUser 
+        : currentUser;
+      var canModerate = user && (isUserAdmin(user.email) || (user.email && user.email.toLowerCase() === WEBMASTER_EMAIL.toLowerCase()));
+
+      if (!canModerate) {
+        alert("ZUGRIFF VERWEIGERT // Bitte logge dich als Admin oder Webmaster ein.");
+        openAuthModal();
+        return;
+      }
+
+      if (!confirm("MITGLIED ENTFERNEN: Möchtest du " + memberId + " wirklich aus dem Clan löschen?")) {
+        return;
+      }
+
+      // 1. Direkt aus Cloud Firestore für ALLE Geräte löschen
+      if (typeof firebase !== 'undefined' && firebase.firestore) {
+        firebase.firestore().collection('clan_members').doc(memberId).delete()
+          .then(function() {
+            console.log("Mitglied aus Cloud gelöscht:", memberId);
+          })
+          .catch(function(err) {
+            console.error("Firestore Löschfehler:", err);
+          });
+      }
+
+      // 2. Aus lokalem Speicher entfernen
+      var idx = membersData.findIndex(function(m) { return m.id === memberId; });
+      if (idx !== -1) membersData.splice(idx, 1);
+
+      var fullList = getFullClanMembersList().filter(function(m) { return m.id !== memberId; });
+      localStorage.setItem('wd_all_clan_members', JSON.stringify(fullList));
+
+      var rosterList = getDynamicRosterList().filter(function(r) { return r.id !== memberId; });
+      localStorage.setItem('wd_competitive_roster', JSON.stringify(rosterList));
+
+      var customs = getCustomProfiles();
+      if (customs[memberId]) {
+        delete customs[memberId];
+        localStorage.setItem('wd_custom_profiles', JSON.stringify(customs));
+      }
+
+      closeModal();
+      renderRosterTableAndTiers();
+      alert("Commander " + memberId + " wurde erfolgreich gelöscht.");
+    }
+
+        function handleAvatarFileUpload(event) {
       var file = event.target.files && event.target.files[0];
       if (!file) return;
 
@@ -5122,7 +5170,7 @@ window.addEventListener('DOMContentLoaded', function() {
       }
     }
 
-function saveDossierChanges() {
+    function saveDossierChanges() {
       if (!currentInspectedMemberId) return;
       var allM = (typeof getFullClanMembersList === 'function') ? getFullClanMembersList() : membersData;
       var p = allM.find(function(m) { return m.id === currentInspectedMemberId; });
@@ -5134,8 +5182,8 @@ function saveDossierChanges() {
         : currentUser;
 
       var isWebmaster = user && user.email && (user.email.toLowerCase() === WEBMASTER_EMAIL.toLowerCase());
-      var isSelf = user && p.email && (user.email.toLowerCase() === p.email.toLowerCase());
       var isAdminUser = user && user.email && isUserAdmin(user.email);
+      var isSelf = user && p.email && (user.email.toLowerCase() === p.email.toLowerCase());
 
       if (!isSelf && !isAdminUser && !isWebmaster) {
         alert("ACCESS DENIED // Sie können nur Ihr eigenes Profil bearbeiten.");
@@ -5150,8 +5198,8 @@ function saveDossierChanges() {
         country: document.getElementById('edit-country-select').value
       };
       updates.flagKey = updates.country.toLowerCase().replace(/[^a-z]/g, '');
-  
-    if (isAdminUser || isWebmaster) {
+
+      if (isAdminUser || isWebmaster) {
         var rSel = document.getElementById('edit-rank-select');
         var roleSel = document.getElementById('edit-role-select');
         if (rSel) updates.rank = rSel.value;
@@ -5169,29 +5217,6 @@ function saveDossierChanges() {
           .catch(function(err) {
             alert("Fehler beim Speichern: " + err.message);
           });
-      }
-    }
-
-      // Live-Update direkt an Cloud Firestore senden
-      if (typeof firebase !== 'undefined' && firebase.firestore) {
-        firebase.firestore().collection('clan_members').doc(p.id).update(updates)
-          .then(function() {
-            cancelDossierEdit();
-            closeModal();
-            alert("Dossier wurde für alle Geräte synchronisiert!");
-          })
-          .catch(function(err) {
-            console.error("Firestore-Fehler:", err);
-            // Lokaler Fallback
-            var customs = getCustomProfiles();
-            if (!customs[p.id]) customs[p.id] = {};
-            Object.assign(customs[p.id], updates);
-            localStorage.setItem('wd_custom_profiles', JSON.stringify(customs));
-            applyProfileCustomizationsToRoster();
-            renderRosterTableAndTiers();
-            cancelDossierEdit();
-            closeModal();
-          });
       } else {
         var customs = getCustomProfiles();
         if (!customs[p.id]) customs[p.id] = {};
@@ -5203,8 +5228,8 @@ function saveDossierChanges() {
         closeModal();
       }
     }
-  
-// ========================================================
+
+  // ========================================================
     // 1. DYNAMIC MATCHES ENGINE WITH AUTO-CALCULATED MEMBER SCORES
     // ========================================================
     var currentMatchCategoryFilter = 'All';
