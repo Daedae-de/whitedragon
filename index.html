@@ -2793,18 +2793,18 @@
       if (!race) race = 'Terran';
       var r = race.toLowerCase();
       if (r.startsWith('t')) {
-        return '<span class="race-badge race-terran" title="Terran"><img src="images/terran.jpg" alt="Terran" class="race-icon-img" onerror="this.onerror=null;this.replaceWith(document.createElement(\'span\')).innerHTML=\'🛡️\';"> Terran</span>';
+        return '<span class="race-badge race-terran" title="Terran">🛡️ Terran</span>';
       } else if (r.startsWith('p')) {
-        return '<span class="race-badge race-protoss" title="Protoss"><img src="images/protoss.jpg" alt="Protoss" class="race-icon-img" onerror="this.onerror=null;this.replaceWith(document.createElement(\'span\')).innerHTML=\'⚡\';"> Protoss</span>';
+        return '<span class="race-badge race-protoss" title="Protoss">⚡ Protoss</span>';
       } else if (r.startsWith('z')) {
-        return '<span class="race-badge race-zerg" title="Zerg"><img src="images/zerg.jpg" alt="Zerg" class="race-icon-img" onerror="this.onerror=null;this.replaceWith(document.createElement(\'span\')).innerHTML=\'🕷️\';"> Zerg</span>';
+        return '<span class="race-badge race-zerg" title="Zerg">🕷️ Zerg</span>';
       } else if (r === 'ums') {
         return '<span class="race-badge race-ums" title="UMS" style="background:rgba(16,185,129,0.2);color:#10b981;border:1px solid rgba(16,185,129,0.5);">🎮 UMS</span>';
       } else {
-        return '<span class="race-badge race-random" title="Random" style="background:rgba(239,68,68,0.2);color:#ef4444;border:1px solid rgba(239,68,68,0.5);"><img src="images/random.jpg" alt="Random" class="race-icon-img" onerror="this.onerror=null;this.replaceWith(document.createElement(\'span\')).innerHTML=\'🎲\';"> Random</span>';
+        return '<span class="race-badge race-random" title="Random" style="background:rgba(239,68,68,0.2);color:#ef4444;border:1px solid rgba(239,68,68,0.5);">🎲 Random</span>';
       }
     }
-
+    
 // Helper function to return official vector flag SVG from CDN
     function getFlagImg(code) {
       return `<img src="https://cdn.jsdelivr.net/gh/lipis/flag-icons@main/flags/4x3/${code}.svg" 
