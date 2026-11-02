@@ -5837,26 +5837,23 @@ function saveNewMatchRecord() {
         firebase.firestore().collection('clan_matches').doc(matchId).set(matchRecord)
           .then(function() {
             cancelMatchCMS();
-            alert('Match-Scorecard erfolgreich in Firebase gespeichert und für alle synchronisiert!');
+            alert('Match scorecard successfully saved in Firebase and synced for everyone!');
           })
           .catch(function(e) {
-            alert('Fehler beim Speichern in Cloud: ' + e.message);
+            alert('Error saving to cloud: ' + e.message);
           });
       } else {
         var matches = getMatchesList();
         if (editId) {
           var idx = matches.findIndex(function(m) { return m.id === editId; });
-          if (idx !== -1) {
-            matches[idx] = matchRecord;
+          if (idx !== -1) matches[idx] = matchRecord;
+          else matches.unshift(matchRecord);
           } else {
-            matches.unshift(matchRecord);
-          }
-        } else {
           matches.unshift(matchRecord);
-        }
-        localStorage.setItem('wd_matches_vault', JSON.stringify(matches));
-        renderMatches();
-        cancelMatchCMS();
+          }
+          localStorage.setItem('wd_matches_vault', JSON.stringify(matches));
+          renderMatches();
+          cancelMatchCMS();
       }
     }
 
@@ -5866,7 +5863,7 @@ function saveNewMatchRecord() {
       if (typeof firebase !== 'undefined' && firebase.firestore) {
         firebase.firestore().collection('clan_matches').doc(id).delete()
           .then(function() {
-            alert('Match aus Cloud gelöscht.');
+            alert('Match deleted from cloud.');
           });
       }
       
