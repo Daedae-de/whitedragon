@@ -4972,46 +4972,6 @@ window.addEventListener('DOMContentLoaded', function() {
       adminDeleteMember(sel.value);
     }
 
-    function adminDeleteMember(memberId) {
-      var user = (typeof firebase !== 'undefined' && firebase.auth && firebase.auth().currentUser) 
-        ? firebase.auth().currentUser 
-        : currentUser;
-      var canModerate = user && (isUserAdmin(user.email) || (user.email && user.email.toLowerCase() === WEBMASTER_EMAIL.toLowerCase()));
-
-      if (!canModerate) {
-        alert("ACCESS DENIED // HIGH COMMAND CLEARANCE REQUIRED.");
-        return;
-      }
-
-      if (!confirm("EXPEL MEMBER: Are you sure you want to remove " + memberId + " from White Dragon clan records?")) {
-        return;
-      }
-
-      // 1. Remove from in-memory membersData
-      var idx = membersData.findIndex(function(m) { return m.id === memberId; });
-      if (idx !== -1) {
-        membersData.splice(idx, 1);
-      }
-
-      // 2. Remove from localStorage custom members
-      var fullList = getFullClanMembersList().filter(function(m) { return m.id !== memberId; });
-      localStorage.setItem('wd_all_clan_members', JSON.stringify(fullList));
-
-      // 3. Remove from competitive roster if enrolled
-      var rosterList = getDynamicRosterList().filter(function(r) { return r.id !== memberId; });
-      localStorage.setItem('wd_competitive_roster', JSON.stringify(rosterList));
-
-      // 4. Clean up any saved custom profile data
-      var customs = getCustomProfiles();
-      if (customs[memberId]) {
-        delete customs[memberId];
-        localStorage.setItem('wd_custom_profiles', JSON.stringify(customs));
-      }
-
-      closeModal();
-      renderRosterTableAndTiers();
-      alert("Commander " + memberId + " has been successfully removed from clan records.");
-    }
     function handleAvatarFileUpload(event) {
       var file = event.target.files && event.target.files[0];
       if (!file) return;
@@ -5179,25 +5139,38 @@ function saveDossierChanges() {
 
       if (!isSelf && !isAdminUser && !isWebmaster) {
         alert("ACCESS DENIED // Sie können nur Ihr eigenes Profil bearbeiten.");
+        openAuthModal();
         return;
       }
 
-      var updates = {};
-      if (isSelf || isWebmaster) {
-        updates.avatar = document.getElementById('edit-avatar-url').value.trim();
-        updates.race = document.getElementById('edit-race-select').value;
-        updates.bio = document.getElementById('edit-bio-text').value.trim();
-        var countrySel = document.getElementById('edit-country-select');
-        if (countrySel) {
-          updates.country = countrySel.value;
-          updates.flagKey = countrySel.value.toLowerCase().replace(/[^a-z]/g, '');
-        }
+      var updates = {
+        avatar: document.getElementById('edit-avatar-url').value.trim(),
+        race: document.getElementById('edit-race-select').value,
+        bio: document.getElementById('edit-bio-text').value.trim(),
+        country: document.getElementById('edit-country-select').value
+      };
+      updates.flagKey = updates.country.toLowerCase().replace(/[^a-z]/g, '');
+  
+    if (isAdminUser || isWebmaster) {
+        var rSel = document.getElementById('edit-rank-select');
+        var roleSel = document.getElementById('edit-role-select');
+        if (rSel) updates.rank = rSel.value;
+        if (roleSel) updates.role = roleSel.value;
       }
 
-      if (isAdminUser || isWebmaster) {
-        updates.rank = document.getElementById('edit-rank-select').value;
-        updates.role = document.getElementById('edit-role-select').value;
+      // Sofort in Cloud Firestore speichern
+      if (typeof firebase !== 'undefined' && firebase.firestore) {
+        firebase.firestore().collection('clan_members').doc(p.id).set(updates, { merge: true })
+          .then(function() {
+            cancelDossierEdit();
+            closeModal();
+            alert("Änderungen wurden live in der Cloud gespeichert!");
+          })
+          .catch(function(err) {
+            alert("Fehler beim Speichern: " + err.message);
+          });
       }
+    }
 
       // Live-Update direkt an Cloud Firestore senden
       if (typeof firebase !== 'undefined' && firebase.firestore) {
