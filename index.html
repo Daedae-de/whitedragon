@@ -3266,7 +3266,9 @@ window.addEventListener('DOMContentLoaded', function() {
     function openDossier(memberId) {
       applyProfileCustomizationsToRoster();
       currentInspectedMemberId = memberId;
-      const p = membersData.find(m => m.id === memberId);
+      var allM = (typeof getFullClanMembersList === 'function') ? getFullClanMembersList() : membersData;
+      var p = allM.find(function(m) { return m.id === memberId; });
+      if (!p) p = membersData.find(function(m) { return m.id === memberId; });
       if (!p) return;
 
       document.getElementById('m-handle').innerText = p.name;
