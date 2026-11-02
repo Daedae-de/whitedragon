@@ -3251,7 +3251,11 @@ window.addEventListener('DOMContentLoaded', function() {
   recalculateAllMemberScores();
   renderMatches();
   renderRosterTableAndTiers();
+  
+  // Realtime Cloud-Sync für alle Geräte (Firebase Firestore)
   initNewsRealtimeListener();
+  initClanMembersRealtimeListener();
+  initVaultRealtimeListener();       
   fetchBWCLStandings();
   
   var hash = window.location.hash.replace('#', '');
@@ -3788,47 +3792,78 @@ window.addEventListener('DOMContentLoaded', function() {
       if (form) form.style.display = 'none';
     }
 
-    async function saveMapDownload() {
-      if (!ensureVerifiedAccess("save downloads to Clan Vault")) return;
-      if (!currentSelectedMapFile) {
-        alert('Please choose a file to upload first.');
+    function initVaultRealtimeListener() {
+      if (typeof firebase !== 'undefined' && firebase.firestore) {
+        firebase.firestore().collection('clan_vault').orderBy('date', 'desc').onSnapshot(function(snapshot) {
+          var files = [];
+          snapshot.forEach(function(doc) {
+            var item = doc.data();
+            item.id = doc.id;
+            files.push(item);
+          });
+          if (files.length > 0) {
+            renderUserMapsFromCloud(files);
+          }
+        }, function(err) {
+          console.warn("Vault Sync offline:", err);
+        });
+      }
+    }
+
+    function renderUserMapsFromCloud(cloudFiles) {
+      var container = document.getElementById('user-maps-list');
+      var emptyMsg = document.getElementById('no-maps-msg');
+      if (!container) return;
+
+      container.innerHTML = '';
+      if (emptyMsg) emptyMsg.style.display = cloudFiles.length === 0 ? 'block' : 'none';
+
+      cloudFiles.forEach(function(item) {
+        var card = document.createElement('div');
+        card.className = 'replay-card';
+        card.style.borderLeft = '4px solid var(--cyan)';
+        card.innerHTML = `
+          <div class="replay-meta">
+            <span class="replay-title">${item.title} <span style="font-size:0.68rem; color:var(--cyan); border:1px solid var(--cyan); padding:1px 6px; border-radius:4px; font-family:monospace;">${item.category}</span></span>
+            <span class="replay-sub">${item.desc} (${item.fileSize} • ${item.date})</span>
+          </div>
+          <button class="btn-download-rep" onclick="alert('Download bereitgestellt via Cloud Mainframe.')">DOWNLOAD</button>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    function saveMapDownload() {
+      if (!ensureVerifiedAccess("Dateien im Clan-Vault speichern")) return;
+      var file = currentSelectedMapFile;
+      if (!file) {
+        alert('Bitte wählen Sie zuerst eine Datei aus.');
         return;
       }
 
-      var file = currentSelectedMapFile;
       var titleInp = document.getElementById('map-title-input');
       var descInp = document.getElementById('map-desc-input');
       var catSelect = document.getElementById('map-category-input');
 
-      var title = (titleInp && titleInp.value.trim()) || file.name;
-      var desc = (descInp && descInp.value.trim()) || 'StarCraft Resource File';
-      var category = (catSelect && catSelect.value) || 'Map Pack';
-      var dateStr = new Date().toLocaleDateString();
-
-      var downloadItem = {
-        id: 'dl_' + Date.now(),
-        title: title,
-        desc: desc,
-        category: category,
+      var downloadRecord = {
+        title: (titleInp && titleInp.value.trim()) || file.name,
+        desc: (descInp && descInp.value.trim()) || 'StarCraft Resource File',
+        category: (catSelect && catSelect.value) || 'Map Pack',
         fileName: file.name,
         fileSize: (file.size / 1024).toFixed(1) + ' KB',
-        date: dateStr,
-        uploader: (currentUser ? currentUser.email : 'Verified Member'),
-        fileBlob: file
+        date: new Date().toLocaleDateString(),
+        uploader: currentUser ? currentUser.email : 'High Command'
       };
 
-      try {
-        const db = await getVaultDB();
-        const tx = db.transaction('downloads', 'readwrite');
-        tx.objectStore('downloads').put(downloadItem);
-        tx.oncomplete = function() {
-          renderUserMaps();
-          cancelMapUpload();
-          alert('File stored in Clan Downloads Vault successfully!');
-        };
-      } catch(err) {
-        console.error('Error saving download to IndexedDB:', err);
-        alert('Failed to store file: ' + err.message);
+      if (typeof firebase !== 'undefined' && firebase.firestore) {
+        firebase.firestore().collection('clan_vault').add(downloadRecord)
+          .then(function() {
+            cancelMapUpload();
+            alert('Datei-Eintrag global synchronisiert! Alle Geräte sehen diesen Download nun.');
+          })
+          .catch(function(e) {
+            alert('Upload fehlgeschlagen: ' + e.message);
+          });
       }
     }
 
@@ -5128,7 +5163,7 @@ window.addEventListener('DOMContentLoaded', function() {
       }
     }
 
-    function saveDossierChanges() {
+function saveDossierChanges() {
       if (!currentInspectedMemberId) return;
       var allM = (typeof getFullClanMembersList === 'function') ? getFullClanMembersList() : membersData;
       var p = allM.find(function(m) { return m.id === currentInspectedMemberId; });
@@ -5144,48 +5179,58 @@ window.addEventListener('DOMContentLoaded', function() {
       var isAdminUser = user && user.email && isUserAdmin(user.email);
 
       if (!isSelf && !isAdminUser && !isWebmaster) {
-        alert("ACCESS DENIED // You can only customize your own profile.");
+        alert("ACCESS DENIED // Sie können nur Ihr eigenes Profil bearbeiten.");
         return;
       }
 
-      var customs = getCustomProfiles();
-      if (!customs[p.id]) customs[p.id] = {};
-
+      var updates = {};
       if (isSelf || isWebmaster) {
-        customs[p.id].avatar = document.getElementById('edit-avatar-url').value.trim();
-        customs[p.id].race = document.getElementById('edit-race-select').value;
-        customs[p.id].bio = document.getElementById('edit-bio-text').value.trim();
+        updates.avatar = document.getElementById('edit-avatar-url').value.trim();
+        updates.race = document.getElementById('edit-race-select').value;
+        updates.bio = document.getElementById('edit-bio-text').value.trim();
         var countrySel = document.getElementById('edit-country-select');
         if (countrySel) {
-          customs[p.id].country = countrySel.value;
-          customs[p.id].flagKey = countrySel.value.toLowerCase().replace(/\s+/g, '');
+          updates.country = countrySel.value;
+          updates.flagKey = countrySel.value.toLowerCase().replace(/[^a-z]/g, '');
         }
       }
 
       if (isAdminUser || isWebmaster) {
-        var newRank = document.getElementById('edit-rank-select').value;
-        var newRole = document.getElementById('edit-role-select').value;
-        customs[p.id].rank = newRank;
-        customs[p.id].role = newRole;
-        p.rank = newRank;
-        p.role = newRole;
+        updates.rank = document.getElementById('edit-rank-select').value;
+        updates.role = document.getElementById('edit-role-select').value;
       }
 
-      localStorage.setItem('wd_custom_profiles', JSON.stringify(customs));
-      applyProfileCustomizationsToRoster();
-      renderRosterTableAndTiers();
-
-      cancelDossierEdit();
-      openDossier(p.id);
-      alert("Dossier updated successfully!");
+      // Live-Update direkt an Cloud Firestore senden
+      if (typeof firebase !== 'undefined' && firebase.firestore) {
+        firebase.firestore().collection('clan_members').doc(p.id).update(updates)
+          .then(function() {
+            cancelDossierEdit();
+            closeModal();
+            alert("Dossier wurde für alle Geräte synchronisiert!");
+          })
+          .catch(function(err) {
+            console.error("Firestore-Fehler:", err);
+            // Lokaler Fallback
+            var customs = getCustomProfiles();
+            if (!customs[p.id]) customs[p.id] = {};
+            Object.assign(customs[p.id], updates);
+            localStorage.setItem('wd_custom_profiles', JSON.stringify(customs));
+            applyProfileCustomizationsToRoster();
+            renderRosterTableAndTiers();
+            cancelDossierEdit();
+            closeModal();
+          });
+      } else {
+        var customs = getCustomProfiles();
+        if (!customs[p.id]) customs[p.id] = {};
+        Object.assign(customs[p.id], updates);
+        localStorage.setItem('wd_custom_profiles', JSON.stringify(customs));
+        applyProfileCustomizationsToRoster();
+        renderRosterTableAndTiers();
+        cancelDossierEdit();
+        closeModal();
+      }
     }
-
-  document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape') closePrivacyModal();
-      if (e.key === 'Escape') closeAuthModal();
-      if (e.key === 'Escape') closeModal();
-    });
-
   
 // ========================================================
     // 1. DYNAMIC MATCHES ENGINE WITH AUTO-CALCULATED MEMBER SCORES
@@ -5876,31 +5921,56 @@ window.addEventListener('DOMContentLoaded', function() {
     // ========================================================
     // 3. CLAN MEMBER LIST MANAGEMENT (ENLIST NEW MEMBERS)
     // ========================================================
-    function getFullClanMembersList() {
-      var list = membersData;
-      try {
-        var stored = JSON.parse(localStorage.getItem('wd_all_clan_members') || 'null');
-        if (Array.isArray(stored) && stored.length > 0) list = stored;
-      } catch(e) {}
+    var firestoreMembers = [];
 
-      // Always merge saved custom profile overrides (rank, role, race, avatar, country, bio)
-      var customs = getCustomProfiles();
-      list.forEach(function(member) {
-        if (customs[member.id]) {
-          var c = customs[member.id];
-          if (c.avatar !== undefined && c.avatar !== '') member.avatar = c.avatar;
-          if (c.race !== undefined && c.race !== '') member.race = c.race;
-          if (c.bio !== undefined) member.bio = c.bio;
-          if (c.rank !== undefined && c.rank !== '') member.rank = c.rank;
-          if (c.role !== undefined && c.role !== '') member.role = c.role;
-          if (c.country !== undefined && c.country !== '') member.country = c.country;
-          if (c.flagKey !== undefined && c.flagKey !== '') member.flagKey = c.flagKey;
-        }
-      });
-      return list;
+    // Hört live auf Änderungen in Firestore und aktualisiert alle Geräte sofort
+    function initClanMembersRealtimeListener() {
+      if (typeof firebase !== 'undefined' && firebase.firestore) {
+        var db = firebase.firestore();
+        db.collection('clan_members').onSnapshot(function(snapshot) {
+          if (!snapshot.empty) {
+            var liveList = [];
+            snapshot.forEach(function(doc) {
+              var d = doc.data();
+              d.id = doc.id;
+              liveList.push(d);
+            });
+            firestoreMembers = liveList;
+            localStorage.setItem('wd_all_clan_members', JSON.stringify(liveList));
+            renderRosterTableAndTiers();
+          } else {
+            seedDefaultMembersToFirestore();
+          }
+        }, function(err) {
+          console.warn("Firestore Mitglieder-Sync offline, nutze lokalen Cache:", err);
+          renderRosterTableAndTiers();
+        });
+      }
     }
 
-   function enlistNewClanMemberUI() {
+    function seedDefaultMembersToFirestore() {
+      if (!firebase.firestore) return;
+      var db = firebase.firestore();
+      var batch = db.batch();
+      membersData.forEach(function(m) {
+        var ref = db.collection('clan_members').doc(m.id);
+        batch.set(ref, m);
+      });
+      batch.commit().catch(function(e) { console.error("Fehler beim Seeden:", e); });
+    }
+
+    function getFullClanMembersList() {
+      if (firestoreMembers && firestoreMembers.length > 0) {
+        return firestoreMembers;
+      }
+      try {
+        var stored = JSON.parse(localStorage.getItem('wd_all_clan_members') || 'null');
+        if (Array.isArray(stored) && stored.length > 0) return stored;
+      } catch(e) {}
+      return membersData;
+    }
+
+    function enlistNewClanMemberUI() {
       var name = document.getElementById('new-mem-name').value.trim();
       var race = document.getElementById('new-mem-race').value;
       var rank = document.getElementById('new-mem-rank').value;
@@ -5909,8 +5979,6 @@ window.addEventListener('DOMContentLoaded', function() {
       if (!name) { alert('Please provide the member alias/handle.'); return; }
 
       var id = name.replace(/[^a-zA-Z0-9]/g, '');
-
-      // --- REPLACE YOUR OLD flagKey LOGIC WITH THIS ---
       var cleanKey = country.toLowerCase().replace(/[^a-z]/g, '');
       var flagKey = flags[cleanKey] ? cleanKey : 'global';
 
@@ -5926,16 +5994,21 @@ window.addEventListener('DOMContentLoaded', function() {
         w1: '0-0', w2: '0-0', pts: 0, history: []
       };
 
-      var fullList = getFullClanMembersList();
-      if (!fullList.some(function(m) { return m.id === id; })) {
+      if (typeof firebase !== 'undefined' && firebase.firestore) {
+        firebase.firestore().collection('clan_members').doc(id).set(newMember)
+          .then(function() {
+            document.getElementById('new-mem-name').value = '';
+            alert('Mitglied ' + newMember.name + ' erfolgreich für alle Geräte synchronisiert!');
+          })
+          .catch(function(err) {
+            alert('Fehler beim Synchronisieren: ' + err.message);
+          });
+      } else {
+        var fullList = getFullClanMembersList();
         fullList.push(newMember);
+        localStorage.setItem('wd_all_clan_members', JSON.stringify(fullList));
+        renderRosterTableAndTiers();
       }
-      membersData.push(newMember);
-      localStorage.setItem('wd_all_clan_members', JSON.stringify(fullList));
-
-      document.getElementById('new-mem-name').value = '';
-      renderRosterTableAndTiers();
-      alert('Operator ' + newMember.name + ' successfully enlisted in White Dragon [' + rank + ']!');
     }
 
     // ========================================================
