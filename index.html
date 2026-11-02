@@ -2793,18 +2793,18 @@
       if (!race) race = 'Terran';
       var r = race.toLowerCase();
       if (r.startsWith('t')) {
-        return '<span class="race-badge race-terran" title="Terran">🛡️ Terran</span>';
+        return '<span class="race-badge race-terran" title="Terran"><img src="images/terran.jpg" alt="Terran" class="race-icon-img" onerror="this.onerror=null;this.replaceWith(document.createElement(\'span\')).innerHTML=\'🛡️\';"> Terran</span>';
       } else if (r.startsWith('p')) {
-        return '<span class="race-badge race-protoss" title="Protoss">⚡ Protoss</span>';
+        return '<span class="race-badge race-protoss" title="Protoss"><img src="images/protoss.jpg" alt="Protoss" class="race-icon-img" onerror="this.onerror=null;this.replaceWith(document.createElement(\'span\')).innerHTML=\'⚡\';"> Protoss</span>';
       } else if (r.startsWith('z')) {
-        return '<span class="race-badge race-zerg" title="Zerg">🕷️ Zerg</span>';
+        return '<span class="race-badge race-zerg" title="Zerg"><img src="images/zerg.jpg" alt="Zerg" class="race-icon-img" onerror="this.onerror=null;this.replaceWith(document.createElement(\'span\')).innerHTML=\'🕷️\';"> Zerg</span>';
       } else if (r === 'ums') {
         return '<span class="race-badge race-ums" title="UMS" style="background:rgba(16,185,129,0.2);color:#10b981;border:1px solid rgba(16,185,129,0.5);">🎮 UMS</span>';
       } else {
-        return '<span class="race-badge race-random" title="Random" style="background:rgba(239,68,68,0.2);color:#ef4444;border:1px solid rgba(239,68,68,0.5);">🎲 Random</span>';
+        return '<span class="race-badge race-random" title="Random" style="background:rgba(239,68,68,0.2);color:#ef4444;border:1px solid rgba(239,68,68,0.5);"><img src="images/random.jpg" alt="Random" class="race-icon-img" onerror="this.onerror=null;this.replaceWith(document.createElement(\'span\')).innerHTML=\'🎲\';"> Random</span>';
       }
     }
-    
+
 // Helper function to return official vector flag SVG from CDN
     function getFlagImg(code) {
       return `<img src="https://cdn.jsdelivr.net/gh/lipis/flag-icons@main/flags/4x3/${code}.svg" 
@@ -3246,24 +3246,17 @@
     };
 
 window.addEventListener('DOMContentLoaded', function() {
-      initVisitorCounter();
-      recalculateAllMemberScores();
-      renderMatches();
-      renderRosterTableAndTiers();
-      
-      // Realtime Cloud-Sync for all section
-      initNewsRealtimeListener();
-      initClanMembersRealtimeListener();
-      initVaultRealtimeListener();       
-      initMatchesRealtimeListener();
-      fetchBWCLStandings();
-      
-      var hash = window.location.hash.replace('#', '');
-      if (hash && document.getElementById('tab-' + hash)) {
-        switchTab(hash, false);
-      }
-    });
-
+  initVisitorCounter();
+  recalculateAllMemberScores();
+  renderMatches();
+  renderRosterTableAndTiers();
+  
+  // Realtime Cloud-Sync für alle Geräte (Firebase Firestore)
+  initNewsRealtimeListener();
+  initClanMembersRealtimeListener();
+  initVaultRealtimeListener();       
+  fetchBWCLStandings();
+  
   var hash = window.location.hash.replace('#', '');
   if (hash && document.getElementById('tab-' + hash)) {
     switchTab(hash, false);
@@ -5285,7 +5278,42 @@ window.addEventListener('DOMContentLoaded', function() {
     }
 
     // Official Default Scorecards with full sets and race tags
-    function getDefaultMatchesArchive() {
+        var firestoreMatches = [];
+
+    function initMatchesRealtimeListener() {
+      if (typeof firebase !== 'undefined' && firebase.firestore) {
+        firebase.firestore().collection('clan_matches').onSnapshot(function(snapshot) {
+          if (!snapshot.empty) {
+            var liveMatches = [];
+            snapshot.forEach(function(doc) {
+              var m = doc.data();
+              m.id = doc.id;
+              liveMatches.push(m);
+            });
+            firestoreMatches = liveMatches;
+            renderMatches();
+          } else {
+            seedDefaultMatchesToFirestore();
+          }
+        }, function(err) {
+          console.warn("Matches Cloud-Sync offline:", err);
+          renderMatches();
+        });
+      }
+    }
+
+    function seedDefaultMatchesToFirestore() {
+      if (!firebase.firestore) return;
+      var db = firebase.firestore();
+      var batch = db.batch();
+      getDefaultMatchesArchive().forEach(function(m) {
+        var ref = db.collection('clan_matches').doc(m.id);
+        batch.set(ref, m);
+      });
+      batch.commit().catch(function(e) { console.error("Fehler beim Seeden der Matches:", e); });
+    }
+
+function getDefaultMatchesArchive() {
       return [
         {
           id: 'm_1',
@@ -5425,57 +5453,7 @@ window.addEventListener('DOMContentLoaded', function() {
         }
       ];
     }
-    
-    // ========================================================
-    // MATCHES REALTIME SYNC (CLAN MATCHES)
-    // ========================================================
-    var firestoreMatches = [];
 
-  function initMatchesRealtimeListener() {
-      if (typeof firebase !== 'undefined' && firebase.firestore) {
-        firebase.firestore().collection('clan_matches').onSnapshot(function(snapshot) {
-          if (!snapshot.empty) {
-            var liveMatches = [];
-            snapshot.forEach(function(doc) {
-              var m = doc.data();
-              m.id = doc.id;
-              liveMatches.push(m);
-            });
-            firestoreMatches = liveMatches;
-            renderMatches(); // Zeichnet die Matches sofort neu
-          } else {
-            seedDefaultMatchesToFirestore();
-          }
-        }, function(err) {
-          console.warn("Matches Cloud-Sync offline, nutze Fallback:", err);
-          renderMatches();
-        });
-      }
-    }
-
-  function seedDefaultMatchesToFirestore() {
-      if (!firebase.firestore) return;
-      var db = firebase.firestore();
-      var batch = db.batch();
-      getDefaultMatchesArchive().forEach(function(m) {
-        var ref = db.collection('clan_matches').doc(m.id);
-        batch.set(ref, m);
-      });
-      batch.commit().catch(function(e) { console.error("Fehler beim Seeden der Matches:", e); });
-    }
-
-    // Deine bestehende getMatchesList()-Funktion (ersetzen mit dieser Version):
-  function getMatchesList() {
-      if (firestoreMatches && firestoreMatches.length > 0) {
-        return firestoreMatches;
-      }
-      try {
-        var stored = JSON.parse(localStorage.getItem('wd_matches_vault') || 'null');
-        if (Array.isArray(stored) && stored.length > 0) return stored;
-      } catch(e) {}
-      return getDefaultMatchesArchive();
-    }
-    
     // Auto-heals cached matches if the browser had cached old records without sets
     function getMatchesList() {
       var defaultMatches = getDefaultMatchesArchive();
@@ -5810,7 +5788,7 @@ window.addEventListener('DOMContentLoaded', function() {
       renderMatches();
     }
 
-function saveNewMatchRecord() {
+    function saveNewMatchRecord() {
       var editId = document.getElementById('match-edit-id').value;
       var cat = document.getElementById('match-inp-cat').value;
       var date = document.getElementById('match-inp-date').value.trim() || 'MATCH FIXTURE';
@@ -5820,65 +5798,54 @@ function saveNewMatchRecord() {
       var note = document.getElementById('match-inp-note').value.trim();
       var setsText = document.getElementById('match-inp-sets').value.trim();
 
-      if (!title) { alert('Bitte Match-Titel eingeben.'); return; }
+      if (!title) { alert('Please enter a match title.'); return; }
 
       var setsArray = [];
       if (setsText) {
         setsArray = setsText.split('\n').map(function(line) { return line.trim(); }).filter(function(line) { return line.length > 0; });
       }
 
-      var matchId = editId || ('m_' + Date.now());
-      var matchRecord = {
-        id: matchId,
-        category: cat,
-        week: date,
-        title: title,
-        resultType: result,
-        score: score,
-        note: note,
-        sets: setsArray
-      };
+      var matches = getMatchesList();
 
-      // Direkt in Firebase Firestore speichern / aktualisieren
-      if (typeof firebase !== 'undefined' && firebase.firestore) {
-        firebase.firestore().collection('clan_matches').doc(matchId).set(matchRecord)
-          .then(function() {
-            cancelMatchCMS();
-            alert('Match scorecard successfully saved in Firebase and synced for everyone!');
-          })
-          .catch(function(e) {
-            alert('Error saving to cloud: ' + e.message);
-          });
+      if (editId) {
+        var idx = matches.findIndex(function(m) { return m.id === editId; });
+        if (idx !== -1) {
+          matches[idx].category = cat;
+          matches[idx].week = date;
+          matches[idx].title = title;
+          matches[idx].resultType = result;
+          matches[idx].score = score;
+          matches[idx].note = note;
+          matches[idx].sets = setsArray;
+        }
       } else {
-        var matches = getMatchesList();
-        if (editId) {
-          var idx = matches.findIndex(function(m) { return m.id === editId; });
-          if (idx !== -1) matches[idx] = matchRecord;
-          else matches.unshift(matchRecord);
-          } else {
-          matches.unshift(matchRecord);
-          }
-          localStorage.setItem('wd_matches_vault', JSON.stringify(matches));
-          renderMatches();
-          cancelMatchCMS();
+        matches.unshift({
+          id: 'm_' + Date.now(),
+          category: cat,
+          week: date,
+          title: title,
+          resultType: result,
+          score: score,
+          note: note,
+          sets: setsArray
+        });
       }
+
+      localStorage.setItem('wd_matches_vault', JSON.stringify(matches));
+      renderMatches();
+      cancelMatchCMS();
+      alert('Match scorecard saved! All member points and set records have been automatically re-calculated.');
     }
 
     function deleteMatchRecord(id) {
       if (!confirm('Are you sure you want to delete this match record?')) return;
-
-      if (typeof firebase !== 'undefined' && firebase.firestore) {
-        firebase.firestore().collection('clan_matches').doc(id).delete()
-          .then(function() {
-            alert('Match deleted from cloud.');
-          });
-      }
-      
       var matches = getMatchesList().filter(function(m) { return m.id !== id; });
       localStorage.setItem('wd_matches_vault', JSON.stringify(matches));
       renderMatches();
     }
 
+    // ========================================================
+    
     // ========================================================
     // SQUAD FILTERING ENGINE (WD-A, WD-B, WD-C)
     // ========================================================
