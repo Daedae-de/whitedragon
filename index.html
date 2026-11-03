@@ -1691,7 +1691,7 @@
             <option value="Clan Match">🛡️ Clan Match (Friendly CW)</option>
           </select>
         </div>
-        <div>
+	<div>
           <label style="display:block; font-size:0.68rem; color:var(--text-muted); font-family:'Orbitron',sans-serif;">DATE / CALENDAR</label>
           <input type="date" id="match-inp-date" style="width:100%; background:#070a12; border:1px solid var(--border-color); color:#fff; padding:7px; border-radius:4px; font-family:'Share Tech Mono', monospace;">
         </div>
@@ -1714,6 +1714,7 @@
       </div>
 
       <!-- TABELLARISCHER SET BUILDER -->
+<!-- TABELLARISCHER SET BUILDER (AKTUALISIERT) -->
       <div style="background:rgba(7,12,22,0.8); border:1px solid rgba(0,229,255,0.3); border-radius:8px; padding:12px; margin-bottom:12px; overflow-x:auto;">
         <div style="font-family:'Orbitron',sans-serif; font-size:0.75rem; color:var(--cyan); font-weight:800; margin-bottom:8px;">
           🛠️ MATCH-SETS TABELLE (Auto-Kalkulation: Win +2 Pkt, Loss +1 Pkt für Clan League)
@@ -1726,7 +1727,6 @@
               <th style="padding:6px 4px;">MAP</th>
               <th style="padding:6px 4px;">WD PLAYER(S)</th>
               <th style="padding:6px 4px; text-align:center;">SCORE</th>
-              <th style="padding:6px 4px;">OPPONENT CLAN</th>
               <th style="padding:6px 4px;">OPP PLAYER(S)</th>
               <th style="padding:6px 4px; text-align:center;">RESULT</th>
               <th></th>
@@ -1734,17 +1734,25 @@
           </thead>
           <tbody id="builder-table-body">
             <tr>
-              <td style="padding:4px;"><select id="b-type" style="background:#0d1627; border:1px solid var(--border-color); color:var(--cyan); padding:4px;"><option>1v1</option><option>2v2</option></select></td>
-              <td style="padding:4px;"><input type="text" id="b-map" placeholder="Map..." style="width:80px; background:#0d1627; border:1px solid var(--border-color); color:#fff; padding:4px;"></td>
+              <td style="padding:4px;"><select id="b-type" onchange="toggleTable2v2Mode()" style="background:#0d1627; border:1px solid var(--border-color); color:var(--cyan); padding:4px;"><option value="1v1">1v1</option><option value="2v2">2v2</option></select></td>
+              <td style="padding:4px;"><input type="text" id="b-map" placeholder="Map..." style="width:90px; background:#0d1627; border:1px solid var(--border-color); color:#fff; padding:4px;"></td>
               <td style="padding:4px;">
-                <select id="b-wd1" style="width:90px; background:#0d1627; border:1px solid var(--border-color); color:#fff; padding:4px;"></select> <select id="b-wdr1" style="width:40px; background:#0d1627; border:1px solid var(--border-color); color:var(--cyan); padding:4px;"><option value="T">T</option><option value="P">P</option><option value="Z">Z</option><option value="R">R</option></select><br>
-                <input type="text" id="b-wd2" placeholder="Partner 2v2..." style="width:90px; background:#0d1627; border:1px solid var(--border-color); color:#fff; padding:4px; margin-top:2px;"> <select id="b-wdr2" style="width:40px; background:#0d1627; border:1px solid var(--border-color); color:var(--cyan); padding:4px; margin-top:2px;"><option value="T">T</option><option value="P">P</option><option value="Z">Z</option></select>
+                <!-- WD Player 1 -->
+                <select id="b-wd1" style="width:100px; background:#0d1627; border:1px solid var(--border-color); color:#fff; padding:4px;"></select> 
+                <select id="b-wdr1" style="width:45px; background:#0d1627; border:1px solid var(--border-color); color:var(--cyan); padding:4px;"><option value="T">T</option><option value="P">P</option><option value="Z">Z</option><option value="R">R</option></select><br>
+                <!-- WD Player 2 (Nur bei 2v2 sichtbar) -->
+                <div id="table-wd2-container" style="display:none; margin-top:3px;">
+                  <select id="b-wd2" style="width:100px; background:#0d1627; border:1px solid var(--border-color); color:#fff; padding:4px;"></select> 
+                  <select id="b-wdr2" style="width:45px; background:#0d1627; border:1px solid var(--border-color); color:var(--cyan); padding:4px;"><option value="T">T</option><option value="P">P</option><option value="Z">Z</option></select>
+                </div>
               </td>
-              <td style="padding:4px; text-align:center;"><select id="b-score" style="background:#0d1627; border:1px solid var(--border-color); color:#fff; padding:4px; font-weight:bold;"><option>2 : 0</option><option>2 : 1</option><option>1 : 2</option><option>0 : 2</option></select></td>
-              <td style="padding:4px;"><input type="text" id="b-opp-clan" placeholder="Clan Tag..." style="width:80px; background:#0d1627; border:1px solid var(--border-color); color:#fff; padding:4px;"></td>
+              <!-- Freies Eingabefeld statt Dropdown für Score -->
+              <td style="padding:4px; text-align:center;"><input type="text" id="b-score" value="2 - 0" style="width:60px; background:#0d1627; border:1px solid var(--border-color); color:#fff; padding:4px; text-align:center; font-weight:bold;"></td>
               <td style="padding:4px;">
-                <input type="text" id="b-opp1" placeholder="Opp 1..." style="width:80px; background:#0d1627; border:1px solid var(--border-color); color:#fff; padding:4px;"> <select id="b-oppr1" style="width:40px; background:#0d1627; border:1px solid var(--border-color); color:#fbbf24; padding:4px;"><option value="Z">Z</option><option value="P">P</option><option value="T">T</option><option value="R">R</option></select><br>
-                <input type="text" id="b-opp2" placeholder="Opp 2..." style="width:80px; background:#0d1627; border:1px solid var(--border-color); color:#fff; padding:4px; margin-top:2px;"> <select id="b-oppr2" style="width:40px; background:#0d1627; border:1px solid var(--border-color); color:#fbbf24; padding:4px; margin-top:2px;"><option value="Z">Z</option><option value="P">P</option><option value="T">T</option></select>
+                <input type="text" id="b-opp1" placeholder="Opp 1..." style="width:90px; background:#0d1627; border:1px solid var(--border-color); color:#fff; padding:4px;"> <select id="b-oppr1" style="width:45px; background:#0d1627; border:1px solid var(--border-color); color:#fbbf24; padding:4px;"><option value="Z">Z</option><option value="P">P</option><option value="T">T</option><option value="R">R</option></select><br>
+                <div id="table-opp2-container" style="display:none; margin-top:3px;">
+                  <input type="text" id="b-opp2" placeholder="Opp 2..." style="width:90px; background:#0d1627; border:1px solid var(--border-color); color:#fff; padding:4px;"> <select id="b-oppr2" style="width:45px; background:#0d1627; border:1px solid var(--border-color); color:#fbbf24; padding:4px;"><option value="Z">Z</option><option value="P">P</option><option value="T">T</option></select>
+                </div>
               </td>
               <td style="padding:4px; text-align:center;"><select id="b-result" style="background:#0d1627; border:1px solid var(--border-color); color:var(--win); padding:4px; font-weight:bold;"><option value="WIN">WIN</option><option value="LOSS" style="color:var(--loss);">LOSS</option></select></td>
               <td style="padding:4px; text-align:right;"><button type="button" onclick="addSetFromTableBuilder()" class="btn-download-rep" style="background:var(--cyan); color:#070a12; font-weight:800; font-size:0.7rem; padding:4px 8px;">+ ADD</button></td>
@@ -5387,9 +5395,61 @@ window.addEventListener('DOMContentLoaded', function() {
       document.getElementById('b-opp2').value = '';
     }
 
+    // Schaltet die 2v2-Felder in der Tabelle ein/aus
+    function toggleTable2v2Mode() {
+      var type = document.getElementById('b-type').value;
+      var wd2Box = document.getElementById('table-wd2-container');
+      var opp2Box = document.getElementById('table-opp2-container');
+      if (wd2Box) wd2Box.style.display = (type === '2v2') ? 'block' : 'none';
+      if (opp2Box) opp2Box.style.display = (type === '2v2') ? 'block' : 'none';
+    }
+
+    function addSetFromTableBuilder() {
+      var allMembers = (typeof getFullClanMembersList === 'function') ? getFullClanMembersList() : membersData;
+      var type = document.getElementById('b-type').value;
+      var map = document.getElementById('b-map').value.trim() || 'Unknown Map';
+      var score = document.getElementById('b-score').value.trim() || '2 - 0';
+      var result = document.getElementById('b-result').value;
+      
+      var p1Id = document.getElementById('b-wd1').value;
+      var r1 = document.getElementById('b-wdr1').value;
+      var oppP1 = document.getElementById('b-opp1').value.trim() || 'Opponent';
+      var oppR1 = document.getElementById('b-oppr1').value;
+
+      var mem1 = allMembers.find(function(m) { return m.id === p1Id; });
+      var mem1Name = mem1 ? mem1.name : (p1Id + '[WD]');
+
+      var generatedLine = '';
+
+      if (type === '1v1') {
+        generatedLine = type + ' | ' + map + ' | [' + r1 + '] ' + mem1Name + ' ' + score + ' ' + oppP1 + ' [' + oppR1 + '] | ' + result;
+      } else {
+        var p2Id = document.getElementById('b-wd2').value;
+        var r2 = document.getElementById('b-wdr2').value;
+        var oppP2 = document.getElementById('b-opp2').value.trim() || 'Opp2';
+        var oppR2 = document.getElementById('b-oppr2').value;
+
+        var mem2 = allMembers.find(function(m) { return m.id === p2Id; });
+        var mem2Name = mem2 ? mem2.name : (p2Id + '[WD]');
+        var cleanMem1 = mem1Name.replace('[WD]', '');
+
+        generatedLine = type + ' | ' + map + ' | [' + r1 + '/' + r2 + '] ' + cleanMem1 + ' & ' + mem2Name + ' ' + score + ' ' + oppP1 + ' & ' + oppP2 + ' [' + oppR1 + '/' + oppR2 + '] | ' + result;
+      }
+
+      var textarea = document.getElementById('match-inp-sets');
+      if (textarea) {
+        if (textarea.value.trim().length > 0) textarea.value += '\n' + generatedLine;
+        else textarea.value = generatedLine;
+      }
+
+      document.getElementById('b-opp1').value = '';
+      document.getElementById('b-opp2').value = '';
+    }
+
     function initBuilderMemberSelects() {
       var allMembers = (typeof getFullClanMembersList === 'function') ? getFullClanMembersList() : membersData;
       var selP1 = document.getElementById('b-wd1');
+      var selP2 = document.getElementById('b-wd2');
       
       if (selP1) {
         selP1.innerHTML = '';
@@ -5398,6 +5458,15 @@ window.addEventListener('DOMContentLoaded', function() {
           opt.value = m.id;
           opt.innerText = m.name;
           selP1.appendChild(opt);
+        });
+      }
+      if (selP2) {
+        selP2.innerHTML = '<option value="">-- Partner --</option>';
+        allMembers.forEach(function(m) {
+          var opt = document.createElement('option');
+          opt.value = m.id;
+          opt.innerText = m.name;
+          selP2.appendChild(opt);
         });
       }
     }
