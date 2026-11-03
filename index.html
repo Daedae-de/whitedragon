@@ -5887,7 +5887,7 @@ var firestoreRoster = [];
       return defaultRoster;
     }
 
-    function addMemberToRosterUI() {
+function addMemberToRosterUI() {
       var select = document.getElementById('roster-add-member-select');
       var squadSel = document.getElementById('roster-add-squad-select');
       var roleSelect = document.getElementById('roster-add-role-select');
@@ -5898,23 +5898,51 @@ var firestoreRoster = [];
 
       if (!memberId) { alert('Please select a clan member first.'); return; }
 
-      var list = getDynamicRosterList();
-      var existingIdx = list.findIndex(function(r) { return r.id === memberId; });
-      if (existingIdx !== -1) {
-        list[existingIdx].squad = squad;
-        list[existingIdx].role = role;
-      } else {
-        list.push({ id: memberId, squad: squad, role: role });
-      }
+      // Eindeutige ID pro Mitglied + Squad, damit jemand in WD-A und WD-B gleichzeitig sein kann!
+      var recordId = memberId + '_' + squad.replace('-', '');
+      var rosterRecord = { id: memberId, squad: squad, role: role };
 
-      localStorage.setItem('wd_competitive_roster', JSON.stringify(list));
-      renderRosterTableAndTiers();
-      alert('Commander successfully assigned to ' + squad + '!');
+      if (typeof firebase !== 'undefined' && firebase.firestore) {
+        firebase.firestore().collection('clan_roster').doc(recordId).set(rosterRecord, { merge: true })
+          .then(function() {
+            alert('Commander successfully assigned to ' + squad + ' in Firebase!');
+          })
+          .catch(function(err) {
+            alert('Fehler beim Speichern in Firebase: ' + err.message);
+          });
+      } else {
+        var list = getDynamicRosterList();
+        // Prüfen ob genau diese Kombination schon existiert
+        var existingIdx = list.findIndex(function(r) { return r.id === memberId && r.squad === squad; });
+        if (existingIdx !== -1) {
+          list[existingIdx].role = role;
+        } else {
+          list.push(rosterRecord);
+        }
+        localStorage.setItem('wd_competitive_roster', JSON.stringify(list));
+        renderRosterTableAndTiers();
+        alert('Commander successfully assigned to ' + squad + '!');
+      }
     }
 
-    function removeMemberFromRoster(memberId) {
-      if (!confirm('Remove this player from the tournament squad?')) return;
-      var list = getDynamicRosterList().filter(function(r) { return r.id !== memberId; });
+function removeMemberFromRoster(memberId, squadTag) {
+      if (!confirm('Remove this player from the squad?')) return;
+
+      // Wenn squadTag übergeben wird, löschen wir genau diesen Squad-Eintrag
+      var targetSquad = squadTag || currentActiveSquad;
+      var recordId = memberId + '_' + targetSquad.replace('-', '');
+
+      if (typeof firebase !== 'undefined' && firebase.firestore) {
+        firebase.firestore().collection('clan_roster').doc(recordId).delete()
+          .catch(function(err) { 
+            // Fallback falls noch die alte ID-Struktur genutzt wurde
+            firebase.firestore().collection('clan_roster').doc(memberId).delete().catch(function(){});
+          });
+      }
+
+      var list = getDynamicRosterList().filter(function(r) { 
+        return !(r.id === memberId && r.squad === targetSquad); 
+      });
       localStorage.setItem('wd_competitive_roster', JSON.stringify(list));
       renderRosterTableAndTiers();
     }
@@ -6131,7 +6159,7 @@ var firestoreRoster = [];
             '<img src="' + p.avatar + '" class="table-avatar" onerror="this.style.display=\'none\'">' : '';
           
           var removeBtn = canModerate 
-            ? '<button onclick="event.stopPropagation(); removeMemberFromRoster(\'' + p.id + '\')" class="admin-del-btn" style="display:inline-block; margin-left:8px; padding:2px 6px;">✕</button>'
+            ? '<button onclick="event.stopPropagation(); removeMemberFromRoster(\'' + p.id + '\', \'' + squadTag + '\')" class="admin-          del-btn" style="display:inline-block; margin-left:8px; padding:2px 6px;">✕</button>'
             : '';
 
           var squadTag = entry.squad || 'WD-A';
