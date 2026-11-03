@@ -3854,105 +3854,140 @@ window.addEventListener('DOMContentLoaded', function() {
       }
     }
 
-    async function renderUserMaps() {
+async function renderUserMaps() {
       var container = document.getElementById('user-maps-list');
       var emptyMsg = document.getElementById('no-maps-msg');
       if (!container) return;
 
+      var allFiles = [];
+
+      // 1. Hole lokale IndexedDB Dateien
       try {
         const db = await getVaultDB();
         const tx = db.transaction('downloads', 'readonly');
         const req = tx.objectStore('downloads').getAll();
-        req.onsuccess = function() {
-          var existing = req.result || [];
-
-          var countAll = existing.length;
-          var countMapPack = 0, countMap = 0, countSoftware = 0, countOther = 0;
-          for (var k = 0; k < existing.length; k++) {
-            var c = existing[k].category;
-            if (c === 'Map Pack') countMapPack++;
-            else if (c === 'Map') countMap++;
-            else if (c === 'Software') countSoftware++;
-            else countOther++;
-          }
-
-          var elAll = document.getElementById('count-all');
-          if (elAll) elAll.innerText = countAll;
-          var elMP = document.getElementById('count-mappack');
-          if (elMP) elMP.innerText = countMapPack;
-          var elM = document.getElementById('count-map');
-          if (elM) elM.innerText = countMap;
-          var elS = document.getElementById('count-software');
-          if (elS) elS.innerText = countSoftware;
-          var elO = document.getElementById('count-other');
-          if (elO) elO.innerText = countOther;
-
-          var clearBtn = document.getElementById('btn-clear-maps');
-          if (clearBtn) {
-            clearBtn.style.display = existing.length > 0 ? 'inline-block' : 'none';
-          }
-
-          var filtered = [];
-          for (var m = 0; m < existing.length; m++) {
-            if (currentDownloadFilter === 'All' || existing[m].category === currentDownloadFilter) {
-              filtered.push(existing[m]);
+        await new Promise((resolve) => {
+          req.onsuccess = function() {
+            if (req.result) {
+              allFiles = allFiles.concat(req.result);
             }
-          }
-
-          container.innerHTML = '';
-          if (emptyMsg) {
-            emptyMsg.style.display = filtered.length === 0 ? 'block' : 'none';
-          }
-
-          var catBadges = {
-            'Map Pack': { icon: '📦', color: 'var(--cyan)', border: '1px solid var(--cyan)' },
-            'Map': { icon: '🗺️', color: 'var(--win)', border: '1px solid var(--win)' },
-            'Software': { icon: '⚙️', color: '#fbbf24', border: '1px solid #fbbf24' },
-            'Other': { icon: '📁', color: '#c084fc', border: '1px solid #c084fc' }
+            resolve();
           };
+          req.onerror = () => resolve();
+        });
+      } catch(e) {}
 
-          for (var n = 0; n < filtered.length; n++) {
-            var item = filtered[n];
-            var badgeInfo = catBadges[item.category] || catBadges['Other'];
+      // 2. Hole Firebase Cloud Dateien (falls verbunden)
+      if (typeof firebase !== 'undefined' && firebase.firestore) {
+        try {
+          var snapshot = await firebase.firestore().collection('clan_vault').get();
+          snapshot.forEach(function(doc) {
+            var item = doc.data();
+            item.id = doc.id;
+            // Vermeide Duplikate, falls lokal & cloud identisch
+            if (!allFiles.some(function(f) { return f.id === item.id; })) {
+              allFiles.push(item);
+            }
+          });
+        } catch(e) {
+          console.warn("Cloud Vault Sync im Render fehlgeschlagen:", e);
+        }
+      }
 
-            var card = document.createElement('div');
-            card.className = 'replay-card';
-            card.style.borderLeft = '4px solid ' + badgeInfo.color;
+      // Zähler berechnen
+      var countAll = allFiles.length;
+      var countMapPack = 0, countMap = 0, countSoftware = 0, countOther = 0;
+      
+      for (var k = 0; k < allFiles.length; k++) {
+        var c = allFiles[k].category;
+        if (c === 'Map Pack') countMapPack++;
+        else if (c === 'Map') countMap++;
+        else if (c === 'Software') countSoftware++;
+        else countOther++;
+      }
 
-            var metaDiv = document.createElement('div');
-            metaDiv.className = 'replay-meta';
-            metaDiv.innerHTML = '<span class="replay-title">' + item.title + ' ' +
-                                '<span style="font-size:0.68rem; color:' + badgeInfo.color + '; border:' + badgeInfo.border + '; padding:1px 6px; border-radius:4px; margin-left:6px; font-family:monospace; text-transform:uppercase;">' + badgeInfo.icon + ' ' + item.category + '</span></span>' +
-                                '<span class="replay-sub">' + item.desc + ' (' + item.fileSize + ' • ' + item.date + ')</span>';
-            card.appendChild(metaDiv);
+      var elAll = document.getElementById('count-all');
+      if (elAll) elAll.innerText = countAll;
+      var elMP = document.getElementById('count-mappack');
+      if (elMP) elMP.innerText = countMapPack;
+      var elM = document.getElementById('count-map');
+      if (elM) elM.innerText = countMap;
+      var elS = document.getElementById('count-software');
+      if (elS) elS.innerText = countSoftware;
+      var elO = document.getElementById('count-other');
+      if (elO) elO.innerText = countOther;
 
-            var btnGroup = document.createElement('div');
-            btnGroup.style.display = 'flex';
-            btnGroup.style.alignItems = 'center';
-            btnGroup.style.gap = '8px';
+      var clearBtn = document.getElementById('btn-clear-maps');
+      if (clearBtn) {
+        clearBtn.style.display = allFiles.length > 0 ? 'inline-block' : 'none';
+      }
 
-            var dlBtn = document.createElement('button');
-            dlBtn.className = 'btn-download-rep';
-            dlBtn.innerText = 'DOWNLOAD';
-            (function(idToDownload) {
-              dlBtn.onclick = function() { downloadSavedMap(idToDownload); };
-            })(item.id);
-            btnGroup.appendChild(dlBtn);
+      var filtered = [];
+      for (var m = 0; m < allFiles.length; m++) {
+        if (currentDownloadFilter === 'All' || allFiles[m].category === currentDownloadFilter) {
+          filtered.push(allFiles[m]);
+        }
+      }
 
-            var adminBtn = document.createElement('button');
-            adminBtn.className = 'admin-del-btn';
-            adminBtn.innerText = '🗑️ REMOVE';
-            (function(dlId) {
-              adminBtn.onclick = function() { adminDeleteDownload(dlId); };
-            })(item.id);
-            btnGroup.appendChild(adminBtn);
+      container.innerHTML = '';
+      if (emptyMsg) {
+        emptyMsg.style.display = filtered.length === 0 ? 'block' : 'none';
+      }
 
-            card.appendChild(btnGroup);
-            container.appendChild(card);
-          }
-        };
-      } catch(err) {
-        console.warn('Error rendering maps from IndexedDB:', err);
+      var catBadges = {
+        'Map Pack': { icon: '📦', color: 'var(--cyan)', border: '1px solid var(--cyan)' },
+        'Map': { icon: '🗺️', color: 'var(--win)', border: '1px solid var(--win)' },
+        'Software': { icon: '⚙️', color: '#fbbf24', border: '1px solid #fbbf24' },
+        'Other': { icon: '📁', color: '#c084fc', border: '1px solid #c084fc' }
+      };
+
+      var user = (typeof firebase !== 'undefined' && firebase.auth && firebase.auth().currentUser) 
+        ? firebase.auth().currentUser 
+        : currentUser;
+      var canModerate = user && (isUserAdmin(user.email) || user.email.toLowerCase() === WEBMASTER_EMAIL.toLowerCase());
+
+      for (var n = 0; n < filtered.length; n++) {
+        var item = filtered[n];
+        var badgeInfo = catBadges[item.category] || catBadges['Other'];
+
+        var card = document.createElement('div');
+        card.className = 'replay-card';
+        card.style.borderLeft = '4px solid ' + badgeInfo.color;
+
+        var metaDiv = document.createElement('div');
+        metaDiv.className = 'replay-meta';
+        metaDiv.innerHTML = '<span class="replay-title">' + item.title + ' ' +
+                            '<span style="font-size:0.68rem; color:' + badgeInfo.color + '; border:' + badgeInfo.border + '; padding:1px 6px; border-radius:4px; margin-left:6px; font-family:monospace; text-transform:uppercase;">' + badgeInfo.icon + ' ' + item.category + '</span></span>' +
+                            '<span class="replay-sub">' + item.desc + ' (' + item.fileSize + ' • ' + item.date + ')</span>';
+        card.appendChild(metaDiv);
+
+        var btnGroup = document.createElement('div');
+        btnGroup.style.display = 'flex';
+        btnGroup.style.alignItems = 'center';
+        btnGroup.style.gap = '8px';
+
+        var dlBtn = document.createElement('button');
+        dlBtn.className = 'btn-download-rep';
+        dlBtn.innerText = 'DOWNLOAD';
+        (function(idToDownload) {
+          dlBtn.onclick = function() { downloadSavedMap(idToDownload); };
+        })(item.id);
+        btnGroup.appendChild(dlBtn);
+
+        // Remove-Button für Admins/Webmaster hinzufügen
+        if (canModerate) {
+          var adminBtn = document.createElement('button');
+          adminBtn.className = 'admin-del-btn';
+          adminBtn.innerText = '🗑️ REMOVE';
+          adminBtn.style.display = 'inline-block';
+          (function(dlId) {
+            adminBtn.onclick = function() { adminDeleteDownload(dlId); };
+          })(item.id);
+          btnGroup.appendChild(adminBtn);
+        }
+
+        card.appendChild(btnGroup);
+        container.appendChild(card);
       }
     }
 
@@ -4718,12 +4753,21 @@ window.addEventListener('DOMContentLoaded', function() {
 
     async function adminDeleteDownload(dlId) {
       if (!confirm("WEBMASTER COMMAND: Are you sure you want to remove this download from Clan Vault?")) return;
+      
+      // 1. Versuche aus Firebase zu löschen
+      if (typeof firebase !== 'undefined' && firebase.firestore) {
+        firebase.firestore().collection('clan_vault').doc(dlId).delete().catch(function() {});
+      }
+
+      // 2. Aus IndexedDB löschen
       try {
         const db = await getVaultDB();
         const tx = db.transaction('downloads', 'readwrite');
         tx.objectStore('downloads').delete(dlId);
         tx.oncomplete = () => renderUserMaps();
-      } catch(e) {}
+      } catch(e) {
+        renderUserMaps();
+      }
     }
 
     
