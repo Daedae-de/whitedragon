@@ -1329,7 +1329,7 @@
         <li><button class="nav-tab-btn" id="btn-tab-matches" onclick="switchTab('matches')">Matches</button></li>
         <li><button class="nav-tab-btn" id="btn-tab-replays" onclick="switchTab('replays')">Replays</button></li>
         <li><button class="nav-tab-btn" id="btn-tab-downloads" onclick="switchTab('downloads')">Downloads</button></li>
-        <li><button class="nav-tab-btn" id="btn-tab-news" onclick="switchTab('news')">News</button></li>
+        <li><button class="nav-tab-btn" id="btn-tab-community" onclick="switchTab('community')">Community</button></li>
         <li><button class="nav-tab-btn" id="btn-tab-members" onclick="switchTab('members')">Members</button></li>
         <li><button class="nav-tab-btn" id="btn-tab-about" onclick="switchTab('about')">About Us</button></li>
       </ul>
@@ -1398,10 +1398,10 @@
       <span class="dash-label">DOWNLOADS</span>
       <span class="dash-sub">Map Packs</span>
     </div>
-    <div class="dash-btn" id="dash-news" onclick="switchTab('news')">
+    <div class="dash-btn" id="dash-community" onclick="switchTab('community')">
       <span class="dash-icon">📡</span>
-      <span class="dash-label">NEWS</span>
-      <span class="dash-sub">Transmissions</span>
+      <span class="dash-label">COMMUNITY</span>
+      <span class="dash-sub">News, League, Board</span>
     </div>
     <div class="dash-btn" id="dash-members" onclick="switchTab('members')">
       <span class="dash-icon">🎖️</span>
@@ -1974,67 +1974,76 @@
     </div>
   </section>
 
-  <!-- ==================== 6. NEWS TAB ==================== -->
-  <section id="tab-news" class="section-wrap">
+<!-- ==================== COMMUNITY TAB (EX-NEWS) ==================== -->
+  <section id="tab-community" class="section-wrap">
     <div class="section-head">
       <div>
-        <h2>CLAN <span>NEWS</span> & TRANSMISSIONS</h2>
-        <div class="section-subtitle">Announcements, match debriefs, and roster movements.</div>
+        <h2>CLAN <span>COMMUNITY</span> & TRANSMISSIONS</h2>
+        <div class="section-subtitle">Announcements, league updates, info board, and free community discussions.</div>
       </div>
       <div id="news-admin-badge" style="display:none; font-family:'Share Tech Mono',monospace; font-size:0.75rem; color:var(--cyan); background:rgba(0,229,255,0.12); padding:4px 10px; border-radius:4px; border:1px solid var(--cyan);">
         ⚡ HIGH COMMAND CMS ACTIVE
       </div>
     </div>
 
-    <!-- ADMIN EXCLUSIVE: IN-BROWSER CMS TRANSMISSION DISPATCH TERMINAL -->
+    <!-- SUB-CATEGORY FILTER BAR -->
+    <div style="display:flex; gap:8px; margin-bottom:16px; flex-wrap:wrap;">
+      <button onclick="filterCommunityCategory('All')" id="btn-ccat-All" class="nav-tab-btn active" style="font-size:0.78rem; padding:6px 14px;">ALL</button>
+      <button onclick="filterCommunityCategory('News')" id="btn-ccat-News" class="nav-tab-btn" style="font-size:0.78rem; padding:6px 14px;">📰 NEWS</button>
+      <button onclick="filterCommunityCategory('League')" id="btn-ccat-League" class="nav-tab-btn" style="font-size:0.78rem; padding:6px 14px;">🏆 LEAGUE</button>
+      <button onclick="filterCommunityCategory('Info')" id="btn-ccat-Info" class="nav-tab-btn" style="font-size:0.78rem; padding:6px 14px;">ℹ️ INFO</button>
+      <button onclick="filterCommunityCategory('Free Board')" id="btn-ccat-FreeBoard" class="nav-tab-btn" style="font-size:0.78rem; padding:6px 14px;">💬 FREE BOARD</button>
+    </div>
+
+    <!-- ADMIN & MEMBER TRANSMISSION / POST DISPATCH TERMINAL (WITH EDIT SUPPORT) -->
     <div id="admin-news-terminal" style="display:none; margin-bottom:24px; border:1.5px solid var(--cyan); background:linear-gradient(135deg, rgba(14, 25, 45, 0.96) 0%, rgba(9, 16, 30, 0.98) 100%); border-radius:10px; padding:18px 20px; box-shadow:0 0 25px rgba(0,229,255,0.2);">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; border-bottom:1px solid var(--border-color); padding-bottom:8px;">
         <div style="display:flex; align-items:center; gap:8px;">
           <span style="display:inline-block; width:8px; height:8px; background:var(--cyan); border-radius:50%; box-shadow:0 0 8px var(--cyan);"></span>
-          <span style="font-family:'Orbitron',sans-serif; font-size:0.88rem; font-weight:800; color:#fff; letter-spacing:1px;">TRANSMISSION DISPATCH TERMINAL // HIGH COMMAND CMS</span>
+          <span style="font-family:'Orbitron',sans-serif; font-size:0.88rem; font-weight:800; color:#fff; letter-spacing:1px;" id="cms-form-heading">TRANSMISSION DISPATCH TERMINAL // COMMUNITY CMS</span>
         </div>
         <span style="font-size:0.72rem; color:var(--text-muted); font-family:'Share Tech Mono',monospace;">LIVE BROADCAST</span>
       </div>
-      <p style="color:#cbd5e1; font-size:0.86rem; line-height:1.45; margin-bottom:14px;">
-        Publish official bulletins, league recaps, or clan notices directly to the White Dragon mainframe. Broadcasted transmissions sync instantly for all visitors.
-      </p>
+      <input type="hidden" id="cms-edit-article-id" value="">
 
       <div style="display:grid; grid-template-columns: 2fr 1fr 1fr; gap:12px; margin-bottom:12px;">
         <div>
-          <label style="display:block; font-family:'Orbitron',sans-serif; font-size:0.72rem; color:var(--text-muted); margin-bottom:4px; text-transform:uppercase;">Transmission Headline</label>
-          <input type="text" id="cms-news-title" placeholder="e.g. Victorious BWCL Week #5 Debrief vs dB)-3" style="width:100%; background:#070a12; border:1px solid var(--border-color); color:#fff; padding:8px 12px; border-radius:6px; font-family:'Rajdhani',sans-serif; font-size:0.95rem;">
+          <label style="display:block; font-family:'Orbitron',sans-serif; font-size:0.72rem; color:var(--text-muted); margin-bottom:4px; text-transform:uppercase;">Headline / Title</label>
+          <input type="text" id="cms-news-title" placeholder="e.g. Victorious BWCL Week #5 Debrief" style="width:100%; background:#070a12; border:1px solid var(--border-color); color:#fff; padding:8px 12px; border-radius:6px; font-family:'Rajdhani',sans-serif; font-size:0.95rem;">
         </div>
         <div>
-          <label style="display:block; font-family:'Orbitron',sans-serif; font-size:0.72rem; color:var(--text-muted); margin-bottom:4px; text-transform:uppercase;">Dispatch Classification</label>
-          <select id="cms-news-tag" style="width:100%; background:#070a12; border:1px solid var(--border-color); color:var(--cyan); padding:8px 12px; border-radius:6px; font-family:'Rajdhani',sans-serif; font-size:0.95rem; font-weight:700;">
-            <option value="// BWCL RECAP">// BWCL RECAP</option>
-            <option value="// ROSTER UPDATE">// ROSTER UPDATE</option>
-            <option value="// MISSION INTEL">// MISSION INTEL</option>
-            <option value="// CLAN NOTICE">// CLAN NOTICE</option>
-            <option value="// TOURNAMENT ALERT">// TOURNAMENT ALERT</option>
+          <label style="display:block; font-size:0.72rem; color:var(--text-muted); font-family:'Orbitron',sans-serif; margin-bottom:4px; text-transform:uppercase;">Category</label>
+          <select id="cms-news-cat" style="width:100%; background:#070a12; border:1px solid var(--border-color); color:var(--cyan); padding:8px 12px; border-radius:6px; font-family:'Rajdhani',sans-serif; font-size:0.95rem; font-weight:700;">
+            <option value="News">News</option>
+            <option value="League">League</option>
+            <option value="Info">Info</option>
+            <option value="Free Board">Free Board</option>
           </select>
         </div>
         <div>
-          <label style="display:block; font-family:'Orbitron',sans-serif; font-size:0.72rem; color:var(--text-muted); margin-bottom:4px; text-transform:uppercase;">Author / Sign-off</label>
+          <label style="display:block; font-size:0.72rem; color:var(--text-muted); font-family:'Orbitron',sans-serif; margin-bottom:4px; text-transform:uppercase;">Author / Sign-off</label>
           <input type="text" id="cms-news-author" placeholder="HIGH COMMAND" style="width:100%; background:#070a12; border:1px solid var(--border-color); color:#fff; padding:8px 12px; border-radius:6px; font-family:'Rajdhani',sans-serif; font-size:0.95rem;">
         </div>
       </div>
 
       <div style="margin-bottom:14px;">
-        <label style="display:block; font-family:'Orbitron',sans-serif; font-size:0.72rem; color:var(--text-muted); margin-bottom:4px; text-transform:uppercase;">Transmission Content</label>
-        <textarea id="cms-news-body" rows="3" placeholder="Enter transmission debrief or announcement text..." style="width:100%; background:#070a12; border:1px solid var(--border-color); color:#fff; padding:10px 12px; border-radius:6px; font-family:'Rajdhani',sans-serif; font-size:0.95rem; line-height:1.5; resize:vertical;"></textarea>
+        <label style="display:block; font-family:'Orbitron',sans-serif; font-size:0.72rem; color:var(--text-muted); margin-bottom:4px; text-transform:uppercase;">Content / Message</label>
+        <textarea id="cms-news-body" rows="3" placeholder="Enter post or transmission text..." style="width:100%; background:#070a12; border:1px solid var(--border-color); color:#fff; padding:10px 12px; border-radius:6px; font-family:'Rajdhani',sans-serif; font-size:0.95rem; line-height:1.5; resize:vertical;"></textarea>
       </div>
 
       <div style="display:flex; justify-content:flex-end; gap:8px;">
-        <button onclick="publishClanNews()" class="btn-download-rep" style="background:var(--cyan); color:#070a12; cursor:pointer; font-weight:800; padding:8px 20px;">
+        <button onclick="publishClanNews()" class="btn-download-rep" style="background:var(--cyan); color:#070a12; cursor:pointer; font-weight:800; padding:8px 20px;" id="cms-submit-btn">
           📡 BROADCAST TRANSMISSION
+        </button>
+        <button onclick="cancelClanNewsEdit()" class="btn-download-rep" id="cms-cancel-btn" style="display:none; background:transparent; border-color:var(--text-dim); color:var(--text-muted); cursor:pointer;">
+          CANCEL
         </button>
       </div>
     </div>
 
-    <!-- DYNAMIC TRANSMISSION GRID -->
+    <!-- DYNAMIC COMMUNITY GRID -->
     <div id="clan-news-grid" class="news-grid">
-      <!-- Rendered dynamically from Firestore / Local Fallback -->
+      <!-- Rendered dynamically -->
     </div>
   </section>
 
@@ -4078,14 +4087,15 @@ async function renderUserMaps() {
       return defaultAdmins;
     }
 
-    // ========================================================
-    // PHASE 2 DYNAMIC CLAN NEWS CMS LOGIC
+// ========================================================
+    // PHASE 2 DYNAMIC COMMUNITY CMS LOGIC (MIT EDIT-FUNKTION)
     // ========================================================
     var defaultClanNews = [
       {
         id: "news_1",
         title: "Flawless 6-0 Victory Over Shadow-2",
-        tag: "// BWCL RECAP",
+        category: "League",
+        tag: "// LEAGUE",
         body: "White Dragon dominated Week #4 with stellar individual execution across all maps. KaRDiNaL, Battousai, CheesyCake, and new Mexican Zerg starter aMeba secured undefeated sets.",
         author: "HIGH COMMAND",
         date: "OCTOBER 25, 2026",
@@ -4094,7 +4104,8 @@ async function renderUserMaps() {
       {
         id: "news_2",
         title: "aMeba[WD] Joins WD-A Active Lineup",
-        tag: "// ROSTER UPDATE",
+        category: "News",
+        tag: "// NEWS",
         body: "Mexican Zerg ace aMeba officially made his BWCL debut in Week #4, taking down Shadow|LaBestia 2-0 and partnering with CheesyCake for an electric 2-0 doubles victory.",
         author: "ROSTER COMMITTEE",
         date: "OCTOBER 24, 2026",
@@ -4103,7 +4114,8 @@ async function renderUserMaps() {
       {
         id: "news_3",
         title: "Approaching Week #5 Clash vs Division Leader dB)-3",
-        tag: "// MISSION INTEL",
+        category: "Info",
+        tag: "// INFO",
         body: "The squad is in intensive training for the pivotal Week #5 clash against top-ranked dB)-3 on Backrooms (1n1) and Octagon (2n2). Victory will propel WD into first place contention.",
         author: "TACTICAL DESK",
         date: "OCTOBER 27, 2026",
@@ -4120,6 +4132,20 @@ async function renderUserMaps() {
       return defaultClanNews;
     }
 
+    var currentCommunityCategoryFilter = 'All';
+
+    function filterCommunityCategory(cat) {
+      currentCommunityCategoryFilter = cat;
+      ['All', 'News', 'League', 'Info', 'FreeBoard'].forEach(function(c) {
+        var btn = document.getElementById('btn-ccat-' + c);
+        if (btn) {
+          if (c === cat.replace(/\s+/g, '')) btn.classList.add('active');
+          else btn.classList.remove('active');
+        }
+      });
+      initNewsRealtimeListener();
+    }
+
     function renderClanNews(articles) {
       var grid = document.getElementById('clan-news-grid');
       if (!grid) return;
@@ -4128,18 +4154,33 @@ async function renderUserMaps() {
       var user = (typeof firebase !== 'undefined' && firebase.auth && firebase.auth().currentUser) 
         ? firebase.auth().currentUser 
         : currentUser;
-      var canModerate = user && (isUserAdmin(user.email) || user.email.toLowerCase() === WEBMASTER_EMAIL.toLowerCase());
+      
+      var canWrite = user && user.emailVerified; 
+      var terminal = document.getElementById('admin-news-terminal');
+      if (terminal) terminal.style.display = canWrite ? 'block' : 'none';
 
-      articles.forEach(function(item) {
+      var filtered = articles.filter(function(item) {
+        if (currentCommunityCategoryFilter === 'All') return true;
+        var itemCat = item.category || (item.tag ? item.tag.replace('//', '').trim() : 'News');
+        return itemCat.toLowerCase() === currentCommunityCategoryFilter.toLowerCase();
+      });
+
+      filtered.forEach(function(item) {
         var card = document.createElement('div');
         card.className = 'news-card';
         
-        var delBtnHtml = canModerate 
-          ? '<button onclick="deleteClanNews(\'' + item.id + '\')" class="admin-del-btn" style="display:inline-block; float:right; margin-bottom:8px;">🗑️ REMOVE</button>'
-          : '';
+        var isOwnerOrAdmin = user && (isUserAdmin(user.email) || (item.userEmail && item.userEmail.toLowerCase() === user.email.toLowerCase()));
+        
+        var actionBtns = isOwnerOrAdmin ? 
+          '<div style="float:right; display:flex; gap:6px;">' +
+            '<button onclick="editClanNews(\'' + item.id + '\')" class="admin-del-btn" style="display:inline-block; border-color:var(--cyan); color:var(--cyan); background:rgba(0,229,255,0.15); margin:0;">✏️ EDIT</button>' +
+            '<button onclick="deleteClanNews(\'' + item.id + '\')" class="admin-del-btn" style="display:inline-block; margin:0;">🗑️ REMOVE</button>' +
+          '</div>' : '';
 
-        card.innerHTML = delBtnHtml +
-          '<span class="news-tag">' + (item.tag || '// ANNOUNCEMENT') + '</span>' +
+        var displayCategory = item.category || (item.tag ? item.tag.replace('//', '').trim() : 'NEWS');
+
+        card.innerHTML = actionBtns +
+          '<span class="news-tag">// ' + displayCategory.toUpperCase() + '</span>' +
           '<h3>' + item.title + '</h3>' +
           '<p>' + item.body + '</p>' +
           '<div class="news-date">' + (item.date || 'RECENT') + ' • TRANSMITTED BY ' + (item.author || 'HIGH COMMAND') + '</div>';
@@ -4165,7 +4206,7 @@ async function renderUserMaps() {
               renderClanNews(getLocalNewsArticles());
             }
           }, function(err) {
-            console.warn("Firestore sync unavailable, using local news vault:", err);
+            console.warn("Firestore sync offline:", err);
             renderClanNews(getLocalNewsArticles());
           });
           return;
@@ -4177,73 +4218,116 @@ async function renderUserMaps() {
     }
 
     function publishClanNews() {
-      var user = (typeof firebase !== 'undefined' && firebase.auth && firebase.auth().currentUser) 
-        ? firebase.auth().currentUser 
-        : currentUser;
-
-      if (!user || !isUserAdmin(user.email)) {
-        alert("ACCESS DENIED // HIGH COMMAND CLEARANCE REQUIRED.");
-        return;
-      }
-
+      var editId = document.getElementById('cms-edit-article-id').value;
       var titleInp = document.getElementById('cms-news-title');
-      var tagInp = document.getElementById('cms-news-tag');
+      var catInp = document.getElementById('cms-news-cat');
       var authorInp = document.getElementById('cms-news-author');
       var bodyInp = document.getElementById('cms-news-body');
 
       var title = titleInp ? titleInp.value.trim() : '';
-      var tag = tagInp ? tagInp.value : '// ANNOUNCEMENT';
+      var category = catInp ? catInp.value : 'News';
       var author = authorInp && authorInp.value.trim() ? authorInp.value.trim().toUpperCase() : 'HIGH COMMAND';
       var body = bodyInp ? bodyInp.value.trim() : '';
 
       if (!title || !body) {
-        alert("Please provide both a headline and transmission content.");
+        alert("Bitte geben Sie einen Titel und Nachrichtentext ein.");
         return;
       }
 
-      var dateStr = new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }).toUpperCase();
-      var newArticle = {
+      var user = (typeof firebase !== 'undefined' && firebase.auth && firebase.auth().currentUser) ? firebase.auth().currentUser : currentUser;
+      var userEmail = user ? user.email : 'Anonymous';
+
+      var articleData = {
         title: title,
-        tag: tag,
+        category: category,
+        tag: '// ' + category.toUpperCase(),
         author: author,
         body: body,
-        date: dateStr,
+        userEmail: userEmail,
+        date: new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }).toUpperCase(),
         createdAt: Date.now()
       };
 
       if (typeof firebase !== 'undefined' && firebase.firestore) {
-        try {
-          firebase.firestore().collection('clan_news').add(newArticle)
+        var db = firebase.firestore();
+        if (editId) {
+          db.collection('clan_news').doc(editId).set(articleData, { merge: true })
             .then(function() {
-              if (titleInp) titleInp.value = '';
-              if (bodyInp) bodyInp.value = '';
-              alert("Transmission broadcasted globally via Cloud Firestore!");
+              cancelClanNewsEdit();
+              alert("Beitrag erfolgreich aktualisiert!");
             })
-            .catch(function(err) {
-              console.warn("Firestore add failed, saving locally:", err);
-              saveNewsLocallyFallback(newArticle);
-            });
-          return;
-        } catch(e) {}
+            .catch(function(e) { alert("Fehler: " + e.message); });
+        } else {
+          db.collection('clan_news').add(articleData)
+            .then(function() {
+              cancelClanNewsEdit();
+              alert("Beitrag erfolgreich veröffentlicht!");
+            })
+            .catch(function(e) { alert("Fehler: " + e.message); });
+        }
+      } else {
+        saveNewsLocallyFallback(articleData, editId);
       }
-      saveNewsLocallyFallback(newArticle);
     }
 
-    function saveNewsLocallyFallback(article) {
-      article.id = "news_" + Date.now();
+    function saveNewsLocallyFallback(article, editId) {
       var news = getLocalNewsArticles();
-      news.unshift(article);
+      if (editId) {
+        var idx = news.findIndex(function(n) { return n.id === editId; });
+        if (idx !== -1) {
+          article.id = editId;
+          news[idx] = article;
+        }
+      } else {
+        article.id = "news_" + Date.now();
+        news.unshift(article);
+      }
       localStorage.setItem('wd_clan_news', JSON.stringify(news));
       renderClanNews(news);
-      var titleInp = document.getElementById('cms-news-title');
-      var bodyInp = document.getElementById('cms-news-body');
-      if (titleInp) titleInp.value = '';
-      if (bodyInp) bodyInp.value = '';
-      alert("Transmission broadcasted to Clan Vault!");
+      cancelClanNewsEdit();
+      alert("Beitrag im lokalen Vault gespeichert!");
+    }
+
+    function editClanNews(id) {
+      var card = event.target.closest('.news-card');
+      if (card) {
+        var tagText = card.querySelector('.news-tag').innerText.replace('//', '').trim();
+        var title = card.querySelector('h3').innerText;
+        var body = card.querySelector('p').innerText;
+        
+        document.getElementById('cms-edit-article-id').value = id;
+        document.getElementById('cms-news-title').value = title;
+        document.getElementById('cms-news-body').value = body;
+        
+        var catSelect = document.getElementById('cms-news-cat');
+        if (catSelect) {
+          for (var i = 0; i < catSelect.options.length; i++) {
+            if (catSelect.options[i].value.toLowerCase() === tagText.toLowerCase()) {
+              catSelect.selectedIndex = i;
+              break;
+            }
+          }
+        }
+
+        document.getElementById('cms-form-heading').innerText = '⚡ EDIT COMMUNITY TRANSMISSION';
+        document.getElementById('cms-submit-btn').innerText = '💾 SAVE CHANGES';
+        document.getElementById('cms-cancel-btn').style.display = 'inline-block';
+
+        window.scrollTo({ top: document.getElementById('admin-news-terminal').offsetTop - 100, behavior: 'smooth' });
+      }
+    }
+
+    function cancelClanNewsEdit() {
+      document.getElementById('cms-edit-article-id').value = '';
+      document.getElementById('cms-news-title').value = '';
+      document.getElementById('cms-news-body').value = '';
+      document.getElementById('cms-form-heading').innerText = 'TRANSMISSION DISPATCH TERMINAL // COMMUNITY CMS';
+      document.getElementById('cms-submit-btn').innerText = '📡 BROADCAST TRANSMISSION';
+      document.getElementById('cms-cancel-btn').style.display = 'none';
     }
 
     function deleteClanNews(newsId) {
-      if (!confirm("Are you sure you want to delete this transmission?")) return;
+      if (!confirm("Möchtest du diesen Beitrag wirklich löschen?")) return;
       if (typeof firebase !== 'undefined' && firebase.firestore) {
         try {
           firebase.firestore().collection('clan_news').doc(newsId).delete();
