@@ -5223,7 +5223,10 @@ var firestoreRoster = [];
             var liveRoster = [];
             snapshot.forEach(function(doc) {
               var r = doc.data();
-              r.id = doc.id;
+              // WICHTIG: r.id beibehält die echte Member-ID, doc.id ist die Dokumenten-ID in Firebase
+              if (!r.id) {
+                r.id = doc.id.split('_')[0]; // Fallback falls ID im Dokument fehlt
+              }
               liveRoster.push(r);
             });
             firestoreRoster = liveRoster;
