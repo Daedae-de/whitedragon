@@ -1566,7 +1566,7 @@
     </div>
 
     <!-- Streamlined Data Table -->
-    <div class="table-container">
+<div class="table-container">
       <table class="data-table">
         <thead>
           <tr>
@@ -1575,6 +1575,7 @@
             <th>SQUAD</th>
             <th>COUNTRY</th>
             <th>PREFERRED RACE</th>
+            <th style="text-align:right;">STATUS & ACTIONS</th>
           </tr>
         </thead>
         <tbody id="roster-tbody">
@@ -5929,16 +5930,15 @@ function addMemberToRosterUI() {
     }
 
 function removeMemberFromRoster(memberId, squadTag) {
-      if (!confirm('Remove this player from the squad?')) return;
+      if (!confirm('Möchtest du diesen Commander wirklich aus dem Squad entfernen?')) return;
 
-      // Wenn squadTag übergeben wird, löschen wir genau diesen Squad-Eintrag
       var targetSquad = squadTag || currentActiveSquad;
       var recordId = memberId + '_' + targetSquad.replace('-', '');
 
       if (typeof firebase !== 'undefined' && firebase.firestore) {
+        // Löscht das spezifische Squad-Dokument aus Firebase
         firebase.firestore().collection('clan_roster').doc(recordId).delete()
           .catch(function(err) { 
-            // Fallback falls noch die alte ID-Struktur genutzt wurde
             firebase.firestore().collection('clan_roster').doc(memberId).delete().catch(function(){});
           });
       }
@@ -6087,6 +6087,7 @@ function removeMemberFromRoster(memberId, squadTag) {
     // ========================================================
     // RENDER ROSTER & DYNAMIC MEMBER COUNTS
     // ========================================================
+
     function renderRosterTableAndTiers() {
       applyProfileCustomizationsToRoster();
       
@@ -6098,13 +6099,11 @@ function removeMemberFromRoster(memberId, squadTag) {
         : currentUser;
       var canModerate = user && (isUserAdmin(user.email) || (user.email && user.email.toLowerCase() === WEBMASTER_EMAIL.toLowerCase()));
 
-      // 1. UPDATE DYNAMIC MEMBER COUNTS ACROSS SITE
       var navCountEl = document.getElementById('members-nav-count');
       if (navCountEl) navCountEl.innerText = allMembers.length + ' Commanders';
       var subtitleCountEl = document.getElementById('members-subtitle-count');
       if (subtitleCountEl) subtitleCountEl.innerText = allMembers.length;
 
-      // 2. POPULATE ADMIN DROPDOWNS
       var expelSelect = document.getElementById('quick-expel-select');
       if (expelSelect) {
         expelSelect.innerHTML = '<option value="">-- Choose Member to Expel --</option>';
@@ -6126,6 +6125,110 @@ function removeMemberFromRoster(memberId, squadTag) {
           addSelect.appendChild(opt);
         });
       }
+
+      var rTbody = document.getElementById('roster-tbody');
+      if (rTbody) {
+        rTbody.innerHTML = '';
+
+        var filteredRoster = rosterEntries.filter(function(entry) {
+          return currentActiveSquad === 'ALL' || (entry.squad || 'WD-A') === currentActiveSquad;
+        });
+
+        filteredRoster.forEach(function(entry) {
+          var p = allMembers.find(function(m) { return m.id === entry.id; });
+          if (!p) return;
+
+          var tr = document.createElement('tr');
+          tr.className = 'clickable-row';
+          tr.onclick = function() { openDossier(p.id); };
+          
+          var flagSvg = flags[p.flagKey] || flags.global;
+
+          var displayRole = entry.role || p.role || 'Player';
+          var roleBadge = '';
+          if (displayRole === 'Squadleader') {
+            roleBadge = '<span class="role-badge role-squadleader">★ Squadleader</span>';
+          } else if (displayRole === 'Captain') {
+            roleBadge = '<span class="role-badge role-captain">⛨ Captain</span>';
+          } else if (displayRole === 'Starter') {
+            roleBadge = '<span class="role-badge role-squadleader" style="background:rgba(16,185,129,0.18); color:var(--win); border-color:var(--win);">★ Starter</span>';
+          } else {
+            roleBadge = '<span class="role-badge role-starter">Player</span>';
+          }
+
+          var miniAvatar = p.avatar ? 
+            '<img src="' + p.avatar + '" class="table-avatar" onerror="this.style.display=\'none\'">' : '';
+          
+          var squadTag = entry.squad || 'WD-A';
+
+          // Status Badge (Active / Inactive)
+          var isMemberActive = (p.status !== 'Inactive');
+          var statusHtml = isMemberActive 
+            ? '<span style="color:var(--win); font-family:\'Share Tech Mono\',monospace; font-size:0.8rem; font-weight:bold;">● ACTIVE</span>'
+            : '<span style="color:var(--text-dim); font-family:\'Share Tech Mono\',monospace; font-size:0.8rem;">○ INACTIVE</span>';
+
+          // Rotes Kreuz ganz rechts für Admins zum Löschen aus dem Squad
+          var removeBtn = canModerate 
+            ? '<button onclick="event.stopPropagation(); removeMemberFromRoster(\'' + p.id + '\', \'' + squadTag + '\')" title="Aus Squad entfernen" style="background:rgba(239,68,68,0.2); border:1px solid var(--loss); color:var(--loss); width:26px; height:26px; border-radius:4px; font-weight:bold; cursor:pointer; margin-left:12px;">✕</button>'
+            : '';
+
+          tr.innerHTML = 
+            '<td><span class="player-tag">' + miniAvatar + p.name + ' <span class="click-hint">INTEL</span></span></td>' +
+            '<td>' + roleBadge + '</td>' +
+            '<td><strong style="color:var(--cyan);">' + squadTag + '</strong></td>' +
+            '<td>' + flagSvg + ' ' + p.country + '</td>' +
+            '<td>' + getRaceBadgeHtml(p.race) + '</td>' +
+            '<td style="text-align:right;">' + statusHtml + removeBtn + '</td>';
+          
+          rTbody.appendChild(tr);
+        });
+      }
+
+      // Tiers / Members Tab rendern
+      Object.keys(tiers).forEach(function(tierName) {
+        var el = document.getElementById(tiers[tierName]);
+        if (el) el.innerHTML = '';
+      });
+
+      allMembers.forEach(function(p) {
+        var targetId = tiers[p.rank] || 'tier-privates';
+        var container = document.getElementById(targetId);
+        if (!container) return;
+
+        var pill = document.createElement('div');
+        pill.className = 'member-pill';
+        pill.onclick = function() { openDossier(p.id); };
+
+        var raceLower = (p.race || '').toLowerCase();
+        var raceColor = '#60a5fa';
+        var raceTag = '[T]';
+
+        if (raceLower.startsWith('t')) {
+          raceColor = '#60a5fa'; raceTag = '[T]';
+        } else if (raceLower.startsWith('p')) {
+          raceColor = '#fbbf24'; raceTag = '[P]';
+        } else if (raceLower.startsWith('z')) {
+          raceColor = '#c084fc'; raceTag = '[Z]';
+        } else if (raceLower === 'ums') {
+          raceColor = '#10b981'; raceTag = '[UMS]';
+        } else {
+          raceColor = '#ef4444'; raceTag = '[R]';
+        }
+
+        var pillAvatar = p.avatar ? 
+          '<img src="' + p.avatar + '" class="pill-avatar" onerror="this.style.display=\'none\'">' : '';
+
+        var delBtnHtml = canModerate ?
+          '<span onclick="event.stopPropagation(); adminDeleteMember(\'' + p.id + '\')" title="Expel member" style="margin-left:6px; color:var(--loss); font-weight:bold; cursor:pointer; padding:0 3px;">✕</span>' : '';
+
+        pill.innerHTML = 
+          '<span class="tag">' + pillAvatar + p.name + '</span>' +
+          '<span class="pill-race" style="color:' + raceColor + '">' + raceTag + '</span>' +
+          delBtnHtml;
+
+        container.appendChild(pill);
+      });
+    }
 
       // 3. RENDER CLEAN ROSTER TABLE (WITHOUT AFFILIATION & SCHEDULE)
       var rTbody = document.getElementById('roster-tbody');
