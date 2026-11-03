@@ -3201,8 +3201,9 @@ window.addEventListener('DOMContentLoaded', function() {
   // Realtime Cloud-Sync für alle Geräte (Firebase Firestore)
   initNewsRealtimeListener();
   initClanMembersRealtimeListener();
-  initMatchesRealtimeListener(); // <-- WICHTIG: Muss hier stehen!
-  initVaultRealtimeListener();       
+  initMatchesRealtimeListener(); //
+  initVaultRealtimeListener();
+  initRosterRealtimeListener();       
   fetchBWCLStandings();
   
   var hash = window.location.hash.replace('#', '');
@@ -5211,6 +5212,42 @@ async function renderUserMaps() {
         .replace(/\[T\/T\]|\(T\/T\)/gi, '<span class="race-badge race-terran" style="font-size:0.62rem; padding:1px 4px; margin:0 1px;">T</span><span class="race-badge race-terran" style="font-size:0.62rem; padding:1px 4px; margin:0 1px;">T</span>');
 
       return '<div class="set-row"><span>' + textPart + '</span>' + resBadge + '</div>';
+    }
+
+var firestoreRoster = [];
+
+    function initRosterRealtimeListener() {
+      if (typeof firebase !== 'undefined' && firebase.firestore) {
+        firebase.firestore().collection('clan_roster').onSnapshot(function(snapshot) {
+          if (!snapshot.empty) {
+            var liveRoster = [];
+            snapshot.forEach(function(doc) {
+              var r = doc.data();
+              r.id = doc.id;
+              liveRoster.push(r);
+            });
+            firestoreRoster = liveRoster;
+            localStorage.setItem('wd_competitive_roster', JSON.stringify(liveRoster));
+            renderRosterTableAndTiers();
+          } else {
+            seedDefaultRosterToFirestore();
+          }
+        }, function(err) {
+          console.warn("Roster Cloud-Sync offline:", err);
+          renderRosterTableAndTiers();
+        });
+      }
+    }
+
+    function seedDefaultRosterToFirestore() {
+      if (!firebase.firestore) return;
+      var db = firebase.firestore();
+      var batch = db.batch();
+      getDynamicRosterList().forEach(function(r) {
+        var ref = db.collection('clan_roster').doc(r.id);
+        batch.set(ref, r);
+      });
+      batch.commit().catch(function(e) { console.error("Fehler beim Seeden des Rosters:", e); });
     }
 
     function initMatchesRealtimeListener() {
