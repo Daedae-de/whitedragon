@@ -1672,7 +1672,7 @@
       </button>
     </div>
 
-       <!-- ADMIN & WEBMASTER MATCH ENTRY TERMINAL -->
+<!-- ADMIN & WEBMASTER MATCH ENTRY TERMINAL (VERBESSERT) -->
     <div id="admin-match-terminal" style="display:none; margin-bottom:22px; border:1.5px solid var(--cyan); background:linear-gradient(135deg, rgba(14,25,45,0.96) 0%, rgba(9,16,30,0.98) 100%); border-radius:10px; padding:18px 20px; box-shadow:0 0 25px rgba(0,229,255,0.2);">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
         <div style="font-family:'Orbitron',sans-serif; font-size:0.85rem; color:var(--cyan); font-weight:800;" id="match-cms-heading">
@@ -1682,22 +1682,22 @@
       </div>
 
       <!-- Match Metadata Grid -->
-      <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap:10px; margin-bottom:12px;">
+      <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap:10px; margin-bottom:16px;">
         <div>
           <label style="display:block; font-size:0.68rem; color:var(--text-muted); font-family:'Orbitron',sans-serif;">CATEGORY</label>
           <select id="match-inp-cat" style="width:100%; background:#070a12; border:1px solid var(--border-color); color:var(--cyan); padding:7px; border-radius:4px; font-weight:bold;">
             <option value="Clan League">🏆 Clan League (BWCL)</option>
-            <option value="WD Match">⚔️ WD Match (In-House)</option>
+            <option value="WD Star League">⚔️ WD Star League (In-House)</option>
             <option value="Clan Match">🛡️ Clan Match (Friendly CW)</option>
           </select>
         </div>
         <div>
-          <label style="display:block; font-size:0.68rem; color:var(--text-muted); font-family:'Orbitron',sans-serif;">DATE / SCHEDULE</label>
-          <input type="text" id="match-inp-date" placeholder="e.g. WEEK #5 // 1ST NOV. 2026" style="width:100%; background:#070a12; border:1px solid var(--border-color); color:#fff; padding:7px; border-radius:4px;">
+          <label style="display:block; font-size:0.68rem; color:var(--text-muted); font-family:'Orbitron',sans-serif;">DATE / CALENDAR</label>
+          <input type="date" id="match-inp-date" style="width:100%; background:#070a12; border:1px solid var(--border-color); color:#fff; padding:7px; border-radius:4px; font-family:'Share Tech Mono', monospace;">
         </div>
         <div>
           <label style="display:block; font-size:0.68rem; color:var(--text-muted); font-family:'Orbitron',sans-serif;">MATCH TITLE</label>
-          <input type="text" id="match-inp-title" placeholder="e.g. White Dragon vs dB)-3" style="width:100%; background:#070a12; border:1px solid var(--border-color); color:#fff; padding:7px; border-radius:4px;">
+          <input type="text" id="match-inp-title" placeholder="e.g. WD vs dB)-3" style="width:100%; background:#070a12; border:1px solid var(--border-color); color:#fff; padding:7px; border-radius:4px;">
         </div>
         <div>
           <label style="display:block; font-size:0.68rem; color:var(--text-muted); font-family:'Orbitron',sans-serif;">RESULT STATUS</label>
@@ -1709,132 +1709,61 @@
         </div>
         <div>
           <label style="display:block; font-size:0.68rem; color:var(--text-muted); font-family:'Orbitron',sans-serif;">TOTAL SCORE</label>
-          <input type="text" id="match-inp-score" placeholder="e.g. WIN (4 : 2) or PENDING" style="width:100%; background:#070a12; border:1px solid var(--border-color); color:#fff; padding:7px; border-radius:4px;">
+          <input type="text" id="match-inp-score" placeholder="e.g. WIN (4 : 2)" style="width:100%; background:#070a12; border:1px solid var(--border-color); color:#fff; padding:7px; border-radius:4px;">
         </div>
       </div>
 
-      <!-- INTERACTIVE SET BUILDER -->
-      <div style="background:rgba(7,12,22,0.8); border:1px solid rgba(0,229,255,0.3); border-radius:8px; padding:12px; margin-bottom:12px;">
+      <!-- TABELLARISCHER SET BUILDER -->
+      <div style="background:rgba(7,12,22,0.8); border:1px solid rgba(0,229,255,0.3); border-radius:8px; padding:12px; margin-bottom:12px; overflow-x:auto;">
         <div style="font-family:'Orbitron',sans-serif; font-size:0.75rem; color:var(--cyan); font-weight:800; margin-bottom:8px;">
-          🛠️ INTERACTIVE SET BUILDER (Auto-Calculates Member Scores: Win +2 Pts, Loss +1 Pt)
+          🛠️ MATCH-SETS TABELLE (Auto-Kalkulation: Win +2 Pkt, Loss +1 Pkt für Clan League)
         </div>
         
-        <div style="display:grid; grid-template-columns: 80px 100px 1fr 100px 90px 80px 1fr 100px auto; gap:8px; align-items:center;">
-          <!-- Set # -->
-          <div>
-            <label style="display:block; font-size:0.62rem; color:var(--text-muted);">SET #</label>
-            <input type="text" id="builder-set-num" value="#1" style="width:100%; background:#0d1627; border:1px solid var(--border-color); color:#fff; padding:6px; border-radius:4px; font-size:0.8rem; text-align:center;">
-          </div>
-          <!-- Type -->
-          <div>
-            <label style="display:block; font-size:0.62rem; color:var(--text-muted);">TYPE</label>
-            <select id="builder-set-type" onchange="toggleBuilder2v2Mode()" style="width:100%; background:#0d1627; border:1px solid var(--border-color); color:var(--cyan); padding:6px; border-radius:4px; font-size:0.8rem; font-weight:bold;">
-              <option value="1v1">1v1</option>
-              <option value="2v2">2v2</option>
-            </select>
-          </div>
-          <!-- WD Player 1 -->
-          <div>
-            <label style="display:block; font-size:0.62rem; color:var(--text-muted);">WD PLAYER</label>
-            <select id="builder-wd-p1" onchange="onBuilderMemberSelect(this.value, 'builder-wd-r1')" style="width:100%; background:#0d1627; border:1px solid var(--border-color); color:#fff; padding:6px; border-radius:4px; font-size:0.8rem;"></select>
-          </div>
-          <!-- WD Race 1 -->
-          <div>
-            <label style="display:block; font-size:0.62rem; color:var(--text-muted);">WD RACE</label>
-            <select id="builder-wd-r1" style="width:100%; background:#0d1627; border:1px solid var(--border-color); color:var(--cyan); padding:6px; border-radius:4px; font-size:0.8rem;">
-              <option value="T">Terran [T]</option>
-              <option value="P">Protoss [P]</option>
-              <option value="Z">Zerg [Z]</option>
-              <option value="R">Random [R]</option>
-            </select>
-          </div>
-          <!-- Score -->
-          <div>
-            <label style="display:block; font-size:0.62rem; color:var(--text-muted);">SCORE</label>
-            <select id="builder-set-score" style="width:100%; background:#0d1627; border:1px solid var(--border-color); color:#fff; padding:6px; border-radius:4px; font-size:0.8rem; font-weight:bold;">
-              <option value="2 - 0">2 - 0</option>
-              <option value="2 - 1">2 - 1</option>
-              <option value="1 - 2">1 - 2</option>
-              <option value="0 - 2">0 - 2</option>
-            </select>
-          </div>
-          <!-- Outcome -->
-          <div>
-            <label style="display:block; font-size:0.62rem; color:var(--text-muted);">OUTCOME</label>
-            <select id="builder-set-outcome" style="width:100%; background:#0d1627; border:1px solid var(--border-color); color:var(--win); padding:6px; border-radius:4px; font-size:0.8rem; font-weight:bold;">
-              <option value="W" style="color:var(--win);">WIN (W)</option>
-              <option value="L" style="color:var(--loss);">LOSS (L)</option>
-            </select>
-          </div>
-          <!-- Opponent Name -->
-          <div>
-            <label style="display:block; font-size:0.62rem; color:var(--text-muted);">OPPONENT NAME</label>
-            <input type="text" id="builder-opp-p1" placeholder="Type opponent..." style="width:100%; background:#0d1627; border:1px solid var(--border-color); color:#fff; padding:6px; border-radius:4px; font-size:0.8rem;">
-          </div>
-          <!-- Opponent Race -->
-          <div>
-            <label style="display:block; font-size:0.62rem; color:var(--text-muted);">OPP RACE</label>
-            <select id="builder-opp-r1" style="width:100%; background:#0d1627; border:1px solid var(--border-color); color:#fbbf24; padding:6px; border-radius:4px; font-size:0.8rem;">
-              <option value="Z">Zerg [Z]</option>
-              <option value="P">Protoss [P]</option>
-              <option value="T">Terran [T]</option>
-              <option value="R">Random [R]</option>
-            </select>
-          </div>
-          <!-- Add Button -->
-          <div>
-            <label style="display:block; font-size:0.62rem; visibility:hidden;">ADD</label>
-            <button type="button" onclick="addSetFromBuilder()" class="btn-download-rep" style="background:var(--cyan); color:#070a12; font-weight:800; font-size:0.75rem; padding:6px 12px; cursor:pointer;">
-              + ADD SET
-            </button>
-          </div>
-        </div>
-
-        <!-- Secondary 2v2 Row (Hidden unless 2v2 is picked) -->
-        <div id="builder-2v2-row" style="display:none; grid-template-columns: 80px 100px 1fr 100px 90px 80px 1fr 100px auto; gap:8px; align-items:center; margin-top:8px;">
-          <div></div>
-          <div style="font-size:0.68rem; color:var(--cyan); text-align:right; font-weight:bold;">PARTNER &rarr;</div>
-          <!-- WD Player 2 -->
-          <div>
-            <select id="builder-wd-p2" onchange="onBuilderMemberSelect(this.value, 'builder-wd-r2')" style="width:100%; background:#0d1627; border:1px solid var(--border-color); color:#fff; padding:6px; border-radius:4px; font-size:0.8rem;"></select>
-          </div>
-          <!-- WD Race 2 -->
-          <div>
-            <select id="builder-wd-r2" style="width:100%; background:#0d1627; border:1px solid var(--border-color); color:var(--cyan); padding:6px; border-radius:4px; font-size:0.8rem;">
-              <option value="T">Terran [T]</option>
-              <option value="P">Protoss [P]</option>
-              <option value="Z">Zerg [Z]</option>
-            </select>
-          </div>
-          <div></div>
-          <div style="font-size:0.68rem; color:#fbbf24; text-align:right; font-weight:bold;">VS 2ND &rarr;</div>
-          <!-- Opponent Player 2 -->
-          <div>
-            <input type="text" id="builder-opp-p2" placeholder="2nd Opponent..." style="width:100%; background:#0d1627; border:1px solid var(--border-color); color:#fff; padding:6px; border-radius:4px; font-size:0.8rem;">
-          </div>
-          <!-- Opponent Race 2 -->
-          <div>
-            <select id="builder-opp-r2" style="width:100%; background:#0d1627; border:1px solid var(--border-color); color:#fbbf24; padding:6px; border-radius:4px; font-size:0.8rem;">
-              <option value="Z">Zerg [Z]</option>
-              <option value="P">Protoss [P]</option>
-              <option value="T">Terran [T]</option>
-            </select>
-          </div>
-          <div></div>
-        </div>
+        <table style="width:100%; min-width:700px; border-collapse: collapse; font-size:0.8rem; text-align:left;">
+          <thead style="border-bottom:1px solid var(--border-color); color:var(--text-muted); font-family:'Orbitron',sans-serif; font-size:0.65rem;">
+            <tr>
+              <th style="padding:6px 4px;">TYPE</th>
+              <th style="padding:6px 4px;">MAP</th>
+              <th style="padding:6px 4px;">WD PLAYER(S)</th>
+              <th style="padding:6px 4px; text-align:center;">SCORE</th>
+              <th style="padding:6px 4px;">OPPONENT CLAN</th>
+              <th style="padding:6px 4px;">OPP PLAYER(S)</th>
+              <th style="padding:6px 4px; text-align:center;">RESULT</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="builder-table-body">
+            <tr>
+              <td style="padding:4px;"><select id="b-type" style="background:#0d1627; border:1px solid var(--border-color); color:var(--cyan); padding:4px;"><option>1v1</option><option>2v2</option></select></td>
+              <td style="padding:4px;"><input type="text" id="b-map" placeholder="Map..." style="width:80px; background:#0d1627; border:1px solid var(--border-color); color:#fff; padding:4px;"></td>
+              <td style="padding:4px;">
+                <select id="b-wd1" style="width:90px; background:#0d1627; border:1px solid var(--border-color); color:#fff; padding:4px;"></select> <select id="b-wdr1" style="width:40px; background:#0d1627; border:1px solid var(--border-color); color:var(--cyan); padding:4px;"><option value="T">T</option><option value="P">P</option><option value="Z">Z</option><option value="R">R</option></select><br>
+                <input type="text" id="b-wd2" placeholder="Partner 2v2..." style="width:90px; background:#0d1627; border:1px solid var(--border-color); color:#fff; padding:4px; margin-top:2px;"> <select id="b-wdr2" style="width:40px; background:#0d1627; border:1px solid var(--border-color); color:var(--cyan); padding:4px; margin-top:2px;"><option value="T">T</option><option value="P">P</option><option value="Z">Z</option></select>
+              </td>
+              <td style="padding:4px; text-align:center;"><select id="b-score" style="background:#0d1627; border:1px solid var(--border-color); color:#fff; padding:4px; font-weight:bold;"><option>2 : 0</option><option>2 : 1</option><option>1 : 2</option><option>0 : 2</option></select></td>
+              <td style="padding:4px;"><input type="text" id="b-opp-clan" placeholder="Clan Tag..." style="width:80px; background:#0d1627; border:1px solid var(--border-color); color:#fff; padding:4px;"></td>
+              <td style="padding:4px;">
+                <input type="text" id="b-opp1" placeholder="Opp 1..." style="width:80px; background:#0d1627; border:1px solid var(--border-color); color:#fff; padding:4px;"> <select id="b-oppr1" style="width:40px; background:#0d1627; border:1px solid var(--border-color); color:#fbbf24; padding:4px;"><option value="Z">Z</option><option value="P">P</option><option value="T">T</option><option value="R">R</option></select><br>
+                <input type="text" id="b-opp2" placeholder="Opp 2..." style="width:80px; background:#0d1627; border:1px solid var(--border-color); color:#fff; padding:4px; margin-top:2px;"> <select id="b-oppr2" style="width:40px; background:#0d1627; border:1px solid var(--border-color); color:#fbbf24; padding:4px; margin-top:2px;"><option value="Z">Z</option><option value="P">P</option><option value="T">T</option></select>
+              </td>
+              <td style="padding:4px; text-align:center;"><select id="b-result" style="background:#0d1627; border:1px solid var(--border-color); color:var(--win); padding:4px; font-weight:bold;"><option value="WIN">WIN</option><option value="LOSS" style="color:var(--loss);">LOSS</option></select></td>
+              <td style="padding:4px; text-align:right;"><button type="button" onclick="addSetFromTableBuilder()" class="btn-download-rep" style="background:var(--cyan); color:#070a12; font-weight:800; font-size:0.7rem; padding:4px 8px;">+ ADD</button></td>
+            </tr>
+          </tbody>
+        </table>
       </div>
 
-      <!-- Sets Textarea (Updated by builder, or directly editable) -->
+      <!-- Sets Textarea (Speichert die formatierte Tabelle für die Datenbank) -->
       <div style="margin-bottom:12px;">
         <label style="display:block; font-size:0.68rem; color:var(--text-muted); font-family:'Orbitron',sans-serif; margin-bottom:4px;">
-          DETAILED SCORECARD LINES (Populated by builder above or editable directly • One line per set)
+          GENERIERTE MATCH-DATEN (Wird automatisch von der Tabelle oben befüllt)
         </label>
-        <textarea id="match-inp-sets" rows="5" placeholder="#1 1v1 [T] KaRDiNaL[WD] 2 - 0 Red.Hot [Z] | W&#10;#2 1v1 [T] CheesyCake[WD] 2 - 0 Red-Navane [P] | W" style="width:100%; background:#070a12; border:1px solid var(--border-color); color:#fff; padding:8px 10px; border-radius:4px; font-family:'Share Tech Mono',monospace; font-size:0.85rem; line-height:1.45; resize:vertical;"></textarea>
+        <textarea id="match-inp-sets" rows="4" placeholder="1v1 | Map | [T] KaRDiNaL[WD] 2:0 dB)Opponent [Z] | WIN" style="width:100%; background:#070a12; border:1px solid var(--border-color); color:#fff; padding:8px 10px; border-radius:4px; font-family:'Share Tech Mono',monospace; font-size:0.85rem; line-height:1.45; resize:vertical;"></textarea>
       </div>
 
       <div style="margin-bottom:12px;">
         <label style="display:block; font-size:0.68rem; color:var(--text-muted); font-family:'Orbitron',sans-serif; margin-bottom:4px;">MAP NOTES / MOTW BRIEF</label>
-        <input type="text" id="match-inp-note" placeholder="e.g. 1n1 MOTW: Backrooms | 2n2 MOTW: Octagon" style="width:100%; background:#070a12; border:1px solid var(--border-color); color:#fff; padding:7px; border-radius:4px;">
+        <input type="text" id="match-inp-note" placeholder="e.g. 1n1 MOTW: Backrooms" style="width:100%; background:#070a12; border:1px solid var(--border-color); color:#fff; padding:7px; border-radius:4px;">
       </div>
 
       <div style="display:flex; justify-content:flex-end; gap:8px;">
@@ -1851,7 +1780,7 @@
     <div style="display:flex; gap:8px; margin-bottom:16px; flex-wrap:wrap;">
       <button onclick="filterMatchCategory('All')" id="btn-mcat-All" class="nav-tab-btn active">ALL</button>
       <button onclick="filterMatchCategory('Clan League')" id="btn-mcat-ClanLeague" class="nav-tab-btn">🏆 CLAN LEAGUE</button>
-      <button onclick="filterMatchCategory('WD Match')" id="btn-mcat-WDMatch" class="nav-tab-btn">⚔️ WD IN-HOUSE</button>
+      <button onclick="filterMatchCategory('WD Star League')" id="btn-mcat-WDStarLeague" class="nav-tab-btn">⚔️ WD STAR LEAGUE</button>
       <button onclick="filterMatchCategory('Clan Match')" id="btn-mcat-ClanMatch" class="nav-tab-btn">🛡️ CLAN MATCH</button>
     </div>
 
@@ -3255,6 +3184,7 @@ window.addEventListener('DOMContentLoaded', function() {
   // Realtime Cloud-Sync für alle Geräte (Firebase Firestore)
   initNewsRealtimeListener();
   initClanMembersRealtimeListener();
+  initMatchesRealtimeListener(); // <-- WICHTIG: Muss hier stehen!
   initVaultRealtimeListener();       
   fetchBWCLStandings();
   
@@ -4835,135 +4765,6 @@ window.addEventListener('DOMContentLoaded', function() {
         }
       } catch(e) {}
     }
-
-    function renderRosterTableAndTiers() {
-      applyProfileCustomizationsToRoster();
-      
-      var allMembers = getFullClanMembersList();
-      var rosterEntries = getDynamicRosterList();
-
-      var user = (typeof firebase !== 'undefined' && firebase.auth && firebase.auth().currentUser) 
-        ? firebase.auth().currentUser 
-        : currentUser;
-      var canModerate = user && (isUserAdmin(user.email) || user.email.toLowerCase() === WEBMASTER_EMAIL.toLowerCase());
-
-      // Populate Roster Add Member dropdown
-      var expelSelect = document.getElementById('quick-expel-select');
-      if (expelSelect) {
-        expelSelect.innerHTML = '<option value="">-- Choose Member to Expel --</option>';
-        allMembers.forEach(function(m) {
-          var opt = document.createElement('option');
-          opt.value = m.id;
-          opt.innerText = m.name + ' (' + m.rank + ')';
-          expelSelect.appendChild(opt);
-        });
-      }
-      var addSelect = document.getElementById('roster-add-member-select');
-      if (addSelect) {
-        addSelect.innerHTML = '<option value="">-- Choose Clan Member --</option>';
-        allMembers.forEach(function(m) {
-          var isAlreadyIn = rosterEntries.some(function(r) { return r.id === m.id; });
-          var opt = document.createElement('option');
-          opt.value = m.id;
-          opt.innerText = m.name + (isAlreadyIn ? ' (In WD-A)' : '');
-          if (isAlreadyIn) opt.disabled = true;
-          addSelect.appendChild(opt);
-        });
-      }
-
-      var rTbody = document.getElementById('roster-tbody');
-      if (rTbody) {
-        rTbody.innerHTML = '';
-        rosterEntries.forEach(function(entry) {
-          var p = allMembers.find(function(m) { return m.id === entry.id; });
-          if (!p) return;
-          var tr = document.createElement('tr');
-          tr.className = 'clickable-row';
-          tr.onclick = function() { openDossier(p.id); };
-          
-          var flagSvg = flags[p.flagKey] || flags.global;
-
-          var displayRole = entry.role || p.role || 'Player';
-          var roleBadge = '';
-          if (displayRole === 'Squadleader') {
-            roleBadge = '<span class="role-badge role-squadleader">★ Squadleader</span>';
-          } else if (displayRole === 'Captain') {
-            roleBadge = '<span class="role-badge role-captain">⛨ Captain</span>';
-          } else if (displayRole === 'Starter') {
-            roleBadge = '<span class="role-badge role-squadleader" style="background:rgba(16,185,129,0.18); color:var(--win); border-color:var(--win);">★ Starter</span>';
-          } else {
-            roleBadge = '<span class="role-badge role-starter">Player</span>';
-          }
-
-          var miniAvatar = p.avatar ? 
-            '<img src="' + p.avatar + '" class="table-avatar" onerror="this.style.display=\'none\'">' : '';
-          
-          var removeBtn = canModerate 
-            ? '<button onclick="event.stopPropagation(); removeMemberFromRoster(\'' + p.id + '\')" class="admin-del-btn" style="display:inline-block; margin-left:8px; padding:2px 6px;">✕</button>'
-            : '';
-
-          var scheduleTime = entry.time || 'Available for League';
-
-          tr.innerHTML = 
-            '<td><span class="player-tag">' + miniAvatar + p.name + ' <span class="click-hint">INTEL</span></span></td>' +
-            '<td>' + roleBadge + '</td>' +
-            '<td><strong style="color:var(--cyan);">WD-A</strong></td>' +
-            '<td>White Dragon</td>' +
-            '<td>' + flagSvg + ' ' + p.country + '</td>' +
-            '<td>' + getRaceBadgeHtml(p.race) + '</td>' +
-            '<td><span style="font-family:\'Share Tech Mono\',monospace; font-size:0.85rem; color:#e2e8f0;">' + scheduleTime + '</span>' + removeBtn + '</td>';
-          
-          rTbody.appendChild(tr);
-        });
-      }
-
-      // Re-populate tiers
-      Object.keys(tiers).forEach(function(tierName) {
-        var el = document.getElementById(tiers[tierName]);
-        if (el) el.innerHTML = '';
-      });
-
-      allMembers.forEach(function(p) {
-        var targetId = tiers[p.rank] || 'tier-privates';
-        var container = document.getElementById(targetId);
-        if (!container) return;
-
-        var pill = document.createElement('div');
-        pill.className = 'member-pill';
-        pill.onclick = function() { openDossier(p.id); };
-
-        // Determine badge tag and color: Random = Red (#ef4444), UMS = Green (#10b981)
-        var raceLower = (p.race || '').toLowerCase();
-        var raceColor = '#60a5fa'; // default terran
-        var raceTag = '[T]';
-
-        if (raceLower.startsWith('t')) {
-          raceColor = '#60a5fa'; raceTag = '[T]';
-        } else if (raceLower.startsWith('p')) {
-          raceColor = '#fbbf24'; raceTag = '[P]';
-        } else if (raceLower.startsWith('z')) {
-          raceColor = '#c084fc'; raceTag = '[Z]';
-        } else if (raceLower === 'ums') {
-          raceColor = '#10b981'; raceTag = '[UMS]'; // Green
-        } else {
-          raceColor = '#ef4444'; raceTag = '[R]'; // Red
-        }
-
-        var pillAvatar = p.avatar ? 
-          '<img src="' + p.avatar + '" class="pill-avatar" onerror="this.style.display=\'none\'">' : '';
-
-        // Delete button visible on pill for Admin / Webmaster
-        var delBtnHtml = canModerate ?
-          '<span onclick="event.stopPropagation(); adminDeleteMember(\'' + p.id + '\')" title="Expel member" style="margin-left:6px; color:var(--loss); font-weight:bold; cursor:pointer; padding:0 3px;">✕</span>' : '';
-
-        pill.innerHTML = 
-          '<span class="tag">' + pillAvatar + p.name + '</span>' +
-          '<span class="pill-race" style="color:' + raceColor + '">' + raceTag + '</span>' +
-          delBtnHtml;
-
-        container.appendChild(pill);
-      });
-    }
     
 
     function quickExpelMemberUI() {
@@ -5232,42 +5033,40 @@ window.addEventListener('DOMContentLoaded', function() {
       }
     }
 
-  // ========================================================
+// ========================================================
     // 1. DYNAMIC MATCHES ENGINE WITH AUTO-CALCULATED MEMBER SCORES
     // ========================================================
     var currentMatchCategoryFilter = 'All';
+    var firestoreMatches = [];
 
-    // Parse set line for display (preserves clan tags like Cwt|MaF or Shadow|JD)
     function formatSetLineHtml(lineStr) {
       if (!lineStr || !lineStr.trim()) return '';
       var s = lineStr.trim();
       var resBadge = '';
       var textPart = s;
 
-      // Extract outcome specifically from line end so clan tags with '|' aren't broken
       var mOutcome = s.match(/\|\s*(WIN|LOSS|W|L)\s*$/i);
       if (mOutcome) {
         textPart = s.substring(0, mOutcome.index).trim();
         var out = mOutcome[1].toUpperCase();
         if (out === 'W' || out === 'WIN') {
-          resBadge = '<span style="color:var(--win); font-weight:bold; font-family:\'Share Tech Mono\',monospace;">W</span>';
+          resBadge = '<span style="color:var(--win); font-weight:bold; font-family:\'Share Tech Mono\',monospace;">WIN</span>';
         } else {
-          resBadge = '<span style="color:var(--loss); font-weight:bold; font-family:\'Share Tech Mono\',monospace;">L</span>';
+          resBadge = '<span style="color:var(--loss); font-weight:bold; font-family:\'Share Tech Mono\',monospace;">LOSS</span>';
         }
       } else if (s.slice(-2).toUpperCase() === ' W') {
         textPart = s.slice(0, -2).trim();
-        resBadge = '<span style="color:var(--win); font-weight:bold; font-family:\'Share Tech Mono\',monospace;">W</span>';
+        resBadge = '<span style="color:var(--win); font-weight:bold; font-family:\'Share Tech Mono\',monospace;">WIN</span>';
       } else if (s.slice(-2).toUpperCase() === ' L') {
         textPart = s.slice(0, -2).trim();
-        resBadge = '<span style="color:var(--loss); font-weight:bold; font-family:\'Share Tech Mono\',monospace;">L</span>';
+        resBadge = '<span style="color:var(--loss); font-weight:bold; font-family:\'Share Tech Mono\',monospace;">LOSS</span>';
       }
 
-      // Convert race tokens to badges
       textPart = textPart
         .replace(/\[T\]|\(T\)/gi, '<span class="race-badge race-terran" style="font-size:0.62rem; padding:1px 5px; margin:0 3px;">T</span>')
         .replace(/\[P\]|\(P\)/gi, '<span class="race-badge race-protoss" style="font-size:0.62rem; padding:1px 5px; margin:0 3px;">P</span>')
         .replace(/\[Z\]|\(Z\)/gi, '<span class="race-badge race-zerg" style="font-size:0.62rem; padding:1px 5px; margin:0 3px;">Z</span>')
-        .replace(/\[R\]|\(R\)/gi, '<span class="race-badge" style="font-size:0.62rem; padding:1px 5px; margin:0 3px; background:rgba(0,229,255,0.2); color:#00e5ff; border:1px solid #00e5ff;">R</span>')
+        .replace(/\[R\]|\(R\)/gi, '<span class="race-badge race-random" style="font-size:0.62rem; padding:1px 5px; margin:0 3px;">R</span>')
         .replace(/\[P\/T\]|\(P\/T\)/gi, '<span class="race-badge race-protoss" style="font-size:0.62rem; padding:1px 4px; margin:0 1px;">P</span><span class="race-badge race-terran" style="font-size:0.62rem; padding:1px 4px; margin:0 1px;">T</span>')
         .replace(/\[T\/P\]|\(T\/P\)/gi, '<span class="race-badge race-terran" style="font-size:0.62rem; padding:1px 4px; margin:0 1px;">T</span><span class="race-badge race-protoss" style="font-size:0.62rem; padding:1px 4px; margin:0 1px;">P</span>')
         .replace(/\[Z\/T\]|\(Z\/T\)/gi, '<span class="race-badge race-zerg" style="font-size:0.62rem; padding:1px 4px; margin:0 1px;">Z</span><span class="race-badge race-terran" style="font-size:0.62rem; padding:1px 4px; margin:0 1px;">T</span>')
@@ -5277,9 +5076,6 @@ window.addEventListener('DOMContentLoaded', function() {
 
       return '<div class="set-row"><span>' + textPart + '</span>' + resBadge + '</div>';
     }
-
-    // Official Default Scorecards with full sets and race tags
-        var firestoreMatches = [];
 
     function initMatchesRealtimeListener() {
       if (typeof firebase !== 'undefined' && firebase.firestore) {
@@ -5292,6 +5088,7 @@ window.addEventListener('DOMContentLoaded', function() {
               liveMatches.push(m);
             });
             firestoreMatches = liveMatches;
+            localStorage.setItem('wd_matches_vault', JSON.stringify(liveMatches));
             renderMatches();
           } else {
             seedDefaultMatchesToFirestore();
@@ -5314,7 +5111,7 @@ window.addEventListener('DOMContentLoaded', function() {
       batch.commit().catch(function(e) { console.error("Fehler beim Seeden der Matches:", e); });
     }
 
-function getDefaultMatchesArchive() {
+    function getDefaultMatchesArchive() {
       return [
         {
           id: 'm_1',
@@ -5422,7 +5219,7 @@ function getDefaultMatchesArchive() {
         },
         {
           id: 'm_9',
-          category: 'WD Match',
+          category: 'WD Star League',
           week: 'WEEKLY IN-HOUSE // OCT. 2026',
           title: 'White Dragon Blue vs White Dragon Gold',
           resultType: 'WIN',
@@ -5455,40 +5252,21 @@ function getDefaultMatchesArchive() {
       ];
     }
 
-    // Auto-heals cached matches if the browser had cached old records without sets
     function getMatchesList() {
-      var defaultMatches = getDefaultMatchesArchive();
+      if (firestoreMatches && firestoreMatches.length > 0) {
+        return firestoreMatches;
+      }
       try {
         var stored = JSON.parse(localStorage.getItem('wd_matches_vault') || 'null');
-        if (Array.isArray(stored) && stored.length > 0) {
-          var needsUpdate = false;
-          stored.forEach(function(m) {
-            if ((!m.sets || m.sets.length === 0) && m.resultType !== 'UPCOMING') {
-              var def = defaultMatches.find(function(d) { return d.id === m.id; });
-              if (def && def.sets && def.sets.length > 0) {
-                m.sets = def.sets;
-                needsUpdate = true;
-              }
-            }
-          });
-          if (needsUpdate) {
-            localStorage.setItem('wd_matches_vault', JSON.stringify(stored));
-          }
-          return stored;
-        }
+        if (Array.isArray(stored) && stored.length > 0) return stored;
       } catch(e) {}
-
-      localStorage.setItem('wd_matches_vault', JSON.stringify(defaultMatches));
-      return defaultMatches;
+      return getDefaultMatchesArchive();
     }
 
-    // AUTOMATIC POINT & SCORE CALCULATION ENGINE
-    // Rule: Win = +2 Points, Loss = +1 Point (Participation)
     function recalculateAllMemberScores() {
       var matches = getMatchesList();
       var allMembers = (typeof getFullClanMembersList === 'function') ? getFullClanMembersList() : membersData;
 
-      // Reset dynamic counters for all clan members
       allMembers.forEach(function(mem) {
         mem._w1_w = 0; mem._w1_l = 0;
         mem._w2_w = 0; mem._w2_l = 0;
@@ -5499,54 +5277,54 @@ function getDefaultMatchesArchive() {
       matches.forEach(function(match) {
         if (!match.sets || !Array.isArray(match.sets)) return;
         var weekLabel = match.week ? match.week.split('//')[0].trim() : 'CW';
+        var isClanLeague = (match.category === 'Clan League' || match.category === '🏆 Clan League (BWCL)');
 
         match.sets.forEach(function(s) {
           if (!s || !s.trim()) return;
           var line = s.trim();
 
-          // Outcome detection
           var mOutcome = line.match(/\|\s*(WIN|LOSS|W|L)\s*$/i);
           var isWin = false;
           var cleanText = line;
 
           if (mOutcome) {
             cleanText = line.substring(0, mOutcome.index).trim();
-            isWin = (mOutcome[1].toUpperCase() === 'W' || mOutcome[1].toUpperCase() === 'WIN');
+            var outStr = mOutcome[1].toUpperCase();
+            isWin = (outStr === 'W' || outStr === 'WIN');
           } else if (line.slice(-2).toUpperCase() === ' W') {
             cleanText = line.slice(0, -2).trim();
             isWin = true;
-          } else if (line.slice(-2).toUpperCase() === ' L') {
-            cleanText = line.slice(0, -2).trim();
-            isWin = false;
           }
 
           var is2v2 = /2v2/i.test(cleanText);
-
-          // Find set score
           var scoreMatch = cleanText.match(/(\d+)\s*[-:]\s*(\d+)/);
-          var scoreStr = scoreMatch ? scoreMatch[0] : (isWin ? '2 - 0' : '0 - 2');
+          var scoreStr = scoreMatch ? scoreMatch[0] : (isWin ? '2:0' : '0:2');
           var wdSide = scoreMatch ? cleanText.substring(0, scoreMatch.index).trim() : cleanText;
 
-          // Check which member played on the White Dragon side
           allMembers.forEach(function(mem) {
             var memKey = mem.id.toLowerCase();
             var memNameClean = mem.name.replace('[WD]', '').toLowerCase();
 
             if (wdSide.toLowerCase().indexOf(memKey) !== -1 || wdSide.toLowerCase().indexOf(memNameClean) !== -1) {
               if (is2v2) {
-                if (isWin) mem._w2_w++;
-                else mem._w2_l++;
+                if (isWin) mem._w2_w++; else mem._w2_l++;
               } else {
-                if (isWin) mem._w1_w++;
-                else mem._w1_l++;
+                if (isWin) mem._w1_w++; else mem._w1_l++;
               }
 
-              // Win: +2 Pts | Loss: +1 Pt (Participation)
-              mem._pts += (isWin ? 2 : 1);
+              if (isClanLeague) {
+                mem._pts += (isWin ? 2 : 1);
+              }
+
+              var displaySet = cleanText;
+              if (cleanText.indexOf('|') !== -1) {
+                var parts = cleanText.split('|').map(function(p) { return p.trim(); });
+                displaySet = parts.join(' • ');
+              }
 
               mem._history.push({
                 week: weekLabel,
-                set: cleanText,
+                set: displaySet,
                 res: isWin ? 'WIN' : 'LOSS',
                 score: scoreStr,
                 win: isWin
@@ -5556,7 +5334,6 @@ function getDefaultMatchesArchive() {
         });
       });
 
-      // Apply computed results
       allMembers.forEach(function(mem) {
         if (mem._history.length > 0) {
           mem.w1 = mem._w1_w + ' - ' + mem._w1_l;
@@ -5567,12 +5344,53 @@ function getDefaultMatchesArchive() {
       });
     }
 
-    // Populate the dropdown of members in the Set Builder
+    function addSetFromTableBuilder() {
+      var allMembers = (typeof getFullClanMembersList === 'function') ? getFullClanMembersList() : membersData;
+      var type = document.getElementById('b-type').value;
+      var map = document.getElementById('b-map').value.trim() || 'Unknown Map';
+      var score = document.getElementById('b-score').value;
+      var result = document.getElementById('b-result').value;
+      var oppClan = document.getElementById('b-opp-clan').value.trim() || '';
+      
+      var p1Id = document.getElementById('b-wd1').value;
+      var r1 = document.getElementById('b-wdr1').value;
+      var oppP1 = document.getElementById('b-opp1').value.trim() || 'Opponent';
+      var oppR1 = document.getElementById('b-oppr1').value;
+
+      var mem1 = allMembers.find(function(m) { return m.id === p1Id; });
+      var mem1Name = mem1 ? mem1.name : (p1Id + '[WD]');
+
+      var generatedLine = '';
+
+      if (type === '1v1') {
+        generatedLine = type + ' | ' + map + ' | [' + r1 + '] ' + mem1Name + ' ' + score + ' ' + (oppClan ? oppClan + '|' : '') + oppP1 + ' [' + oppR1 + '] | ' + result;
+      } else {
+        var p2Id = document.getElementById('b-wd2').value.trim() || 'Partner';
+        var r2 = document.getElementById('b-wdr2').value;
+        var oppP2 = document.getElementById('b-opp2').value.trim() || 'Opp2';
+        var oppR2 = document.getElementById('b-oppr2').value;
+
+        var mem2 = allMembers.find(function(m) { return m.id === p2Id; });
+        var mem2Name = mem2 ? mem2.name.replace('[WD]', '') : p2Id;
+        var cleanMem1 = mem1Name.replace('[WD]', '');
+
+        generatedLine = type + ' | ' + map + ' | [' + r1 + '/' + r2 + '] ' + cleanMem1 + ' & ' + mem2Name + ' ' + score + ' ' + (oppClan ? oppClan + '|' : '') + oppP1 + ' & ' + oppP2 + ' [' + oppR1 + '/' + oppR2 + '] | ' + result;
+      }
+
+      var textarea = document.getElementById('match-inp-sets');
+      if (textarea) {
+        if (textarea.value.trim().length > 0) textarea.value += '\n' + generatedLine;
+        else textarea.value = generatedLine;
+      }
+
+      document.getElementById('b-opp1').value = '';
+      document.getElementById('b-opp2').value = '';
+    }
+
     function initBuilderMemberSelects() {
       var allMembers = (typeof getFullClanMembersList === 'function') ? getFullClanMembersList() : membersData;
-      var selP1 = document.getElementById('builder-wd-p1');
-      var selP2 = document.getElementById('builder-wd-p2');
-
+      var selP1 = document.getElementById('b-wd1');
+      
       if (selP1) {
         selP1.innerHTML = '';
         allMembers.forEach(function(m) {
@@ -5582,91 +5400,6 @@ function getDefaultMatchesArchive() {
           selP1.appendChild(opt);
         });
       }
-      if (selP2) {
-        selP2.innerHTML = '';
-        allMembers.forEach(function(m) {
-          var opt = document.createElement('option');
-          opt.value = m.id;
-          opt.innerText = m.name;
-          selP2.appendChild(opt);
-        });
-      }
-
-      // Default initial race
-      if (allMembers[0]) {
-        onBuilderMemberSelect(allMembers[0].id, 'builder-wd-r1');
-        if (allMembers[1]) onBuilderMemberSelect(allMembers[1].id, 'builder-wd-r2');
-      }
-    }
-
-    // Auto-select race when member is chosen
-    function onBuilderMemberSelect(memberId, raceSelectId) {
-      var allMembers = (typeof getFullClanMembersList === 'function') ? getFullClanMembersList() : membersData;
-      var mem = allMembers.find(function(m) { return m.id === memberId; });
-      var raceSel = document.getElementById(raceSelectId);
-      if (mem && raceSel) {
-        var firstLetter = (mem.race ? mem.race[0].toUpperCase() : 'T');
-        raceSel.value = (firstLetter === 'T' || firstLetter === 'P' || firstLetter === 'Z') ? firstLetter : 'T';
-      }
-    }
-
-    function toggleBuilder2v2Mode() {
-      var typeSel = document.getElementById('builder-set-type');
-      var row2v2 = document.getElementById('builder-2v2-row');
-      if (row2v2 && typeSel) {
-        row2v2.style.display = (typeSel.value === '2v2') ? 'grid' : 'none';
-      }
-    }
-
-    // Add set to scorecard textarea
-    function addSetFromBuilder() {
-      var allMembers = (typeof getFullClanMembersList === 'function') ? getFullClanMembersList() : membersData;
-      var setNum = (document.getElementById('builder-set-num').value || '#1').trim();
-      var setType = document.getElementById('builder-set-type').value;
-      var p1Id = document.getElementById('builder-wd-p1').value;
-      var r1 = document.getElementById('builder-wd-r1').value;
-      var score = document.getElementById('builder-set-score').value;
-      var outcome = document.getElementById('builder-set-outcome').value;
-      var oppP1 = (document.getElementById('builder-opp-p1').value || 'Opponent').trim();
-      var oppR1 = document.getElementById('builder-opp-r1').value;
-
-      var mem1 = allMembers.find(function(m) { return m.id === p1Id; });
-      var mem1Name = mem1 ? mem1.name : (p1Id + '[WD]');
-
-      var generatedLine = '';
-
-      if (setType === '1v1') {
-        generatedLine = setNum + ' 1v1 [' + r1 + '] ' + mem1Name + ' ' + score + ' ' + oppP1 + ' [' + oppR1 + '] | ' + outcome;
-      } else {
-        var p2Id = document.getElementById('builder-wd-p2').value;
-        var r2 = document.getElementById('builder-wd-r2').value;
-        var oppP2 = (document.getElementById('builder-opp-p2').value || 'Partner').trim();
-        var oppR2 = document.getElementById('builder-opp-r2').value;
-
-        var mem2 = allMembers.find(function(m) { return m.id === p2Id; });
-        var mem2Name = mem2 ? mem2.name.replace('[WD]', '') : p2Id;
-        var cleanMem1 = mem1Name.replace('[WD]', '');
-
-        generatedLine = setNum + ' 2v2 [' + r1 + '/' + r2 + '] ' + cleanMem1 + ' & ' + mem2Name + ' ' + score + ' ' + oppP1 + ' & ' + oppP2 + ' [' + oppR1 + '/' + oppR2 + '] | ' + outcome;
-      }
-
-      var textarea = document.getElementById('match-inp-sets');
-      if (textarea) {
-        if (textarea.value.trim().length > 0) {
-          textarea.value = textarea.value.trim() + '\n' + generatedLine;
-        } else {
-          textarea.value = generatedLine;
-        }
-      }
-
-      // Increment set number for quick successive entry
-      var matchNum = setNum.match(/\d+/);
-      if (matchNum) {
-        var nextNum = parseInt(matchNum[0], 10) + 1;
-        document.getElementById('builder-set-num').value = '#' + nextNum;
-      }
-      document.getElementById('builder-opp-p1').value = '';
-      document.getElementById('builder-opp-p2').value = '';
     }
 
     function renderMatches() {
@@ -5685,7 +5418,9 @@ function getDefaultMatchesArchive() {
       if (btnCms) btnCms.style.display = canModerate ? 'inline-block' : 'none';
 
       var filtered = matches.filter(function(m) {
-        return currentMatchCategoryFilter === 'All' || m.category === currentMatchCategoryFilter;
+        if (currentMatchCategoryFilter === 'All') return true;
+        if (currentMatchCategoryFilter === 'WD Star League' && (m.category === 'WD Match' || m.category === 'WD Star League')) return true;
+        return m.category === currentMatchCategoryFilter;
       });
 
       grid.innerHTML = '';
@@ -5778,7 +5513,7 @@ function getDefaultMatchesArchive() {
 
     function filterMatchCategory(cat) {
       currentMatchCategoryFilter = cat;
-      var catKeys = ['All', 'ClanLeague', 'WDMatch', 'ClanMatch'];
+      var catKeys = ['All', 'ClanLeague', 'WDStarLeague', 'ClanMatch'];
       catKeys.forEach(function(c) {
         var b = document.getElementById('btn-mcat-' + c);
         if (b) {
@@ -5799,57 +5534,54 @@ function getDefaultMatchesArchive() {
       var note = document.getElementById('match-inp-note').value.trim();
       var setsText = document.getElementById('match-inp-sets').value.trim();
 
-      if (!title) { alert('Please enter a match title.'); return; }
+      if (!title) { alert('Bitte Match-Titel eingeben.'); return; }
 
       var setsArray = [];
       if (setsText) {
         setsArray = setsText.split('\n').map(function(line) { return line.trim(); }).filter(function(line) { return line.length > 0; });
       }
 
-      var matches = getMatchesList();
+      var matchId = editId || ('m_' + Date.now());
+      var matchRecord = {
+        id: matchId,
+        category: cat,
+        week: date,
+        title: title,
+        resultType: result,
+        score: score,
+        note: note,
+        sets: setsArray
+      };
 
-      if (editId) {
-        var idx = matches.findIndex(function(m) { return m.id === editId; });
-        if (idx !== -1) {
-          matches[idx].category = cat;
-          matches[idx].week = date;
-          matches[idx].title = title;
-          matches[idx].resultType = result;
-          matches[idx].score = score;
-          matches[idx].note = note;
-          matches[idx].sets = setsArray;
-        }
+      if (typeof firebase !== 'undefined' && firebase.firestore) {
+        firebase.firestore().collection('clan_matches').doc(matchId).set(matchRecord, { merge: true })
+          .then(function() {
+            cancelMatchCMS();
+            alert('Match erfolgreich in Firebase gespeichert und synchronisiert!');
+          })
+          .catch(function(e) {
+            alert('Fehler beim Speichern in Firebase: ' + e.message);
+          });
       } else {
-        matches.unshift({
-          id: 'm_' + Date.now(),
-          category: cat,
-          week: date,
-          title: title,
-          resultType: result,
-          score: score,
-          note: note,
-          sets: setsArray
-        });
+        alert('Keine Verbindung zu Firebase. Speichern abgebrochen.');
       }
-
-      localStorage.setItem('wd_matches_vault', JSON.stringify(matches));
-      renderMatches();
-      cancelMatchCMS();
-      alert('Match scorecard saved! All member points and set records have been automatically re-calculated.');
     }
 
     function deleteMatchRecord(id) {
-      if (!confirm('Are you sure you want to delete this match record?')) return;
+      if (!confirm('Möchtest du dieses Match wirklich für alle Geräte löschen?')) return;
+      if (typeof firebase !== 'undefined' && firebase.firestore) {
+        firebase.firestore().collection('clan_matches').doc(id).delete()
+          .catch(function(e) { alert('Fehler beim Löschen: ' + e.message); });
+      }
       var matches = getMatchesList().filter(function(m) { return m.id !== id; });
       localStorage.setItem('wd_matches_vault', JSON.stringify(matches));
       renderMatches();
     }
-
-    // ========================================================
     
     // ========================================================
     // SQUAD FILTERING ENGINE (WD-A, WD-B, WD-C)
     // ========================================================
+
     var currentActiveSquad = 'WD-A';
 
     function filterSquadView(squadKey) {
@@ -6162,7 +5894,7 @@ function getDefaultMatchesArchive() {
           }
 
           var miniAvatar = p.avatar ? 
-            '<img src="' + p.avatar + '" class="table-avatar" onerror="this.style.display=\'none\">' : '';
+            '<img src="' + p.avatar + '" class="table-avatar" onerror="this.style.display=\'none\'">' : '';
           
           var removeBtn = canModerate 
             ? '<button onclick="event.stopPropagation(); removeMemberFromRoster(\'' + p.id + '\')" class="admin-del-btn" style="display:inline-block; margin-left:8px; padding:2px 6px;">✕</button>'
@@ -6212,8 +5944,8 @@ function getDefaultMatchesArchive() {
           raceColor = '#ef4444'; raceTag = '[R]'; // Red Random
         }
 
-        var pillAvatar = p.avatar ? 
-          '<img src="' + p.avatar + '" class="pill-avatar" onerror="this.style.display=\'none\">' : '';
+	var pillAvatar = p.avatar ? 
+          '<img src="' + p.avatar + '" class="pill-avatar" onerror="this.style.display=\'none\'">' : '';
 
         var delBtnHtml = canModerate ?
           '<span onclick="event.stopPropagation(); adminDeleteMember(\'' + p.id + '\')" title="Expel member" style="margin-left:6px; color:var(--loss); font-weight:bold; cursor:pointer; padding:0 3px;">✕</span>' : '';
