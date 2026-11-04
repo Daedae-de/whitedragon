@@ -1481,7 +1481,7 @@
         </div>
         <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom:12px;">Top active tournament starters representing White Dragon in Season 65:</p>
         <div style="display:flex; flex-direction:column; gap:8px;" id="overview-active-squad-list">
-          <!-- Wird dynamisch geladen -->
+          <!-- Dynamisch geladen -->
         </div>
       </div>
 
@@ -1491,7 +1491,7 @@
           <a href="javascript:switchTab('community')" style="color:var(--cyan); font-size:0.8rem; text-decoration:none; font-family:'Share Tech Mono', monospace; font-weight:bold;">ALL NEWS &rarr;</a>
         </div>
         <div id="overview-latest-news-box" style="background:rgba(7, 12, 22, 0.7); padding:14px; border-radius:8px; border:1px solid var(--border-color);">
-          <!-- Lädt immer automatisch die allerneueste Transmission / News -->
+          <!-- Automatisch neueste News -->
         </div>
         <div style="margin-top:12px; text-align:right;">
           <a href="javascript:switchTab('replays')" class="btn-download-rep" style="display:inline-block;">DOWNLOAD REPLAYS (.REP)</a>
@@ -3194,28 +3194,6 @@ window.addEventListener('DOMContentLoaded', function() {
   }
 });
 
-function renderDynamicOverview() {
-      // 1. Roster-Zusammenfassung dynamisch ausfüllen
-      var squadContainer = document.getElementById('overview-active-squad-list');
-      if (squadContainer) {
-        squadContainer.innerHTML = '';
-        var allM = getFullClanMembersList();
-        var topStarters = ['CheesyCake', 'Battousai', 'KaRDiNaL', 'aMeba'];
-        
-        topStarters.forEach(function(id) {
-          var p = allM.find(function(m) { return m.id === id; });
-          if (!p) return;
-          var recordText = p.w1 ? (p.w1 + ' 1v1') : 'Active Roster';
-          var winColor = (p.w1 && p.w1.startsWith('0 -')) ? 'var(--text-muted)' : 'var(--win)';
-
-          var div = document.createElement('div');
-          div.style.cssText = "display:flex; justify-content:space-between; align-items:center; background:rgba(7, 12, 22, 0.7); padding:9px 12px; border-radius:6px; border:1px solid var(--border-color); cursor:pointer;";
-          div.onclick = function() { openDossier(p.id); };
-          div.innerHTML = '<span><strong style="color:#fff;">' + p.name + '</strong> ' + getRaceBadgeHtml(p.race) + '</span>' +
-                          '<span style="color:' + winColor + '; font-family:\'Share Tech Mono\', monospace; font-size:0.85rem; font-weight:bold;">' + recordText + '</span>';
-          squadContainer.appendChild(div);
-        });
-      }
 
       // 2. Neueste Transmission / News dynamisch in die Box laden
       var newsBox = document.getElementById('overview-latest-news-box');
@@ -3799,6 +3777,38 @@ function renderDynamicOverview() {
         `;
         container.appendChild(card);
       });
+    }
+
+function renderDynamicOverview() {
+      var squadContainer = document.getElementById('overview-active-squad-list');
+      if (squadContainer) {
+        squadContainer.innerHTML = '';
+        var allM = getFullClanMembersList();
+        var topStarters = ['CheesyCake', 'Battousai', 'KaRDiNaL', 'aMeba'];
+        topStarters.forEach(function(id) {
+          var p = allM.find(function(m) { return m.id === id; });
+          if (!p) return;
+          var recordText = p.w1 ? (p.w1 + ' 1v1') : 'Active Roster';
+          var winColor = (p.w1 && p.w1.startsWith('0 -')) ? 'var(--text-muted)' : 'var(--win)';
+          var div = document.createElement('div');
+          div.style.cssText = "display:flex; justify-content:space-between; align-items:center; background:rgba(7, 12, 22, 0.7); padding:9px 12px; border-radius:6px; border:1px solid var(--border-color); cursor:pointer;";
+          div.onclick = function() { openDossier(p.id); };
+          div.innerHTML = '<span><strong style="color:#fff;">' + p.name + '</strong> ' + getRaceBadgeHtml(p.race) + '</span>' +
+                          '<span style="color:' + winColor + '; font-family:\'Share Tech Mono\', monospace; font-size:0.85rem; font-weight:bold;">' + recordText + '</span>';
+          squadContainer.appendChild(div);
+        });
+      }
+
+      var newsBox = document.getElementById('overview-latest-news-box');
+      if (newsBox) {
+        var articles = getLocalNewsArticles();
+        if (articles && articles.length > 0) {
+          var latest = articles[0];
+          newsBox.innerHTML = '<span style="color:var(--cyan); font-size:0.75rem; font-family:\'Share Tech Mono\', monospace; font-weight:bold;">' + (latest.date || 'RECENT') + ' // ' + (latest.category || 'NEWS').toUpperCase() + '</span>' +
+                              '<h4 style="font-family:\'Orbitron\', sans-serif; color:#fff; font-size:1.02rem; margin:6px 0 8px; font-weight:800;">' + latest.title + '</h4>' +
+                              '<p style="color:var(--text-muted); font-size:0.88rem; line-height:1.55;">' + latest.body + '</p>';
+        }
+      }
     }
 
     function saveMapDownload() {
