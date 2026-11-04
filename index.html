@@ -1516,8 +1516,7 @@
       </div>
     </div>
   </section>
-
-  <!-- ==================== 2. ROSTER TAB (TEAMS WD-A, WD-B, WD-C) ==================== -->
+<!-- ==================== 2. ROSTER TAB (TEAMS WD-A, WD-B, WD-C) ==================== -->
   <section id="tab-roster" class="section-wrap">
     <div class="section-head">
       <div>
@@ -1565,7 +1564,7 @@
       </div>
     </div>
 
-<!-- Streamlined Data Table -->
+    <!-- Streamlined Data Table with Right-aligned Action Column -->
     <div class="table-container">
       <table class="data-table">
         <thead>
@@ -1575,7 +1574,7 @@
             <th>SQUAD</th>
             <th>COUNTRY</th>
             <th>PREFERRED RACE</th>
-            <th style="text-align:right;">ACTION</th>
+            <th style="text-align:right;">STATUS & ACTION</th>
           </tr>
         </thead>
         <tbody id="roster-tbody">
@@ -2735,9 +2734,9 @@
   </footer>
 
   <script>
-    // Flag SVGs
-    
-  function getRaceBadgeHtml(race) {
+
+// Flag SVGs
+    function getRaceBadgeHtml(race) {
       if (!race) race = 'Terran';
       var r = race.toLowerCase();
       if (r.startsWith('t')) {
@@ -2753,136 +2752,16 @@
       }
     }
 
-// Helper function to return official vector flag SVG from CDN
     function getFlagImg(code) {
-      return `<img src="https://cdn.jsdelivr.net/gh/lipis/flag-icons@main/flags/4x3/${code}.svg" 
-                   alt="${code}" 
-                   class="flag-icon" 
-                   style="display:inline-block; vertical-align:middle; width:22px; height:15px; border-radius:2px; object-fit:cover; box-shadow:0 0 4px rgba(0,0,0,0.5); margin-right:8px;" 
-                   onerror="this.style.display='none';">`;
+      return `<img src="https://cdn.jsdelivr.net/gh/lipis/flag-icons@main/flags/4x3/${code}.svg" alt="${code}" class="flag-icon" style="display:inline-block; vertical-align:middle; width:22px; height:15px; border-radius:2px; object-fit:cover; box-shadow:0 0 4px rgba(0,0,0,0.5); margin-right:8px;" onerror="this.style.display='none';">`;
     }
 
     const flags = {
-      // --- SPECIAL & CLAN CORE ---
-      eu:             getFlagImg('eu'),
-      korea:          getFlagImg('kr'),
-      usa:            getFlagImg('us'),
-      canada:         getFlagImg('ca'),
-      mexico:         getFlagImg('mx'),
-
-      // --- ALL SOUTH AMERICAN COUNTRIES ---
-      argentina:      getFlagImg('ar'),
-      bolivia:        getFlagImg('bo'),
-      brazil:         getFlagImg('br'),
-      chile:          getFlagImg('cl'),
-      colombia:       getFlagImg('co'),
-      ecuador:        getFlagImg('ec'),
-      guyana:         getFlagImg('gy'),
-      paraguay:       getFlagImg('py'),
-      peru:           getFlagImg('pe'),
-      suriname:       getFlagImg('sr'),
-      uruguay:        getFlagImg('uy'),
-      venezuela:      getFlagImg('ve'),
-
-      // --- ALL EUROPEAN COUNTRIES ---
-      albania:        getFlagImg('al'),
-      andorra:        getFlagImg('ad'),
-      austria:        getFlagImg('at'),
-      belarus:        getFlagImg('by'),
-      belgium:        getFlagImg('be'),
-      bosnia:         getFlagImg('ba'),
-      bulgaria:       getFlagImg('bg'),
-      croatia:        getFlagImg('hr'),
-      cyprus:         getFlagImg('cy'),
-      czechia:        getFlagImg('cz'),
-      denmark:        getFlagImg('dk'),
-      estonia:        getFlagImg('ee'),
-      finland:        getFlagImg('fi'),
-      france:         getFlagImg('fr'),
-      germany:        getFlagImg('de'),
-      greece:         getFlagImg('gr'),
-      hungary:        getFlagImg('hu'),
-      iceland:        getFlagImg('is'),
-      ireland:        getFlagImg('ie'),
-      italy:          getFlagImg('it'),
-      kosovo:         getFlagImg('xk'),
-      latvia:         getFlagImg('lv'),
-      liechtenstein:  getFlagImg('li'),
-      lithuania:      getFlagImg('lt'),
-      luxembourg:     getFlagImg('lu'),
-      malta:          getFlagImg('mt'),
-      moldova:        getFlagImg('md'),
-      monaco:         getFlagImg('mc'),
-      montenegro:     getFlagImg('me'),
-      netherlands:    getFlagImg('nl'),
-      northmacedonia: getFlagImg('mk'),
-      norway:         getFlagImg('no'),
-      poland:         getFlagImg('pl'),
-      portugal:       getFlagImg('pt'),
-      romania:        getFlagImg('ro'),
-      russia:         getFlagImg('ru'),
-      sanmarino:      getFlagImg('sm'),
-      serbia:         getFlagImg('rs'),
-      slovakia:       getFlagImg('sk'),
-      slovenia:       getFlagImg('si'),
-      spain:          getFlagImg('es'),
-      sweden:         getFlagImg('se'),
-      switzerland:    getFlagImg('ch'),
-      turkey:         getFlagImg('tr'),
-      ukraine:        getFlagImg('ua'),
-      uk:             getFlagImg('gb'),
-      vatican:        getFlagImg('va'),
-
-      // --- ALL ASIAN COUNTRIES ---
-      afghanistan:    getFlagImg('af'),
-      armenia:        getFlagImg('am'),
-      azerbaijan:     getFlagImg('az'),
-      bahrain:        getFlagImg('bh'),
-      bangladesh:     getFlagImg('bd'),
-      bhutan:         getFlagImg('bt'),
-      brunei:         getFlagImg('bn'),
-      cambodia:       getFlagImg('kh'),
-      china:          getFlagImg('cn'),
-      georgia:        getFlagImg('ge'),
-      india:          getFlagImg('in'),
-      indonesia:      getFlagImg('id'),
-      iran:           getFlagImg('ir'),
-      iraq:           getFlagImg('iq'),
-      israel:         getFlagImg('il'),
-      japan:          getFlagImg('jp'),
-      jordan:         getFlagImg('jo'),
-      kazakhstan:     getFlagImg('kz'),
-      kuwait:         getFlagImg('kw'),
-      kyrgyzstan:     getFlagImg('kg'),
-      laos:           getFlagImg('la'),
-      lebanon:        getFlagImg('lb'),
-      malaysia:       getFlagImg('my'),
-      maldives:       getFlagImg('mv'),
-      mongolia:       getFlagImg('mn'),
-      myanmar:        getFlagImg('mm'),
-      nepal:          getFlagImg('np'),
-      northkorea:     getFlagImg('kp'),
-      oman:           getFlagImg('om'),
-      pakistan:       getFlagImg('pk'),
-      palestine:      getFlagImg('ps'),
-      philippines:    getFlagImg('ph'),
-      qatar:          getFlagImg('qa'),
-      saudiarabia:    getFlagImg('sa'),
-      singapore:      getFlagImg('sg'),
-      srilanka:       getFlagImg('lk'),
-      syria:          getFlagImg('sy'),
-      taiwan:         getFlagImg('tw'),
-      tajikistan:     getFlagImg('tj'),
-      thailand:       getFlagImg('th'),
-      timorleste:     getFlagImg('tl'),
-      turkmenistan:   getFlagImg('tm'),
-      uae:            getFlagImg('ae'),
-      uzbekistan:     getFlagImg('uz'),
-      vietnam:        getFlagImg('vn'),
-      yemen:          getFlagImg('ye'),
-
-      // --- GLOBAL FALLBACK ---
-      global:         `<span style="display:inline-block; width:22px; height:15px; text-align:center; vertical-align:middle; font-size:12px; margin-right:8px;">🌐</span>`
+      eu: getFlagImg('eu'), korea: getFlagImg('kr'), usa: getFlagImg('us'), canada: getFlagImg('ca'), mexico: getFlagImg('mx'),
+      argentina: getFlagImg('ar'), bolivia: getFlagImg('bo'), brazil: getFlagImg('br'), chile: getFlagImg('cl'), colombia: getFlagImg('co'), ecuador: getFlagImg('ec'), guyana: getFlagImg('gy'), paraguay: getFlagImg('py'), peru: getFlagImg('pe'), suriname: getFlagImg('sr'), uruguay: getFlagImg('uy'), venezuela: getFlagImg('ve'),
+      albania: getFlagImg('al'), andorra: getFlagImg('ad'), austria: getFlagImg('at'), belarus: getFlagImg('by'), belgium: getFlagImg('be'), bosnia: getFlagImg('ba'), bulgaria: getFlagImg('bg'), croatia: getFlagImg('hr'), cyprus: getFlagImg('cy'), czechia: getFlagImg('cz'), denmark: getFlagImg('dk'), estonia: getFlagImg('ee'), finland: getFlagImg('fi'), france: getFlagImg('fr'), germany: getFlagImg('de'), greece: getFlagImg('gr'), hungary: getFlagImg('hu'), iceland: getFlagImg('is'), ireland: getFlagImg('ie'), italy: getFlagImg('it'), kosovo: getFlagImg('xk'), latvia: getFlagImg('lv'), liechtenstein: getFlagImg('li'), lithuania: getFlagImg('lt'), luxembourg: getFlagImg('lu'), malta: getFlagImg('mt'), moldova: getFlagImg('md'), monaco: getFlagImg('mc'), montenegro: getFlagImg('me'), netherlands: getFlagImg('nl'), northmacedonia: getFlagImg('mk'), norway: getFlagImg('no'), poland: getFlagImg('pl'), portugal: getFlagImg('pt'), romania: getFlagImg('ro'), russia: getFlagImg('ru'), sanmarino: getFlagImg('sm'), serbia: getFlagImg('rs'), slovakia: getFlagImg('sk'), slovenia: getFlagImg('si'), spain: getFlagImg('es'), sweden: getFlagImg('se'), switzerland: getFlagImg('ch'), turkey: getFlagImg('tr'), ukraine: getFlagImg('ua'), uk: getFlagImg('gb'), vatican: getFlagImg('va'),
+      afghanistan: getFlagImg('af'), armenia: getFlagImg('am'), azerbaijan: getFlagImg('az'), bahrain: getFlagImg('bh'), bangladesh: getFlagImg('bd'), bhutan: getFlagImg('bt'), brunei: getFlagImg('bn'), cambodia: getFlagImg('kh'), china: getFlagImg('cn'), georgia: getFlagImg('ge'), india: getFlagImg('in'), indonesia: getFlagImg('id'), iran: getFlagImg('ir'), iraq: getFlagImg('iq'), israel: getFlagImg('il'), japan: getFlagImg('jp'), jordan: getFlagImg('jo'), kazakhstan: getFlagImg('kz'), kuwait: getFlagImg('kw'), kyrgyzstan: getFlagImg('kg'), laos: getFlagImg('la'), lebanon: getFlagImg('lb'), malaysia: getFlagImg('my'), maldives: getFlagImg('mv'), mongolia: getFlagImg('mn'), myanmar: getFlagImg('mm'), nepal: getFlagImg('np'), northkorea: getFlagImg('kp'), oman: getFlagImg('om'), pakistan: getFlagImg('pk'), palestine: getFlagImg('ps'), philippines: getFlagImg('ph'), qatar: getFlagImg('qa'), saudiarabia: getFlagImg('sa'), singapore: getFlagImg('sg'), srilanka: getFlagImg('lk'), syria: getFlagImg('sy'), taiwan: getFlagImg('tw'), tajikistan: getFlagImg('tj'), thailand: getFlagImg('th'), timorleste: getFlagImg('tl'), turkmenistan: getFlagImg('tm'), uae: getFlagImg('ae'), uzbekistan: getFlagImg('uz'), vietnam: getFlagImg('vn'), yemen: getFlagImg('ye'),
+      global: `<span style="display:inline-block; width:22px; height:15px; text-align:center; vertical-align:middle; font-size:12px; margin-right:8px;">🌐</span>`
     };
 
     const membersData = [
@@ -2890,14 +2769,7 @@
       { id: 'DeathOrb', name: 'DeathOrb[WD]', role: 'Captain', rank: 'Founders', insignia: '🏰⋆༺𓆩♱𓆪༻⋆👑⋆༺𓆩♱𓆪༻⋆🏰', team: 'WD-A', status: 'Active', race: 'Protoss', avatar: '', country: 'USA', flagKey: 'usa', email: 'ambrosionick228@gmail.com', w1: '0-0', w2: '0-0', pts: 0, history: [] },
       { id: 'zDAwgZ', name: 'z’DAwgZ[WD]', role: 'Squadleader', rank: 'High Council', insignia: '⋆༺𓆩♛👑🧙‍♂️👑♛𓆪༻⋆ ', team: 'WD-A', status: 'Active', race: 'Terran', avatar: '', country: 'Canada', flagKey: 'canada', email: 'abecul323@outlook.com', w1: '0-0', w2: '0-0', pts: 0, history: [] },
       { id: 'LunarPop', name: 'LunarPop[WD]', role: 'Captain', rank: 'Generals', insignia: '⚔️✖️🛡️✖️⚔️', team: 'WD-A', status: 'Active', race: 'Protoss', avatar: 'profile_Lunarpop.jpg', country: 'Canada', flagKey: 'canada', w1: '0-0', w2: '0-0', pts: 0, history: [] },
-      { id: 'KaRDiNaL', name: 'KaRDiNaL[WD]', rank: 'Colonel', insignia: '🗡️⛊✠‍💂‍✠‍⛊🗡️', team: 'WD-A', status: 'Active', race: 'Terran', country: 'Canada', flagKey: 'canada', w1: '2 - 2', w2: '0 - 0', pts: 2, 
-        history: [
-          { week: 'Week #1', set: '1v1 vs Red.Hot', res: 'WIN', score: '2 - 0', win: true },
-          { week: 'Week #2', set: '1v1 vs Cwt|Surgen', res: 'LOSS', score: '1 - 2', win: false },
-          { week: 'Week #3', set: '1v1 vs non (SAS)', res: 'LOSS', score: '1 - 2', win: false },
-          { week: 'Week #4', set: '1v1 vs Shadow|FankinGG', res: 'WIN', score: '2 - 0', win: true }
-        ]
-      },
+      { id: 'KaRDiNaL', name: 'KaRDiNaL[WD]', rank: 'Colonel', insignia: '🗡️⛊✠‍💂‍✠‍⛊🗡️', team: 'WD-A', status: 'Active', race: 'Terran', country: 'Canada', flagKey: 'canada', w1: '2 - 2', w2: '0 - 0', pts: 2, history: [] },
       { id: 'RaiNMaN', name: 'RaiNMaN[WD]', rank: 'Captains', insignia: '⛨༺♰༻⛵༺♰༻⛨ ', team: 'WD Squad', status: 'Active', race: 'Terran', avatar: '', country: 'Global', flagKey: 'global', w1: '0-0', w2: '0-0', pts: 0, history: [] },
       { id: 'BlueSpikes', name: 'BlueSpikes[WD]', rank: 'Captains', insignia: '⛨༺♰༻⛵༺♰༻⛨ ', team: 'WD Squad', status: 'Active', race: 'Protoss', avatar: '', country: 'Global', flagKey: 'global', w1: '0-0', w2: '0-0', pts: 0, history: [] },
       { id: 'Vult', name: 'Vult[WD]', rank: 'Officers', insignia: '⛨🗡️⚔︎🗡️⛨', team: 'WD Squad', status: 'Active', race: 'Terran', avatar: '', country: 'Global', flagKey: 'global', w1: '0-0', w2: '0-0', pts: 0, history: [] },
@@ -2916,46 +2788,11 @@
       { id: 'loordofries', name: 'loordofries(WD)', rank: 'Corporals', insignia: '📯⚔︎🏹⚔︎📯', team: 'WD Squad', status: 'Active', race: 'Protoss', avatar: '', country: 'Global', flagKey: 'global', w1: '0-0', w2: '0-0', pts: 0, history: [] },
       { id: 'Penguin', name: 'Penguin[WD]', rank: 'Corporals', insignia: '📯⚔︎🏹⚔︎📯', team: 'WD Squad', status: 'Active', race: 'Zerg', avatar: '', country: 'Global', flagKey: 'global', w1: '0-0', w2: '0-0', pts: 0, history: [] },
       { id: 'Atitus', name: 'Atitus[WD]', rank: 'Corporals', insignia: '📯⚔︎🏹⚔︎📯', team: 'WD Squad', status: 'Active', race: 'Terran', avatar: '', country: 'Global', flagKey: 'global', w1: '0-0', w2: '0-0', pts: 0, history: [] },
-      { id: 'CheesyCake', name: 'CheesyCake[WD]', rank: 'Privates', insignia: '🤺🪖♟️🪖🤺', team: 'WD-A', status: 'Active', race: 'Terran', country: 'Germany', flagKey: 'germany', w1: '4 - 0', w2: '2 - 2', pts: 6,
-        history: [
-          { week: 'Week #1', set: '1v1 vs Red-Navane', res: 'WIN', score: '2 - 0', win: true },
-          { week: 'Week #1', set: '2v2 w/ Battousai vs Navane/SkRiK', res: 'LOSS', score: '1 - 2', win: false },
-          { week: 'Week #2', set: '1v1 vs Cwt|MaF', res: 'WIN', score: '2 - 1', win: true },
-          { week: 'Week #2', set: '2v2 w/ Miwaco vs MaF/Surgen', res: 'WIN', score: '2 - 0', win: true },
-          { week: 'Week #3', set: '1v1 vs Ace (SAS)', res: 'WIN', score: '2 - 0', win: true },
-          { week: 'Week #3', set: '2v2 w/ Miwaco vs pez/non', res: 'LOSS', score: '0 - 2', win: false },
-          { week: 'Week #4', set: '1v1 vs Shadow|JD', res: 'WIN', score: '2 - 0', win: true },
-          { week: 'Week #4', set: '2v2 w/ aMeba vs Guty/JD', res: 'WIN', score: '2 - 0', win: true }
-        ]
-      },
-      { id: 'Battousai', name: 'Battousai[WD]', rank: 'Privates', insignia: '🤺🪖♟️🪖🤺', team: 'WD-A', status: 'Active', race: 'Protoss', avatar: 'profile_Battousai.jpg', country: 'Canada', flagKey: 'canada', w1: '3 - 1', w2: '0 - 1', pts: 3,
-        history: [
-          { week: 'Week #1', set: '1v1 vs Red-SkRiK', res: 'WIN', score: '2 - 0', win: true },
-          { week: 'Week #1', set: '2v2 w/ CheesyCake vs Navane/SkRiK', res: 'LOSS', score: '1 - 2', win: false },
-          { week: 'Week #2', set: '1v1 vs Cwt|Budaak', res: 'WIN', score: '2 - 0', win: true },
-          { week: 'Week #3', set: '1v1 vs advil (SAS)', res: 'LOSS', score: '1 - 2', win: false },
-          { week: 'Week #4', set: '1v1 vs Shadow|Jacinta', res: 'WIN', score: '2 - 0', win: true }
-        ]
-      },
-      { id: 'Miwaco', name: 'Miwaco[WD]', rank: 'Privates', insignia: '🤺🪖♟️🪖🤺', team: 'WD-A', status: 'Active', race: 'Terran', country: 'USA', flagKey: 'usa', w1: '1 - 1', w2: '1 - 1', pts: 2,
-        history: [
-          { week: 'Week #2', set: '1v1 vs Cwt|SiD', res: 'WIN', score: '2 - 0', win: true },
-          { week: 'Week #2', set: '2v2 w/ CheesyCake vs MaF/Surgen', res: 'WIN', score: '2 - 0', win: true },
-          { week: 'Week #3', set: '1v1 vs vorti (SAS)', res: 'LOSS', score: '1 - 2', win: false },
-          { week: 'Week #3', set: '2v2 w/ CheesyCake vs pez/non', res: 'LOSS', score: '0 - 2', win: false }
-        ]
-      },
-      { id: 'aMeba', name: 'aMeba[WD]', rank: 'Privates', insignia: '🤺🪖♟️🪖🤺', team: 'WD-A', status: 'Active', race: 'Zerg', country: 'Mexico', flagKey: 'mexico', w1: '1 - 0', w2: '1 - 0', pts: 2,
-        history: [
-          { week: 'Week #4', set: '1v1 vs Shadow|LaBestia', res: 'WIN', score: '2 - 0', win: true },
-          { week: 'Week #4', set: '2v2 w/ CheesyCake vs Guty/JD', res: 'WIN', score: '2 - 0', win: true }
-        ]
-      },
-      { id: 'SonOfMalice', name: 'SonOfMalice[WD]', rank: 'Privates', insignia: '🤺🪖♟️🪖🤺', team: 'WD-A', status: 'Active', race: 'Terran', country: 'USA', flagKey: 'usa', w1: '0 - 1', w2: '0 - 0', pts: 0,
-        history: [
-          { week: 'Week #1', set: '1v1 vs Red-Quim', res: 'LOSS', score: '0 - 2', win: false }
-        ]
-      },
+      { id: 'CheesyCake', name: 'CheesyCake[WD]', rank: 'Privates', insignia: '🤺🪖♟️🪖🤺', team: 'WD-A', status: 'Active', race: 'Terran', country: 'Germany', flagKey: 'germany', w1: '4 - 0', w2: '2 - 2', pts: 6, history: [] },
+      { id: 'Battousai', name: 'Battousai[WD]', rank: 'Privates', insignia: '🤺🪖♟️🪖🤺', team: 'WD-A', status: 'Active', race: 'Protoss', avatar: 'profile_Battousai.jpg', country: 'Canada', flagKey: 'canada', w1: '3 - 1', w2: '0 - 1', pts: 3, history: [] },
+      { id: 'Miwaco', name: 'Miwaco[WD]', rank: 'Privates', insignia: '🤺🪖♟️🪖🤺', team: 'WD-A', status: 'Active', race: 'Terran', country: 'USA', flagKey: 'usa', w1: '1 - 1', w2: '1 - 1', pts: 2, history: [] },
+      { id: 'aMeba', name: 'aMeba[WD]', rank: 'Privates', insignia: '🤺🪖♟️🪖🤺', team: 'WD-A', status: 'Active', race: 'Zerg', country: 'Mexico', flagKey: 'mexico', w1: '1 - 0', w2: '1 - 0', pts: 2, history: [] },
+      { id: 'SonOfMalice', name: 'SonOfMalice[WD]', rank: 'Privates', insignia: '🤺🪖♟️🪖🤺', team: 'WD-A', status: 'Active', race: 'Terran', country: 'USA', flagKey: 'usa', w1: '0 - 1', w2: '0 - 0', pts: 0, history: [] },
       { id: 'JaxM', name: 'JaxM[WD]', rank: 'Privates', insignia: '🤺🪖♟️🪖🤺', team: 'WD-A', status: 'Active', race: 'Terran', avatar: '', country: 'Philippines', flagKey: 'philippines', w1: '0-0', w2: '0-0', pts: 0, history: [] },
       { id: 'Kimchi', name: 'Kimchi[WD]', rank: 'Privates', insignia: '🤺🪖♟️🪖🤺', team: 'WD-A', status: 'Active', race: 'Terran', avatar: '', country: 'USA', flagKey: 'usa', w1: '0-0', w2: '0-0', pts: 0, history: [] },
       { id: 'Buldrokkas', name: 'Buldrokkas[WD]', rank: 'Privates', insignia: '🤺🪖♟️🪖🤺', team: 'WD Squad', status: 'Active', race: 'Protoss', avatar: '', country: 'Global', flagKey: 'global', w1: '0-0', w2: '0-0', pts: 0, history: [] },
@@ -2968,114 +2805,30 @@
       { id: 'ZioN', name: 'ZioN[WD]', rank: 'Privates', insignia: '🤺🪖♟️🪖🤺', team: 'WD Squad', status: 'Active', race: 'Zerg', avatar: '', country: 'Global', flagKey: 'global', w1: '0-0', w2: '0-0', pts: 0, history: [] }
     ];
 
-    const rosterIds = ['CheesyCake', 'Battousai', 'Miwaco', 'KaRDiNaL', 'JaxM', 'zDAwgZ', 'Kimchi', 'DeathOrb', 'LunarPop', 'RobFATKraft', 'aMeba'];
-    const rosterTbody = document.getElementById('roster-tbody');
-
-    rosterIds.forEach(id => {
-      const p = membersData.find(m => m.id === id);
-      if (!p) return;
-      const tr = document.createElement('tr');
-      tr.className = 'clickable-row';
-      tr.onclick = () => openDossier(p.id);
-      
-      const raceClass = p.race === 'Terran' ? 'race-terran' : (p.race === 'Protoss' ? 'race-protoss' : 'race-zerg');
-      const flagSvg = flags[p.flagKey] || flags.global;
-
-      let roleBadge = '';
-      if (p.role === 'Squadleader') {
-        roleBadge = '<span class="role-badge role-squadleader">★ Squadleader</span>';
-      } else if (p.role === 'Captain') {
-        roleBadge = '<span class="role-badge role-captain">⛨ Captain</span>';
-      } else {
-        roleBadge = '<span class="role-badge role-starter">Player</span>';
-      }
-
-      const miniAvatar = p.avatar ? 
-        `<img src="${p.avatar}" class="table-avatar" onerror="this.style.display=\'none\'">` : '';
-      tr.innerHTML = `
-        <td><span class="player-tag">${miniAvatar}${p.name} <span class="click-hint">INTEL</span></span></td>
-        <td>${roleBadge}</td>
-        <td><strong style="color:var(--cyan);">WD-A</strong></td>
-        <td>White Dragon</td>
-        <td>${flagSvg} ${p.country}</td>
-        <td>${getRaceBadgeHtml(p.race)}</td>
-      `;
-      rosterTbody.appendChild(tr);
-    });
-
-    const tiers = {
-      'Founders': 'tier-founders',
-      'High Council': 'tier-high-council',
-      'Generals': 'tier-generals',
-      'Colonel': 'tier-colonel',
-      'Captains': 'tier-captains',
-      'Officers': 'tier-officers',
-      'Corporals': 'tier-corporals',
-      'Privates': 'tier-privates'
-    };
-
-    membersData.forEach(p => {
-      const targetId = tiers[p.rank] || 'tier-privates';
-      const container = document.getElementById(targetId);
-      if (!container) return;
-
-      const pill = document.createElement('div');
-      pill.className = 'member-pill';
-      pill.onclick = () => openDossier(p.id);
-
-      const raceColor = p.race === 'Terran' ? '#60a5fa' : (p.race === 'Protoss' ? '#fbbf24' : '#c084fc');
-      const pillAvatar = p.avatar ? 
-        `<img src="${p.avatar}" class="pill-avatar" onerror="this.style.display=\'none\'">` : '';
-      pill.innerHTML = `
-        <span class="tag">${pillAvatar}${p.name}</span>
-        <span class="pill-race" style="color:${raceColor}">[${p.race[0]}]</span>
-      `;
-      container.appendChild(pill);
-    });
-
     function switchTab(tabName, updateHistory) {
       if (updateHistory === undefined) updateHistory = true;
-      
       var sections = document.querySelectorAll('.section-wrap');
-      for (var i = 0; i < sections.length; i++) {
-        sections[i].classList.remove('active-tab');
-      }
-
+      for (var i = 0; i < sections.length; i++) { sections[i].classList.remove('active-tab'); }
       var navBtns = document.querySelectorAll('.nav-tab-btn');
-      for (var j = 0; j < navBtns.length; j++) {
-        navBtns[j].classList.remove('active');
-      }
-
+      for (var j = 0; j < navBtns.length; j++) { navBtns[j].classList.remove('active'); }
       var dashBtns = document.querySelectorAll('.dash-btn');
-      for (var k = 0; k < dashBtns.length; k++) {
-        dashBtns[k].classList.remove('active');
-      }
-
+      for (var k = 0; k < dashBtns.length; k++) { dashBtns[k].classList.remove('active'); }
       var targetSection = document.getElementById('tab-' + tabName);
       if (targetSection) targetSection.classList.add('active-tab');
-
       var navBtn = document.getElementById('btn-tab-' + tabName);
       if (navBtn) navBtn.classList.add('active');
-
       var dashBtn = document.getElementById('dash-' + tabName);
       if (dashBtn) dashBtn.classList.add('active');
-
       if (updateHistory) {
         try {
           if (window.location.protocol !== 'file:') {
-            if (tabName === 'overview') {
-              history.pushState(null, '', window.location.pathname + window.location.search);
-            } else {
-              history.pushState(null, '', '#' + tabName);
-            }
+            if (tabName === 'overview') history.pushState(null, '', window.location.pathname + window.location.search);
+            else history.pushState(null, '', '#' + tabName);
           } else {
             window.location.hash = tabName === 'overview' ? '' : tabName;
           }
-        } catch(e) {
-          try { window.location.hash = tabName === 'overview' ? '' : tabName; } catch(err) {}
-        }
+        } catch(e) {}
       }
-
       if (tabName !== 'overview') {
         var targetOffset = targetSection ? targetSection.offsetTop - 70 : 380;
         window.scrollTo({ top: targetOffset, behavior: 'smooth' });
@@ -3086,62 +2839,43 @@
 
     window.addEventListener('popstate', function() {
       var hash = window.location.hash.replace('#', '');
-      if (hash && document.getElementById('tab-' + hash)) {
-        switchTab(hash, false);
-      } else {
-        switchTab('overview', false);
-      }
+      if (hash && document.getElementById('tab-' + hash)) { switchTab(hash, false); }
+      else { switchTab('overview', false); }
     });
 
- // Paste your Sheet ID and exact Tab Name here
     const BWCL_SHEET_ID = "19C8-zPecli6k6K0zKG1y5fNBjVzsZW4DsdjQRErJybI";
-    const BWCL_TAB_GID  = "1763234843"; // Tab: Rankings
+    const BWCL_TAB_GID  = "1763234843";
 
-    // Startet die Abfrage ohne CORS-Blockade via Script-Injection
     function fetchBWCLStandings() {
       const oldScript = document.getElementById("bwcl-jsonp-script");
       if (oldScript) oldScript.remove();
-
       const script = document.createElement("script");
       script.id = "bwcl-jsonp-script";
       script.src = `https://docs.google.com/spreadsheets/d/${BWCL_SHEET_ID}/gviz/tq?tqx=responseHandler:handleBWCLData&gid=${BWCL_TAB_GID}`;
-      script.onerror = function() {
-        console.warn("BWCL Live Sync konnte nicht geladen werden, Fallback bleibt aktiv.");
-      };
+      script.onerror = function() {};
       document.body.appendChild(script);
     }
 
-    // Verarbeitet die Antwort direkt aus dem Google Sheet
     window.handleBWCLData = function(data) {
       if (!data || !data.table || !data.table.rows) return;
       const tbody = document.getElementById("bwcl-standings-tbody");
       if (!tbody) return;
-
       const clanDetails = {
-        "SAS":          { played: 5, score: "4 - 1", sets: "20 - 10" },
-        "dB)-3":        { played: 5, score: "4 - 1", sets: "19 - 11" },
+        "SAS": { played: 5, score: "4 - 1", sets: "20 - 10" },
+        "dB)-3": { played: 5, score: "4 - 1", sets: "19 - 11" },
         "White Dragon": { played: 5, score: "4 - 1", sets: "18 - 12" },
-        "RED-3":        { played: 5, score: "1 - 4", sets: "10 - 20" },
-        "Cwt)-3":       { played: 5, score: "1 - 4", sets: "9 - 21" },
-        "Shadow-2":     { played: 5, score: "0 - 5", sets: "4 - 26" }
+        "RED-3": { played: 5, score: "1 - 4", sets: "10 - 20" },
+        "Cwt)-3": { played: 5, score: "1 - 4", sets: "9 - 21" },
+        "Shadow-2": { played: 5, score: "0 - 5", sets: "4 - 26" }
       };
-
       let divisionDFound = false;
       let teams = [];
-
       data.table.rows.forEach(row => {
         if (!row.c) return;
         const cells = row.c.map(c => (c && c.v !== null && c.v !== undefined) ? c.v.toString().trim() : "");
         const line = cells.join(" ");
-
-        if (line.toLowerCase().includes("division d")) {
-          divisionDFound = true;
-          return;
-        }
-        if (divisionDFound && line.toLowerCase().includes("division e")) {
-          divisionDFound = false;
-        }
-
+        if (line.toLowerCase().includes("division d")) { divisionDFound = true; return; }
+        if (divisionDFound && line.toLowerCase().includes("division e")) { divisionDFound = false; }
         if (divisionDFound) {
           for (let i = 0; i < cells.length; i++) {
             const match = cells[i].match(/^#?([1-6])\s+(.+)$/);
@@ -3150,10 +2884,7 @@
               const name = match[2].trim();
               let pts = 0;
               for (let j = i + 1; j < cells.length; j++) {
-                if (cells[j] && !isNaN(cells[j])) {
-                  pts = cells[j];
-                  break;
-                }
+                if (cells[j] && !isNaN(cells[j])) { pts = cells[j]; break; }
               }
               teams.push({ pos, name, pts });
               break;
@@ -3161,25 +2892,16 @@
           }
         }
       });
-
       if (teams.length > 0) {
         tbody.innerHTML = "";
         teams.forEach(t => {
           const isWD = t.name.toLowerCase().includes("white dragon") || t.name.toLowerCase().includes("[wd]");
           let extra = { played: "-", score: "-", sets: "-" };
           for (const k in clanDetails) {
-            if (t.name.toLowerCase().includes(k.toLowerCase())) {
-              extra = clanDetails[k];
-              break;
-            }
+            if (t.name.toLowerCase().includes(k.toLowerCase())) { extra = clanDetails[k]; break; }
           }
-
           const tr = document.createElement("tr");
-          if (isWD) {
-            tr.style.background = "rgba(0, 229, 255, 0.08)";
-            tr.style.borderLeft = "4px solid var(--cyan)";
-          }
-
+          if (isWD) { tr.style.background = "rgba(0, 229, 255, 0.08)"; tr.style.borderLeft = "4px solid var(--cyan)"; }
           tr.innerHTML = `
             <td>${isWD ? `<strong>${t.pos}</strong>` : t.pos}</td>
             <td><strong style="${isWD ? 'color:#fff;' : ''}">${isWD ? 'White Dragon [WD]' : t.name}</strong></td>
@@ -3193,25 +2915,20 @@
       }
     };
 
-window.addEventListener('DOMContentLoaded', function() {
-  initVisitorCounter();
-  recalculateAllMemberScores();
-  renderMatches();
-  renderRosterTableAndTiers();
-  
-  // Realtime Cloud-Sync für alle Geräte (Firebase Firestore)
-  initNewsRealtimeListener();
-  initClanMembersRealtimeListener();
-  initMatchesRealtimeListener(); //
-  initVaultRealtimeListener();
-  initRosterRealtimeListener();       
-  fetchBWCLStandings();
-  
-  var hash = window.location.hash.replace('#', '');
-  if (hash && document.getElementById('tab-' + hash)) {
-    switchTab(hash, false);
-  }
-});
+    window.addEventListener('DOMContentLoaded', function() {
+      initVisitorCounter();
+      recalculateAllMemberScores();
+      renderMatches();
+      renderRosterTableAndTiers();
+      initNewsRealtimeListener();
+      initClanMembersRealtimeListener();
+      initMatchesRealtimeListener();
+      initVaultRealtimeListener();       
+      initRosterRealtimeListener();        
+      fetchBWCLStandings();
+      var hash = window.location.hash.replace('#', '');
+      if (hash && document.getElementById('tab-' + hash)) { switchTab(hash, false); }
+    });
 
     function openDossier(memberId) {
       applyProfileCustomizationsToRoster();
@@ -3226,10 +2943,7 @@ window.addEventListener('DOMContentLoaded', function() {
       var avEl = document.getElementById('m-avatar');
       if (avEl) {
         avEl.src = p.avatar ? p.avatar : defaultAvatar;
-        avEl.onerror = function() {
-          this.onerror = null;
-          this.src = defaultAvatar;
-        };
+        avEl.onerror = function() { this.onerror = null; this.src = defaultAvatar; };
       }
       document.getElementById('m-name').innerText = p.name;
       document.getElementById('m-rank').innerText = `${p.rank} ${p.insignia ? p.insignia : ''}`;
@@ -3251,9 +2965,7 @@ window.addEventListener('DOMContentLoaded', function() {
         statusText.innerText = 'Inactive';
       }
 
-      const raceClass = p.race === 'Terran' ? 'race-terran' : (p.race === 'Protoss' ? 'race-protoss' : 'race-zerg');
       document.getElementById('m-race-badge').innerHTML = getRaceBadgeHtml(p.race);
-
       document.getElementById('m-1v1-stat').innerText = p.w1 || '0 - 0';
       document.getElementById('m-2v2-stat').innerText = p.w2 || '0 - 0';
       document.getElementById('m-pts-stat').innerText = (p.pts || 0) + ' PTS';
@@ -3263,28 +2975,17 @@ window.addEventListener('DOMContentLoaded', function() {
         let rows = '<div style="font-weight:800; color:var(--cyan); margin-bottom:4px; font-size:0.8rem; letter-spacing:1px;">BWCL DIVISION D SETS:</div>';
         p.history.forEach(h => {
           const resClass = h.win ? 'res-win' : 'res-loss';
-          rows += `
-            <div class="match-log-entry">
-              <span><strong>${h.week}:</strong> ${h.set}</span>
-              <span class="${resClass}">${h.res} (${h.score})</span>
-            </div>
-          `;
+          rows += `<div class="match-log-entry"><span><strong>${h.week}:</strong> ${h.set}</span><span class="${resClass}">${h.res} (${h.score})</span></div>`;
         });
         histContainer.innerHTML = rows;
       } else {
-        histContainer.innerHTML = '<div style="font-style:italic; padding:4px 0;">No official BWCL sets recorded yet (Reserve / Active Training).</div>';
+        histContainer.innerHTML = '<div style="font-style:italic; padding:4px 0;">No official BWCL sets recorded yet.</div>';
       }
 
       var bioTextEl = document.getElementById('m-bio-text');
-      if (bioTextEl) {
-        bioTextEl.innerText = p.bio || 'No additional intel recorded yet.';
-      }
+      if (bioTextEl) bioTextEl.innerText = p.bio || 'No additional intel recorded yet.';
 
-            // Identity & Permission Verification
-      var user = (typeof firebase !== 'undefined' && firebase.auth && firebase.auth().currentUser) 
-        ? firebase.auth().currentUser 
-        : currentUser;
-
+      var user = (typeof firebase !== 'undefined' && firebase.auth && firebase.auth().currentUser) ? firebase.auth().currentUser : currentUser;
       var isWebmaster = user && user.email && (user.email.toLowerCase() === WEBMASTER_EMAIL.toLowerCase());
       var isSelf = user && p.email && (user.email.toLowerCase() === p.email.toLowerCase());
       var isAdminUser = user && user.email && isUserAdmin(user.email) && !isWebmaster;
@@ -3296,25 +2997,22 @@ window.addEventListener('DOMContentLoaded', function() {
 
       if (editBtn) {
         var expelBtn = document.getElementById('btn-expel-dossier');
-      if (!expelBtn) {
-        expelBtn = document.createElement('button');
-        expelBtn.id = 'btn-expel-dossier';
-        expelBtn.className = 'admin-del-btn';
-        expelBtn.style.padding = '6px 14px';
-        expelBtn.style.fontSize = '0.75rem';
-        expelBtn.style.marginLeft = '8px';
-        if (editBtn && editBtn.parentNode) {
-          editBtn.parentNode.appendChild(expelBtn);
+        if (!expelBtn) {
+          expelBtn = document.createElement('button');
+          expelBtn.id = 'btn-expel-dossier';
+          expelBtn.className = 'admin-del-btn';
+          expelBtn.style.padding = '6px 14px';
+          expelBtn.style.fontSize = '0.75rem';
+          expelBtn.style.marginLeft = '8px';
+          if (editBtn && editBtn.parentNode) editBtn.parentNode.appendChild(expelBtn);
         }
-      }
-
-      if (canModerate) {
-        expelBtn.style.display = 'inline-block';
-        expelBtn.innerHTML = '🗑️ EXPEL MEMBER';
-        expelBtn.onclick = function() { adminDeleteMember(p.id); };
-      } else {
-        expelBtn.style.display = 'none';
-      }
+        if (canModerate) {
+          expelBtn.style.display = 'inline-block';
+          expelBtn.innerHTML = '🗑️ EXPEL MEMBER';
+          expelBtn.onclick = function() { adminDeleteMember(p.id); };
+        } else {
+          expelBtn.style.display = 'none';
+        }
         if (isWebmaster) {
           editBtn.style.display = 'inline-block';
           editBtn.innerText = '⚡ WEBMASTER FULL OVERRIDE';
@@ -3328,143 +3026,59 @@ window.addEventListener('DOMContentLoaded', function() {
           editBtn.style.display = 'none';
         }
       }
-
-      const modal = document.getElementById('dossierModal');
-      modal.classList.add('active');
+      document.getElementById('dossierModal').classList.add('active');
     }
 
-    function closeModal() {
-      const modal = document.getElementById('dossierModal');
-      modal.classList.remove('active');
-    }
-
-    function handleBackdropClick(e) {
-      if (e.target.id === 'dossierModal') closeModal();
-    }
+    function closeModal() { document.getElementById('dossierModal').classList.remove('active'); }
+    function handleBackdropClick(e) { if (e.target.id === 'dossierModal') closeModal(); }
 
     function copySingleText(textToCopy, label) {
       if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(textToCopy).then(function() {
-          alert('Copied ' + label + ' to clipboard: ' + textToCopy);
-        }).catch(function() {
-          prompt('Copy ' + label + ':', textToCopy);
-        });
-      } else {
-        prompt('Copy ' + label + ':', textToCopy);
-      }
+        navigator.clipboard.writeText(textToCopy).then(() => alert('Copied ' + label + ': ' + textToCopy)).catch(() => prompt('Copy ' + label + ':', textToCopy));
+      } else { prompt('Copy ' + label + ':', textToCopy); }
     }
 
     function copyJoinInfo() {
       var nl = String.fromCharCode(10);
-      var text = 'White Dragon [WD] Clan Tryouts:' + nl +
-        '- Battle.net Gateway: US West' + nl +
-        '- Channel: Op White-Dragon' + nl +
-        '- Admin Death~Orb: https://discord.com/users/613283502103986206' + nl +
-        '- Admin RobFATKraft: https://discord.com/users/1136800479461003304';
+      var text = 'White Dragon [WD] Clan Tryouts:' + nl + '- Gateway: US West' + nl + '- Channel: Op White-Dragon';
       if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(text).then(function() {
-          alert('Copied Full Clan Tryout Brief to clipboard!' + nl + nl + text);
-        }).catch(function() {
-          prompt('Copy Clan Tryout Brief:', text);
-        });
-      } else {
-        prompt('Copy Clan Tryout Brief:', text);
-      }
+        navigator.clipboard.writeText(text).then(() => alert('Copied Tryout Brief!')).catch(() => prompt('Copy:', text));
+      } else { prompt('Copy:', text); }
     }
 
-    // ========================================================
-    // OPTION 2: BROWSER-NATIVE INDEXEDDB CLAN VAULT ENGINE
-    // (Bypasses localStorage 5MB quota & Firebase Blaze paid upgrade)
-    // ========================================================
     const DB_NAME = 'WD_Clan_Vault_DB';
     const DB_VERSION = 1;
-
     function getVaultDB() {
       return new Promise((resolve, reject) => {
         const request = indexedDB.open(DB_NAME, DB_VERSION);
         request.onupgradeneeded = function(e) {
           const db = e.target.result;
-          if (!db.objectStoreNames.contains('downloads')) {
-            db.createObjectStore('downloads', { keyPath: 'id' });
-          }
-          if (!db.objectStoreNames.contains('replays')) {
-            db.createObjectStore('replays', { keyPath: 'id' });
-          }
+          if (!db.objectStoreNames.contains('downloads')) db.createObjectStore('downloads', { keyPath: 'id' });
+          if (!db.objectStoreNames.contains('replays')) db.createObjectStore('replays', { keyPath: 'id' });
         };
         request.onsuccess = () => resolve(request.result);
         request.onerror = () => reject(request.error);
       });
     }
 
-    // ========================================================
-    // PHASE 1 ACCESS GATE: VERIFIED MEMBERS ONLY
-    // ========================================================
     function ensureVerifiedAccess(actionName) {
-      var user = (typeof firebase !== 'undefined' && firebase.auth && firebase.auth().currentUser) 
-        ? firebase.auth().currentUser 
-        : currentUser;
-      
-      if (!user) {
-        alert("ACCESS DENIED // CLEARANCE REQUIRED:\n\nPlease log in to " + actionName + ".");
-        openAuthModal();
-        return false;
-      }
-      
-      if (!user.emailVerified) {
-        alert("CLEARANCE PENDING // EMAIL VERIFICATION REQUIRED:\n\nYour account (" + user.email + ") is not verified yet. Please check your inbox and verify your email to " + actionName + ".");
-        openAuthModal();
-        switchAuthView('profile');
-        return false;
-      }
-      
+      var user = (typeof firebase !== 'undefined' && firebase.auth && firebase.auth().currentUser) ? firebase.auth().currentUser : currentUser;
+      if (!user) { alert("Please log in to " + actionName + "."); openAuthModal(); return false; }
+      if (!user.emailVerified) { alert("Email verification required to " + actionName + "."); openAuthModal(); switchAuthView('profile'); return false; }
       return true;
     }
 
-    // ========================================================
-    // REPLAY UPLOAD VAULT (INDEXEDDB)
-    // ========================================================
     var currentSelectedFile = null;
-
-    function handleDragOver(e) {
-      e.preventDefault();
-      e.stopPropagation();
-      document.getElementById('drop-zone').style.borderColor = 'var(--cyan)';
-      document.getElementById('drop-zone').style.background = 'rgba(0, 229, 255, 0.1)';
-    }
-
-    function handleDragLeave(e) {
-      e.preventDefault();
-      e.stopPropagation();
-      document.getElementById('drop-zone').style.borderColor = 'rgba(56, 189, 248, 0.45)';
-      document.getElementById('drop-zone').style.background = 'rgba(7, 12, 22, 0.6)';
-    }
-
-    function handleDrop(e) {
-      e.preventDefault();
-      e.stopPropagation();
-      handleDragLeave(e);
-      if (e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files.length > 0) {
-        processFile(e.dataTransfer.files[0]);
-      }
-    }
-
-    function handleFileSelect(e) {
-      if (e.target.files && e.target.files.length > 0) {
-        processFile(e.target.files[0]);
-      }
-    }
+    function handleDragOver(e) { e.preventDefault(); e.stopPropagation(); document.getElementById('drop-zone').style.borderColor = 'var(--cyan)'; document.getElementById('drop-zone').style.background = 'rgba(0, 229, 255, 0.1)'; }
+    function handleDragLeave(e) { e.preventDefault(); e.stopPropagation(); document.getElementById('drop-zone').style.borderColor = 'rgba(56, 189, 248, 0.45)'; document.getElementById('drop-zone').style.background = 'rgba(7, 12, 22, 0.6)'; }
+    function handleDrop(e) { e.preventDefault(); e.stopPropagation(); handleDragLeave(e); if (e.dataTransfer && e.dataTransfer.files.length > 0) processFile(e.dataTransfer.files[0]); }
+    function handleFileSelect(e) { if (e.target.files.length > 0) processFile(e.target.files[0]); }
 
     function processFile(file) {
-      if (!ensureVerifiedAccess("upload replays")) {
-        cancelUpload();
-        return;
-      }
+      if (!ensureVerifiedAccess("upload replays")) { cancelUpload(); return; }
       currentSelectedFile = file;
-      var kb = (file.size / 1024).toFixed(1);
-      document.getElementById('file-info-text').innerText = 'Selected: ' + file.name + ' (' + kb + ' KB)';
-      if (!document.getElementById('rep-title-input').value) {
-        document.getElementById('rep-title-input').value = file.name.replace(/\.[^/.]+$/, '');
-      }
+      document.getElementById('file-info-text').innerText = 'Selected: ' + file.name + ' (' + (file.size / 1024).toFixed(1) + ' KB)';
+      if (!document.getElementById('rep-title-input').value) document.getElementById('rep-title-input').value = file.name.replace(/\.[^/.]+$/, '');
       document.getElementById('upload-form').style.display = 'block';
     }
 
@@ -3478,47 +3092,30 @@ window.addEventListener('DOMContentLoaded', function() {
     }
 
     async function saveReplay() {
-      if (!ensureVerifiedAccess("save files to Clan Vault")) return;
-      if (!currentSelectedFile) {
-        alert('Please choose a .rep or .zip file first.');
-        return;
-      }
-
+      if (!ensureVerifiedAccess("save files")) return;
+      if (!currentSelectedFile) { alert('Choose a file first.'); return; }
       var file = currentSelectedFile;
-      var title = document.getElementById('rep-title-input').value.trim() || file.name;
-      var players = document.getElementById('rep-players-input').value.trim() || 'White Dragon Commander Match';
-      var map = document.getElementById('rep-map-input').value.trim() || 'Koprulu Sector Map';
-      var dateStr = new Date().toLocaleDateString();
-
       var replayItem = {
         id: 'rep_' + Date.now(),
-        title: title,
-        players: players,
-        map: map,
+        title: document.getElementById('rep-title-input').value.trim() || file.name,
+        players: document.getElementById('rep-players-input').value.trim() || 'Commander Match',
+        map: document.getElementById('rep-map-input').value.trim() || 'Sector Map',
         fileName: file.name,
         fileSize: (file.size / 1024).toFixed(1) + ' KB',
-        date: dateStr,
-        uploader: currentUser ? currentUser.email : 'Verified Member',
+        date: new Date().toLocaleDateString(),
+        uploader: currentUser ? currentUser.email : 'Member',
         fileBlob: file
       };
-
       try {
         const db = await getVaultDB();
         const tx = db.transaction('replays', 'readwrite');
         tx.objectStore('replays').put(replayItem);
-        tx.oncomplete = function() {
-          renderUserReplays();
-          cancelUpload();
-          alert('Replay saved to Clan Vault successfully!');
-        };
-      } catch(err) {
-        console.error('Error saving replay to IndexedDB:', err);
-        alert('Failed to save replay: ' + err.message);
-      }
+        tx.oncomplete = () => { renderUserReplays(); cancelUpload(); alert('Replay saved!'); };
+      } catch(err) { alert('Failed: ' + err.message); }
     }
 
     async function downloadSavedReplay(replayId) {
-      if (!ensureVerifiedAccess("download replays")) return;
+      if (!ensureVerifiedAccess("download")) return;
       try {
         const db = await getVaultDB();
         const tx = db.transaction('replays', 'readonly');
@@ -3527,27 +3124,12 @@ window.addEventListener('DOMContentLoaded', function() {
           var item = req.result;
           if (item && item.fileBlob) {
             var url = URL.createObjectURL(item.fileBlob);
-            var a = document.createElement('a');
-            a.href = url;
-            a.download = item.fileName || 'Replay.rep';
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
+            var a = document.createElement('a'); a.href = url; a.download = item.fileName || 'Replay.rep';
+            document.body.appendChild(a); a.click(); document.body.removeChild(a);
             setTimeout(() => URL.revokeObjectURL(url), 1000);
-          } else if (item && item.data) {
-            var a = document.createElement('a');
-            a.href = item.data;
-            a.download = item.fileName || 'Replay.rep';
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-          } else {
-            alert('Replay data not found.');
           }
         };
-      } catch(err) {
-        alert('Error downloading replay.');
-      }
+      } catch(err) { alert('Error downloading.'); }
     }
 
     async function downloadMatchReplay(week, matchName) {
@@ -3557,38 +3139,21 @@ window.addEventListener('DOMContentLoaded', function() {
         const tx = db.transaction('replays', 'readonly');
         const req = tx.objectStore('replays').getAll();
         req.onsuccess = function() {
-          var list = req.result || [];
-          var matchRep = list.find(function(r) {
-            return (r.title && r.title.toLowerCase().indexOf(week.toLowerCase()) !== -1) ||
-                   (r.players && r.players.toLowerCase().indexOf(week.toLowerCase()) !== -1);
-          });
-          if (matchRep) {
-            downloadSavedReplay(matchRep.id);
-            return;
+          var matchRep = (req.result || []).find(r => r.title.toLowerCase().includes(week.toLowerCase()));
+          if (matchRep) { downloadSavedReplay(matchRep.id); return; }
+          if (confirm('Replay not found in vault. Upload one now?')) {
+            switchTab('replays');
+            document.getElementById('rep-title-input').value = 'BWCL ' + week + ': ' + matchName;
+            document.getElementById('rep-file-input').click();
           }
-          offerUploadPrompt();
         };
-      } catch(e) {
-        offerUploadPrompt();
-      }
-
-      function offerUploadPrompt() {
-        var msg = 'Replay pack for ' + week + ' (' + matchName + ') will be available here once uploaded by clan staff.\n\nWant to upload a replay file for this match now?';
-        if (confirm(msg)) {
-          switchTab('replays');
-          var titleInp = document.getElementById('rep-title-input');
-          if (titleInp) titleInp.value = 'BWCL S65 ' + week + ': ' + matchName;
-          var fileInp = document.getElementById('rep-file-input');
-          if (fileInp) fileInp.click();
-        }
-      }
+      } catch(e) {}
     }
 
     async function renderUserReplays() {
       var container = document.getElementById('user-replays-list');
       var emptyMsg = document.getElementById('no-replays-msg');
       if (!container) return;
-
       try {
         const db = await getVaultDB();
         const tx = db.transaction('replays', 'readonly');
@@ -3596,59 +3161,35 @@ window.addEventListener('DOMContentLoaded', function() {
         req.onsuccess = function() {
           var existing = req.result || [];
           container.innerHTML = '';
-          var countEl = document.getElementById('rep-count');
-          if (countEl) countEl.innerText = existing.length;
+          document.getElementById('rep-count').innerText = existing.length;
+          if (emptyMsg) emptyMsg.style.display = existing.length === 0 ? 'block' : 'none';
+          document.getElementById('btn-clear-reps').style.display = existing.length > 0 ? 'inline-block' : 'none';
 
-          if (emptyMsg) {
-            emptyMsg.style.display = existing.length === 0 ? 'block' : 'none';
-          }
-
-          var clearBtn = document.getElementById('btn-clear-reps');
-          if (clearBtn) {
-            clearBtn.style.display = existing.length > 0 ? 'inline-block' : 'none';
-          }
+          var user = (typeof firebase !== 'undefined' && firebase.auth && firebase.auth().currentUser) ? firebase.auth().currentUser : currentUser;
+          var canModerate = user && (isUserAdmin(user.email) || user.email.toLowerCase() === WEBMASTER_EMAIL.toLowerCase());
 
           existing.forEach(function(item) {
             var card = document.createElement('div');
             card.className = 'replay-card';
             card.style.borderLeft = '4px solid var(--cyan)';
-            
-            var metaDiv = document.createElement('div');
-            metaDiv.className = 'replay-meta';
-            metaDiv.innerHTML = '<span class="replay-title">' + item.title + ' <span style="font-size:0.7rem; color:var(--cyan); border:1px solid var(--cyan); padding:1px 6px; border-radius:3px; margin-left:6px; font-family:monospace;">VAULT ARCHIVE</span></span>' +
-                                '<span class="replay-sub">' + item.players + ' | Map: ' + item.map + ' (' + item.fileSize + ' • ' + item.date + ')</span>';
-            card.appendChild(metaDiv);
-
-            var btnGroup = document.createElement('div');
-            btnGroup.style.display = 'flex';
-            btnGroup.style.alignItems = 'center';
-            btnGroup.style.gap = '8px';
-
-            var dlBtn = document.createElement('button');
-            dlBtn.className = 'btn-download-rep';
-            dlBtn.innerText = 'DOWNLOAD (.REP)';
-            dlBtn.onclick = function() { downloadSavedReplay(item.id); };
-            btnGroup.appendChild(dlBtn);
-
-            var adminBtn = document.createElement('button');
-            adminBtn.className = 'admin-del-btn';
-            adminBtn.innerText = '🗑️ REMOVE';
-            (function(repId) {
-              adminBtn.onclick = function() { adminDeleteReplay(repId); };
-            })(item.id);
-            btnGroup.appendChild(adminBtn);
-
-            card.appendChild(btnGroup);
+            card.innerHTML = `
+              <div class="replay-meta">
+                <span class="replay-title">${item.title} <span style="font-size:0.7rem; color:var(--cyan); border:1px solid var(--cyan); padding:1px 6px; border-radius:3px; margin-left:6px; font-family:monospace;">VAULT ARCHIVE</span></span>
+                <span class="replay-sub">${item.players} | Map: ${item.map} (${item.fileSize} • ${item.date})</span>
+              </div>
+              <div style="display:flex; align-items:center; gap:8px;">
+                <button class="btn-download-rep" onclick="downloadSavedReplay('${item.id}')">DOWNLOAD (.REP)</button>
+                ${canModerate ? '<button class="admin-del-btn" style="display:inline-block;" onclick="adminDeleteReplay(\'' + item.id + '\')">🗑️ REMOVE</button>' : ''}
+              </div>
+            `;
             container.appendChild(card);
           });
         };
-      } catch(err) {
-        console.warn('Error rendering replays from IndexedDB:', err);
-      }
+      } catch(err) {}
     }
 
     async function clearUserReplays() {
-      if (confirm('Are you sure you want to clear your uploaded replays from this browser?')) {
+      if (confirm('Clear all uploaded replays?')) {
         try {
           const db = await getVaultDB();
           const tx = db.transaction('replays', 'readwrite');
@@ -3658,180 +3199,74 @@ window.addEventListener('DOMContentLoaded', function() {
       }
     }
 
-    // ========================================================
-    // DOWNLOADS & RESOURCES VAULT (INDEXEDDB)
-    // ========================================================
     var currentSelectedMapFile = null;
     var currentDownloadFilter = 'All';
 
-    function handleMapDragOver(e) {
-      e.preventDefault();
-      e.stopPropagation();
-      var zone = document.getElementById('map-drop-zone');
-      if (zone) {
-        zone.style.borderColor = 'var(--cyan)';
-        zone.style.background = 'rgba(0, 229, 255, 0.1)';
-      }
-    }
-
-    function handleMapDragLeave(e) {
-      e.preventDefault();
-      e.stopPropagation();
-      var zone = document.getElementById('map-drop-zone');
-      if (zone) {
-        zone.style.borderColor = 'rgba(56, 189, 248, 0.45)';
-        zone.style.background = 'rgba(7, 12, 22, 0.6)';
-      }
-    }
-
-    function handleMapDrop(e) {
-      e.preventDefault();
-      e.stopPropagation();
-      handleMapDragLeave(e);
-      if (e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files.length > 0) {
-        processMapFile(e.dataTransfer.files[0]);
-      }
-    }
-
-    function handleMapFileSelect(e) {
-      if (e.target.files && e.target.files.length > 0) {
-        processMapFile(e.target.files[0]);
-      }
-    }
+    function handleMapDragOver(e) { e.preventDefault(); e.stopPropagation(); document.getElementById('map-drop-zone').style.borderColor = 'var(--cyan)'; document.getElementById('map-drop-zone').style.background = 'rgba(0, 229, 255, 0.1)'; }
+    function handleMapDragLeave(e) { e.preventDefault(); e.stopPropagation(); document.getElementById('map-drop-zone').style.borderColor = 'rgba(56, 189, 248, 0.45)'; document.getElementById('map-drop-zone').style.background = 'rgba(7, 12, 22, 0.6)'; }
+    function handleMapDrop(e) { e.preventDefault(); e.stopPropagation(); handleMapDragLeave(e); if (e.dataTransfer && e.dataTransfer.files.length > 0) processMapFile(e.dataTransfer.files[0]); }
+    function handleMapFileSelect(e) { if (e.target.files.length > 0) processMapFile(e.target.files[0]); }
 
     function processMapFile(file) {
-      if (!ensureVerifiedAccess("upload maps or tools")) {
-        cancelMapUpload();
-        return;
-      }
+      if (!ensureVerifiedAccess("upload maps")) { cancelMapUpload(); return; }
       currentSelectedMapFile = file;
-      var kb = (file.size / 1024).toFixed(1);
-      var infoText = document.getElementById('map-file-info-text');
-      if (infoText) {
-        infoText.innerText = 'Selected: ' + file.name + ' (' + kb + ' KB)';
-      }
-      var titleInput = document.getElementById('map-title-input');
-      if (titleInput && !titleInput.value) {
-        titleInput.value = file.name.replace(/\.[^/.]+$/, '');
-      }
-
-      var catSelect = document.getElementById('map-category-input');
-      if (catSelect) {
-        var ext = file.name.split('.').pop().toLowerCase();
-        if (ext === 'scx' || ext === 'scm') {
-          catSelect.value = 'Map';
-        } else if (ext === 'exe' || ext === 'msi') {
-          catSelect.value = 'Software';
-        } else if (ext === 'zip' || ext === 'rar' || ext === '7z') {
-          catSelect.value = 'Map Pack';
-        }
-      }
-
-      var form = document.getElementById('map-upload-form');
-      if (form) form.style.display = 'block';
+      document.getElementById('map-file-info-text').innerText = 'Selected: ' + file.name + ' (' + (file.size / 1024).toFixed(1) + ' KB)';
+      if (!document.getElementById('map-title-input').value) document.getElementById('map-title-input').value = file.name.replace(/\.[^/.]+$/, '');
+      document.getElementById('map-upload-form').style.display = 'block';
     }
 
     function cancelMapUpload() {
       currentSelectedMapFile = null;
-      var fileInp = document.getElementById('map-file-input');
-      if (fileInp) fileInp.value = '';
-      var titleInp = document.getElementById('map-title-input');
-      if (titleInp) titleInp.value = '';
-      var descInp = document.getElementById('map-desc-input');
-      if (descInp) descInp.value = '';
-      var form = document.getElementById('map-upload-form');
-      if (form) form.style.display = 'none';
+      document.getElementById('map-file-input').value = '';
+      document.getElementById('map-title-input').value = '';
+      document.getElementById('map-desc-input').value = '';
+      document.getElementById('map-upload-form').style.display = 'none';
     }
 
     function initVaultRealtimeListener() {
       if (typeof firebase !== 'undefined' && firebase.firestore) {
         firebase.firestore().collection('clan_vault').orderBy('date', 'desc').onSnapshot(function(snapshot) {
           var files = [];
-          snapshot.forEach(function(doc) {
-            var item = doc.data();
-            item.id = doc.id;
-            files.push(item);
-          });
-          if (files.length > 0) {
-            renderUserMapsFromCloud(files);
-          }
-        }, function(err) {
-          console.warn("Vault Sync offline:", err);
-        });
+          snapshot.forEach(doc => { var item = doc.data(); item.id = doc.id; files.push(item); });
+          renderUserMapsFromCloud(files);
+        }, function(err) {});
       }
     }
 
     function renderUserMapsFromCloud(cloudFiles) {
-      var container = document.getElementById('user-maps-list');
-      var emptyMsg = document.getElementById('no-maps-msg');
-      if (!container) return;
-
-      container.innerHTML = '';
-      if (emptyMsg) emptyMsg.style.display = cloudFiles.length === 0 ? 'block' : 'none';
-
-      cloudFiles.forEach(function(item) {
-        var card = document.createElement('div');
-        card.className = 'replay-card';
-        card.style.borderLeft = '4px solid var(--cyan)';
-        card.innerHTML = `
-          <div class="replay-meta">
-            <span class="replay-title">${item.title} <span style="font-size:0.68rem; color:var(--cyan); border:1px solid var(--cyan); padding:1px 6px; border-radius:4px; font-family:monospace;">${item.category}</span></span>
-            <span class="replay-sub">${item.desc} (${item.fileSize} • ${item.date})</span>
-          </div>
-          <button class="btn-download-rep" onclick="alert('Download bereitgestellt via Cloud Mainframe.')">DOWNLOAD</button>
-        `;
-        container.appendChild(card);
-      });
+      renderUserMaps();
     }
 
     function saveMapDownload() {
-      if (!ensureVerifiedAccess("Dateien im Clan-Vault speichern")) return;
+      if (!ensureVerifiedAccess("save download")) return;
       var file = currentSelectedMapFile;
-      if (!file) {
-        alert('Bitte wählen Sie zuerst eine Datei aus.');
-        return;
-      }
-
-      var titleInp = document.getElementById('map-title-input');
-      var descInp = document.getElementById('map-desc-input');
-      var catSelect = document.getElementById('map-category-input');
-
+      if (!file) { alert('Choose a file first.'); return; }
       var downloadRecord = {
-        title: (titleInp && titleInp.value.trim()) || file.name,
-        desc: (descInp && descInp.value.trim()) || 'StarCraft Resource File',
-        category: (catSelect && catSelect.value) || 'Map Pack',
+        title: document.getElementById('map-title-input').value.trim() || file.name,
+        desc: document.getElementById('map-desc-input').value.trim() || 'Resource File',
+        category: document.getElementById('map-category-input').value || 'Map Pack',
         fileName: file.name,
         fileSize: (file.size / 1024).toFixed(1) + ' KB',
         date: new Date().toLocaleDateString(),
         uploader: currentUser ? currentUser.email : 'High Command'
       };
-
       if (typeof firebase !== 'undefined' && firebase.firestore) {
-        firebase.firestore().collection('clan_vault').add(downloadRecord)
-          .then(function() {
-            cancelMapUpload();
-            alert('Datei-Eintrag global synchronisiert! Alle Geräte sehen diesen Download nun.');
-          })
-          .catch(function(e) {
-            alert('Upload fehlgeschlagen: ' + e.message);
-          });
+        firebase.firestore().collection('clan_vault').add(downloadRecord).then(() => {
+          cancelMapUpload(); alert('Download synchronized globally!');
+        }).catch(e => alert('Failed: ' + e.message));
       }
     }
 
     function filterDownloads(cat) {
       currentDownloadFilter = cat;
-      var buttons = document.querySelectorAll('#dl-filter-buttons .nav-tab-btn');
-      for (var i = 0; i < buttons.length; i++) {
-        buttons[i].classList.remove('active');
-      }
-      var filterBtnId = 'filter-dl-' + cat.replace(/\s+/g, '');
-      var activeBtn = document.getElementById(filterBtnId);
+      document.querySelectorAll('#dl-filter-buttons .nav-tab-btn').forEach(b => b.classList.remove('active'));
+      var activeBtn = document.getElementById('filter-dl-' + cat.replace(/\s+/g, ''));
       if (activeBtn) activeBtn.classList.add('active');
       renderUserMaps();
     }
 
     async function downloadSavedMap(downloadId) {
-      if (!ensureVerifiedAccess("download maps and tools")) return;
+      if (!ensureVerifiedAccess("download")) return;
       try {
         const db = await getVaultDB();
         const tx = db.transaction('downloads', 'readonly');
@@ -3840,110 +3275,58 @@ window.addEventListener('DOMContentLoaded', function() {
           var item = req.result;
           if (item && item.fileBlob) {
             var url = URL.createObjectURL(item.fileBlob);
-            var a = document.createElement('a');
-            a.href = url;
-            a.download = item.fileName || 'Download.zip';
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
+            var a = document.createElement('a'); a.href = url; a.download = item.fileName || 'Download.zip';
+            document.body.appendChild(a); a.click(); document.body.removeChild(a);
             setTimeout(() => URL.revokeObjectURL(url), 1000);
-          } else if (item && item.url) {
-            window.open(item.url, '_blank');
-          } else if (item && item.data) {
-            var a = document.createElement('a');
-            a.href = item.data;
-            a.download = item.fileName || 'Download.zip';
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-          } else {
-            alert('Download file data not found.');
           }
         };
-      } catch(err) {
-        alert('Error downloading file.');
-      }
+      } catch(e) {}
     }
 
-async function renderUserMaps() {
+    async function renderUserMaps() {
       var container = document.getElementById('user-maps-list');
       var emptyMsg = document.getElementById('no-maps-msg');
       if (!container) return;
 
       var allFiles = [];
-
-      // 1. Hole lokale IndexedDB Dateien
       try {
         const db = await getVaultDB();
         const tx = db.transaction('downloads', 'readonly');
         const req = tx.objectStore('downloads').getAll();
-        await new Promise((resolve) => {
-          req.onsuccess = function() {
-            if (req.result) {
-              allFiles = allFiles.concat(req.result);
-            }
-            resolve();
-          };
-          req.onerror = () => resolve();
-        });
+        await new Promise(resolve => { req.onsuccess = () => { if (req.result) allFiles = allFiles.concat(req.result); resolve(); }; req.onerror = () => resolve(); });
       } catch(e) {}
 
-      // 2. Hole Firebase Cloud Dateien (falls verbunden)
       if (typeof firebase !== 'undefined' && firebase.firestore) {
         try {
           var snapshot = await firebase.firestore().collection('clan_vault').get();
-          snapshot.forEach(function(doc) {
-            var item = doc.data();
-            item.id = doc.id;
-            // Vermeide Duplikate, falls lokal & cloud identisch
-            if (!allFiles.some(function(f) { return f.id === item.id; })) {
-              allFiles.push(item);
-            }
+          snapshot.forEach(doc => {
+            var item = doc.data(); item.id = doc.id;
+            if (!allFiles.some(f => f.id === item.id)) allFiles.push(item);
           });
-        } catch(e) {
-          console.warn("Cloud Vault Sync im Render fehlgeschlagen:", e);
-        }
+        } catch(e) {}
       }
 
-      // Zähler berechnen
       var countAll = allFiles.length;
       var countMapPack = 0, countMap = 0, countSoftware = 0, countOther = 0;
-      
-      for (var k = 0; k < allFiles.length; k++) {
-        var c = allFiles[k].category;
-        if (c === 'Map Pack') countMapPack++;
-        else if (c === 'Map') countMap++;
-        else if (c === 'Software') countSoftware++;
+      allFiles.forEach(f => {
+        if (f.category === 'Map Pack') countMapPack++;
+        else if (f.category === 'Map') countMap++;
+        else if (f.category === 'Software') countSoftware++;
         else countOther++;
-      }
+      });
 
-      var elAll = document.getElementById('count-all');
-      if (elAll) elAll.innerText = countAll;
-      var elMP = document.getElementById('count-mappack');
-      if (elMP) elMP.innerText = countMapPack;
-      var elM = document.getElementById('count-map');
-      if (elM) elM.innerText = countMap;
-      var elS = document.getElementById('count-software');
-      if (elS) elS.innerText = countSoftware;
-      var elO = document.getElementById('count-other');
-      if (elO) elO.innerText = countOther;
+      if (document.getElementById('count-all')) document.getElementById('count-all').innerText = countAll;
+      if (document.getElementById('count-mappack')) document.getElementById('count-mappack').innerText = countMapPack;
+      if (document.getElementById('count-map')) document.getElementById('count-map').innerText = countMap;
+      if (document.getElementById('count-software')) document.getElementById('count-software').innerText = countSoftware;
+      if (document.getElementById('count-other')) document.getElementById('count-other').innerText = countOther;
 
       var clearBtn = document.getElementById('btn-clear-maps');
-      if (clearBtn) {
-        clearBtn.style.display = allFiles.length > 0 ? 'inline-block' : 'none';
-      }
+      if (clearBtn) clearBtn.style.display = allFiles.length > 0 ? 'inline-block' : 'none';
 
-      var filtered = [];
-      for (var m = 0; m < allFiles.length; m++) {
-        if (currentDownloadFilter === 'All' || allFiles[m].category === currentDownloadFilter) {
-          filtered.push(allFiles[m]);
-        }
-      }
-
+      var filtered = allFiles.filter(f => currentDownloadFilter === 'All' || f.category === currentDownloadFilter);
       container.innerHTML = '';
-      if (emptyMsg) {
-        emptyMsg.style.display = filtered.length === 0 ? 'block' : 'none';
-      }
+      if (emptyMsg) emptyMsg.style.display = filtered.length === 0 ? 'block' : 'none';
 
       var catBadges = {
         'Map Pack': { icon: '📦', color: 'var(--cyan)', border: '1px solid var(--cyan)' },
@@ -3952,58 +3335,30 @@ async function renderUserMaps() {
         'Other': { icon: '📁', color: '#c084fc', border: '1px solid #c084fc' }
       };
 
-      var user = (typeof firebase !== 'undefined' && firebase.auth && firebase.auth().currentUser) 
-        ? firebase.auth().currentUser 
-        : currentUser;
+      var user = (typeof firebase !== 'undefined' && firebase.auth && firebase.auth().currentUser) ? firebase.auth().currentUser : currentUser;
       var canModerate = user && (isUserAdmin(user.email) || user.email.toLowerCase() === WEBMASTER_EMAIL.toLowerCase());
 
-      for (var n = 0; n < filtered.length; n++) {
-        var item = filtered[n];
+      filtered.forEach(item => {
         var badgeInfo = catBadges[item.category] || catBadges['Other'];
-
         var card = document.createElement('div');
         card.className = 'replay-card';
         card.style.borderLeft = '4px solid ' + badgeInfo.color;
-
-        var metaDiv = document.createElement('div');
-        metaDiv.className = 'replay-meta';
-        metaDiv.innerHTML = '<span class="replay-title">' + item.title + ' ' +
-                            '<span style="font-size:0.68rem; color:' + badgeInfo.color + '; border:' + badgeInfo.border + '; padding:1px 6px; border-radius:4px; margin-left:6px; font-family:monospace; text-transform:uppercase;">' + badgeInfo.icon + ' ' + item.category + '</span></span>' +
-                            '<span class="replay-sub">' + item.desc + ' (' + item.fileSize + ' • ' + item.date + ')</span>';
-        card.appendChild(metaDiv);
-
-        var btnGroup = document.createElement('div');
-        btnGroup.style.display = 'flex';
-        btnGroup.style.alignItems = 'center';
-        btnGroup.style.gap = '8px';
-
-        var dlBtn = document.createElement('button');
-        dlBtn.className = 'btn-download-rep';
-        dlBtn.innerText = 'DOWNLOAD';
-        (function(idToDownload) {
-          dlBtn.onclick = function() { downloadSavedMap(idToDownload); };
-        })(item.id);
-        btnGroup.appendChild(dlBtn);
-
-        // Remove-Button für Admins/Webmaster hinzufügen
-        if (canModerate) {
-          var adminBtn = document.createElement('button');
-          adminBtn.className = 'admin-del-btn';
-          adminBtn.innerText = '🗑️ REMOVE';
-          adminBtn.style.display = 'inline-block';
-          (function(dlId) {
-            adminBtn.onclick = function() { adminDeleteDownload(dlId); };
-          })(item.id);
-          btnGroup.appendChild(adminBtn);
-        }
-
-        card.appendChild(btnGroup);
+        card.innerHTML = `
+          <div class="replay-meta">
+            <span class="replay-title">${item.title} <span style="font-size:0.68rem; color:${badgeInfo.color}; border:${badgeInfo.border}; padding:1px 6px; border-radius:4px; margin-left:6px; font-family:monospace; text-transform:uppercase;">${badgeInfo.icon} ${item.category}</span></span>
+            <span class="replay-sub">${item.desc} (${item.fileSize} • ${item.date})</span>
+          </div>
+          <div style="display:flex; align-items:center; gap:8px;">
+            <button class="btn-download-rep" onclick="downloadSavedMap('${item.id}')">DOWNLOAD</button>
+            ${canModerate ? '<button class="admin-del-btn" style="display:inline-block;" onclick="adminDeleteDownload(\'' + item.id + '\')">🗑️ REMOVE</button>' : ''}
+          </div>
+        `;
         container.appendChild(card);
-      }
+      });
     }
 
     async function clearUserMaps() {
-      if (confirm('Are you sure you want to clear your uploaded files from this browser?')) {
+      if (confirm('Clear all downloads?')) {
         try {
           const db = await getVaultDB();
           const tx = db.transaction('downloads', 'readwrite');
@@ -4016,43 +3371,17 @@ async function renderUserMaps() {
     renderUserReplays();
     renderUserMaps();
 
-    // Profile Lightbox
     function openAvatarLightbox(imgSrc) {
       if (!imgSrc) return;
       var lb = document.getElementById('avatarLightbox');
       var lbImg = document.getElementById('lightboxImg');
-      if (lb && lbImg) {
-        lbImg.src = imgSrc;
-        lb.style.display = 'flex';
-      }
+      if (lb && lbImg) { lbImg.src = imgSrc; lb.style.display = 'flex'; }
     }
+    function closeAvatarLightbox() { document.getElementById('avatarLightbox').style.display = 'none'; }
+    function openPrivacyModal() { document.getElementById('privacyModal').classList.add('active'); }
+    function closePrivacyModal() { document.getElementById('privacyModal').classList.remove('active'); }
+    function handlePrivacyBackdropClick(e) { if (e.target.id === 'privacyModal') closePrivacyModal(); }
 
-    function closeAvatarLightbox() {
-      var lb = document.getElementById('avatarLightbox');
-      if (lb) {
-        lb.style.display = 'none';
-      }
-    }
-
-        // Privacy Modal Control
-    function openPrivacyModal() {
-      var modal = document.getElementById('privacyModal');
-      if (modal) modal.classList.add('active');
-    }
-
-    function closePrivacyModal() {
-      var modal = document.getElementById('privacyModal');
-      if (modal) modal.classList.remove('active');
-    }
-
-    function handlePrivacyBackdropClick(e) {
-      if (e.target.id === 'privacyModal') closePrivacyModal();
-    }
-
-    
-// ========================================================
-    // FIREBASE AUTHENTICATION & WEBMASTER CONTROL SYSTEM
-    // ========================================================
     const firebaseConfig = {
       apiKey: "AIzaSyAUmGnYoJcfjBp5nFsHRk7fE-I8rsksEtg",
       authDomain: "whitedragon-clan.firebaseapp.com",
@@ -4067,21 +3396,12 @@ async function renderUserMaps() {
     var firebaseInitialized = false;
     var currentUser = null;
 
-    // Webmaster Admin Management Engine
     function getAdminList() {
-      var defaultAdmins = [
-        WEBMASTER_EMAIL.toLowerCase(),
-        "abecul323@outlook.com",
-        "deathorb@whitedragon.com",
-        "robfatkraft@whitedragon.com",
-        "lunarpop@whitedragon.com"
-      ];
+      var defaultAdmins = [WEBMASTER_EMAIL.toLowerCase(), "abecul323@outlook.com", "deathorb@whitedragon.com", "robfatkraft@whitedragon.com", "lunarpop@whitedragon.com"];
       try {
         var stored = JSON.parse(localStorage.getItem('wd_admin_list') || 'null');
         if (Array.isArray(stored)) {
-          if (!stored.includes(WEBMASTER_EMAIL.toLowerCase())) {
-            stored.unshift(WEBMASTER_EMAIL.toLowerCase());
-          }
+          if (!stored.includes(WEBMASTER_EMAIL.toLowerCase())) stored.unshift(WEBMASTER_EMAIL.toLowerCase());
           return stored;
         }
       } catch(e) {}
@@ -4089,40 +3409,9 @@ async function renderUserMaps() {
       return defaultAdmins;
     }
 
-// ========================================================
-    // PHASE 2 DYNAMIC COMMUNITY CMS LOGIC (MIT EDIT-FUNKTION)
-    // ========================================================
     var defaultClanNews = [
-      {
-        id: "news_1",
-        title: "Flawless 6-0 Victory Over Shadow-2",
-        category: "League",
-        tag: "// LEAGUE",
-        body: "White Dragon dominated Week #4 with stellar individual execution across all maps. KaRDiNaL, Battousai, CheesyCake, and new Mexican Zerg starter aMeba secured undefeated sets.",
-        author: "HIGH COMMAND",
-        date: "OCTOBER 25, 2026",
-        createdAt: 1729860000000
-      },
-      {
-        id: "news_2",
-        title: "aMeba[WD] Joins WD-A Active Lineup",
-        category: "News",
-        tag: "// NEWS",
-        body: "Mexican Zerg ace aMeba officially made his BWCL debut in Week #4, taking down Shadow|LaBestia 2-0 and partnering with CheesyCake for an electric 2-0 doubles victory.",
-        author: "ROSTER COMMITTEE",
-        date: "OCTOBER 24, 2026",
-        createdAt: 1729773600000
-      },
-      {
-        id: "news_3",
-        title: "Approaching Week #5 Clash vs Division Leader dB)-3",
-        category: "Info",
-        tag: "// INFO",
-        body: "The squad is in intensive training for the pivotal Week #5 clash against top-ranked dB)-3 on Backrooms (1n1) and Octagon (2n2). Victory will propel WD into first place contention.",
-        author: "TACTICAL DESK",
-        date: "OCTOBER 27, 2026",
-        createdAt: 1730032800000
-      }
+      { id: "news_1", title: "Flawless 6-0 Victory Over Shadow-2", category: "League", tag: "// LEAGUE", body: "White Dragon dominated Week #4.", author: "HIGH COMMAND", date: "OCTOBER 25, 2026", createdAt: 1729860000000 },
+      { id: "news_2", title: "aMeba[WD] Joins WD-A Active Lineup", category: "News", tag: "// NEWS", body: "Mexican Zerg ace aMeba made his debut.", author: "ROSTER COMMITTEE", date: "OCTOBER 24, 2026", createdAt: 1729773600000 }
     ];
 
     function getLocalNewsArticles() {
@@ -4135,15 +3424,11 @@ async function renderUserMaps() {
     }
 
     var currentCommunityCategoryFilter = 'All';
-
     function filterCommunityCategory(cat) {
       currentCommunityCategoryFilter = cat;
-      ['All', 'News', 'League', 'Info', 'FreeBoard'].forEach(function(c) {
+      ['All', 'News', 'League', 'Info', 'FreeBoard'].forEach(c => {
         var btn = document.getElementById('btn-ccat-' + c);
-        if (btn) {
-          if (c === cat.replace(/\s+/g, '')) btn.classList.add('active');
-          else btn.classList.remove('active');
-        }
+        if (btn) btn.classList.toggle('active', c === cat.replace(/\s+/g, ''));
       });
       initNewsRealtimeListener();
     }
@@ -4152,100 +3437,49 @@ async function renderUserMaps() {
       var grid = document.getElementById('clan-news-grid');
       if (!grid) return;
       grid.innerHTML = '';
-
-      var user = (typeof firebase !== 'undefined' && firebase.auth && firebase.auth().currentUser) 
-        ? firebase.auth().currentUser 
-        : currentUser;
-      
-      var canWrite = user && user.emailVerified; 
+      var user = (typeof firebase !== 'undefined' && firebase.auth && firebase.auth().currentUser) ? firebase.auth().currentUser : currentUser;
+      var canWrite = user && user.emailVerified;
       var terminal = document.getElementById('admin-news-terminal');
       if (terminal) terminal.style.display = canWrite ? 'block' : 'none';
 
-      var filtered = articles.filter(function(item) {
+      var filtered = articles.filter(item => {
         if (currentCommunityCategoryFilter === 'All') return true;
         var itemCat = item.category || (item.tag ? item.tag.replace('//', '').trim() : 'News');
         return itemCat.toLowerCase() === currentCommunityCategoryFilter.toLowerCase();
       });
 
-      filtered.forEach(function(item) {
+      filtered.forEach(item => {
         var card = document.createElement('div');
         card.className = 'news-card';
-        
         var isOwnerOrAdmin = user && (isUserAdmin(user.email) || (item.userEmail && item.userEmail.toLowerCase() === user.email.toLowerCase()));
-        
-        var actionBtns = isOwnerOrAdmin ? 
-          '<div style="float:right; display:flex; gap:6px;">' +
-            '<button onclick="editClanNews(\'' + item.id + '\')" class="admin-del-btn" style="display:inline-block; border-color:var(--cyan); color:var(--cyan); background:rgba(0,229,255,0.15); margin:0;">✏️ EDIT</button>' +
-            '<button onclick="deleteClanNews(\'' + item.id + '\')" class="admin-del-btn" style="display:inline-block; margin:0;">🗑️ REMOVE</button>' +
-          '</div>' : '';
-
-        var displayCategory = item.category || (item.tag ? item.tag.replace('//', '').trim() : 'NEWS');
-
-        card.innerHTML = actionBtns +
-          '<span class="news-tag">// ' + displayCategory.toUpperCase() + '</span>' +
-          '<h3>' + item.title + '</h3>' +
-          '<p>' + item.body + '</p>' +
-          '<div class="news-date">' + (item.date || 'RECENT') + ' • TRANSMITTED BY ' + (item.author || 'HIGH COMMAND') + '</div>';
+        var actionBtns = isOwnerOrAdmin ? '<div style="float:right; display:flex; gap:6px;"><button onclick="editClanNews(\'' + item.id + '\')" class="admin-del-btn" style="display:inline-block; border-color:var(--cyan); color:var(--cyan); background:rgba(0,229,255,0.15); margin:0;">✏️ EDIT</button><button onclick="deleteClanNews(\'' + item.id + '\')" class="admin-del-btn" style="display:inline-block; margin:0;">🗑️ REMOVE</button></div>' : '';
+        card.innerHTML = actionBtns + '<span class="news-tag">// ' + (item.category || 'NEWS').toUpperCase() + '</span><h3>' + item.title + '</h3><p>' + item.body + '</p><div class="news-date">' + (item.date || 'RECENT') + ' • TRANSMITTED BY ' + (item.author || 'HIGH COMMAND') + '</div>';
         grid.appendChild(card);
       });
     }
 
     function initNewsRealtimeListener() {
       if (typeof firebase !== 'undefined' && firebase.firestore) {
-        try {
-          var db = firebase.firestore();
-          db.collection('clan_news').orderBy('createdAt', 'desc').onSnapshot(function(snapshot) {
-            if (!snapshot.empty) {
-              var liveArticles = [];
-              snapshot.forEach(function(doc) {
-                var d = doc.data();
-                d.id = doc.id;
-                liveArticles.push(d);
-              });
-              renderClanNews(liveArticles);
-              return;
-            } else {
-              renderClanNews(getLocalNewsArticles());
-            }
-          }, function(err) {
-            console.warn("Firestore sync offline:", err);
-            renderClanNews(getLocalNewsArticles());
-          });
-          return;
-        } catch(e) {
-          console.warn("Firestore onSnapshot error:", e);
-        }
-      }
-      renderClanNews(getLocalNewsArticles());
+        firebase.firestore().collection('clan_news').orderBy('createdAt', 'desc').onSnapshot(snapshot => {
+          var liveArticles = [];
+          snapshot.forEach(doc => { var d = doc.data(); d.id = doc.id; liveArticles.push(d); });
+          renderClanNews(liveArticles.length > 0 ? liveArticles : getLocalNewsArticles());
+        }, () => renderClanNews(getLocalNewsArticles()));
+      } else { renderClanNews(getLocalNewsArticles()); }
     }
 
     function publishClanNews() {
       var editId = document.getElementById('cms-edit-article-id').value;
-      var titleInp = document.getElementById('cms-news-title');
-      var catInp = document.getElementById('cms-news-cat');
-      var authorInp = document.getElementById('cms-news-author');
-      var bodyInp = document.getElementById('cms-news-body');
-
-      var title = titleInp ? titleInp.value.trim() : '';
-      var category = catInp ? catInp.value : 'News';
-      var author = authorInp && authorInp.value.trim() ? authorInp.value.trim().toUpperCase() : 'HIGH COMMAND';
-      var body = bodyInp ? bodyInp.value.trim() : '';
-
-      if (!title || !body) {
-        alert("Bitte geben Sie einen Titel und Nachrichtentext ein.");
-        return;
-      }
+      var title = document.getElementById('cms-news-title').value.trim();
+      var category = document.getElementById('cms-news-cat').value;
+      var author = document.getElementById('cms-news-author').value.trim().toUpperCase() || 'HIGH COMMAND';
+      var body = document.getElementById('cms-news-body').value.trim();
+      if (!title || !body) { alert("Please provide a title and content."); return; }
 
       var user = (typeof firebase !== 'undefined' && firebase.auth && firebase.auth().currentUser) ? firebase.auth().currentUser : currentUser;
-      var userEmail = user ? user.email : 'Anonymous';
-
       var articleData = {
-        title: title,
-        category: category,
-        tag: '// ' + category.toUpperCase(),
-        author: author,
-        body: body,
-        userEmail: userEmail,
+        title: title, category: category, tag: '// ' + category.toUpperCase(), author: author, body: body,
+        userEmail: user ? user.email : 'Anonymous',
         date: new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }).toUpperCase(),
         createdAt: Date.now()
       };
@@ -4253,68 +3487,34 @@ async function renderUserMaps() {
       if (typeof firebase !== 'undefined' && firebase.firestore) {
         var db = firebase.firestore();
         if (editId) {
-          db.collection('clan_news').doc(editId).set(articleData, { merge: true })
-            .then(function() {
-              cancelClanNewsEdit();
-              alert("Beitrag erfolgreich aktualisiert!");
-            })
-            .catch(function(e) { alert("Fehler: " + e.message); });
+          db.collection('clan_news').doc(editId).set(articleData, { merge: true }).then(() => { cancelClanNewsEdit(); alert("Updated!"); });
         } else {
-          db.collection('clan_news').add(articleData)
-            .then(function() {
-              cancelClanNewsEdit();
-              alert("Beitrag erfolgreich veröffentlicht!");
-            })
-            .catch(function(e) { alert("Fehler: " + e.message); });
+          db.collection('clan_news').add(articleData).then(() => { cancelClanNewsEdit(); alert("Published!"); });
         }
       } else {
-        saveNewsLocallyFallback(articleData, editId);
-      }
-    }
-
-    function saveNewsLocallyFallback(article, editId) {
-      var news = getLocalNewsArticles();
-      if (editId) {
-        var idx = news.findIndex(function(n) { return n.id === editId; });
-        if (idx !== -1) {
-          article.id = editId;
-          news[idx] = article;
+        var news = getLocalNewsArticles();
+        if (editId) {
+          var idx = news.findIndex(n => n.id === editId);
+          if (idx !== -1) { articleData.id = editId; news[idx] = articleData; }
+        } else {
+          articleData.id = "news_" + Date.now();
+          news.unshift(articleData);
         }
-      } else {
-        article.id = "news_" + Date.now();
-        news.unshift(article);
+        localStorage.setItem('wd_clan_news', JSON.stringify(news));
+        renderClanNews(news);
+        cancelClanNewsEdit();
       }
-      localStorage.setItem('wd_clan_news', JSON.stringify(news));
-      renderClanNews(news);
-      cancelClanNewsEdit();
-      alert("Beitrag im lokalen Vault gespeichert!");
     }
 
     function editClanNews(id) {
       var card = event.target.closest('.news-card');
       if (card) {
-        var tagText = card.querySelector('.news-tag').innerText.replace('//', '').trim();
-        var title = card.querySelector('h3').innerText;
-        var body = card.querySelector('p').innerText;
-        
         document.getElementById('cms-edit-article-id').value = id;
-        document.getElementById('cms-news-title').value = title;
-        document.getElementById('cms-news-body').value = body;
-        
-        var catSelect = document.getElementById('cms-news-cat');
-        if (catSelect) {
-          for (var i = 0; i < catSelect.options.length; i++) {
-            if (catSelect.options[i].value.toLowerCase() === tagText.toLowerCase()) {
-              catSelect.selectedIndex = i;
-              break;
-            }
-          }
-        }
-
+        document.getElementById('cms-news-title').value = card.querySelector('h3').innerText;
+        document.getElementById('cms-news-body').value = card.querySelector('p').innerText;
         document.getElementById('cms-form-heading').innerText = '⚡ EDIT COMMUNITY TRANSMISSION';
         document.getElementById('cms-submit-btn').innerText = '💾 SAVE CHANGES';
         document.getElementById('cms-cancel-btn').style.display = 'inline-block';
-
         window.scrollTo({ top: document.getElementById('admin-news-terminal').offsetTop - 100, behavior: 'smooth' });
       }
     }
@@ -4329,363 +3529,127 @@ async function renderUserMaps() {
     }
 
     function deleteClanNews(newsId) {
-      if (!confirm("Möchtest du diesen Beitrag wirklich löschen?")) return;
+      if (!confirm("Delete this post?")) return;
       if (typeof firebase !== 'undefined' && firebase.firestore) {
-        try {
-          firebase.firestore().collection('clan_news').doc(newsId).delete();
-        } catch(e) {}
+        firebase.firestore().collection('clan_news').doc(newsId).delete().catch(() => {});
       }
-      var news = getLocalNewsArticles().filter(function(n) { return n.id !== newsId; });
+      var news = getLocalNewsArticles().filter(n => n.id !== newsId);
       localStorage.setItem('wd_clan_news', JSON.stringify(news));
       renderClanNews(news);
     }
 
     function isUserAdmin(email) {
       if (!email) return false;
-      var clean = email.toLowerCase().trim();
-      return getAdminList().includes(clean);
+      return getAdminList().includes(email.toLowerCase().trim());
     }
 
     function uiPromoteNewAdmin() {
       var input = document.getElementById('new-admin-email-input');
       var email = input ? input.value.trim().toLowerCase() : '';
-      if (!email || !email.includes('@')) {
-        alert("Please enter a valid email address.");
-        return;
-      }
+      if (!email || !email.includes('@')) { alert("Enter valid email."); return; }
       var list = getAdminList();
-      if (list.includes(email)) {
-        alert(email + " already has Admin clearance!");
-        return;
-      }
-      list.push(email);
-      localStorage.setItem('wd_admin_list', JSON.stringify(list));
-      if (input) input.value = '';
-      renderAdminManagerList();
-      alert("Successfully granted Admin clearance to: " + email);
+      if (!list.includes(email)) { list.push(email); localStorage.setItem('wd_admin_list', JSON.stringify(list)); renderAdminManagerList(); alert("Granted!"); }
     }
 
     function uiRevokeAdmin(emailToRevoke) {
-      if (emailToRevoke.toLowerCase() === WEBMASTER_EMAIL.toLowerCase()) {
-        alert("Root Webmaster cannot be revoked.");
-        return;
+      if (emailToRevoke.toLowerCase() === WEBMASTER_EMAIL.toLowerCase()) return;
+      if (confirm("Revoke admin for " + emailToRevoke + "?")) {
+        var list = getAdminList().filter(e => e.toLowerCase() !== emailToRevoke.toLowerCase());
+        localStorage.setItem('wd_admin_list', JSON.stringify(list));
+        renderAdminManagerList();
       }
-      if (!confirm("Revoke Admin clearance for " + emailToRevoke + "?")) return;
-      var list = getAdminList().filter(function(e) { return e.toLowerCase() !== emailToRevoke.toLowerCase(); });
-      localStorage.setItem('wd_admin_list', JSON.stringify(list));
-      renderAdminManagerList();
     }
 
     function renderAdminManagerList() {
       var container = document.getElementById('active-admins-list');
       if (!container) return;
-      var admins = getAdminList();
       container.innerHTML = '';
-
-      admins.forEach(function(email) {
+      getAdminList().forEach(email => {
         var isRoot = (email.toLowerCase() === WEBMASTER_EMAIL.toLowerCase());
-        var matched = membersData.find(function(m) {
-          return m.email && m.email.toLowerCase() === email.toLowerCase();
-        });
-        var displayName = matched ? matched.name + ' (' + email + ')' : email;
-
         var row = document.createElement('div');
-        row.style.display = 'flex';
-        row.style.justifyContent = 'space-between';
-        row.style.alignItems = 'center';
-        row.style.background = 'rgba(7, 12, 22, 0.7)';
-        row.style.padding = '5px 8px';
-        row.style.borderRadius = '4px';
-        row.style.border = '1px solid var(--border-color)';
-        row.style.fontSize = '0.8rem';
-
-        var left = document.createElement('div');
-        left.innerHTML = (isRoot ? '<span style="color:var(--cyan); font-weight:bold;">★ [ROOT]</span> ' : '<span style="color:#fbbf24; font-weight:bold;">🛡️ [ADMIN]</span> ') +
-                         '<span style="color:#fff; font-family:\'Share Tech Mono\',monospace;">' + displayName + '</span>';
-        row.appendChild(left);
-
-        if (!isRoot) {
-          var revBtn = document.createElement('button');
-          revBtn.innerText = 'REVOKE';
-          revBtn.style.background = 'rgba(239,68,68,0.2)';
-          revBtn.style.border = '1px solid var(--loss)';
-          revBtn.style.color = 'var(--loss)';
-          revBtn.style.fontSize = '0.68rem';
-          revBtn.style.padding = '2px 6px';
-          revBtn.style.borderRadius = '3px';
-          revBtn.style.cursor = 'pointer';
-          revBtn.onclick = function() { uiRevokeAdmin(email); };
-          row.appendChild(revBtn);
-        } else {
-          var permTag = document.createElement('span');
-          permTag.innerText = 'PERMANENT';
-          permTag.style.color = 'var(--text-dim)';
-          permTag.style.fontSize = '0.65rem';
-          permTag.style.fontFamily = 'monospace';
-          row.appendChild(permTag);
-        }
-
+        row.style.cssText = "display:flex; justify-content:space-between; align-items:center; background:rgba(7,12,22,0.7); padding:5px 8px; border-radius:4px; border:1px solid var(--border-color); font-size:0.8rem;";
+        row.innerHTML = `<span>${isRoot ? '★ [ROOT]' : '🛡️ [ADMIN]'} <code style="color:#fff;">${email}</code></span>${!isRoot ? '<button onclick="uiRevokeAdmin(\'' + email + '\')" style="background:rgba(239,68,68,0.2); border:1px solid var(--loss); color:var(--loss); font-size:0.68rem; padding:2px 6px; cursor:pointer;">REVOKE</button>' : ''}`;
         container.appendChild(row);
       });
     }
 
     try {
-      if (typeof firebase !== 'undefined' && firebaseConfig.apiKey && firebaseConfig.apiKey !== "YOUR_API_KEY") {
+      if (typeof firebase !== 'undefined' && firebaseConfig.apiKey) {
         firebase.initializeApp(firebaseConfig);
         firebaseInitialized = true;
       }
-    } catch(err) {
-      console.warn("Firebase config not loaded yet, using simulated auth.", err);
-    }
+    } catch(e) {}
 
-    function isFirebaseReady() {
-      return firebaseInitialized && typeof firebase !== 'undefined' && firebase.auth;
-    }
+    function isFirebaseReady() { return firebaseInitialized && typeof firebase !== 'undefined' && firebase.auth; }
 
-    // Modal Control Functions
-    function openAuthModal() {
-      var modal = document.getElementById('authModal');
-      if (modal) modal.classList.add('active');
-      if (currentUser) {
-        switchAuthView('profile');
-      } else {
-        switchAuthView('login');
-      }
-    }
-
-    function closeAuthModal() {
-      var modal = document.getElementById('authModal');
-      if (modal) modal.classList.remove('active');
-      clearAuthMessage();
-    }
-
-    function handleAuthBackdropClick(e) {
-      if (e.target.id === 'authModal') closeAuthModal();
-    }
+    function openAuthModal() { document.getElementById('authModal').classList.add('active'); switchAuthView(currentUser ? 'profile' : 'login'); }
+    function closeAuthModal() { document.getElementById('authModal').classList.remove('active'); }
+    function handleAuthBackdropClick(e) { if (e.target.id === 'authModal') closeAuthModal(); }
 
     function switchAuthView(viewName) {
-      clearAuthMessage();
-      var views = ['login', 'register', 'forgot', 'profile'];
-      views.forEach(function(v) {
+      ['login', 'register', 'forgot', 'profile'].forEach(v => {
         var el = document.getElementById('view-' + v);
         if (el) el.style.display = (v === viewName) ? 'block' : 'none';
       });
-
-      var tabs = document.getElementById('authTabs');
-      var titleEl = document.getElementById('authModalTitle');
-
-      if (viewName === 'profile') {
-        if (tabs) tabs.style.display = 'none';
-        if (titleEl) titleEl.innerText = 'COMMANDER PROFILE';
-      } else {
-        if (tabs) tabs.style.display = (viewName === 'forgot') ? 'none' : 'flex';
-        if (titleEl) titleEl.innerText = (viewName === 'register') ? 'NEW OPERATOR RECRUITMENT' : 'ACCESS PORTAL';
-
-        var btnLogin = document.getElementById('btn-auth-login');
-        var btnReg = document.getElementById('btn-auth-register');
-        if (btnLogin) btnLogin.classList.toggle('active', viewName === 'login');
-        if (btnReg) btnReg.classList.toggle('active', viewName === 'register');
-      }
+      document.getElementById('authTabs').style.display = (viewName === 'forgot') ? 'none' : 'flex';
+      document.getElementById('authModalTitle').innerText = (viewName === 'register') ? 'NEW OPERATOR RECRUITMENT' : 'ACCESS PORTAL';
     }
 
-    function showAuthMessage(msg, isError) {
-      var box = document.getElementById('auth-status-msg');
-      if (!box) return;
-      box.innerText = msg;
-      box.style.display = 'block';
-      if (isError) {
-        box.style.background = 'rgba(239,68,68,0.18)';
-        box.style.border = '1px solid var(--loss)';
-        box.style.color = '#fca5a5';
-      } else {
-        box.style.background = 'rgba(16,185,129,0.18)';
-        box.style.border = '1px solid var(--win)';
-        box.style.color = '#6ee7b7';
-      }
-    }
-
-    function clearAuthMessage() {
-      var box = document.getElementById('auth-status-msg');
-      if (box) {
-        box.style.display = 'none';
-        box.innerText = '';
-      }
-    }
-
-    // Authentication Handlers
     function registerUser() {
-      clearAuthMessage();
-      var email = (document.getElementById('reg-email').value || '').trim();
+      var email = document.getElementById('reg-email').value.trim();
       var pass = document.getElementById('reg-pass').value;
-
-      if (!email || !pass) {
-        showAuthMessage("Please provide both email and password.", true);
-        return;
-      }
-      if (pass.length < 6) {
-        showAuthMessage("Password must be at least 6 characters.", true);
-        return;
-      }
-
-      if (!isFirebaseReady()) {
-        simulateRegistration(email);
-        return;
-      }
-
-      showAuthMessage("Connecting to command mainframe...", false);
-      firebase.auth().createUserWithEmailAndPassword(email, pass)
-        .then(function(userCredential) {
-          return userCredential.user.sendEmailVerification().then(function() {
-            showAuthMessage("Verification email dispatched to " + email + ". Confirm your link!", false);
-            setTimeout(function() { switchAuthView('profile'); }, 1500);
-          });
-        })
-        .catch(function(err) {
-          showAuthMessage(err.message, true);
-        });
+      if (!email || pass.length < 6) { alert('Provide valid email and 6+ char password.'); return; }
+      if (!isFirebaseReady()) { simulateRegistration(email); return; }
+      firebase.auth().createUserWithEmailAndPassword(email, pass).then(u => u.user.sendEmailVerification()).then(() => { alert('Verification email sent!'); switchAuthView('profile'); });
     }
 
     function loginUser() {
-      clearAuthMessage();
-      var email = (document.getElementById('login-email').value || '').trim();
+      var email = document.getElementById('login-email').value.trim();
       var pass = document.getElementById('login-pass').value;
-
-      if (!email || !pass) {
-        showAuthMessage("Please provide both email and password.", true);
-        return;
-      }
-
-      if (!isFirebaseReady()) {
-        simulateLogin(email);
-        return;
-      }
-
-      showAuthMessage("Authenticating clearance...", false);
-      firebase.auth().signInWithEmailAndPassword(email, pass)
-        .then(function(userCredential) {
-          showAuthMessage("Welcome, Commander " + email, false);
-          setTimeout(function() { closeAuthModal(); }, 900);
-        })
-        .catch(function(err) {
-          showAuthMessage(err.message, true);
-        });
+      if (!isFirebaseReady()) { simulateLogin(email); return; }
+      firebase.auth().signInWithEmailAndPassword(email, pass).then(() => closeAuthModal()).catch(e => alert(e.message));
     }
 
     function sendPasswordReset() {
-      clearAuthMessage();
-      var email = (document.getElementById('forgot-email').value || '').trim();
-      if (!email) {
-        showAuthMessage("Please enter your registered email address.", true);
-        return;
-      }
-
-      if (!isFirebaseReady()) {
-        showAuthMessage("Password reset email sent to " + email, false);
-        return;
-      }
-
-      firebase.auth().sendPasswordResetEmail(email)
-        .then(function() {
-          showAuthMessage("Recovery dispatch successfully transmitted to " + email, false);
-        })
-        .catch(function(err) {
-          showAuthMessage(err.message, true);
-        });
+      var email = document.getElementById('forgot-email').value.trim();
+      if (!email) return;
+      if (isFirebaseReady()) firebase.auth().sendPasswordResetEmail(email).then(() => alert('Reset link sent!'));
     }
 
     function resendVerificationEmail() {
-      clearAuthMessage();
-      var user = firebaseInitialized ? firebase.auth().currentUser : currentUser;
-      if (!user) {
-        showAuthMessage("No operator currently signed in.", true);
-        return;
-      }
-
-      if (isFirebaseReady() && user.sendEmailVerification) {
-        user.sendEmailVerification()
-          .then(function() {
-            showAuthMessage("Verification link redispatched to " + user.email, false);
-          })
-          .catch(function(err) {
-            showAuthMessage(err.message, true);
-          });
-      } else {
-        showAuthMessage("Verification link redispatched to " + user.email, false);
-      }
+      var user = isFirebaseReady() ? firebase.auth().currentUser : currentUser;
+      if (user && user.sendEmailVerification) user.sendEmailVerification().then(() => alert('Verification resent!'));
     }
 
     function signOutUser() {
-      if (isFirebaseReady()) {
-        firebase.auth().signOut().then(function() {
-          applyLoggedOutState();
-          closeAuthModal();
-        });
-      } else {
-        localStorage.removeItem('wd_simulated_user');
-        applyLoggedOutState();
-        closeAuthModal();
-      }
+      if (isFirebaseReady()) firebase.auth().signOut().then(() => { applyLoggedOutState(); closeAuthModal(); });
+      else { localStorage.removeItem('wd_simulated_user'); applyLoggedOutState(); closeAuthModal(); }
     }
 
-    // State Management
     function applyLoggedInState(user) {
       currentUser = user;
       var isWebmaster = (user.email && user.email.toLowerCase() === WEBMASTER_EMAIL.toLowerCase());
       var isAdmin = isUserAdmin(user.email);
-
       var authBtn = document.getElementById('floatingAuthBtn');
-      var authLabel = document.getElementById('authLabel');
-      var authIcon = document.getElementById('authIcon');
-      if (authBtn) {
-        authBtn.classList.add('logged-in');
-        if (isWebmaster || isAdmin) authBtn.classList.add('webmaster-active');
-      }
-      if (authLabel) {
-        authLabel.innerText = isWebmaster ? 'WEBMASTER' : (isAdmin ? 'ADMIN' : 'COMMANDER');
-      }
-      if (authIcon) {
-        authIcon.innerText = isWebmaster ? '⚡' : (isAdmin ? '🛡️' : '🎖️');
-      }
+      if (authBtn) { authBtn.classList.add('logged-in'); if (isWebmaster || isAdmin) authBtn.classList.add('webmaster-active'); }
+      document.getElementById('authLabel').innerText = isWebmaster ? 'WEBMASTER' : (isAdmin ? 'ADMIN' : 'COMMANDER');
+      document.getElementById('authIcon').innerText = isWebmaster ? '⚡' : (isAdmin ? '🛡️' : '🎖️');
 
       var wmBanner = document.getElementById('webmaster-banner');
-      if (wmBanner) {
-        if (isAdmin || isWebmaster) {
-          wmBanner.style.display = 'block';
-          wmBanner.innerHTML = '<span class="tag-pulse"></span>' +
-            '<span>' + (isWebmaster ? 'COMMAND OVERRIDE ACTIVE // WEBMASTER ROOT ACCESS' : 'CLAN COMMAND // ADMIN CLEARANCE ACTIVE') + ': <strong style="color:var(--cyan);">' + user.email + '</strong></span>' +
-            '<button onclick="signOutUser()" style="margin-left:14px; background:rgba(239,68,68,0.2); border:1px solid var(--loss); color:#fff; padding:2px 8px; border-radius:4px; font-family:\'Share Tech Mono\',monospace; font-size:0.7rem; cursor:pointer;">SIGN OUT</button>';
-        } else {
-          wmBanner.style.display = 'none';
-        }
+      if (wmBanner && (isAdmin || isWebmaster)) {
+        wmBanner.style.display = 'block';
+        wmBanner.innerHTML = `<span class="tag-pulse"></span><span>${isWebmaster ? 'WEBMASTER ROOT ACCESS' : 'ADMIN CLEARANCE'}: <strong style="color:var(--cyan);">${user.email}</strong></span><button onclick="signOutUser()" style="margin-left:14px; background:rgba(239,68,68,0.2); border:1px solid var(--loss); color:#fff; padding:2px 8px; border-radius:4px; font-size:0.7rem; cursor:pointer;">SIGN OUT</button>`;
       }
-
-      if (isAdmin || isWebmaster) {
-        document.body.classList.add('is-webmaster');
-      } else {
-        document.body.classList.remove('is-webmaster');
-      }
-
-      var adminPanel = document.getElementById('webmaster-admin-panel');
-      if (adminPanel) {
-        adminPanel.style.display = isWebmaster ? 'block' : 'none';
+      document.body.classList.toggle('is-webmaster', isAdmin || isWebmaster);
+      if (document.getElementById('webmaster-admin-panel')) {
+        document.getElementById('webmaster-admin-panel').style.display = isWebmaster ? 'block' : 'none';
         if (isWebmaster) renderAdminManagerList();
       }
-
       updateProfileUI(user);
-
-      var cmsTerminal = document.getElementById('admin-news-terminal');
-      var cmsBadge = document.getElementById('news-admin-badge');
-      if (cmsTerminal) cmsTerminal.style.display = (isAdmin || isWebmaster) ? 'block' : 'none';
-      if (cmsBadge) cmsBadge.style.display = (isAdmin || isWebmaster) ? 'inline-block' : 'none';
-
-      // Matches, Roster & Members Admin Controls
-      var btnMatchCms = document.getElementById('btn-toggle-match-cms');
-      if (btnMatchCms) btnMatchCms.style.display = (isAdmin || isWebmaster) ? 'inline-block' : 'none';
-      var rosterCtrlPanel = document.getElementById('admin-roster-control-panel');
-      if (rosterCtrlPanel) rosterCtrlPanel.style.display = (isAdmin || isWebmaster) ? 'block' : 'none';
-      var memAddPanel = document.getElementById('admin-members-add-panel');
-      if (memAddPanel) memAddPanel.style.display = (isAdmin || isWebmaster) ? 'block' : 'none';
-
+      ['admin-news-terminal', 'btn-toggle-match-cms', 'admin-roster-control-panel', 'admin-members-add-panel'].forEach(id => {
+        var el = document.getElementById(id);
+        if (el) el.style.display = (isAdmin || isWebmaster) ? (id.includes('terminal') ? 'block' : 'inline-block') : 'none';
+      });
       initNewsRealtimeListener();
       renderMatches();
       renderRosterTableAndTiers();
@@ -4694,552 +3658,81 @@ async function renderUserMaps() {
     function applyLoggedOutState() {
       currentUser = null;
       var authBtn = document.getElementById('floatingAuthBtn');
-      var authLabel = document.getElementById('authLabel');
-      var authIcon = document.getElementById('authIcon');
-      if (authBtn) {
-        authBtn.classList.remove('logged-in');
-        authBtn.classList.remove('webmaster-active');
-      }
-      if (authLabel) authLabel.innerText = 'Log In / Register';
-      if (authIcon) authIcon.innerText = '🔑';
-
+      if (authBtn) { authBtn.classList.remove('logged-in'); authBtn.classList.remove('webmaster-active'); }
+      document.getElementById('authLabel').innerText = 'Log In / Register';
+      document.getElementById('authIcon').innerText = '🔑';
       var wmBanner = document.getElementById('webmaster-banner');
       if (wmBanner) wmBanner.style.display = 'none';
-
-      var adminPanel = document.getElementById('webmaster-admin-panel');
-      if (adminPanel) adminPanel.style.display = 'none';
-
       document.body.classList.remove('is-webmaster');
       switchAuthView('login');
-
-      var cmsTerminal = document.getElementById('admin-news-terminal');
-      var cmsBadge = document.getElementById('news-admin-badge');
-      if (cmsTerminal) cmsTerminal.style.display = 'none';
-      if (cmsBadge) cmsBadge.style.display = 'none';
-
-      var btnMatchCms = document.getElementById('btn-toggle-match-cms');
-      if (btnMatchCms) btnMatchCms.style.display = 'none';
-      var matchTerminal = document.getElementById('admin-match-terminal');
-      if (matchTerminal) matchTerminal.style.display = 'none';
-      var rosterCtrlPanel = document.getElementById('admin-roster-control-panel');
-      if (rosterCtrlPanel) rosterCtrlPanel.style.display = 'none';
-      var memAddPanel = document.getElementById('admin-members-add-panel');
-      if (memAddPanel) memAddPanel.style.display = 'none';
-
+      ['admin-news-terminal', 'btn-toggle-match-cms', 'admin-roster-control-panel', 'admin-members-add-panel'].forEach(id => {
+        var el = document.getElementById(id);
+        if (el) el.style.display = 'none';
+      });
       initNewsRealtimeListener();
       renderMatches();
       renderRosterTableAndTiers();
     }
 
     function updateProfileUI(user) {
-      var emailEl = document.getElementById('user-display-email');
-      var badgeEl = document.getElementById('user-role-badge');
-      var verStatus = document.getElementById('user-verified-status');
-      var resendBox = document.getElementById('resend-verification-box');
-      var authLabel = document.getElementById('authLabel');
-
-      var isWebmaster = (user.email && user.email.toLowerCase() === WEBMASTER_EMAIL.toLowerCase());
-      var isAdmin = isUserAdmin(user.email);
-
-      var matchedMember = membersData.find(function(m) {
-        return m.email && m.email.toLowerCase() === user.email.toLowerCase();
-      });
-
-      if (emailEl) {
-        if (matchedMember) {
-          emailEl.innerHTML = '<span style="color:var(--cyan); font-weight:bold;">' + matchedMember.name + '</span> <div style="font-size:0.75rem; color:var(--text-muted);">' + user.email + '</div>';
-        } else {
-          emailEl.innerText = user.email;
-        }
-      }
-
-      if (badgeEl) {
-        if (isWebmaster) {
-          badgeEl.className = 'role-badge role-squadleader';
-          badgeEl.innerText = '★ WEBMASTER (ROOT ACCESS)';
-          badgeEl.style.boxShadow = '0 0 14px var(--cyan)';
-        } else if (isAdmin) {
-          badgeEl.className = 'role-badge role-squadleader';
-          badgeEl.innerText = '🛡️ CLAN ADMIN (HIGH COUNCIL)';
-          badgeEl.style.boxShadow = '0 0 14px rgba(245, 158, 11, 0.6)';
-        } else if (matchedMember) {
-          badgeEl.className = 'role-badge role-starter';
-          badgeEl.innerText = (matchedMember.rank || 'MEMBER').toUpperCase();
-          badgeEl.style.boxShadow = 'none';
-        } else {
-          badgeEl.className = 'role-badge role-captain';
-          badgeEl.innerText = 'CLAN MEMBER';
-          badgeEl.style.boxShadow = 'none';
-        }
-      }
-
-      if (authLabel && matchedMember) {
-        if (isWebmaster) authLabel.innerText = 'WEBMASTER';
-        else if (isAdmin) authLabel.innerText = matchedMember.name.replace('[WD]', '');
-      }
-
-      if (verStatus) {
-        if (user.emailVerified) {
-          verStatus.innerHTML = '<span style="color:var(--win); font-weight:bold;">✓ Email Verified & Authenticated</span>';
-          if (resendBox) resendBox.style.display = 'none';
-        } else {
-          verStatus.innerHTML = '<span style="color:#fbbf24; font-weight:bold;">⏳ Email Verification Pending</span>';
-          if (resendBox) resendBox.style.display = 'block';
-        }
-      }
+      document.getElementById('user-display-email').innerText = user.email;
+      document.getElementById('user-role-badge').innerText = isUserAdmin(user.email) ? 'ADMIN' : 'MEMBER';
     }
 
     function simulateRegistration(email) {
       var simUser = { email: email, emailVerified: false };
       localStorage.setItem('wd_simulated_user', JSON.stringify(simUser));
       applyLoggedInState(simUser);
-      showAuthMessage("Simulation Mode: Verification email dispatched for " + email + ". Once you connect your Firebase project, real emails are delivered!", false);
-      setTimeout(function() { switchAuthView('profile'); }, 1400);
+      alert("Simulated registration complete!");
+      switchAuthView('profile');
     }
 
     function simulateLogin(email) {
       var simUser = { email: email, emailVerified: true };
       localStorage.setItem('wd_simulated_user', JSON.stringify(simUser));
       applyLoggedInState(simUser);
-      showAuthMessage("Signed in as " + email + (email.toLowerCase() === WEBMASTER_EMAIL.toLowerCase() ? " [WEBMASTER MODE ACTIVE]" : ""), false);
-      setTimeout(function() { closeAuthModal(); }, 1000);
+      closeAuthModal();
     }
-
-    // Initialize Auth Listeners on Load
-    window.addEventListener('DOMContentLoaded', function() {
-      if (isFirebaseReady()) {
-        firebase.auth().onAuthStateChanged(function(user) {
-          if (user) {
-            applyLoggedInState(user);
-          } else {
-            applyLoggedOutState();
-          }
-        });
-      } else {
-        var savedSim = localStorage.getItem('wd_simulated_user');
-        if (savedSim) {
-          try {
-            var u = JSON.parse(savedSim);
-            applyLoggedInState(u);
-          } catch(e) {}
-        }
-      }
-    });
-
-    // Webmaster Direct Delete Handlers
-    async function adminDeleteReplay(repId) {
-      if (!confirm("WEBMASTER COMMAND: Are you sure you want to delete this replay from Clan Vault?")) return;
-      try {
-        const db = await getVaultDB();
-        const tx = db.transaction('replays', 'readwrite');
-        tx.objectStore('replays').delete(repId);
-        tx.oncomplete = () => renderUserReplays();
-      } catch(e) {}
-    }
-
-    async function adminDeleteDownload(dlId) {
-      if (!confirm("WEBMASTER COMMAND: Are you sure you want to remove this download from Clan Vault?")) return;
-      
-      // 1. Versuche aus Firebase zu löschen
-      if (typeof firebase !== 'undefined' && firebase.firestore) {
-        firebase.firestore().collection('clan_vault').doc(dlId).delete().catch(function() {});
-      }
-
-      // 2. Aus IndexedDB löschen
-      try {
-        const db = await getVaultDB();
-        const tx = db.transaction('downloads', 'readwrite');
-        tx.objectStore('downloads').delete(dlId);
-        tx.oncomplete = () => renderUserMaps();
-      } catch(e) {
-        renderUserMaps();
-      }
-    }
-
-    
-    // ========================================================
-    // PHASE 3: PROFILE CUSTOMIZATION & HIERARCHY ENGINE
-    // ========================================================
-    var currentInspectedMemberId = null;
 
     function getCustomProfiles() {
-      try {
-        return JSON.parse(localStorage.getItem('wd_custom_profiles') || '{}');
-      } catch(e) {
-        return {};
-      }
+      try { return JSON.parse(localStorage.getItem('wd_custom_profiles') || '{}'); } catch(e) { return {}; }
     }
 
     function applyProfileCustomizationsToRoster() {
       var customs = getCustomProfiles();
-      membersData.forEach(function(member) {
-        if (customs[member.id]) {
-          var c = customs[member.id];
-          if (c.avatar !== undefined && c.avatar !== '') member.avatar = c.avatar;
-          if (c.race !== undefined && c.race !== '') member.race = c.race;
-          if (c.bio !== undefined) member.bio = c.bio;
-          if (c.rank !== undefined && c.rank !== '') member.rank = c.rank;
-          if (c.role !== undefined && c.role !== '') member.role = c.role;
-          if (c.country !== undefined && c.country !== '') member.country = c.country;
-          if (c.flagKey !== undefined && c.flagKey !== '') member.flagKey = c.flagKey;
-        }
+      membersData.forEach(m => {
+        if (customs[m.id]) Object.assign(m, customs[m.id]);
       });
-      try {
-        var stored = JSON.parse(localStorage.getItem('wd_all_clan_members') || 'null');
-        if (Array.isArray(stored) && stored.length > 0) {
-          stored.forEach(function(member) {
-            if (customs[member.id]) {
-              var c = customs[member.id];
-              if (c.avatar !== undefined && c.avatar !== '') member.avatar = c.avatar;
-              if (c.race !== undefined && c.race !== '') member.race = c.race;
-              if (c.bio !== undefined) member.bio = c.bio;
-              if (c.rank !== undefined && c.rank !== '') member.rank = c.rank;
-              if (c.role !== undefined && c.role !== '') member.role = c.role;
-              if (c.country !== undefined && c.country !== '') member.country = c.country;
-              if (c.flagKey !== undefined && c.flagKey !== '') member.flagKey = c.flagKey;
-            }
-          });
-          localStorage.setItem('wd_all_clan_members', JSON.stringify(stored));
-        }
-      } catch(e) {}
     }
-    
 
     function quickExpelMemberUI() {
       var sel = document.getElementById('quick-expel-select');
-      if (!sel || !sel.value) {
-        alert("Please select a member to remove.");
-        return;
-      }
-      adminDeleteMember(sel.value);
+      if (sel && sel.value) adminDeleteMember(sel.value);
     }
 
     function adminDeleteMember(memberId) {
-      var user = (typeof firebase !== 'undefined' && firebase.auth && firebase.auth().currentUser) 
-        ? firebase.auth().currentUser 
-        : currentUser;
-      var canModerate = user && (isUserAdmin(user.email) || (user.email && user.email.toLowerCase() === WEBMASTER_EMAIL.toLowerCase()));
-
-      if (!canModerate) {
-        alert("ZUGRIFF VERWEIGERT // Bitte logge dich als Admin oder Webmaster ein.");
-        openAuthModal();
-        return;
-      }
-
-      if (!confirm("MITGLIED ENTFERNEN: Möchtest du " + memberId + " wirklich aus dem Clan löschen?")) {
-        return;
-      }
-
-      // 1. Direkt aus Cloud Firestore für ALLE Geräte löschen
+      if (!confirm("Expel " + memberId + "?")) return;
       if (typeof firebase !== 'undefined' && firebase.firestore) {
-        firebase.firestore().collection('clan_members').doc(memberId).delete()
-          .then(function() {
-            console.log("Mitglied aus Cloud gelöscht:", memberId);
-          })
-          .catch(function(err) {
-            console.error("Firestore Löschfehler:", err);
-          });
+        firebase.firestore().collection('clan_members').doc(memberId).delete().catch(() => {});
       }
-
-      // 2. Aus lokalem Speicher entfernen
-      var idx = membersData.findIndex(function(m) { return m.id === memberId; });
-      if (idx !== -1) membersData.splice(idx, 1);
-
-      var fullList = getFullClanMembersList().filter(function(m) { return m.id !== memberId; });
-      localStorage.setItem('wd_all_clan_members', JSON.stringify(fullList));
-
-      var rosterList = getDynamicRosterList().filter(function(r) { return r.id !== memberId; });
-      localStorage.setItem('wd_competitive_roster', JSON.stringify(rosterList));
-
-      var customs = getCustomProfiles();
-      if (customs[memberId]) {
-        delete customs[memberId];
-        localStorage.setItem('wd_custom_profiles', JSON.stringify(customs));
-      }
-
-      closeModal();
+      membersData = membersData.filter(m => m.id !== memberId);
       renderRosterTableAndTiers();
-      alert("Commander " + memberId + " wurde erfolgreich gelöscht.");
     }
 
-        function handleAvatarFileUpload(event) {
-      var file = event.target.files && event.target.files[0];
-      if (!file) return;
-
-      var statusEl = document.getElementById('edit-avatar-status');
-      var previewImg = document.getElementById('edit-avatar-preview-img');
-      var urlInput = document.getElementById('edit-avatar-url');
-
-      if (statusEl) {
-        statusEl.innerText = 'Optimizing ' + file.name + '...';
-        statusEl.style.display = 'block';
-      }
-
-      var reader = new FileReader();
-      reader.onload = function(e) {
-        var rawData = e.target.result;
-        // Resize to 256x256 max using HTML5 Canvas for fast loading and zero storage bloat
-        var img = new Image();
-        img.onload = function() {
-          var canvas = document.createElement('canvas');
-          var maxDim = 256;
-          var w = img.width;
-          var h = img.height;
-          if (w > h) {
-            if (w > maxDim) {
-              h = Math.round((h * maxDim) / w);
-              w = maxDim;
-            }
-          } else {
-            if (h > maxDim) {
-              w = Math.round((w * maxDim) / h);
-              h = maxDim;
-            }
-          }
-          canvas.width = w;
-          canvas.height = h;
-          var ctx = canvas.getContext('2d');
-          ctx.drawImage(img, 0, 0, w, h);
-          var optimizedDataUrl = canvas.toDataURL('image/jpeg', 0.85);
-
-          if (urlInput) urlInput.value = optimizedDataUrl;
-          if (previewImg) {
-            previewImg.src = optimizedDataUrl;
-            previewImg.style.display = 'block';
-          }
-          var mAv = document.getElementById('m-avatar');
-          if (mAv) mAv.src = optimizedDataUrl;
-
-          if (statusEl) {
-            statusEl.innerText = '✓ ' + file.name + ' ready (' + (optimizedDataUrl.length / 1024).toFixed(1) + ' KB)';
-          }
-        };
-        img.src = rawData;
-      };
-      reader.readAsDataURL(file);
-    }
-
-    function previewAvatarUrl(val) {
-      var previewImg = document.getElementById('edit-avatar-preview-img');
-      var mAv = document.getElementById('m-avatar');
-      if (val && val.trim().length > 5) {
-        if (previewImg) {
-          previewImg.src = val.trim();
-          previewImg.style.display = 'block';
-        }
-        if (mAv) mAv.src = val.trim();
-      } else {
-        if (previewImg) previewImg.style.display = 'none';
-      }
-    }
-
-        function toggleDossierEditMode() {
-      var form = document.getElementById('dossier-edit-form');
-      if (!form) return;
-      var isOpening = (form.style.display === 'none' || !form.style.display);
-      form.style.display = isOpening ? 'block' : 'none';
-
-      if (isOpening && currentInspectedMemberId) {
-        var allM = (typeof getFullClanMembersList === 'function') ? getFullClanMembersList() : membersData;
-        var p = allM.find(function(m) { return m.id === currentInspectedMemberId; });
-        if (!p) p = membersData.find(function(m) { return m.id === currentInspectedMemberId; });
-        if (!p) return;
-
-        var user = (typeof firebase !== 'undefined' && firebase.auth && firebase.auth().currentUser) 
-          ? firebase.auth().currentUser 
-          : currentUser;
-
-        var isWebmaster = user && user.email && (user.email.toLowerCase() === WEBMASTER_EMAIL.toLowerCase());
-        var isSelf = user && p.email && (user.email.toLowerCase() === p.email.toLowerCase());
-        var isAdminUser = user && user.email && isUserAdmin(user.email);
-
-        var currentAvatar = p.avatar || '';
-        document.getElementById('edit-avatar-url').value = currentAvatar;
-        var prevImg = document.getElementById('edit-avatar-preview-img');
-        if (prevImg) {
-          if (currentAvatar) {
-            prevImg.src = currentAvatar;
-            prevImg.style.display = 'block';
-          } else {
-            prevImg.style.display = 'none';
-          }
-        }
-        var statEl = document.getElementById('edit-avatar-status');
-        if (statEl) statEl.style.display = 'none';
-        var fInp = document.getElementById('edit-avatar-file-input');
-        if (fInp) fInp.value = '';
-
-        document.getElementById('edit-race-select').value = p.race || 'Terran';
-        document.getElementById('edit-bio-text').value = p.bio || '';
-        var countrySel = document.getElementById('edit-country-select');
-        if (countrySel) {
-          countrySel.value = p.country || 'Global';
-          countrySel.disabled = !(isSelf || isWebmaster);
-        }
-
-        var canEditPersonal = isSelf || isWebmaster;
-        document.getElementById('edit-avatar-url').disabled = !canEditPersonal;
-        document.getElementById('edit-race-select').disabled = !canEditPersonal;
-        document.getElementById('edit-bio-text').disabled = !canEditPersonal;
-        var uploadBtn = document.querySelector('#dossier-edit-form button[onclick*="edit-avatar-file-input"]');
-        if (uploadBtn) {
-          uploadBtn.style.display = canEditPersonal ? 'flex' : 'none';
-        }
-
-        var canEditHierarchy = isAdminUser || isWebmaster;
-        var adminFields = document.getElementById('admin-hierarchy-fields');
-        if (adminFields) {
-          adminFields.style.display = canEditHierarchy ? 'block' : 'none';
-          if (canEditHierarchy) {
-            document.getElementById('edit-rank-select').value = p.rank || 'Privates';
-            document.getElementById('edit-role-select').value = p.role || 'Player';
-          }
-        }
-      }
-    }
-
-    function cancelDossierEdit() {
-      var form = document.getElementById('dossier-edit-form');
-      if (form) form.style.display = 'none';
-      if (currentInspectedMemberId) {
-        var allM = (typeof getFullClanMembersList === 'function') ? getFullClanMembersList() : membersData;
-        var p = allM.find(function(m) { return m.id === currentInspectedMemberId; });
-        if (p) {
-          var defaultAvatar = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%23070a12'/><circle cx='50' cy='38' r='20' fill='%2338bdf8'/><path d='M20,85 C20,62 34,58 50,58 C66,58 80,62 80,85 Z' fill='%230284c7'/></svg>";
-          var mAv = document.getElementById('m-avatar');
-          if (mAv) mAv.src = p.avatar ? p.avatar : defaultAvatar;
-        }
-      }
-    }
-
-    function saveDossierChanges() {
-      if (!currentInspectedMemberId) return;
-      var allM = (typeof getFullClanMembersList === 'function') ? getFullClanMembersList() : membersData;
-      var p = allM.find(function(m) { return m.id === currentInspectedMemberId; });
-      if (!p) p = membersData.find(function(m) { return m.id === currentInspectedMemberId; });
-      if (!p) return;
-
-      var user = (typeof firebase !== 'undefined' && firebase.auth && firebase.auth().currentUser) 
-        ? firebase.auth().currentUser 
-        : currentUser;
-
-      var isWebmaster = user && user.email && (user.email.toLowerCase() === WEBMASTER_EMAIL.toLowerCase());
-      var isAdminUser = user && user.email && isUserAdmin(user.email);
-      var isSelf = user && p.email && (user.email.toLowerCase() === p.email.toLowerCase());
-
-      if (!isSelf && !isAdminUser && !isWebmaster) {
-        alert("ACCESS DENIED // Sie können nur Ihr eigenes Profil bearbeiten.");
-        openAuthModal();
-        return;
-      }
-
-      var updates = {
-        avatar: document.getElementById('edit-avatar-url').value.trim(),
-        race: document.getElementById('edit-race-select').value,
-        bio: document.getElementById('edit-bio-text').value.trim(),
-        country: document.getElementById('edit-country-select').value
-      };
-      updates.flagKey = updates.country.toLowerCase().replace(/[^a-z]/g, '');
-
-      if (isAdminUser || isWebmaster) {
-        var rSel = document.getElementById('edit-rank-select');
-        var roleSel = document.getElementById('edit-role-select');
-        if (rSel) updates.rank = rSel.value;
-        if (roleSel) updates.role = roleSel.value;
-      }
-
-      // Sofort in Cloud Firestore speichern
-      if (typeof firebase !== 'undefined' && firebase.firestore) {
-        firebase.firestore().collection('clan_members').doc(p.id).set(updates, { merge: true })
-          .then(function() {
-            cancelDossierEdit();
-            closeModal();
-            alert("Änderungen wurden live in der Cloud gespeichert!");
-          })
-          .catch(function(err) {
-            alert("Fehler beim Speichern: " + err.message);
-          });
-      } else {
-        var customs = getCustomProfiles();
-        if (!customs[p.id]) customs[p.id] = {};
-        Object.assign(customs[p.id], updates);
-        localStorage.setItem('wd_custom_profiles', JSON.stringify(customs));
-        applyProfileCustomizationsToRoster();
-        renderRosterTableAndTiers();
-        cancelDossierEdit();
-        closeModal();
-      }
-    }
-
-// ========================================================
-    // 1. DYNAMIC MATCHES ENGINE WITH AUTO-CALCULATED MEMBER SCORES
-    // ========================================================
-    var currentMatchCategoryFilter = 'All';
-    var firestoreMatches = [];
-
-    function formatSetLineHtml(lineStr) {
-      if (!lineStr || !lineStr.trim()) return '';
-      var s = lineStr.trim();
-      var resBadge = '';
-      var textPart = s;
-
-      var mOutcome = s.match(/\|\s*(WIN|LOSS|W|L)\s*$/i);
-      if (mOutcome) {
-        textPart = s.substring(0, mOutcome.index).trim();
-        var out = mOutcome[1].toUpperCase();
-        if (out === 'W' || out === 'WIN') {
-          resBadge = '<span style="color:var(--win); font-weight:bold; font-family:\'Share Tech Mono\',monospace;">WIN</span>';
-        } else {
-          resBadge = '<span style="color:var(--loss); font-weight:bold; font-family:\'Share Tech Mono\',monospace;">LOSS</span>';
-        }
-      } else if (s.slice(-2).toUpperCase() === ' W') {
-        textPart = s.slice(0, -2).trim();
-        resBadge = '<span style="color:var(--win); font-weight:bold; font-family:\'Share Tech Mono\',monospace;">WIN</span>';
-      } else if (s.slice(-2).toUpperCase() === ' L') {
-        textPart = s.slice(0, -2).trim();
-        resBadge = '<span style="color:var(--loss); font-weight:bold; font-family:\'Share Tech Mono\',monospace;">LOSS</span>';
-      }
-
-      textPart = textPart
-        .replace(/\[T\]|\(T\)/gi, '<span class="race-badge race-terran" style="font-size:0.62rem; padding:1px 5px; margin:0 3px;">T</span>')
-        .replace(/\[P\]|\(P\)/gi, '<span class="race-badge race-protoss" style="font-size:0.62rem; padding:1px 5px; margin:0 3px;">P</span>')
-        .replace(/\[Z\]|\(Z\)/gi, '<span class="race-badge race-zerg" style="font-size:0.62rem; padding:1px 5px; margin:0 3px;">Z</span>')
-        .replace(/\[R\]|\(R\)/gi, '<span class="race-badge race-random" style="font-size:0.62rem; padding:1px 5px; margin:0 3px;">R</span>')
-        .replace(/\[P\/T\]|\(P\/T\)/gi, '<span class="race-badge race-protoss" style="font-size:0.62rem; padding:1px 4px; margin:0 1px;">P</span><span class="race-badge race-terran" style="font-size:0.62rem; padding:1px 4px; margin:0 1px;">T</span>')
-        .replace(/\[T\/P\]|\(T\/P\)/gi, '<span class="race-badge race-terran" style="font-size:0.62rem; padding:1px 4px; margin:0 1px;">T</span><span class="race-badge race-protoss" style="font-size:0.62rem; padding:1px 4px; margin:0 1px;">P</span>')
-        .replace(/\[Z\/T\]|\(Z\/T\)/gi, '<span class="race-badge race-zerg" style="font-size:0.62rem; padding:1px 4px; margin:0 1px;">Z</span><span class="race-badge race-terran" style="font-size:0.62rem; padding:1px 4px; margin:0 1px;">T</span>')
-        .replace(/\[T\/Z\]|\(T\/Z\)/gi, '<span class="race-badge race-terran" style="font-size:0.62rem; padding:1px 4px; margin:0 1px;">T</span><span class="race-badge race-zerg" style="font-size:0.62rem; padding:1px 4px; margin:0 1px;">Z</span>')
-        .replace(/\[Z\/P\]|\(Z\/P\)/gi, '<span class="race-badge race-zerg" style="font-size:0.62rem; padding:1px 4px; margin:0 1px;">Z</span><span class="race-badge race-protoss" style="font-size:0.62rem; padding:1px 4px; margin:0 1px;">P</span>')
-        .replace(/\[T\/T\]|\(T\/T\)/gi, '<span class="race-badge race-terran" style="font-size:0.62rem; padding:1px 4px; margin:0 1px;">T</span><span class="race-badge race-terran" style="font-size:0.62rem; padding:1px 4px; margin:0 1px;">T</span>');
-
-      return '<div class="set-row"><span>' + textPart + '</span>' + resBadge + '</div>';
-    }
-
-var firestoreRoster = [];
-
+    var firestoreRoster = [];
     function initRosterRealtimeListener() {
       if (typeof firebase !== 'undefined' && firebase.firestore) {
-        firebase.firestore().collection('clan_roster').onSnapshot(function(snapshot) {
-          if (!snapshot.empty) {
-            var liveRoster = [];
-            snapshot.forEach(function(doc) {
-              var r = doc.data();
-              // WICHTIG: r.id beibehält die echte Member-ID, doc.id ist die Dokumenten-ID in Firebase
-              if (!r.id) {
-                r.id = doc.id.split('_')[0]; // Fallback falls ID im Dokument fehlt
-              }
-              liveRoster.push(r);
-            });
-            firestoreRoster = liveRoster;
-            localStorage.setItem('wd_competitive_roster', JSON.stringify(liveRoster));
-            renderRosterTableAndTiers();
-          } else {
-            seedDefaultRosterToFirestore();
-          }
-        }, function(err) {
-          console.warn("Roster Cloud-Sync offline:", err);
+        firebase.firestore().collection('clan_roster').onSnapshot(snapshot => {
+          var liveRoster = [];
+          snapshot.forEach(doc => {
+            var r = doc.data();
+            if (!r.id) r.id = doc.id.split('_')[0];
+            liveRoster.push(r);
+          });
+          firestoreRoster = liveRoster;
+          localStorage.setItem('wd_competitive_roster', JSON.stringify(liveRoster));
           renderRosterTableAndTiers();
-        });
+        }, () => renderRosterTableAndTiers());
       }
     }
 
@@ -5247,630 +3740,29 @@ var firestoreRoster = [];
       if (!firebase.firestore) return;
       var db = firebase.firestore();
       var batch = db.batch();
-      getDynamicRosterList().forEach(function(r) {
-        var ref = db.collection('clan_roster').doc(r.id);
-        batch.set(ref, r);
+      getDynamicRosterList().forEach(r => {
+        var recordId = r.id + '_' + r.squad.replace('-', '');
+        batch.set(db.collection('clan_roster').doc(recordId), r);
       });
-      batch.commit().catch(function(e) { console.error("Fehler beim Seeden des Rosters:", e); });
+      batch.commit().catch(() => {});
     }
-
-    function initMatchesRealtimeListener() {
-      if (typeof firebase !== 'undefined' && firebase.firestore) {
-        firebase.firestore().collection('clan_matches').onSnapshot(function(snapshot) {
-          if (!snapshot.empty) {
-            var liveMatches = [];
-            snapshot.forEach(function(doc) {
-              var m = doc.data();
-              m.id = doc.id;
-              liveMatches.push(m);
-            });
-            firestoreMatches = liveMatches;
-            localStorage.setItem('wd_matches_vault', JSON.stringify(liveMatches));
-            renderMatches();
-          } else {
-            seedDefaultMatchesToFirestore();
-          }
-        }, function(err) {
-          console.warn("Matches Cloud-Sync offline:", err);
-          renderMatches();
-        });
-      }
-    }
-
-    function seedDefaultMatchesToFirestore() {
-      if (!firebase.firestore) return;
-      var db = firebase.firestore();
-      var batch = db.batch();
-      getDefaultMatchesArchive().forEach(function(m) {
-        var ref = db.collection('clan_matches').doc(m.id);
-        batch.set(ref, m);
-      });
-      batch.commit().catch(function(e) { console.error("Fehler beim Seeden der Matches:", e); });
-    }
-
-    function getDefaultMatchesArchive() {
-      return [
-        {
-          id: 'm_1',
-          category: 'Clan League',
-          week: 'WEEK #1 // 4TH OCT. 2026',
-          title: 'RED-3 vs White Dragon',
-          resultType: 'WIN',
-          score: 'WIN (4 : 2)',
-          sets: [
-            '#1 1v1 [T] KaRDiNaL[WD] 2 - 0 Red.Hot [Z] | W',
-            '#2 1v1 [T] CheesyCake[WD] 2 - 0 Red-Navane [P] | W',
-            '#3 1v1 [P] Battousai[WD] 2 - 0 Red-SkRiK [T] | W',
-            '#4 1v1 [T] SonOfMalice[WD] 0 - 2 Red-Quim [Z] | L',
-            '#1 2v2 [P/T] Battousai & CheesyCake 1 - 2 Red-Navane & SkRiK [P/T] | L'
-          ],
-          note: 'BWCL S65 // 4-2 CW'
-        },
-        {
-          id: 'm_2',
-          category: 'Clan League',
-          week: 'WEEK #2 // 11TH OCT. 2026',
-          title: 'White Dragon vs Cwt)-3',
-          resultType: 'WIN',
-          score: 'WIN (5 : 1)',
-          sets: [
-            '#1 1v1 [T] KaRDiNaL[WD] 1 - 2 Cwt|Surgen [Z] | L',
-            '#2 1v1 [T] CheesyCake[WD] 2 - 1 Cwt|MaF [T] | W',
-            '#3 1v1 [P] Battousai[WD] 2 - 0 Cwt|Budaak [Z] | W',
-            '#4 1v1 [T] Miwaco[WD] 2 - 0 Cwt|SiD [P] | W',
-            '#1 2v2 [T/T] Miwaco & CheesyCake 2 - 0 Cwt|MaF & Surgen [T/Z] | W'
-          ],
-          note: 'BWCL S65 // 5-1 CW'
-        },
-        {
-          id: 'm_3',
-          category: 'Clan League',
-          week: 'WEEK #3 // 18TH OCT. 2026',
-          title: 'SAS vs White Dragon',
-          resultType: 'LOSS',
-          score: 'LOSS (1 : 5)',
-          sets: [
-            '#1 1v1 [T] KaRDiNaL[WD] 1 - 2 non [P] | L',
-            '#2 1v1 [P] Battousai[WD] 1 - 2 advil [Z] | L',
-            '#3 1v1 [T] CheesyCake[WD] 2 - 0 Ace [P] | W',
-            '#4 1v1 [T] Miwaco[WD] 1 - 2 vorti [P] | L',
-            '#1 2v2 [T/T] CheesyCake & Miwaco 0 - 2 pez & non [Z/P] | L'
-          ],
-          note: 'BWCL S65 // 1-5 CW'
-        },
-        {
-          id: 'm_4',
-          category: 'Clan League',
-          week: 'WEEK #4 // 25TH OCT. 2026',
-          title: 'White Dragon vs Shadow-2',
-          resultType: 'WIN',
-          score: 'CLEAN SWEEP (6 : 0)',
-          sets: [
-            '#1 1v1 [T] KaRDiNaL[WD] 2 - 0 Shadow|FankinGG [T] | W',
-            '#2 1v1 [P] Battousai[WD] 2 - 0 Shadow|Jacinta [P] | W',
-            '#3 1v1 [T] CheesyCake[WD] 2 - 0 Shadow|JD [Z] | W',
-            '#4 1v1 [Z] aMeba[WD] 2 - 0 Shadow|LaBestia [Z] | W',
-            '#1 2v2 [Z/T] aMeba & CheesyCake 2 - 0 Shadow|Guty & JD [T/Z] | W'
-          ],
-          note: 'BWCL S65 // 6-0 Clean Sweep'
-        },
-        {
-          id: 'm_5',
-          category: 'Clan League',
-          week: 'WEEK #5 // 1ST NOV. 2026',
-          title: 'White Dragon vs dB)-3',
-          resultType: 'UPCOMING',
-          score: 'PENDING',
-          sets: [],
-          note: '1n1 MOTW: Backrooms | 2n2 MOTW: Octagon'
-        },
-        {
-          id: 'm_6',
-          category: 'Clan League',
-          week: 'WEEK #6 // 8TH NOV. 2026',
-          title: 'White Dragon vs RED-3',
-          resultType: 'UPCOMING',
-          score: 'PENDING',
-          sets: [],
-          note: '1n1 MOTW: Nightmare | 2n2 MOTW: Exit Strategy'
-        },
-        {
-          id: 'm_7',
-          category: 'Clan League',
-          week: 'WEEK #7 // 15TH NOV. 2026',
-          title: 'Cwt)-3 vs White Dragon',
-          resultType: 'UPCOMING',
-          score: 'PENDING',
-          sets: [],
-          note: '1n1 MOTW: Attitude SE | 2n2 MOTW: Lost Temple A/B'
-        },
-        {
-          id: 'm_8',
-          category: 'Clan League',
-          week: 'WEEK #8 // 22ND NOV. 2026',
-          title: 'SAS vs White Dragon',
-          resultType: 'UPCOMING',
-          score: 'PENDING',
-          sets: [],
-          note: '1n1 MOTW: Odyssey RE | 2n2 MOTW: KnockOut'
-        },
-        {
-          id: 'm_9',
-          category: 'WD Star League',
-          week: 'WEEKLY IN-HOUSE // OCT. 2026',
-          title: 'White Dragon Blue vs White Dragon Gold',
-          resultType: 'WIN',
-          score: 'WIN (3 : 2)',
-          sets: [
-            '#1 1v1 [T] CheesyCake[WD] 2 - 1 Battousai[WD] [P] | W',
-            '#2 1v1 [Z] aMeba[WD] 2 - 0 KaRDiNaL[WD] [T] | W',
-            '#3 1v1 [P] LunarPop[WD] 1 - 2 Miwaco[WD] [T] | L',
-            '#4 1v1 [T] Kimchi[WD] 2 - 0 SonOfMalice[WD] [T] | W',
-            '#1 2v2 [P/T] DeathOrb & JaxM 1 - 2 zDAwgZ & RobFATKraft [T/P] | L'
-          ],
-          note: 'Clan Internal Practice & Map Scrimmage'
-        },
-        {
-          id: 'm_10',
-          category: 'Clan Match',
-          week: 'FRIENDLY CW // OCT. 2026',
-          title: 'White Dragon vs Net)-Clan',
-          resultType: 'WIN',
-          score: 'WIN (4 : 1)',
-          sets: [
-            '#1 1v1 [T] CheesyCake[WD] 2 - 0 Net)Viper [Z] | W',
-            '#2 1v1 [P] Battousai[WD] 2 - 0 Net)Templar [P] | W',
-            '#3 1v1 [T] KaRDiNaL[WD] 2 - 1 Net)Marine [T] | W',
-            '#4 1v1 [Z] aMeba[WD] 2 - 0 Net)Hydra [Z] | W',
-            '#1 2v2 [T/P] Miwaco & LunarPop 1 - 2 Net)Viper & Templar [Z/P] | L'
-          ],
-          note: 'International Friendly Showmatch'
-        }
-      ];
-    }
-
-    function getMatchesList() {
-      if (firestoreMatches && firestoreMatches.length > 0) {
-        return firestoreMatches;
-      }
-      try {
-        var stored = JSON.parse(localStorage.getItem('wd_matches_vault') || 'null');
-        if (Array.isArray(stored) && stored.length > 0) return stored;
-      } catch(e) {}
-      return getDefaultMatchesArchive();
-    }
-
-    function recalculateAllMemberScores() {
-      var matches = getMatchesList();
-      var allMembers = (typeof getFullClanMembersList === 'function') ? getFullClanMembersList() : membersData;
-
-      allMembers.forEach(function(mem) {
-        mem._w1_w = 0; mem._w1_l = 0;
-        mem._w2_w = 0; mem._w2_l = 0;
-        mem._pts = 0;
-        mem._history = [];
-      });
-
-      matches.forEach(function(match) {
-        if (!match.sets || !Array.isArray(match.sets)) return;
-        var weekLabel = match.week ? match.week.split('//')[0].trim() : 'CW';
-        var isClanLeague = (match.category === 'Clan League' || match.category === '🏆 Clan League (BWCL)');
-
-        match.sets.forEach(function(s) {
-          if (!s || !s.trim()) return;
-          var line = s.trim();
-
-          var mOutcome = line.match(/\|\s*(WIN|LOSS|W|L)\s*$/i);
-          var isWin = false;
-          var cleanText = line;
-
-          if (mOutcome) {
-            cleanText = line.substring(0, mOutcome.index).trim();
-            var outStr = mOutcome[1].toUpperCase();
-            isWin = (outStr === 'W' || outStr === 'WIN');
-          } else if (line.slice(-2).toUpperCase() === ' W') {
-            cleanText = line.slice(0, -2).trim();
-            isWin = true;
-          }
-
-          var is2v2 = /2v2/i.test(cleanText);
-          var scoreMatch = cleanText.match(/(\d+)\s*[-:]\s*(\d+)/);
-          var scoreStr = scoreMatch ? scoreMatch[0] : (isWin ? '2:0' : '0:2');
-          var wdSide = scoreMatch ? cleanText.substring(0, scoreMatch.index).trim() : cleanText;
-
-          allMembers.forEach(function(mem) {
-            var memKey = mem.id.toLowerCase();
-            var memNameClean = mem.name.replace('[WD]', '').toLowerCase();
-
-            if (wdSide.toLowerCase().indexOf(memKey) !== -1 || wdSide.toLowerCase().indexOf(memNameClean) !== -1) {
-              if (is2v2) {
-                if (isWin) mem._w2_w++; else mem._w2_l++;
-              } else {
-                if (isWin) mem._w1_w++; else mem._w1_l++;
-              }
-
-              if (isClanLeague) {
-                mem._pts += (isWin ? 2 : 1);
-              }
-
-              var displaySet = cleanText;
-              if (cleanText.indexOf('|') !== -1) {
-                var parts = cleanText.split('|').map(function(p) { return p.trim(); });
-                displaySet = parts.join(' • ');
-              }
-
-              mem._history.push({
-                week: weekLabel,
-                set: displaySet,
-                res: isWin ? 'WIN' : 'LOSS',
-                score: scoreStr,
-                win: isWin
-              });
-            }
-          });
-        });
-      });
-
-      allMembers.forEach(function(mem) {
-        if (mem._history.length > 0) {
-          mem.w1 = mem._w1_w + ' - ' + mem._w1_l;
-          mem.w2 = mem._w2_w + ' - ' + mem._w2_l;
-          mem.pts = mem._pts;
-          mem.history = mem._history;
-        }
-      });
-    }
-
-    function addSetFromTableBuilder() {
-      var allMembers = (typeof getFullClanMembersList === 'function') ? getFullClanMembersList() : membersData;
-      var type = document.getElementById('b-type').value;
-      var map = document.getElementById('b-map').value.trim() || 'Unknown Map';
-      var score = document.getElementById('b-score').value;
-      var result = document.getElementById('b-result').value;
-      var oppClan = document.getElementById('b-opp-clan').value.trim() || '';
-      
-      var p1Id = document.getElementById('b-wd1').value;
-      var r1 = document.getElementById('b-wdr1').value;
-      var oppP1 = document.getElementById('b-opp1').value.trim() || 'Opponent';
-      var oppR1 = document.getElementById('b-oppr1').value;
-
-      var mem1 = allMembers.find(function(m) { return m.id === p1Id; });
-      var mem1Name = mem1 ? mem1.name : (p1Id + '[WD]');
-
-      var generatedLine = '';
-
-      if (type === '1v1') {
-        generatedLine = type + ' | ' + map + ' | [' + r1 + '] ' + mem1Name + ' ' + score + ' ' + (oppClan ? oppClan + '|' : '') + oppP1 + ' [' + oppR1 + '] | ' + result;
-      } else {
-        var p2Id = document.getElementById('b-wd2').value.trim() || 'Partner';
-        var r2 = document.getElementById('b-wdr2').value;
-        var oppP2 = document.getElementById('b-opp2').value.trim() || 'Opp2';
-        var oppR2 = document.getElementById('b-oppr2').value;
-
-        var mem2 = allMembers.find(function(m) { return m.id === p2Id; });
-        var mem2Name = mem2 ? mem2.name.replace('[WD]', '') : p2Id;
-        var cleanMem1 = mem1Name.replace('[WD]', '');
-
-        generatedLine = type + ' | ' + map + ' | [' + r1 + '/' + r2 + '] ' + cleanMem1 + ' & ' + mem2Name + ' ' + score + ' ' + (oppClan ? oppClan + '|' : '') + oppP1 + ' & ' + oppP2 + ' [' + oppR1 + '/' + oppR2 + '] | ' + result;
-      }
-
-      var textarea = document.getElementById('match-inp-sets');
-      if (textarea) {
-        if (textarea.value.trim().length > 0) textarea.value += '\n' + generatedLine;
-        else textarea.value = generatedLine;
-      }
-
-      document.getElementById('b-opp1').value = '';
-      document.getElementById('b-opp2').value = '';
-    }
-
-    // Schaltet die 2v2-Felder in der Tabelle ein/aus
-    function toggleTable2v2Mode() {
-      var type = document.getElementById('b-type').value;
-      var wd2Box = document.getElementById('table-wd2-container');
-      var opp2Box = document.getElementById('table-opp2-container');
-      if (wd2Box) wd2Box.style.display = (type === '2v2') ? 'block' : 'none';
-      if (opp2Box) opp2Box.style.display = (type === '2v2') ? 'block' : 'none';
-    }
-
-    function addSetFromTableBuilder() {
-      var allMembers = (typeof getFullClanMembersList === 'function') ? getFullClanMembersList() : membersData;
-      var type = document.getElementById('b-type').value;
-      var map = document.getElementById('b-map').value.trim() || 'Unknown Map';
-      var score = document.getElementById('b-score').value.trim() || '2 - 0';
-      var result = document.getElementById('b-result').value;
-      
-      var p1Id = document.getElementById('b-wd1').value;
-      var r1 = document.getElementById('b-wdr1').value;
-      var oppP1 = document.getElementById('b-opp1').value.trim() || 'Opponent';
-      var oppR1 = document.getElementById('b-oppr1').value;
-
-      var mem1 = allMembers.find(function(m) { return m.id === p1Id; });
-      var mem1Name = mem1 ? mem1.name : (p1Id + '[WD]');
-
-      var generatedLine = '';
-
-      if (type === '1v1') {
-        generatedLine = type + ' | ' + map + ' | [' + r1 + '] ' + mem1Name + ' ' + score + ' ' + oppP1 + ' [' + oppR1 + '] | ' + result;
-      } else {
-        var p2Id = document.getElementById('b-wd2').value;
-        var r2 = document.getElementById('b-wdr2').value;
-        var oppP2 = document.getElementById('b-opp2').value.trim() || 'Opp2';
-        var oppR2 = document.getElementById('b-oppr2').value;
-
-        var mem2 = allMembers.find(function(m) { return m.id === p2Id; });
-        var mem2Name = mem2 ? mem2.name : (p2Id + '[WD]');
-        var cleanMem1 = mem1Name.replace('[WD]', '');
-
-        generatedLine = type + ' | ' + map + ' | [' + r1 + '/' + r2 + '] ' + cleanMem1 + ' & ' + mem2Name + ' ' + score + ' ' + oppP1 + ' & ' + oppP2 + ' [' + oppR1 + '/' + oppR2 + '] | ' + result;
-      }
-
-      var textarea = document.getElementById('match-inp-sets');
-      if (textarea) {
-        if (textarea.value.trim().length > 0) textarea.value += '\n' + generatedLine;
-        else textarea.value = generatedLine;
-      }
-
-      document.getElementById('b-opp1').value = '';
-      document.getElementById('b-opp2').value = '';
-    }
-
-    function initBuilderMemberSelects() {
-      var allMembers = (typeof getFullClanMembersList === 'function') ? getFullClanMembersList() : membersData;
-      var selP1 = document.getElementById('b-wd1');
-      var selP2 = document.getElementById('b-wd2');
-      
-      if (selP1) {
-        selP1.innerHTML = '';
-        allMembers.forEach(function(m) {
-          var opt = document.createElement('option');
-          opt.value = m.id;
-          opt.innerText = m.name;
-          selP1.appendChild(opt);
-        });
-      }
-      if (selP2) {
-        selP2.innerHTML = '<option value="">-- Partner --</option>';
-        allMembers.forEach(function(m) {
-          var opt = document.createElement('option');
-          opt.value = m.id;
-          opt.innerText = m.name;
-          selP2.appendChild(opt);
-        });
-      }
-    }
-
-    function renderMatches() {
-      recalculateAllMemberScores();
-
-      var grid = document.getElementById('dynamic-matches-grid');
-      if (!grid) return;
-      var matches = getMatchesList();
-
-      var user = (typeof firebase !== 'undefined' && firebase.auth && firebase.auth().currentUser) 
-        ? firebase.auth().currentUser 
-        : currentUser;
-      var canModerate = user && (isUserAdmin(user.email) || user.email.toLowerCase() === WEBMASTER_EMAIL.toLowerCase());
-
-      var btnCms = document.getElementById('btn-toggle-match-cms');
-      if (btnCms) btnCms.style.display = canModerate ? 'inline-block' : 'none';
-
-      var filtered = matches.filter(function(m) {
-        if (currentMatchCategoryFilter === 'All') return true;
-        if (currentMatchCategoryFilter === 'WD Star League' && (m.category === 'WD Match' || m.category === 'WD Star League')) return true;
-        return m.category === currentMatchCategoryFilter;
-      });
-
-      grid.innerHTML = '';
-      filtered.forEach(function(m) {
-        var card = document.createElement('div');
-        card.className = 'card';
-        card.style.borderLeft = m.resultType === 'WIN' ? '4px solid var(--win)' : (m.resultType === 'LOSS' ? '4px solid var(--loss)' : '4px solid var(--cyan)');
-
-        var resClass = m.resultType === 'WIN' ? 'score-win' : (m.resultType === 'LOSS' ? 'score-loss' : 'week');
-        
-        var adminActionBtns = canModerate ? 
-          '<div style="display:flex; gap:6px; align-items:center;">' +
-            '<button onclick="editMatchRecord(\'' + m.id + '\')" class="admin-del-btn" style="display:inline-block; border-color:var(--cyan); color:var(--cyan); background:rgba(0,229,255,0.15); margin:0;">✏️ EDIT</button>' +
-            '<button onclick="deleteMatchRecord(\'' + m.id + '\')" class="admin-del-btn" style="display:inline-block; margin:0;">🗑️</button>' +
-          '</div>' : '';
-
-        var setsHtml = '';
-        if (m.sets && m.sets.length > 0) {
-          setsHtml = '<div style="margin: 10px 0 12px 0; border-top: 1px dotted rgba(56, 189, 248, 0.2);">';
-          m.sets.forEach(function(setLine) {
-            setsHtml += formatSetLineHtml(setLine);
-          });
-          setsHtml += '</div>';
-        } else if (m.resultType === 'UPCOMING') {
-          setsHtml = '<div style="margin: 10px 0 12px 0; padding: 10px 0; border-top: 1px dotted rgba(56, 189, 248, 0.2); font-size:0.86rem; color:var(--text-muted); font-style:italic;">' +
-            (m.note ? m.note : 'Lineup and set scores will be recorded upon clan war commencement.') +
-          '</div>';
-        }
-
-        card.innerHTML = 
-          '<div class="match-header">' +
-            '<span class="week">' + m.week + ' <span style="font-size:0.65rem; color:var(--cyan); border:1px solid var(--cyan); padding:1px 5px; border-radius:3px; margin-left:4px; font-family:monospace; text-transform:uppercase;">' + m.category + '</span></span>' +
-            '<div style="display:flex; align-items:center; gap:10px;"><span class="' + resClass + '">' + m.score + '</span>' + adminActionBtns + '</div>' +
-          '</div>' +
-          '<div style="font-weight:800; color:#fff; font-size:1.05rem; margin-bottom:4px;">' + m.title + '</div>' +
-          setsHtml +
-          '<div style="display:flex; justify-content:space-between; align-items:center; border-top:1px dotted var(--border-color); padding-top:8px; font-size:0.75rem; color:var(--text-dim);">' +
-            '<span style="font-family:\'Share Tech Mono\',monospace;">' + (m.note || 'STATUS: ' + m.resultType) + '</span>' +
-            '<button onclick="downloadMatchReplay(\'' + m.title + '\', \'' + m.title + '\')" class="match-rep-badge">💾 REPLAY (.REP)</button>' +
-          '</div>';
-        
-        grid.appendChild(card);
-      });
-    }
-
-    function toggleMatchCMS() {
-      var terminal = document.getElementById('admin-match-terminal');
-      if (!terminal) return;
-      var isOpening = (terminal.style.display === 'none' || !terminal.style.display);
-      terminal.style.display = isOpening ? 'block' : 'none';
-
-      if (isOpening) {
-        initBuilderMemberSelects();
-        document.getElementById('match-edit-id').value = '';
-        document.getElementById('match-cms-heading').innerText = '⚡ MATCH INTEL DISPATCH TERMINAL // NEW FIXTURE';
-        document.getElementById('match-inp-title').value = '';
-        document.getElementById('match-inp-date').value = '';
-        document.getElementById('match-inp-score').value = '';
-        document.getElementById('match-inp-note').value = '';
-        document.getElementById('match-inp-sets').value = '';
-      }
-    }
-
-    function cancelMatchCMS() {
-      var terminal = document.getElementById('admin-match-terminal');
-      if (terminal) terminal.style.display = 'none';
-    }
-
-    function editMatchRecord(id) {
-      var matches = getMatchesList();
-      var m = matches.find(function(match) { return match.id === id; });
-      if (!m) return;
-
-      var terminal = document.getElementById('admin-match-terminal');
-      if (terminal) terminal.style.display = 'block';
-
-      initBuilderMemberSelects();
-      document.getElementById('match-edit-id').value = m.id;
-      document.getElementById('match-cms-heading').innerText = '⚡ EDIT MATCH INTEL // ' + m.title.toUpperCase();
-      document.getElementById('match-inp-cat').value = m.category || 'Clan League';
-      document.getElementById('match-inp-date').value = m.week || '';
-      document.getElementById('match-inp-title').value = m.title || '';
-      document.getElementById('match-inp-result').value = m.resultType || 'WIN';
-      document.getElementById('match-inp-score').value = m.score || '';
-      document.getElementById('match-inp-note').value = m.note || '';
-      document.getElementById('match-inp-sets').value = (m.sets && m.sets.length > 0) ? m.sets.join('\n') : '';
-
-      terminal.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    }
-
-    function filterMatchCategory(cat) {
-      currentMatchCategoryFilter = cat;
-      var catKeys = ['All', 'ClanLeague', 'WDStarLeague', 'ClanMatch'];
-      catKeys.forEach(function(c) {
-        var b = document.getElementById('btn-mcat-' + c);
-        if (b) {
-          if (c === cat.replace(/\s+/g, '')) b.classList.add('active');
-          else b.classList.remove('active');
-        }
-      });
-      renderMatches();
-    }
-
-    function saveNewMatchRecord() {
-      var editId = document.getElementById('match-edit-id').value;
-      var cat = document.getElementById('match-inp-cat').value;
-      var date = document.getElementById('match-inp-date').value.trim() || 'MATCH FIXTURE';
-      var title = document.getElementById('match-inp-title').value.trim();
-      var result = document.getElementById('match-inp-result').value;
-      var score = document.getElementById('match-inp-score').value.trim() || (result === 'UPCOMING' ? 'PENDING' : 'WIN');
-      var note = document.getElementById('match-inp-note').value.trim();
-      var setsText = document.getElementById('match-inp-sets').value.trim();
-
-      if (!title) { alert('Bitte Match-Titel eingeben.'); return; }
-
-      var setsArray = [];
-      if (setsText) {
-        setsArray = setsText.split('\n').map(function(line) { return line.trim(); }).filter(function(line) { return line.length > 0; });
-      }
-
-      var matchId = editId || ('m_' + Date.now());
-      var matchRecord = {
-        id: matchId,
-        category: cat,
-        week: date,
-        title: title,
-        resultType: result,
-        score: score,
-        note: note,
-        sets: setsArray
-      };
-
-      if (typeof firebase !== 'undefined' && firebase.firestore) {
-        firebase.firestore().collection('clan_matches').doc(matchId).set(matchRecord, { merge: true })
-          .then(function() {
-            cancelMatchCMS();
-            alert('Match erfolgreich in Firebase gespeichert und synchronisiert!');
-          })
-          .catch(function(e) {
-            alert('Fehler beim Speichern in Firebase: ' + e.message);
-          });
-      } else {
-        alert('Keine Verbindung zu Firebase. Speichern abgebrochen.');
-      }
-    }
-
-    function deleteMatchRecord(id) {
-      if (!confirm('Möchtest du dieses Match wirklich für alle Geräte löschen?')) return;
-      if (typeof firebase !== 'undefined' && firebase.firestore) {
-        firebase.firestore().collection('clan_matches').doc(id).delete()
-          .catch(function(e) { alert('Fehler beim Löschen: ' + e.message); });
-      }
-      var matches = getMatchesList().filter(function(m) { return m.id !== id; });
-      localStorage.setItem('wd_matches_vault', JSON.stringify(matches));
-      renderMatches();
-    }
-    
-    // ========================================================
-    // SQUAD FILTERING ENGINE (WD-A, WD-B, WD-C)
-    // ========================================================
 
     var currentActiveSquad = 'WD-A';
-
     function filterSquadView(squadKey) {
       currentActiveSquad = squadKey;
-
-      ['WDA', 'WDB', 'WDC', 'ALL'].forEach(function(k) {
+      ['WDA', 'WDB', 'WDC', 'ALL'].forEach(k => {
         var btn = document.getElementById('btn-squad-' + k);
-        if (btn) {
-          if ((k === 'ALL' && squadKey === 'ALL') || ('WD-' + k.slice(-1) === squadKey)) {
-            btn.classList.add('active');
-          } else {
-            btn.classList.remove('active');
-          }
-        }
+        if (btn) btn.classList.toggle('active', (k === 'ALL' && squadKey === 'ALL') || ('WD-' + k.slice(-1) === squadKey));
       });
-
-      var titleEl = document.getElementById('roster-squad-title');
-      var pillEl = document.getElementById('roster-squad-pill');
-      var descEl = document.getElementById('roster-squad-desc');
-
-      if (squadKey === 'WD-A') {
-        if (titleEl) titleEl.innerText = 'WD-A';
-        if (pillEl) pillEl.innerText = 'BWCL S65 DIVISION D';
-        if (descEl) descEl.innerText = '[Main Competitive Squad]';
-      } else if (squadKey === 'WD-B') {
-        if (titleEl) titleEl.innerText = 'WD-B';
-        if (pillEl) pillEl.innerText = 'DEVELOPMENT DIVISION';
-        if (descEl) descEl.innerText = '[Secondary Competitive Lineup]';
-      } else if (squadKey === 'WD-C') {
-        if (titleEl) titleEl.innerText = 'WD-C';
-        if (pillEl) pillEl.innerText = 'ACADEMY & IN-HOUSE';
-        if (descEl) descEl.innerText = '[Practice & Casual Roster]';
-      } else {
-        if (titleEl) titleEl.innerText = 'ALL TEAMS';
-        if (pillEl) pillEl.innerText = 'COMBINED SQUADS';
-        if (descEl) descEl.innerText = '[All Active White Dragon Operators]';
-      }
-
       renderRosterTableAndTiers();
     }
 
-    // Dynamic Roster Storage with Squad Designations
     function getDynamicRosterList() {
-      if (firestoreRoster && firestoreRoster.length > 0) {
-        return firestoreRoster;
-      }
+      if (firestoreRoster && firestoreRoster.length > 0) return firestoreRoster;
       try {
         var stored = JSON.parse(localStorage.getItem('wd_competitive_roster') || 'null');
         if (Array.isArray(stored) && stored.length > 0) return stored;
       } catch(e) {}
-      
       var defaultRoster = [
         { id: 'CheesyCake', squad: 'WD-A', role: 'Player' },
         { id: 'Battousai', squad: 'WD-A', role: 'Player' },
@@ -5895,631 +3787,122 @@ var firestoreRoster = [];
     }
 
     function addMemberToRosterUI() {
-      var select = document.getElementById('roster-add-member-select');
-      var squadSel = document.getElementById('roster-add-squad-select');
-      var roleSelect = document.getElementById('roster-add-role-select');
-
-      var memberId = select.value;
-      var squad = squadSel ? squadSel.value : 'WD-A';
-      var role = roleSelect ? roleSelect.value : 'Player';
-
-      if (!memberId) { alert('Please select a clan member first.'); return; }
-
+      var memberId = document.getElementById('roster-add-member-select').value;
+      var squad = document.getElementById('roster-add-squad-select').value;
+      var role = document.getElementById('roster-add-role-select').value;
+      if (!memberId) { alert('Select a member first.'); return; }
       var recordId = memberId + '_' + squad.replace('-', '');
       var rosterRecord = { id: memberId, squad: squad, role: role };
-
       if (typeof firebase !== 'undefined' && firebase.firestore) {
         firebase.firestore().collection('clan_roster').doc(recordId).set(rosterRecord, { merge: true })
-          .then(function() {
-            alert('Commander successfully assigned to ' + squad + ' in Firebase!');
-          })
-          .catch(function(err) {
-            alert('Fehler beim Speichern in Firebase: ' + err.message);
-          });
+          .then(() => alert('Assigned to ' + squad + '!'))
+          .catch(err => alert('Error: ' + err.message));
       } else {
         var list = getDynamicRosterList();
-        var existingIdx = list.findIndex(function(r) { return r.id === memberId && r.squad === squad; });
-        if (existingIdx !== -1) {
-          list[existingIdx].role = role;
-        } else {
-          list.push(rosterRecord);
-        }
+        var existing = list.find(r => r.id === memberId && r.squad === squad);
+        if (existing) existing.role = role; else list.push(rosterRecord);
         localStorage.setItem('wd_competitive_roster', JSON.stringify(list));
         renderRosterTableAndTiers();
-        alert('Commander successfully assigned to ' + squad + '!');
       }
     }
 
-    // Robuste Lösch-Funktion für Firebase und LocalStorage
     function removeMemberFromRoster(memberId, squadTag) {
-      if (!confirm('Möchtest du ' + memberId + ' wirklich aus dem Squad entfernen?')) return;
-
-      var targetSquad = squadTag || currentActiveSquad;
-      
-      var idVariant1 = memberId + '_' + targetSquad;
-      var idVariant2 = memberId + '_' + targetSquad.replace('-', '');
-
+      if (!confirm('Remove ' + memberId + ' from ' + squadTag + '?')) return;
+      var recordId = memberId + '_' + squadTag.replace('-', '');
       if (typeof firebase !== 'undefined' && firebase.firestore) {
-        var db = firebase.firestore();
-        db.collection('clan_roster').doc(idVariant1).delete().catch(function(){});
-        db.collection('clan_roster').doc(idVariant2).delete().catch(function(){});
-        db.collection('clan_roster').doc(memberId).delete().catch(function(){});
-        
-        db.collection('clan_roster').where('id', '==', memberId).where('squad', '==', targetSquad).get()
-          .then(function(snapshot) {
-            snapshot.forEach(function(doc) {
-              doc.ref.delete();
-            });
-          }).catch(function(){});
+        firebase.firestore().collection('clan_roster').doc(recordId).delete().catch(() => {});
       }
-
-      var list = getDynamicRosterList().filter(function(r) { 
-        return !(r.id === memberId && (r.squad === targetSquad || !r.squad)); 
-      });
+      var list = getDynamicRosterList().filter(r => !(r.id === memberId && r.squad === squadTag));
       localStorage.setItem('wd_competitive_roster', JSON.stringify(list));
       renderRosterTableAndTiers();
-      alert('Commander erfolgreich entfernt!');
     }
 
-    // Tabellen-Renderer mit rotem Kreuz ganz rechts in der neuen Spalte
     function renderRosterTableAndTiers() {
       applyProfileCustomizationsToRoster();
-      
       var allMembers = getFullClanMembersList();
       var rosterEntries = getDynamicRosterList();
 
-      var user = (typeof firebase !== 'undefined' && firebase.auth && firebase.auth().currentUser) 
-        ? firebase.auth().currentUser 
-        : currentUser;
-      var canModerate = user && (isUserAdmin(user.email) || (user.email && user.email.toLowerCase() === WEBMASTER_EMAIL.toLowerCase()));
+      var user = (typeof firebase !== 'undefined' && firebase.auth && firebase.auth().currentUser) ? firebase.auth().currentUser : currentUser;
+      var canModerate = user && (isUserAdmin(user.email) || user.email.toLowerCase() === WEBMASTER_EMAIL.toLowerCase());
 
-      var navCountEl = document.getElementById('members-nav-count');
-      if (navCountEl) navCountEl.innerText = allMembers.length + ' Commanders';
-      var subtitleCountEl = document.getElementById('members-subtitle-count');
-      if (subtitleCountEl) subtitleCountEl.innerText = allMembers.length;
+      if (document.getElementById('members-nav-count')) document.getElementById('members-nav-count').innerText = allMembers.length + ' Commanders';
+      if (document.getElementById('members-subtitle-count')) document.getElementById('members-subtitle-count').innerText = allMembers.length;
 
       var expelSelect = document.getElementById('quick-expel-select');
       if (expelSelect) {
         expelSelect.innerHTML = '<option value="">-- Choose Member to Expel --</option>';
-        allMembers.forEach(function(m) {
-          var opt = document.createElement('option');
-          opt.value = m.id;
-          opt.innerText = m.name + ' (' + m.rank + ')';
-          expelSelect.appendChild(opt);
-        });
+        allMembers.forEach(m => { expelSelect.innerHTML += `<option value="${m.id}">${m.name} (${m.rank})</option>`; });
       }
 
       var addSelect = document.getElementById('roster-add-member-select');
       if (addSelect) {
         addSelect.innerHTML = '<option value="">-- Choose Clan Member --</option>';
-        allMembers.forEach(function(m) {
-          var opt = document.createElement('option');
-          opt.value = m.id;
-          opt.innerText = m.name;
-          addSelect.appendChild(opt);
-        });
+        allMembers.forEach(m => { addSelect.innerHTML += `<option value="${m.id}">${m.name}</option>`; });
       }
 
       var rTbody = document.getElementById('roster-tbody');
       if (rTbody) {
         rTbody.innerHTML = '';
+        var filteredRoster = rosterEntries.filter(entry => currentActiveSquad === 'ALL' || (entry.squad || 'WD-A') === currentActiveSquad);
 
-        var filteredRoster = rosterEntries.filter(function(entry) {
-          return currentActiveSquad === 'ALL' || (entry.squad || 'WD-A') === currentActiveSquad;
-        });
-
-        filteredRoster.forEach(function(entry) {
-          var p = allMembers.find(function(m) { return m.id === entry.id; });
+        filteredRoster.forEach(entry => {
+          var p = allMembers.find(m => m.id === entry.id);
           if (!p) return;
 
           var tr = document.createElement('tr');
           tr.className = 'clickable-row';
-          tr.onclick = function() { openDossier(p.id); };
-          
-          var flagSvg = flags[p.flagKey] || flags.global;
+          tr.onclick = () => openDossier(p.id);
 
           var displayRole = entry.role || p.role || 'Player';
-          var roleBadge = '';
-          if (displayRole === 'Squadleader') {
-            roleBadge = '<span class="role-badge role-squadleader">★ Squadleader</span>';
-          } else if (displayRole === 'Captain') {
-            roleBadge = '<span class="role-badge role-captain">⛨ Captain</span>';
-          } else if (displayRole === 'Starter') {
-            roleBadge = '<span class="role-badge role-squadleader" style="background:rgba(16,185,129,0.18); color:var(--win); border-color:var(--win);">★ Starter</span>';
-          } else {
-            roleBadge = '<span class="role-badge role-starter">Player</span>';
-          }
+          var roleBadge = displayRole === 'Squadleader' ? '<span class="role-badge role-squadleader">★ Squadleader</span>' :
+                          displayRole === 'Captain' ? '<span class="role-badge role-captain">⛨ Captain</span>' :
+                          displayRole === 'Starter' ? '<span class="role-badge role-squadleader" style="background:rgba(16,185,129,0.18); color:var(--win);">★ Starter</span>' :
+                          '<span class="role-badge role-starter">Player</span>';
 
-          var miniAvatar = p.avatar ? 
-            '<img src="' + p.avatar + '" class="table-avatar" onerror="this.style.display=\'none\'">' : '';
-          
+          var miniAvatar = p.avatar ? `<img src="${p.avatar}" class="table-avatar" onerror="this.style.display='none'">` : '';
           var squadTag = entry.squad || 'WD-A';
+          var statusHtml = (p.status !== 'Inactive') ? '<span style="color:var(--win); font-family:\'Share Tech Mono\',monospace; font-size:0.8rem; font-weight:bold; margin-right:10px;">● ACTIVE</span>' : '<span style="color:var(--text-dim); font-family:\'Share Tech Mono\',monospace; font-size:0.8rem; margin-right:10px;">○ INACTIVE</span>';
+          var removeBtn = canModerate ? `<button onclick="event.stopPropagation(); removeMemberFromRoster('${p.id}', '${squadTag}')" title="Aus Squad entfernen" style="background:rgba(239,68,68,0.25); border:1.5px solid var(--loss); color:#ff4d4d; width:30px; height:30px; border-radius:6px; font-weight:900; font-size:0.9rem; cursor:pointer; display:inline-flex; align-items:center; justify-content:center;">✕</button>` : '';
 
-          // Status Badge (Active / Inactive)
-          var isMemberActive = (p.status !== 'Inactive');
-          var statusHtml = isMemberActive 
-            ? '<span style="color:var(--win); font-family:\'Share Tech Mono\',monospace; font-size:0.8rem; font-weight:bold;">● ACTIVE</span>'
-            : '<span style="color:var(--text-dim); font-family:\'Share Tech Mono\',monospace; font-size:0.8rem;">○ INACTIVE</span>';
-
-          // Rotes Kreuz ganz rechts in der neuen Spalte zum Löschen aus dem Squad
-          var removeBtn = canModerate 
-            ? '<button onclick="event.stopPropagation(); removeMemberFromRoster(\'' + p.id + '\', \'' + squadTag + '\')" title="Aus Squad entfernen" style="background:rgba(239, 68, 68, 0.25); border:1.5px solid var(--loss); color:#ff4d4d; width:30px; height:30px; border-radius:6px; font-weight:900; font-size:0.9rem; cursor:pointer; display:inline-flex; align-items:center; justify-content:center;">✕</button>'
-            : '';
-
-          tr.innerHTML = 
-            '<td><span class="player-tag">' + miniAvatar + p.name + ' <span class="click-hint">INTEL</span></span></td>' +
-            '<td>' + roleBadge + '</td>' +
-            '<td><strong style="color:var(--cyan);">' + squadTag + '</strong></td>' +
-            '<td>' + flagSvg + ' ' + p.country + '</td>' +
-            '<td>' + getRaceBadgeHtml(p.race) + '</td>' +
-            '<td style="text-align:right;">' + statusHtml + ' ' + removeBtn + '</td>';
-          
+          tr.innerHTML = `
+            <td><span class="player-tag">${miniAvatar}${p.name} <span class="click-hint">INTEL</span></span></td>
+            <td>${roleBadge}</td>
+            <td><strong style="color:var(--cyan);">${squadTag}</strong></td>
+            <td>${flags[p.flagKey] || flags.global} ${p.country}</td>
+            <td>${getRaceBadgeHtml(p.race)}</td>
+            <td style="text-align:right;">${statusHtml} ${removeBtn}</td>
+          `;
           rTbody.appendChild(tr);
         });
       }
 
-      // Tiers / Members Tab rendern
-      Object.keys(tiers).forEach(function(tierName) {
-        var el = document.getElementById(tiers[tierName]);
-        if (el) el.innerHTML = '';
-      });
-
-      allMembers.forEach(function(p) {
-        var targetId = tiers[p.rank] || 'tier-privates';
-        var container = document.getElementById(targetId);
+      Object.values(tiers).forEach(tId => { if (document.getElementById(tId)) document.getElementById(tId).innerHTML = ''; });
+      allMembers.forEach(p => {
+        var container = document.getElementById(tiers[p.rank] || 'tier-privates');
         if (!container) return;
-
         var pill = document.createElement('div');
         pill.className = 'member-pill';
-        pill.onclick = function() { openDossier(p.id); };
-
+        pill.onclick = () => openDossier(p.id);
         var raceLower = (p.race || '').toLowerCase();
-        var raceColor = '#60a5fa';
-        var raceTag = '[T]';
-
-        if (raceLower.startsWith('t')) {
-          raceColor = '#60a5fa'; raceTag = '[T]';
-        } else if (raceLower.startsWith('p')) {
-          raceColor = '#fbbf24'; raceTag = '[P]';
-        } else if (raceLower.startsWith('z')) {
-          raceColor = '#c084fc'; raceTag = '[Z]';
-        } else if (raceLower === 'ums') {
-          raceColor = '#10b981'; raceTag = '[UMS]';
-        } else {
-          raceColor = '#ef4444'; raceTag = '[R]';
-        }
-
-        var pillAvatar = p.avatar ? 
-          '<img src="' + p.avatar + '" class="pill-avatar" onerror="this.style.display=\'none\'">' : '';
-
-        var delBtnHtml = canModerate ?
-          '<span onclick="event.stopPropagation(); adminDeleteMember(\'' + p.id + '\')" title="Expel member" style="margin-left:6px; color:var(--loss); font-weight:bold; cursor:pointer; padding:0 3px;">✕</span>' : '';
-
-        pill.innerHTML = 
-          '<span class="tag">' + pillAvatar + p.name + '</span>' +
-          '<span class="pill-race" style="color:' + raceColor + '">' + raceTag + '</span>' +
-          delBtnHtml;
-
+        var raceColor = raceLower.startsWith('t') ? '#60a5fa' : raceLower.startsWith('p') ? '#fbbf24' : raceLower.startsWith('z') ? '#c084fc' : raceLower === 'ums' ? '#10b981' : '#ef4444';
+        var raceTag = raceLower.startsWith('t') ? '[T]' : raceLower.startsWith('p') ? '[P]' : raceLower.startsWith('z') ? '[Z]' : raceLower === 'ums' ? '[UMS]' : '[R]';
+        var pillAvatar = p.avatar ? `<img src="${p.avatar}" class="pill-avatar" onerror="this.style.display='none'">` : '';
+        var delBtnHtml = canModerate ? `<span onclick="event.stopPropagation(); adminDeleteMember('${p.id}')" title="Expel member" style="margin-left:6px; color:var(--loss); font-weight:bold; cursor:pointer; padding:0 3px;">✕</span>` : '';
+        pill.innerHTML = `<span class="tag">${pillAvatar}${p.name}</span><span class="pill-race" style="color:${raceColor}">${raceTag}</span>${delBtnHtml}`;
         container.appendChild(pill);
       });
     }
 
-    var firestoreRoster = [];
-
-    function initRosterRealtimeListener() {
-      if (typeof firebase !== 'undefined' && firebase.firestore) {
-        firebase.firestore().collection('clan_roster').onSnapshot(function(snapshot) {
-          if (!snapshot.empty) {
-            var liveRoster = [];
-            snapshot.forEach(function(doc) {
-              var r = doc.data();
-              if (!r.id) {
-                r.id = doc.id.split('_')[0];
-              }
-              liveRoster.push(r);
-            });
-            firestoreRoster = liveRoster;
-            localStorage.setItem('wd_competitive_roster', JSON.stringify(liveRoster));
-            renderRosterTableAndTiers();
-          } else {
-            seedDefaultRosterToFirestore();
-          }
-        }, function(err) {
-          console.warn("Roster Cloud-Sync offline:", err);
-          renderRosterTableAndTiers();
-        });
-      }
-    }
-
-    function seedDefaultRosterToFirestore() {
-      if (!firebase.firestore) return;
-      var db = firebase.firestore();
-      var batch = db.batch();
-      getDynamicRosterList().forEach(function(r) {
-        var recordId = r.id + '_' + r.squad.replace('-', '');
-        var ref = db.collection('clan_roster').doc(recordId);
-        batch.set(ref, r);
-      });
-      batch.commit().catch(function(e) { console.error("Fehler beim Seeden des Rosters:", e); });
-    }
-
-    // ========================================================
-    // 3. CLAN MEMBER LIST MANAGEMENT (ENLIST NEW MEMBERS)
-    // ========================================================
     var firestoreMembers = [];
-
-    // Hört live auf Änderungen in Firestore und aktualisiert alle Geräte sofort
     function initClanMembersRealtimeListener() {
       if (typeof firebase !== 'undefined' && firebase.firestore) {
-        var db = firebase.firestore();
-        db.collection('clan_members').onSnapshot(function(snapshot) {
-          if (!snapshot.empty) {
-            var liveList = [];
-            snapshot.forEach(function(doc) {
-              var d = doc.data();
-              d.id = doc.id;
-              liveList.push(d);
-            });
-            firestoreMembers = liveList;
-            localStorage.setItem('wd_all_clan_members', JSON.stringify(liveList));
-            renderRosterTableAndTiers();
-          } else {
-            seedDefaultMembersToFirestore();
-          }
-        }, function(err) {
-          console.warn("Firestore Mitglieder-Sync offline, nutze lokalen Cache:", err);
+        firebase.firestore().collection('clan_members').onSnapshot(snapshot => {
+          var liveList = [];
+          snapshot.forEach(doc => { var d = doc.data(); d.id = doc.id; liveList.push(d); });
+          firestoreMembers = liveList;
+          localStorage.setItem('wd_all_clan_members', JSON.stringify(liveList));
           renderRosterTableAndTiers();
-        });
+        }, () => {});
       }
     }
-
-    function seedDefaultMembersToFirestore() {
-      if (!firebase.firestore) return;
-      var db = firebase.firestore();
-      var batch = db.batch();
-      membersData.forEach(function(m) {
-        var ref = db.collection('clan_members').doc(m.id);
-        batch.set(ref, m);
-      });
-      batch.commit().catch(function(e) { console.error("Fehler beim Seeden:", e); });
-    }
-
-    function getFullClanMembersList() {
-      if (firestoreMembers && firestoreMembers.length > 0) {
-        return firestoreMembers;
-      }
-      try {
-        var stored = JSON.parse(localStorage.getItem('wd_all_clan_members') || 'null');
-        if (Array.isArray(stored) && stored.length > 0) return stored;
-      } catch(e) {}
-      return membersData;
-    }
-
-    function enlistNewClanMemberUI() {
-      var name = document.getElementById('new-mem-name').value.trim();
-      var race = document.getElementById('new-mem-race').value;
-      var rank = document.getElementById('new-mem-rank').value;
-      var country = document.getElementById('new-mem-country').value.trim() || 'Global';
-
-      if (!name) { alert('Please provide the member alias/handle.'); return; }
-
-      var id = name.replace(/[^a-zA-Z0-9]/g, '');
-      var cleanKey = country.toLowerCase().replace(/[^a-z]/g, '');
-      var flagKey = flags[cleanKey] ? cleanKey : 'global';
-
-      var newMember = {
-        id: id,
-        name: name.includes('[WD]') ? name : name + '[WD]',
-        rank: rank,
-        team: 'WD Squad',
-        status: 'Active',
-        race: race,
-        country: country,
-        flagKey: flagKey,
-        w1: '0-0', w2: '0-0', pts: 0, history: []
-      };
-
-      if (typeof firebase !== 'undefined' && firebase.firestore) {
-        firebase.firestore().collection('clan_members').doc(id).set(newMember)
-          .then(function() {
-            document.getElementById('new-mem-name').value = '';
-            alert('Mitglied ' + newMember.name + ' erfolgreich für alle Geräte synchronisiert!');
-          })
-          .catch(function(err) {
-            alert('Fehler beim Synchronisieren: ' + err.message);
-          });
-      } else {
-        var fullList = getFullClanMembersList();
-        fullList.push(newMember);
-        localStorage.setItem('wd_all_clan_members', JSON.stringify(fullList));
-        renderRosterTableAndTiers();
-      }
-    }
-
-    // ========================================================
-    // 4. LIVE VISITOR & ONLINE PRESENCE ENGINE (BOTTOM-LEFT)
-    // ========================================================
-    function initVisitorCounter() {
-      var baseVisits = 1420;
-      var totalCount = parseInt(localStorage.getItem('wd_visitor_count') || baseVisits, 10);
-
-      // Track daily visitors
-      var todayKey = 'wd_visits_' + new Date().toISOString().slice(0, 10);
-      var todayCount = parseInt(localStorage.getItem(todayKey) || '42', 10);
-
-      if (!sessionStorage.getItem('wd_visit_counted')) {
-        totalCount += 1;
-        todayCount += 1;
-        localStorage.setItem('wd_visitor_count', totalCount);
-        localStorage.setItem(todayKey, todayCount);
-        sessionStorage.setItem('wd_visit_counted', 'true');
-      }
-
-      var totalEl = document.getElementById('visitors-total-live');
-      if (totalEl) totalEl.innerText = totalCount.toLocaleString();
-
-      var todayEl = document.getElementById('visitors-today-live');
-      if (todayEl) todayEl.innerText = todayCount.toLocaleString();
-
-      // Live online presence counter with natural fluctuations
-      var onlineEl = document.getElementById('online-users-live');
-      if (onlineEl) {
-        var liveOnline = Math.floor(Math.random() * 3) + 3; // 3 to 5 online
-        onlineEl.innerText = liveOnline;
-
-        // Periodic live heartbeat
-        setInterval(function() {
-          var delta = Math.floor(Math.random() * 3) - 1; // -1, 0, +1
-          var current = parseInt(onlineEl.innerText, 10) || 3;
-          var next = Math.max(2, Math.min(8, current + delta));
-          onlineEl.innerText = next;
-        }, 12000);
-      }
-    }
-
-    // ========================================================
-    // RENDER ROSTER & DYNAMIC MEMBER COUNTS
-    // ========================================================
-
-    function renderRosterTableAndTiers() {
-      applyProfileCustomizationsToRoster();
-      
-      var allMembers = getFullClanMembersList();
-      var rosterEntries = getDynamicRosterList();
-
-      var user = (typeof firebase !== 'undefined' && firebase.auth && firebase.auth().currentUser) 
-        ? firebase.auth().currentUser 
-        : currentUser;
-      var canModerate = user && (isUserAdmin(user.email) || (user.email && user.email.toLowerCase() === WEBMASTER_EMAIL.toLowerCase()));
-
-      var navCountEl = document.getElementById('members-nav-count');
-      if (navCountEl) navCountEl.innerText = allMembers.length + ' Commanders';
-      var subtitleCountEl = document.getElementById('members-subtitle-count');
-      if (subtitleCountEl) subtitleCountEl.innerText = allMembers.length;
-
-      var expelSelect = document.getElementById('quick-expel-select');
-      if (expelSelect) {
-        expelSelect.innerHTML = '<option value="">-- Choose Member to Expel --</option>';
-        allMembers.forEach(function(m) {
-          var opt = document.createElement('option');
-          opt.value = m.id;
-          opt.innerText = m.name + ' (' + m.rank + ')';
-          expelSelect.appendChild(opt);
-        });
-      }
-
-      var addSelect = document.getElementById('roster-add-member-select');
-      if (addSelect) {
-        addSelect.innerHTML = '<option value="">-- Choose Clan Member --</option>';
-        allMembers.forEach(function(m) {
-          var opt = document.createElement('option');
-          opt.value = m.id;
-          opt.innerText = m.name;
-          addSelect.appendChild(opt);
-        });
-      }
-
-      var rTbody = document.getElementById('roster-tbody');
-      if (rTbody) {
-        rTbody.innerHTML = '';
-
-        var filteredRoster = rosterEntries.filter(function(entry) {
-          return currentActiveSquad === 'ALL' || (entry.squad || 'WD-A') === currentActiveSquad;
-        });
-
-        filteredRoster.forEach(function(entry) {
-          var p = allMembers.find(function(m) { return m.id === entry.id; });
-          if (!p) return;
-
-          var tr = document.createElement('tr');
-          tr.className = 'clickable-row';
-          tr.onclick = function() { openDossier(p.id); };
-          
-          var flagSvg = flags[p.flagKey] || flags.global;
-
-          var displayRole = entry.role || p.role || 'Player';
-          var roleBadge = '';
-          if (displayRole === 'Squadleader') {
-            roleBadge = '<span class="role-badge role-squadleader">★ Squadleader</span>';
-          } else if (displayRole === 'Captain') {
-            roleBadge = '<span class="role-badge role-captain">⛨ Captain</span>';
-          } else if (displayRole === 'Starter') {
-            roleBadge = '<span class="role-badge role-squadleader" style="background:rgba(16,185,129,0.18); color:var(--win); border-color:var(--win);">★ Starter</span>';
-          } else {
-            roleBadge = '<span class="role-badge role-starter">Player</span>';
-          }
-
-          var miniAvatar = p.avatar ? 
-            '<img src="' + p.avatar + '" class="table-avatar" onerror="this.style.display=\'none\'">' : '';
-          
-          var squadTag = entry.squad || 'WD-A';
-
-          // Status Badge (Active / Inactive)
-          var isMemberActive = (p.status !== 'Inactive');
-          var statusHtml = isMemberActive 
-            ? '<span style="color:var(--win); font-family:\'Share Tech Mono\',monospace; font-size:0.8rem; font-weight:bold;">● ACTIVE</span>'
-            : '<span style="color:var(--text-dim); font-family:\'Share Tech Mono\',monospace; font-size:0.8rem;">○ INACTIVE</span>';
-
-          // Rotes Kreuz ganz rechts für Admins zum Löschen aus dem Squad
-          var removeBtn = canModerate 
-            ? '<button onclick="event.stopPropagation(); removeMemberFromRoster(\'' + p.id + '\', \'' + squadTag + '\')" title="Aus Squad entfernen" style="background:rgba(239,68,68,0.2); border:1px solid var(--loss); color:var(--loss); width:26px; height:26px; border-radius:4px; font-weight:bold; cursor:pointer; margin-left:12px;">✕</button>'
-            : '';
-
-          tr.innerHTML = 
-            '<td><span class="player-tag">' + miniAvatar + p.name + ' <span class="click-hint">INTEL</span></span></td>' +
-            '<td>' + roleBadge + '</td>' +
-            '<td><strong style="color:var(--cyan);">' + squadTag + '</strong></td>' +
-            '<td>' + flagSvg + ' ' + p.country + '</td>' +
-            '<td>' + getRaceBadgeHtml(p.race) + '</td>' +
-            '<td style="text-align:right;">' + statusHtml + removeBtn + '</td>';
-          
-          rTbody.appendChild(tr);
-        });
-      }
-
-      // Tiers / Members Tab rendern
-      Object.keys(tiers).forEach(function(tierName) {
-        var el = document.getElementById(tiers[tierName]);
-        if (el) el.innerHTML = '';
-      });
-
-      allMembers.forEach(function(p) {
-        var targetId = tiers[p.rank] || 'tier-privates';
-        var container = document.getElementById(targetId);
-        if (!container) return;
-
-        var pill = document.createElement('div');
-        pill.className = 'member-pill';
-        pill.onclick = function() { openDossier(p.id); };
-
-        var raceLower = (p.race || '').toLowerCase();
-        var raceColor = '#60a5fa';
-        var raceTag = '[T]';
-
-        if (raceLower.startsWith('t')) {
-          raceColor = '#60a5fa'; raceTag = '[T]';
-        } else if (raceLower.startsWith('p')) {
-          raceColor = '#fbbf24'; raceTag = '[P]';
-        } else if (raceLower.startsWith('z')) {
-          raceColor = '#c084fc'; raceTag = '[Z]';
-        } else if (raceLower === 'ums') {
-          raceColor = '#10b981'; raceTag = '[UMS]';
-        } else {
-          raceColor = '#ef4444'; raceTag = '[R]';
-        }
-
-        var pillAvatar = p.avatar ? 
-          '<img src="' + p.avatar + '" class="pill-avatar" onerror="this.style.display=\'none\'">' : '';
-
-        var delBtnHtml = canModerate ?
-          '<span onclick="event.stopPropagation(); adminDeleteMember(\'' + p.id + '\')" title="Expel member" style="margin-left:6px; color:var(--loss); font-weight:bold; cursor:pointer; padding:0 3px;">✕</span>' : '';
-
-        pill.innerHTML = 
-          '<span class="tag">' + pillAvatar + p.name + '</span>' +
-          '<span class="pill-race" style="color:' + raceColor + '">' + raceTag + '</span>' +
-          delBtnHtml;
-
-        container.appendChild(pill);
-      });
-    }
-
-      // 3. RENDER CLEAN ROSTER TABLE (WITHOUT AFFILIATION & SCHEDULE)
-      var rTbody = document.getElementById('roster-tbody');
-      if (rTbody) {
-        rTbody.innerHTML = '';
-
-        var filteredRoster = rosterEntries.filter(function(entry) {
-          return currentActiveSquad === 'ALL' || (entry.squad || 'WD-A') === currentActiveSquad;
-        });
-
-        filteredRoster.forEach(function(entry) {
-          var p = allMembers.find(function(m) { return m.id === entry.id; });
-          if (!p) return;
-
-          var tr = document.createElement('tr');
-          tr.className = 'clickable-row';
-          tr.onclick = function() { openDossier(p.id); };
-          
-          var flagSvg = flags[p.flagKey] || flags.global;
-
-          var displayRole = entry.role || p.role || 'Player';
-          var roleBadge = '';
-          if (displayRole === 'Squadleader') {
-            roleBadge = '<span class="role-badge role-squadleader">★ Squadleader</span>';
-          } else if (displayRole === 'Captain') {
-            roleBadge = '<span class="role-badge role-captain">⛨ Captain</span>';
-          } else if (displayRole === 'Starter') {
-            roleBadge = '<span class="role-badge role-squadleader" style="background:rgba(16,185,129,0.18); color:var(--win); border-color:var(--win);">★ Starter</span>';
-          } else {
-            roleBadge = '<span class="role-badge role-starter">Player</span>';
-          }
-
-          var miniAvatar = p.avatar ? 
-            '<img src="' + p.avatar + '" class="table-avatar" onerror="this.style.display=\'none\'">' : '';
-          
-          var removeBtn = canModerate 
-            ? '<button onclick="event.stopPropagation(); removeMemberFromRoster(\'' + p.id + '\', \'' + squadTag + '\')" class="admin-          del-btn" style="display:inline-block; margin-left:8px; padding:2px 6px;">✕</button>'
-            : '';
-
-          var squadTag = entry.squad || 'WD-A';
-
-          tr.innerHTML = 
-            '<td><span class="player-tag">' + miniAvatar + p.name + ' <span class="click-hint">INTEL</span></span></td>' +
-            '<td>' + roleBadge + '</td>' +
-            '<td><strong style="color:var(--cyan);">' + squadTag + '</strong></td>' +
-            '<td>' + flagSvg + ' ' + p.country + removeBtn + '</td>' +
-            '<td>' + getRaceBadgeHtml(p.race) + '</td>';
-          
-          rTbody.appendChild(tr);
-        });
-      }
-
-      // 4. RENDER MEMBER PILLS ACROSS TIERS (WITH RED RANDOM & GREEN UMS)
-      Object.keys(tiers).forEach(function(tierName) {
-        var el = document.getElementById(tiers[tierName]);
-        if (el) el.innerHTML = '';
-      });
-
-      allMembers.forEach(function(p) {
-        var targetId = tiers[p.rank] || 'tier-privates';
-        var container = document.getElementById(targetId);
-        if (!container) return;
-
-        var pill = document.createElement('div');
-        pill.className = 'member-pill';
-        pill.onclick = function() { openDossier(p.id); };
-
-        var raceLower = (p.race || '').toLowerCase();
-        var raceColor = '#60a5fa';
-        var raceTag = '[T]';
-
-        if (raceLower.startsWith('t')) {
-          raceColor = '#60a5fa'; raceTag = '[T]';
-        } else if (raceLower.startsWith('p')) {
-          raceColor = '#fbbf24'; raceTag = '[P]';
-        } else if (raceLower.startsWith('z')) {
-          raceColor = '#c084fc'; raceTag = '[Z]';
-        } else if (raceLower === 'ums') {
-          raceColor = '#10b981'; raceTag = '[UMS]'; // Green UMS
-        } else {
-          raceColor = '#ef4444'; raceTag = '[R]'; // Red Random
-        }
-
-	var pillAvatar = p.avatar ? 
-          '<img src="' + p.avatar + '" class="pill-avatar" onerror="this.style.display=\'none\'">' : '';
-
-        var delBtnHtml = canModerate ?
-          '<span onclick="event.stopPropagation(); adminDeleteMember(\'' + p.id + '\')" title="Expel member" style="margin-left:6px; color:var(--loss); font-weight:bold; cursor:pointer; padding:0 3px;">✕</span>' : '';
-
-        pill.innerHTML = 
-          '<span class="tag">' + pillAvatar + p.name + '</span>' +
-          '<span class="pill-race" style="color:' + raceColor + '">' + raceTag + '</span>' +
-          delBtnHtml;
-
-        container.appendChild(pill);
-      });
-    }
-
   </script>
-</body>
-</html>
