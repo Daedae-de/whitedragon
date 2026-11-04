@@ -1490,13 +1490,12 @@
           <span style="font-family:'Orbitron', sans-serif; font-weight:800; color:#fff; font-size:0.95rem;">LATEST TRANSMISSION</span>
           <a href="javascript:switchTab('community')" style="color:var(--cyan); font-size:0.8rem; text-decoration:none; font-family:'Share Tech Mono', monospace; font-weight:bold;">ALL NEWS &rarr;</a>
         </div>
-        <div id="latest-transmission-card" style="background:rgba(7, 12, 22, 0.7); padding:14px; border-radius:8px; border:1px solid var(--border-color);">
-          <span id="latest-transmission-meta" style="color:var(--cyan); font-size:0.75rem; font-family:'Share Tech Mono', monospace; font-weight:bold;">SYNCING CLOUD TRANSMISSION...</span>
-          <h4 id="latest-transmission-title" style="font-family:'Orbitron', sans-serif; color:#fff; font-size:1.02rem; margin:6px 0 8px; font-weight:800;">Loading latest clan news...</h4>
-          <p id="latest-transmission-body" style="color:var(--text-muted); font-size:0.88rem; line-height:1.55;">The latest published transmission will appear here automatically.</p>
-        </div>
-        <div style="margin-top:12px; text-align:right;">
-          <a href="javascript:switchTab('replays')" class="btn-download-rep" style="display:inline-block;">OPEN REPLAY ARCHIVE</a>
+        <div id="latest-transmission-card" style="display:flex; flex-direction:column; gap:10px;">
+          <div style="background:rgba(7, 12, 22, 0.7); padding:14px; border-radius:8px; border:1px solid var(--border-color);">
+            <span style="color:var(--cyan); font-size:0.75rem; font-family:'Share Tech Mono', monospace; font-weight:bold;">SYNCING CLOUD TRANSMISSIONS...</span>
+            <h4 style="font-family:'Orbitron', sans-serif; color:#fff; font-size:1.02rem; margin:6px 0 8px; font-weight:800;">Loading latest clan news...</h4>
+            <p style="color:var(--text-muted); font-size:0.88rem; line-height:1.55;">The two latest published transmissions will appear here automatically.</p>
+          </div>
         </div>
       </div>
     </div>
@@ -4179,27 +4178,63 @@ async function renderUserMaps() {
     }
 
     function renderLatestTransmission(articles) {
-      var metaEl = document.getElementById('latest-transmission-meta');
-      var titleEl = document.getElementById('latest-transmission-title');
-      var bodyEl = document.getElementById('latest-transmission-body');
-      if (!metaEl || !titleEl || !bodyEl) return;
+      var container = document.getElementById('latest-transmission-card');
+      if (!container) return;
 
-      var latest = (Array.isArray(articles) ? articles.slice() : []).sort(function(a, b) {
-        return getNewsSortTimestamp(b) - getNewsSortTimestamp(a);
-      })[0];
+      var latestTwo = (Array.isArray(articles) ? articles.slice() : [])
+        .sort(function(a, b) {
+          return getNewsSortTimestamp(b) - getNewsSortTimestamp(a);
+        })
+        .slice(0, 2);
 
-      if (!latest) {
-        metaEl.textContent = 'NO TRANSMISSION PUBLISHED';
-        titleEl.textContent = 'Awaiting the next clan update';
-        bodyEl.textContent = 'A new post published in the Community section will appear here automatically.';
+      container.innerHTML = '';
+
+      if (latestTwo.length === 0) {
+        var emptyCard = document.createElement('div');
+        emptyCard.style.cssText = 'background:rgba(7, 12, 22, 0.7); padding:14px; border-radius:8px; border:1px solid var(--border-color);';
+        var emptyMeta = document.createElement('span');
+        emptyMeta.style.cssText = 'color:var(--cyan); font-size:0.75rem; font-family:Share Tech Mono, monospace; font-weight:bold;';
+        emptyMeta.textContent = 'NO TRANSMISSION PUBLISHED';
+        var emptyTitle = document.createElement('h4');
+        emptyTitle.style.cssText = 'font-family:Orbitron, sans-serif; color:#fff; font-size:1.02rem; margin:6px 0 8px; font-weight:800;';
+        emptyTitle.textContent = 'Awaiting the next clan update';
+        var emptyBody = document.createElement('p');
+        emptyBody.style.cssText = 'color:var(--text-muted); font-size:0.88rem; line-height:1.55;';
+        emptyBody.textContent = 'A new post published in the Community section will appear here automatically.';
+        emptyCard.appendChild(emptyMeta);
+        emptyCard.appendChild(emptyTitle);
+        emptyCard.appendChild(emptyBody);
+        container.appendChild(emptyCard);
         return;
       }
 
-      var category = latest.tag ? latest.tag.replace(/^\/\//, '').trim() : (latest.category || 'NEWS').toUpperCase();
-      var dateLabel = latest.date || (getNewsSortTimestamp(latest) ? new Date(getNewsSortTimestamp(latest)).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }).toUpperCase() : 'LATEST UPDATE');
-      metaEl.textContent = dateLabel + ' // ' + category.toUpperCase();
-      titleEl.textContent = latest.title || 'Untitled transmission';
-      bodyEl.textContent = latest.body || '';
+      latestTwo.forEach(function(article, index) {
+        var card = document.createElement('div');
+        card.style.cssText = 'background:rgba(7, 12, 22, 0.7); padding:14px; border-radius:8px; border:1px solid var(--border-color);';
+
+        var category = article.tag ? article.tag.replace(/^\/\//, '').trim() : (article.category || 'NEWS');
+        var timestamp = getNewsSortTimestamp(article);
+        var dateLabel = article.date || (timestamp
+          ? new Date(timestamp).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }).toUpperCase()
+          : 'LATEST UPDATE');
+
+        var meta = document.createElement('span');
+        meta.style.cssText = 'color:var(--cyan); font-size:0.75rem; font-family:Share Tech Mono, monospace; font-weight:bold;';
+        meta.textContent = (index === 0 ? 'LATEST // ' : 'PREVIOUS // ') + dateLabel + ' // ' + String(category).toUpperCase();
+
+        var title = document.createElement('h4');
+        title.style.cssText = 'font-family:Orbitron, sans-serif; color:#fff; font-size:1.02rem; margin:6px 0 8px; font-weight:800;';
+        title.textContent = article.title || 'Untitled transmission';
+
+        var body = document.createElement('p');
+        body.style.cssText = 'color:var(--text-muted); font-size:0.88rem; line-height:1.55;';
+        body.textContent = article.body || '';
+
+        card.appendChild(meta);
+        card.appendChild(title);
+        card.appendChild(body);
+        container.appendChild(card);
+      });
     }
 
     function filterCommunityCategory(cat) {
