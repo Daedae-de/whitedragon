@@ -1476,12 +1476,12 @@
     <div class="grid-2">
       <div class="card">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; border-bottom:1px solid var(--border-color); padding-bottom:8px;">
-          <span style="font-family:'Orbitron', sans-serif; font-weight:800; color:#fff; font-size:0.95rem;">WD-A ACTIVE SQUAD</span>
+          <span style="font-family:'Orbitron', sans-serif; font-weight:800; color:#fff; font-size:0.95rem;">MEMBER POINTS RANKING</span>
           <a href="javascript:switchTab('roster')" style="color:var(--cyan); font-size:0.8rem; text-decoration:none; font-family:'Share Tech Mono', monospace; font-weight:bold;">VIEW FULL ROSTER &rarr;</a>
         </div>
-        <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom:12px;">Current WD-A tournament leaders // live 1v1 record from the match archive:</p>
-        <div id="overview-active-squad-list" style="display:flex; flex-direction:column; gap:8px;">
-          <div style="color:var(--text-muted); padding:10px 12px;">Synchronizing live player records...</div>
+        <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom:12px;">TOP 5 COMMANDERS // ALL ACTIVE SQUADS • CLAN LEAGUE ONLY • WIN 2 PTS / LOSS 1 PT:</p>
+        <div id="overview-points-ranking-list" style="display:flex; flex-direction:column; gap:8px;">
+          <div style="color:var(--text-muted); padding:10px 12px;">Synchronizing member points ranking...</div>
         </div>
       </div>
 
@@ -1702,7 +1702,7 @@
 <!-- TABELLARISCHER SET BUILDER (AKTUALISIERT) -->
       <div style="background:rgba(7,12,22,0.8); border:1px solid rgba(0,229,255,0.3); border-radius:8px; padding:12px; margin-bottom:12px; overflow-x:auto;">
         <div style="font-family:'Orbitron',sans-serif; font-size:0.75rem; color:var(--cyan); font-weight:800; margin-bottom:8px;">
-          🛠️ MATCH-SETS TABELLE (Auto-Kalkulation: Win +2 Pkt, Loss +1 Pkt für Clan League)
+          🛠️ MATCH-SETS TABELLE (Punkte: Clan League Sieg +2 Pkt / Niederlage +1 Pkt)
         </div>
         
         <table style="width:100%; min-width:700px; border-collapse: collapse; font-size:0.8rem; text-align:left;">
@@ -4277,7 +4277,10 @@ async function renderUserMaps() {
               renderClanNews(liveArticles);
               return;
             } else {
-              renderClanNews(getLocalNewsArticles());
+              // Firestore is the source of truth while connected. An empty cloud
+              // collection means the Overview must show no transmission, not
+              // revive deleted/stale local default articles.
+              renderClanNews([]);
             }
           }, function(err) {
             console.warn("Firestore sync offline:", err);
@@ -5477,6 +5480,7 @@ async function renderUserMaps() {
       var matches = getMatchesList();
       var allMembers = (typeof getFullClanMembersList === 'function') ? getFullClanMembersList() : membersData;
 
+      // Reset every calculated field before rebuilding it from the match archive.
       allMembers.forEach(function(mem) {
         mem._w1_w = 0; mem._w1_l = 0;
         mem._w2_w = 0; mem._w2_l = 0;
@@ -5484,76 +5488,103 @@ async function renderUserMaps() {
         mem._history = [];
       });
 
+      function escapeRegExp(value) {
+        return String(value || '').replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      }
+
+      function sideContainsMember(sideText, member) {
+        var aliases = [
+          member.id,
+          String(member.name || '').replace(/\s*\[WD\]\s*/ig, '').replace(/\s*\(WD\)\s*/ig, '').trim()
+        ].filter(Boolean);
+        var side = String(sideText || '');
+        return aliases.some(function(alias) {
+          // Avoid partial matches (e.g. "Wolf" matching "Wolfgang").
+          var pattern = new RegExp('(^|[^a-z0-9])' + escapeRegExp(alias) + '(?=$|[^a-z0-9])', 'i');
+          return pattern.test(side);
+        });
+      }
+
       matches.forEach(function(match) {
-        if (!match.sets || !Array.isArray(match.sets)) return;
-        var weekLabel = match.week ? match.week.split('//')[0].trim() : 'CW';
-        var isClanLeague = (match.category === 'Clan League' || match.category === '🏆 Clan League (BWCL)');
+        if (!match || !Array.isArray(match.sets)) return;
 
-        match.sets.forEach(function(s) {
-          if (!s || !s.trim()) return;
-          var line = s.trim();
+        var weekLabel = match.week ? String(match.week).split('//')[0].trim() : 'CW';
+        var category = String(match.category || '').toLowerCase();
+        var isClanLeague = category.indexOf('clan league') !== -1 || category.indexOf('bwcl') !== -1;
 
-          var mOutcome = line.match(/\|\s*(WIN|LOSS|W|L)\s*$/i);
-          var isWin = false;
+        match.sets.forEach(function(rawSet) {
+          if (typeof rawSet !== 'string' || !rawSet.trim()) return;
+          var line = rawSet.trim();
           var cleanText = line;
+          var isWin = null;
 
-          if (mOutcome) {
-            cleanText = line.substring(0, mOutcome.index).trim();
-            var outStr = mOutcome[1].toUpperCase();
-            isWin = (outStr === 'W' || outStr === 'WIN');
-          } else if (line.slice(-2).toUpperCase() === ' W') {
-            cleanText = line.slice(0, -2).trim();
-            isWin = true;
+          // Preferred format: "... | W", "... | L", "... | WIN", "... | LOSS".
+          var outcomeMatch = line.match(/(?:\|\s*|\s+)(WIN|LOSS|W|L)\s*$/i);
+          if (outcomeMatch) {
+            cleanText = line.substring(0, outcomeMatch.index).trim();
+            var outcome = outcomeMatch[1].toUpperCase();
+            isWin = (outcome === 'W' || outcome === 'WIN');
           }
 
-          var is2v2 = /2v2/i.test(cleanText);
+          // Read the score from the WD player's perspective when no explicit
+          // outcome marker exists. The WD player(s) are listed before the score.
           var scoreMatch = cleanText.match(/(\d+)\s*[-:]\s*(\d+)/);
+          if (isWin === null && scoreMatch) {
+            var wdScore = parseInt(scoreMatch[1], 10);
+            var opponentScore = parseInt(scoreMatch[2], 10);
+            if (wdScore === opponentScore) return; // Draw/ambiguous set: no result points.
+            isWin = wdScore > opponentScore;
+          }
+
+          // Ignore unfinished/ambiguous set lines instead of silently counting
+          // them as losses.
+          if (isWin === null) return;
+
+          var is2v2 = /\b2v2\b/i.test(cleanText);
           var scoreStr = scoreMatch ? scoreMatch[0] : (isWin ? '2:0' : '0:2');
           var wdSide = scoreMatch ? cleanText.substring(0, scoreMatch.index).trim() : cleanText;
 
           allMembers.forEach(function(mem) {
-            var memKey = mem.id.toLowerCase();
-            var memNameClean = mem.name.replace('[WD]', '').toLowerCase();
+            if (!sideContainsMember(wdSide, mem)) return;
 
-            if (wdSide.toLowerCase().indexOf(memKey) !== -1 || wdSide.toLowerCase().indexOf(memNameClean) !== -1) {
-              if (is2v2) {
-                if (isWin) mem._w2_w++; else mem._w2_l++;
-              } else {
-                if (isWin) mem._w1_w++; else mem._w1_l++;
-              }
-
-              if (isClanLeague) {
-                mem._pts += (isWin ? 2 : 1);
-              }
-
-              var displaySet = cleanText;
-              if (cleanText.indexOf('|') !== -1) {
-                var parts = cleanText.split('|').map(function(p) { return p.trim(); });
-                displaySet = parts.join(' • ');
-              }
-
-              mem._history.push({
-                week: weekLabel,
-                set: displaySet,
-                res: isWin ? 'WIN' : 'LOSS',
-                score: scoreStr,
-                win: isWin
-              });
+            if (is2v2) {
+              if (isWin) mem._w2_w++; else mem._w2_l++;
+            } else {
+              if (isWin) mem._w1_w++; else mem._w1_l++;
             }
+
+            // White Dragon points apply only to Clan League/BWCL sets:
+            // every WD participant receives 2 points for a win and 1 for a loss.
+            if (isClanLeague) {
+              mem._pts += isWin ? 2 : 1;
+            }
+
+            var displaySet = cleanText;
+            if (cleanText.indexOf('|') !== -1) {
+              displaySet = cleanText.split('|').map(function(part) { return part.trim(); }).join(' • ');
+            }
+
+            mem._history.push({
+              week: weekLabel,
+              set: displaySet,
+              res: isWin ? 'WIN' : 'LOSS',
+              score: scoreStr,
+              win: isWin
+            });
           });
         });
       });
 
       allMembers.forEach(function(mem) {
-        // Always overwrite old values, including members with a 0-0 record.
-        // The match archive is the single source of truth for calculated stats.
+        // Always replace stored values so edits/deletions and zero-result members
+        // are reflected accurately in the overview and member dossiers.
         mem.w1 = mem._w1_w + ' - ' + mem._w1_l;
         mem.w2 = mem._w2_w + ' - ' + mem._w2_l;
         mem.pts = mem._pts;
         mem.history = mem._history.slice();
       });
 
-      // Keep the local fallback consistent when Firestore is unavailable.
+      // Keep the local fallback synchronized when Firestore is unavailable.
       if (typeof firestoreMembers === 'undefined' || !firestoreMembers.length) {
         try {
           localStorage.setItem('wd_all_clan_members', JSON.stringify(allMembers));
@@ -5686,7 +5717,7 @@ async function renderUserMaps() {
 
     function renderMatches() {
       recalculateAllMemberScores();
-      renderOverviewActiveSquad();
+      renderOverviewPointsRanking();
       refreshOpenDossierStats();
 
       var grid = document.getElementById('dynamic-matches-grid');
@@ -5937,47 +5968,75 @@ async function renderUserMaps() {
       return defaultRoster;
     }
 
-    function renderOverviewActiveSquad() {
-      var container = document.getElementById('overview-active-squad-list');
+    function renderOverviewPointsRanking() {
+      // The overview leaderboard uses the same points calculated from the
+      // Clan League match archive. It includes all active clan members,
+      // regardless of WD-A / WD-B / WD-C squad assignment.
+      var container = document.getElementById('overview-points-ranking-list');
       if (!container) return;
 
-      var members = getFullClanMembersList();
-      var membersById = {};
-      members.forEach(function(member) { membersById[member.id] = member; });
-
-      var leaders = getDynamicRosterList()
-        .filter(function(entry) { return (entry.squad || 'WD-A') === 'WD-A'; })
-        .map(function(entry) { return membersById[entry.id]; })
-        .filter(function(member) { return member && member.status !== 'Inactive'; })
-        .sort(function(a, b) {
-          var winsDiff = (Number(b._w1_w) || 0) - (Number(a._w1_w) || 0);
-          if (winsDiff) return winsDiff;
-          var lossesDiff = (Number(a._w1_l) || 0) - (Number(b._w1_l) || 0);
-          if (lossesDiff) return lossesDiff;
-          return String(a.name || '').localeCompare(String(b.name || ''));
+      var members = recalculateAllMemberScores();
+      var ranking = members
+        .filter(function(member) {
+          return member && member.status !== 'Inactive';
         })
-        .slice(0, 4);
+        .map(function(member) {
+          return {
+            member: member,
+            points: Number(member.pts) || 0,
+            wins1v1: Number(member._w1_w) || 0,
+            losses1v1: Number(member._w1_l) || 0,
+            wins2v2: Number(member._w2_w) || 0,
+            losses2v2: Number(member._w2_l) || 0
+          };
+        })
+        .sort(function(a, b) {
+          if (b.points !== a.points) return b.points - a.points;
+          if (b.wins1v1 !== a.wins1v1) return b.wins1v1 - a.wins1v1;
+          if (a.losses1v1 !== b.losses1v1) return a.losses1v1 - b.losses1v1;
+          if (b.wins2v2 !== a.wins2v2) return b.wins2v2 - a.wins2v2;
+          return String(a.member.name || a.member.id || '').localeCompare(String(b.member.name || b.member.id || ''));
+        })
+        .slice(0, 5);
 
       container.innerHTML = '';
-      if (!leaders.length) {
+      if (!ranking.length) {
         var empty = document.createElement('div');
         empty.style.cssText = 'color:var(--text-muted); padding:10px 12px;';
-        empty.textContent = 'No active WD-A players found in the roster.';
+        empty.textContent = 'No active clan members found.';
         container.appendChild(empty);
         return;
       }
 
-      leaders.forEach(function(member) {
-        var wins = Number(member._w1_w) || 0;
-        var losses = Number(member._w1_l) || 0;
+      var previousPoints = null;
+      var previousRank = 0;
+      ranking.forEach(function(entry, index) {
+        var member = entry.member;
+        var rank = entry.points === previousPoints ? previousRank : index + 1;
+        previousPoints = entry.points;
+        previousRank = rank;
+
+        // Podium colours: 1st gold, 2nd silver, 3rd bronze.
+        var podiumStyle = {
+          1: { color: '#fbbf24', border: 'rgba(251, 191, 36, 0.70)', background: 'rgba(251, 191, 36, 0.09)' },
+          2: { color: '#cbd5e1', border: 'rgba(203, 213, 225, 0.62)', background: 'rgba(203, 213, 225, 0.07)' },
+          3: { color: '#cd7f32', border: 'rgba(205, 127, 50, 0.68)', background: 'rgba(205, 127, 50, 0.08)' }
+        }[rank] || { color: 'var(--text-muted)', border: 'var(--border-color)', background: 'rgba(7, 12, 22, 0.7)' };
+
         var row = document.createElement('div');
-        row.style.cssText = 'display:flex; justify-content:space-between; align-items:center; background:rgba(7, 12, 22, 0.7); padding:9px 12px; border-radius:6px; border:1px solid var(--border-color); cursor:pointer; gap:10px;';
+        row.style.cssText = 'display:flex; justify-content:space-between; align-items:center; background:' + podiumStyle.background + '; padding:9px 12px; border-radius:6px; border:1px solid ' + podiumStyle.border + '; cursor:pointer; gap:10px;';
         row.onclick = function() { openDossier(member.id); };
 
         var identity = document.createElement('span');
-        identity.style.cssText = 'display:inline-flex; align-items:center; gap:7px; flex-wrap:wrap;';
+        identity.style.cssText = 'display:inline-flex; align-items:center; gap:8px; min-width:0; flex-wrap:wrap;';
+
+        var rankLabel = document.createElement('strong');
+        rankLabel.style.cssText = 'color:' + podiumStyle.color + '; font-family:Orbitron, sans-serif; min-width:24px;';
+        rankLabel.textContent = '#' + rank;
+        identity.appendChild(rankLabel);
+
         var name = document.createElement('strong');
-        name.style.color = '#fff';
+        name.style.cssText = 'color:#fff;';
         name.textContent = member.name || member.id;
         identity.appendChild(name);
 
@@ -5985,16 +6044,16 @@ async function renderUserMaps() {
         var raceClass = race === 'terran' ? 'race-terran' : (race === 'protoss' ? 'race-protoss' : (race === 'zerg' ? 'race-zerg' : 'race-random'));
         var badge = document.createElement('span');
         badge.className = 'race-badge ' + raceClass;
-        badge.style.cssText = 'font-size:0.68rem; padding:2px 6px;';
+        badge.style.cssText = 'font-size:0.65rem; padding:2px 6px;';
         badge.textContent = member.race || 'Random';
         identity.appendChild(badge);
 
-        var record = document.createElement('span');
-        record.style.cssText = 'color:' + (wins > losses ? 'var(--win)' : '#cbd5e1') + '; font-family:Share Tech Mono, monospace; font-size:0.85rem; font-weight:bold; white-space:nowrap;';
-        record.textContent = wins + 'W - ' + losses + 'L 1v1';
+        var score = document.createElement('span');
+        score.style.cssText = 'color:' + podiumStyle.color + '; font-family:Share Tech Mono, monospace; font-size:0.88rem; font-weight:bold; white-space:nowrap;';
+        score.textContent = entry.points + (entry.points === 1 ? ' PT' : ' PTS');
 
         row.appendChild(identity);
-        row.appendChild(record);
+        row.appendChild(score);
         container.appendChild(row);
       });
     }
@@ -6173,6 +6232,7 @@ async function renderUserMaps() {
       // either member or match data changes so the latest combination is used.
       recalculateAllMemberScores();
       applyProfileCustomizationsToRoster();
+      renderOverviewPointsRanking();
       
       var allMembers = getFullClanMembersList();
       var rosterEntries = getDynamicRosterList();
@@ -6307,7 +6367,7 @@ async function renderUserMaps() {
         container.appendChild(pill);
       });
 
-      renderOverviewActiveSquad();
+      renderOverviewPointsRanking();
       refreshOpenDossierStats();
     }
 
