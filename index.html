@@ -1472,7 +1472,7 @@
       </div>
     </div>
 
-<!-- Two-column highlight: Roster summary + News teaser -->
+    <!-- Two-column highlight: Roster summary + News teaser -->
     <div class="grid-2">
       <div class="card">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; border-bottom:1px solid var(--border-color); padding-bottom:8px;">
@@ -1480,24 +1480,42 @@
           <a href="javascript:switchTab('roster')" style="color:var(--cyan); font-size:0.8rem; text-decoration:none; font-family:'Share Tech Mono', monospace; font-weight:bold;">VIEW FULL ROSTER &rarr;</a>
         </div>
         <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom:12px;">Top active tournament starters representing White Dragon in Season 65:</p>
-        <div style="display:flex; flex-direction:column; gap:8px;" id="overview-active-squad-list">
-          <!-- Dynamisch geladen -->
+        <div style="display:flex; flex-direction:column; gap:8px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; background:rgba(7, 12, 22, 0.7); padding:9px 12px; border-radius:6px; border:1px solid var(--border-color); cursor:pointer;" onclick="openDossier('CheesyCake')">
+            <span><strong style="color:#fff;">CheesyCake[WD]</strong> <span class="race-badge race-terran" style="font-size:0.68rem; padding:2px 6px;">Terran</span></span>
+            <span style="color:var(--win); font-family:'Share Tech Mono', monospace; font-size:0.85rem; font-weight:bold;">4W - 0L 1v1</span>
+          </div>
+          <div style="display:flex; justify-content:space-between; align-items:center; background:rgba(7, 12, 22, 0.7); padding:9px 12px; border-radius:6px; border:1px solid var(--border-color); cursor:pointer;" onclick="openDossier('Battousai')">
+            <span><strong style="color:#fff;">Battousai[WD]</strong> <span class="race-badge race-protoss" style="font-size:0.68rem; padding:2px 6px;">Protoss</span></span>
+            <span style="color:var(--win); font-family:'Share Tech Mono', monospace; font-size:0.85rem; font-weight:bold;">3W - 1L 1v1</span>
+          </div>
+          <div style="display:flex; justify-content:space-between; align-items:center; background:rgba(7, 12, 22, 0.7); padding:9px 12px; border-radius:6px; border:1px solid var(--border-color); cursor:pointer;" onclick="openDossier('KaRDiNaL')">
+            <span><strong style="color:#fff;">KaRDiNaL[WD]</strong> <span class="race-badge race-terran" style="font-size:0.68rem; padding:2px 6px;">Terran</span></span>
+            <span style="color:#cbd5e1; font-family:'Share Tech Mono', monospace; font-size:0.85rem; font-weight:bold;">2W - 2L 1v1</span>
+          </div>
+          <div style="display:flex; justify-content:space-between; align-items:center; background:rgba(7, 12, 22, 0.7); padding:9px 12px; border-radius:6px; border:1px solid var(--border-color); cursor:pointer;" onclick="openDossier('aMeba')">
+            <span><strong style="color:#fff;">aMeba[WD]</strong> <span class="race-badge race-zerg" style="font-size:0.68rem; padding:2px 6px;">Zerg</span></span>
+            <span style="color:var(--win); font-family:'Share Tech Mono', monospace; font-size:0.85rem; font-weight:bold;">1W - 0L 1v1</span>
+          </div>
         </div>
       </div>
 
       <div class="card">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; border-bottom:1px solid var(--border-color); padding-bottom:8px;">
           <span style="font-family:'Orbitron', sans-serif; font-weight:800; color:#fff; font-size:0.95rem;">LATEST TRANSMISSION</span>
-          <a href="javascript:switchTab('community')" style="color:var(--cyan); font-size:0.8rem; text-decoration:none; font-family:'Share Tech Mono', monospace; font-weight:bold;">ALL NEWS &rarr;</a>
+          <a href="javascript:switchTab('news')" style="color:var(--cyan); font-size:0.8rem; text-decoration:none; font-family:'Share Tech Mono', monospace; font-weight:bold;">ALL NEWS &rarr;</a>
         </div>
-        <div id="overview-latest-news-box" style="background:rgba(7, 12, 22, 0.7); padding:14px; border-radius:8px; border:1px solid var(--border-color);">
-          <!-- Automatisch neueste News -->
+        <div style="background:rgba(7, 12, 22, 0.7); padding:14px; border-radius:8px; border:1px solid var(--border-color);">
+          <span style="color:var(--cyan); font-size:0.75rem; font-family:'Share Tech Mono', monospace; font-weight:bold;">OCTOBER 25, 2026 // MATCH BULLETIN</span>
+          <h4 style="font-family:'Orbitron', sans-serif; color:#fff; font-size:1.02rem; margin:6px 0 8px; font-weight:800;">6-0 Clean Sweep vs Shadow-2 in Week #4!</h4>
+          <p style="color:var(--text-muted); font-size:0.88rem; line-height:1.55;">White Dragon commanded the battlefield with four straight 2-0 singles wins by KaRDiNaL, Battousai, CheesyCake, and newcomer aMeba, sealed with a flawless 2-0 doubles set.</p>
         </div>
         <div style="margin-top:12px; text-align:right;">
-          <a href="javascript:switchTab('replays')" class="btn-download-rep" style="display:inline-block;">DOWNLOAD REPLAYS (.REP)</a>
+          <a href="javascript:switchTab('replays')" class="btn-download-rep" style="display:inline-block;">DOWNLOAD WEEK 4 REPLAYS (.REP)</a>
         </div>
       </div>
     </div>
+  </section>
 
   <!-- ==================== 2. ROSTER TAB (TEAMS WD-A, WD-B, WD-C) ==================== -->
   <section id="tab-roster" class="section-wrap">
@@ -3179,7 +3197,6 @@ window.addEventListener('DOMContentLoaded', function() {
   recalculateAllMemberScores();
   renderMatches();
   renderRosterTableAndTiers();
-  renderDynamicOverview();
   
   // Realtime Cloud-Sync für alle Geräte (Firebase Firestore)
   initNewsRealtimeListener();
@@ -3193,20 +3210,6 @@ window.addEventListener('DOMContentLoaded', function() {
     switchTab(hash, false);
   }
 });
-
-
-      // 2. Neueste Transmission / News dynamisch in die Box laden
-      var newsBox = document.getElementById('overview-latest-news-box');
-      if (newsBox) {
-        var articles = getLocalNewsArticles();
-        if (articles && articles.length > 0) {
-          var latest = articles[0]; // Der allerneueste Eintrag
-          newsBox.innerHTML = '<span style="color:var(--cyan); font-size:0.75rem; font-family:\'Share Tech Mono\', monospace; font-weight:bold;">' + (latest.date || 'RECENT') + ' // ' + (latest.category || 'NEWS').toUpperCase() + '</span>' +
-                              '<h4 style="font-family:\'Orbitron\', sans-serif; color:#fff; font-size:1.02rem; margin:6px 0 8px; font-weight:800;">' + latest.title + '</h4>' +
-                              '<p style="color:var(--text-muted); font-size:0.88rem; line-height:1.55;">' + latest.body + '</p>';
-        }
-      }
-    }
 
     function openDossier(memberId) {
       applyProfileCustomizationsToRoster();
@@ -3777,38 +3780,6 @@ window.addEventListener('DOMContentLoaded', function() {
         `;
         container.appendChild(card);
       });
-    }
-
-function renderDynamicOverview() {
-      var squadContainer = document.getElementById('overview-active-squad-list');
-      if (squadContainer) {
-        squadContainer.innerHTML = '';
-        var allM = getFullClanMembersList();
-        var topStarters = ['CheesyCake', 'Battousai', 'KaRDiNaL', 'aMeba'];
-        topStarters.forEach(function(id) {
-          var p = allM.find(function(m) { return m.id === id; });
-          if (!p) return;
-          var recordText = p.w1 ? (p.w1 + ' 1v1') : 'Active Roster';
-          var winColor = (p.w1 && p.w1.startsWith('0 -')) ? 'var(--text-muted)' : 'var(--win)';
-          var div = document.createElement('div');
-          div.style.cssText = "display:flex; justify-content:space-between; align-items:center; background:rgba(7, 12, 22, 0.7); padding:9px 12px; border-radius:6px; border:1px solid var(--border-color); cursor:pointer;";
-          div.onclick = function() { openDossier(p.id); };
-          div.innerHTML = '<span><strong style="color:#fff;">' + p.name + '</strong> ' + getRaceBadgeHtml(p.race) + '</span>' +
-                          '<span style="color:' + winColor + '; font-family:\'Share Tech Mono\', monospace; font-size:0.85rem; font-weight:bold;">' + recordText + '</span>';
-          squadContainer.appendChild(div);
-        });
-      }
-
-      var newsBox = document.getElementById('overview-latest-news-box');
-      if (newsBox) {
-        var articles = getLocalNewsArticles();
-        if (articles && articles.length > 0) {
-          var latest = articles[0];
-          newsBox.innerHTML = '<span style="color:var(--cyan); font-size:0.75rem; font-family:\'Share Tech Mono\', monospace; font-weight:bold;">' + (latest.date || 'RECENT') + ' // ' + (latest.category || 'NEWS').toUpperCase() + '</span>' +
-                              '<h4 style="font-family:\'Orbitron\', sans-serif; color:#fff; font-size:1.02rem; margin:6px 0 8px; font-weight:800;">' + latest.title + '</h4>' +
-                              '<p style="color:var(--text-muted); font-size:0.88rem; line-height:1.55;">' + latest.body + '</p>';
-        }
-      }
     }
 
     function saveMapDownload() {
