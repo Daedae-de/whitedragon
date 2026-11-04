@@ -1479,24 +1479,9 @@
           <span style="font-family:'Orbitron', sans-serif; font-weight:800; color:#fff; font-size:0.95rem;">WD-A ACTIVE SQUAD</span>
           <a href="javascript:switchTab('roster')" style="color:var(--cyan); font-size:0.8rem; text-decoration:none; font-family:'Share Tech Mono', monospace; font-weight:bold;">VIEW FULL ROSTER &rarr;</a>
         </div>
-        <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom:12px;">Top active tournament starters representing White Dragon in Season 65:</p>
-        <div style="display:flex; flex-direction:column; gap:8px;">
-          <div style="display:flex; justify-content:space-between; align-items:center; background:rgba(7, 12, 22, 0.7); padding:9px 12px; border-radius:6px; border:1px solid var(--border-color); cursor:pointer;" onclick="openDossier('CheesyCake')">
-            <span><strong style="color:#fff;">CheesyCake[WD]</strong> <span class="race-badge race-terran" style="font-size:0.68rem; padding:2px 6px;">Terran</span></span>
-            <span style="color:var(--win); font-family:'Share Tech Mono', monospace; font-size:0.85rem; font-weight:bold;">4W - 0L 1v1</span>
-          </div>
-          <div style="display:flex; justify-content:space-between; align-items:center; background:rgba(7, 12, 22, 0.7); padding:9px 12px; border-radius:6px; border:1px solid var(--border-color); cursor:pointer;" onclick="openDossier('Battousai')">
-            <span><strong style="color:#fff;">Battousai[WD]</strong> <span class="race-badge race-protoss" style="font-size:0.68rem; padding:2px 6px;">Protoss</span></span>
-            <span style="color:var(--win); font-family:'Share Tech Mono', monospace; font-size:0.85rem; font-weight:bold;">3W - 1L 1v1</span>
-          </div>
-          <div style="display:flex; justify-content:space-between; align-items:center; background:rgba(7, 12, 22, 0.7); padding:9px 12px; border-radius:6px; border:1px solid var(--border-color); cursor:pointer;" onclick="openDossier('KaRDiNaL')">
-            <span><strong style="color:#fff;">KaRDiNaL[WD]</strong> <span class="race-badge race-terran" style="font-size:0.68rem; padding:2px 6px;">Terran</span></span>
-            <span style="color:#cbd5e1; font-family:'Share Tech Mono', monospace; font-size:0.85rem; font-weight:bold;">2W - 2L 1v1</span>
-          </div>
-          <div style="display:flex; justify-content:space-between; align-items:center; background:rgba(7, 12, 22, 0.7); padding:9px 12px; border-radius:6px; border:1px solid var(--border-color); cursor:pointer;" onclick="openDossier('aMeba')">
-            <span><strong style="color:#fff;">aMeba[WD]</strong> <span class="race-badge race-zerg" style="font-size:0.68rem; padding:2px 6px;">Zerg</span></span>
-            <span style="color:var(--win); font-family:'Share Tech Mono', monospace; font-size:0.85rem; font-weight:bold;">1W - 0L 1v1</span>
-          </div>
+        <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom:12px;">Current WD-A tournament leaders // live 1v1 record from the match archive:</p>
+        <div id="overview-active-squad-list" style="display:flex; flex-direction:column; gap:8px;">
+          <div style="color:var(--text-muted); padding:10px 12px;">Synchronizing live player records...</div>
         </div>
       </div>
 
@@ -1505,13 +1490,13 @@
           <span style="font-family:'Orbitron', sans-serif; font-weight:800; color:#fff; font-size:0.95rem;">LATEST TRANSMISSION</span>
           <a href="javascript:switchTab('news')" style="color:var(--cyan); font-size:0.8rem; text-decoration:none; font-family:'Share Tech Mono', monospace; font-weight:bold;">ALL NEWS &rarr;</a>
         </div>
-        <div style="background:rgba(7, 12, 22, 0.7); padding:14px; border-radius:8px; border:1px solid var(--border-color);">
-          <span style="color:var(--cyan); font-size:0.75rem; font-family:'Share Tech Mono', monospace; font-weight:bold;">OCTOBER 25, 2026 // MATCH BULLETIN</span>
-          <h4 style="font-family:'Orbitron', sans-serif; color:#fff; font-size:1.02rem; margin:6px 0 8px; font-weight:800;">6-0 Clean Sweep vs Shadow-2 in Week #4!</h4>
-          <p style="color:var(--text-muted); font-size:0.88rem; line-height:1.55;">White Dragon commanded the battlefield with four straight 2-0 singles wins by KaRDiNaL, Battousai, CheesyCake, and newcomer aMeba, sealed with a flawless 2-0 doubles set.</p>
+        <div id="latest-transmission-card" style="background:rgba(7, 12, 22, 0.7); padding:14px; border-radius:8px; border:1px solid var(--border-color);">
+          <span id="latest-transmission-meta" style="color:var(--cyan); font-size:0.75rem; font-family:'Share Tech Mono', monospace; font-weight:bold;">SYNCING CLOUD TRANSMISSION...</span>
+          <h4 id="latest-transmission-title" style="font-family:'Orbitron', sans-serif; color:#fff; font-size:1.02rem; margin:6px 0 8px; font-weight:800;">Loading latest clan news...</h4>
+          <p id="latest-transmission-body" style="color:var(--text-muted); font-size:0.88rem; line-height:1.55;">The latest published transmission will appear here automatically.</p>
         </div>
         <div style="margin-top:12px; text-align:right;">
-          <a href="javascript:switchTab('replays')" class="btn-download-rep" style="display:inline-block;">DOWNLOAD WEEK 4 REPLAYS (.REP)</a>
+          <a href="javascript:switchTab('replays')" class="btn-download-rep" style="display:inline-block;">OPEN REPLAY ARCHIVE</a>
         </div>
       </div>
     </div>
@@ -3331,6 +3316,52 @@ window.addEventListener('DOMContentLoaded', function() {
       modal.classList.add('active');
     }
 
+    function refreshOpenDossierStats() {
+      var modal = document.getElementById('dossierModal');
+      if (!modal || !modal.classList.contains('active') || !currentInspectedMemberId) return;
+
+      var allMembers = getFullClanMembersList();
+      var member = allMembers.find(function(m) { return m.id === currentInspectedMemberId; });
+      if (!member) return;
+
+      var oneVOne = document.getElementById('m-1v1-stat');
+      var twoVTwo = document.getElementById('m-2v2-stat');
+      var points = document.getElementById('m-pts-stat');
+      if (oneVOne) oneVOne.textContent = member.w1 || '0 - 0';
+      if (twoVTwo) twoVTwo.textContent = member.w2 || '0 - 0';
+      if (points) points.textContent = (Number(member.pts) || 0) + ' PTS';
+
+      var historyContainer = document.getElementById('m-history-log');
+      if (!historyContainer) return;
+      historyContainer.innerHTML = '';
+
+      if (!member.history || !member.history.length) {
+        var empty = document.createElement('div');
+        empty.style.cssText = 'font-style:italic; padding:4px 0;';
+        empty.textContent = 'No official BWCL sets recorded yet (Reserve / Active Training).';
+        historyContainer.appendChild(empty);
+        return;
+      }
+
+      var heading = document.createElement('div');
+      heading.style.cssText = 'font-weight:800; color:var(--cyan); margin-bottom:4px; font-size:0.8rem; letter-spacing:1px;';
+      heading.textContent = 'BWCL DIVISION D SETS:';
+      historyContainer.appendChild(heading);
+
+      member.history.forEach(function(entry) {
+        var row = document.createElement('div');
+        row.className = 'match-log-entry';
+        var description = document.createElement('span');
+        description.textContent = (entry.week || 'CW') + ': ' + (entry.set || 'Match');
+        var result = document.createElement('span');
+        result.className = entry.win ? 'res-win' : 'res-loss';
+        result.textContent = (entry.res || (entry.win ? 'WIN' : 'LOSS')) + ' (' + (entry.score || '') + ')';
+        row.appendChild(description);
+        row.appendChild(result);
+        historyContainer.appendChild(row);
+      });
+    }
+
     function closeModal() {
       const modal = document.getElementById('dossierModal');
       modal.classList.remove('active');
@@ -4133,6 +4164,43 @@ async function renderUserMaps() {
     }
 
     var currentCommunityCategoryFilter = 'All';
+    var wdNewsCache = null;
+    var newsRealtimeUnsubscribe = null;
+
+    function getNewsSortTimestamp(article) {
+      if (!article) return 0;
+      var value = article.createdAt;
+      if (value && typeof value.toMillis === 'function') return value.toMillis();
+      if (value instanceof Date) return value.getTime();
+      var numeric = Number(value);
+      if (Number.isFinite(numeric) && numeric > 0) return numeric;
+      var parsed = Date.parse(value || article.date || '');
+      return Number.isFinite(parsed) ? parsed : 0;
+    }
+
+    function renderLatestTransmission(articles) {
+      var metaEl = document.getElementById('latest-transmission-meta');
+      var titleEl = document.getElementById('latest-transmission-title');
+      var bodyEl = document.getElementById('latest-transmission-body');
+      if (!metaEl || !titleEl || !bodyEl) return;
+
+      var latest = (Array.isArray(articles) ? articles.slice() : []).sort(function(a, b) {
+        return getNewsSortTimestamp(b) - getNewsSortTimestamp(a);
+      })[0];
+
+      if (!latest) {
+        metaEl.textContent = 'NO TRANSMISSION PUBLISHED';
+        titleEl.textContent = 'Awaiting the next clan update';
+        bodyEl.textContent = 'A new post published in the Community section will appear here automatically.';
+        return;
+      }
+
+      var category = latest.tag ? latest.tag.replace(/^\/\//, '').trim() : (latest.category || 'NEWS').toUpperCase();
+      var dateLabel = latest.date || (getNewsSortTimestamp(latest) ? new Date(getNewsSortTimestamp(latest)).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }).toUpperCase() : 'LATEST UPDATE');
+      metaEl.textContent = dateLabel + ' // ' + category.toUpperCase();
+      titleEl.textContent = latest.title || 'Untitled transmission';
+      bodyEl.textContent = latest.body || '';
+    }
 
     function filterCommunityCategory(cat) {
       currentCommunityCategoryFilter = cat;
@@ -4143,10 +4211,12 @@ async function renderUserMaps() {
           else btn.classList.remove('active');
         }
       });
-      initNewsRealtimeListener();
+      renderClanNews(wdNewsCache || getLocalNewsArticles());
     }
 
     function renderClanNews(articles) {
+      wdNewsCache = Array.isArray(articles) ? articles.slice() : [];
+      renderLatestTransmission(wdNewsCache);
       var grid = document.getElementById('clan-news-grid');
       if (!grid) return;
       grid.innerHTML = '';
@@ -4192,7 +4262,11 @@ async function renderUserMaps() {
       if (typeof firebase !== 'undefined' && firebase.firestore) {
         try {
           var db = firebase.firestore();
-          db.collection('clan_news').orderBy('createdAt', 'desc').onSnapshot(function(snapshot) {
+          if (newsRealtimeUnsubscribe) {
+            newsRealtimeUnsubscribe();
+            newsRealtimeUnsubscribe = null;
+          }
+          newsRealtimeUnsubscribe = db.collection('clan_news').orderBy('createdAt', 'desc').onSnapshot(function(snapshot) {
             if (!snapshot.empty) {
               var liveArticles = [];
               snapshot.forEach(function(doc) {
@@ -5471,13 +5545,24 @@ async function renderUserMaps() {
       });
 
       allMembers.forEach(function(mem) {
-        if (mem._history.length > 0) {
-          mem.w1 = mem._w1_w + ' - ' + mem._w1_l;
-          mem.w2 = mem._w2_w + ' - ' + mem._w2_l;
-          mem.pts = mem._pts;
-          mem.history = mem._history;
-        }
+        // Always overwrite old values, including members with a 0-0 record.
+        // The match archive is the single source of truth for calculated stats.
+        mem.w1 = mem._w1_w + ' - ' + mem._w1_l;
+        mem.w2 = mem._w2_w + ' - ' + mem._w2_l;
+        mem.pts = mem._pts;
+        mem.history = mem._history.slice();
       });
+
+      // Keep the local fallback consistent when Firestore is unavailable.
+      if (typeof firestoreMembers === 'undefined' || !firestoreMembers.length) {
+        try {
+          localStorage.setItem('wd_all_clan_members', JSON.stringify(allMembers));
+        } catch(e) {
+          console.warn('Konnte berechnete Mitgliederstatistiken nicht lokal speichern:', e);
+        }
+      }
+
+      return allMembers;
     }
 
     function addSetFromTableBuilder() {
@@ -5601,6 +5686,8 @@ async function renderUserMaps() {
 
     function renderMatches() {
       recalculateAllMemberScores();
+      renderOverviewActiveSquad();
+      refreshOpenDossierStats();
 
       var grid = document.getElementById('dynamic-matches-grid');
       if (!grid) return;
@@ -5850,6 +5937,68 @@ async function renderUserMaps() {
       return defaultRoster;
     }
 
+    function renderOverviewActiveSquad() {
+      var container = document.getElementById('overview-active-squad-list');
+      if (!container) return;
+
+      var members = getFullClanMembersList();
+      var membersById = {};
+      members.forEach(function(member) { membersById[member.id] = member; });
+
+      var leaders = getDynamicRosterList()
+        .filter(function(entry) { return (entry.squad || 'WD-A') === 'WD-A'; })
+        .map(function(entry) { return membersById[entry.id]; })
+        .filter(function(member) { return member && member.status !== 'Inactive'; })
+        .sort(function(a, b) {
+          var winsDiff = (Number(b._w1_w) || 0) - (Number(a._w1_w) || 0);
+          if (winsDiff) return winsDiff;
+          var lossesDiff = (Number(a._w1_l) || 0) - (Number(b._w1_l) || 0);
+          if (lossesDiff) return lossesDiff;
+          return String(a.name || '').localeCompare(String(b.name || ''));
+        })
+        .slice(0, 4);
+
+      container.innerHTML = '';
+      if (!leaders.length) {
+        var empty = document.createElement('div');
+        empty.style.cssText = 'color:var(--text-muted); padding:10px 12px;';
+        empty.textContent = 'No active WD-A players found in the roster.';
+        container.appendChild(empty);
+        return;
+      }
+
+      leaders.forEach(function(member) {
+        var wins = Number(member._w1_w) || 0;
+        var losses = Number(member._w1_l) || 0;
+        var row = document.createElement('div');
+        row.style.cssText = 'display:flex; justify-content:space-between; align-items:center; background:rgba(7, 12, 22, 0.7); padding:9px 12px; border-radius:6px; border:1px solid var(--border-color); cursor:pointer; gap:10px;';
+        row.onclick = function() { openDossier(member.id); };
+
+        var identity = document.createElement('span');
+        identity.style.cssText = 'display:inline-flex; align-items:center; gap:7px; flex-wrap:wrap;';
+        var name = document.createElement('strong');
+        name.style.color = '#fff';
+        name.textContent = member.name || member.id;
+        identity.appendChild(name);
+
+        var race = String(member.race || 'Random').toLowerCase();
+        var raceClass = race === 'terran' ? 'race-terran' : (race === 'protoss' ? 'race-protoss' : (race === 'zerg' ? 'race-zerg' : 'race-random'));
+        var badge = document.createElement('span');
+        badge.className = 'race-badge ' + raceClass;
+        badge.style.cssText = 'font-size:0.68rem; padding:2px 6px;';
+        badge.textContent = member.race || 'Random';
+        identity.appendChild(badge);
+
+        var record = document.createElement('span');
+        record.style.cssText = 'color:' + (wins > losses ? 'var(--win)' : '#cbd5e1') + '; font-family:Share Tech Mono, monospace; font-size:0.85rem; font-weight:bold; white-space:nowrap;';
+        record.textContent = wins + 'W - ' + losses + 'L 1v1';
+
+        row.appendChild(identity);
+        row.appendChild(record);
+        container.appendChild(row);
+      });
+    }
+
     function addMemberToRosterUI() {
       var select = document.getElementById('roster-add-member-select');
       var squadSel = document.getElementById('roster-add-squad-select');
@@ -6020,6 +6169,9 @@ async function renderUserMaps() {
     // RENDER ROSTER & DYNAMIC MEMBER COUNTS
     // ========================================================
     function renderRosterTableAndTiers() {
+      // Both Firestore listeners can arrive in either order. Recalculate after
+      // either member or match data changes so the latest combination is used.
+      recalculateAllMemberScores();
       applyProfileCustomizationsToRoster();
       
       var allMembers = getFullClanMembersList();
@@ -6154,6 +6306,9 @@ async function renderUserMaps() {
 
         container.appendChild(pill);
       });
+
+      renderOverviewActiveSquad();
+      refreshOpenDossierStats();
     }
 
   </script>
