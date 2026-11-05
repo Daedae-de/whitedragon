@@ -5745,6 +5745,18 @@ async function renderUserMaps() {
       }
     }
 
+    function escapeMatchHtml(value) {
+      return String(value == null ? '' : value).replace(/[&<>"']/g, function(ch) {
+        return {
+          '&': '&amp;',
+          '<': '&lt;',
+          '>': '&gt;',
+          '"': '&quot;',
+          "'": '&#39;'
+        }[ch];
+      });
+    }
+
     function renderMatches() {
       recalculateAllMemberScores();
       renderOverviewPointsRanking();
@@ -5754,8 +5766,8 @@ async function renderUserMaps() {
       if (!grid) return;
       var matches = getMatchesList();
 
-      var user = (typeof firebase !== 'undefined' && firebase.auth && firebase.auth().currentUser) 
-        ? firebase.auth().currentUser 
+      var user = (typeof firebase !== 'undefined' && firebase.auth && firebase.auth().currentUser)
+        ? firebase.auth().currentUser
         : currentUser;
       var canModerate = user && (isUserAdmin(user.email) || user.email.toLowerCase() === WEBMASTER_EMAIL.toLowerCase());
 
@@ -5775,12 +5787,24 @@ async function renderUserMaps() {
         card.style.borderLeft = m.resultType === 'WIN' ? '4px solid var(--win)' : (m.resultType === 'LOSS' ? '4px solid var(--loss)' : '4px solid var(--cyan)');
 
         var resClass = m.resultType === 'WIN' ? 'score-win' : (m.resultType === 'LOSS' ? 'score-loss' : 'week');
-        
-        var adminActionBtns = canModerate ? 
-          '<div style="display:flex; gap:6px; align-items:center;">' +
-            '<button onclick="editMatchRecord(\'' + m.id + '\')" class="admin-del-btn" style="display:inline-block; border-color:var(--cyan); color:var(--cyan); background:rgba(0,229,255,0.15); margin:0;">✏️ EDIT</button>' +
-            '<button onclick="deleteMatchRecord(\'' + m.id + '\')" class="admin-del-btn" style="display:inline-block; margin:0;">🗑️</button>' +
-          '</div>' : '';
+        var displayTitle = String(m.title || '').trim() || 'Untitled Match';
+        var displayDate = String(m.week || '').trim();
+        if (!displayDate || displayDate.toUpperCase() === 'MATCH FIXTURE') {
+          displayDate = 'DATE TBD';
+        } else if (/^\d{4}-\d{2}-\d{2}$/.test(displayDate)) {
+          var dateParts = displayDate.split('-');
+          displayDate = dateParts[2] + '.' + dateParts[1] + '.' + dateParts[0];
+        }
+        var displayCategory = String(m.category || 'MATCH').toUpperCase();
+        var displayScore = String(m.score || (m.resultType === 'UPCOMING' ? 'PENDING' : ''));
+        var displayNote = String(m.note || ('STATUS: ' + (m.resultType || 'UNKNOWN')));
+
+        var adminActionBtns = canModerate
+          ? '<div style="display:flex; gap:6px; align-items:center;">' +
+              '<button type="button" data-match-action="edit" class="admin-del-btn" style="display:inline-block; border-color:var(--cyan); color:var(--cyan); background:rgba(0,229,255,0.15); margin:0;">✏️ EDIT</button>' +
+              '<button type="button" data-match-action="delete" class="admin-del-btn" style="display:inline-block; margin:0;">🗑️</button>' +
+            '</div>'
+          : '';
 
         var setsHtml = '';
         if (m.sets && m.sets.length > 0) {
@@ -5791,40 +5815,58 @@ async function renderUserMaps() {
           setsHtml += '</div>';
         } else if (m.resultType === 'UPCOMING') {
           setsHtml = '<div style="margin: 10px 0 12px 0; padding: 10px 0; border-top: 1px dotted rgba(56, 189, 248, 0.2); font-size:0.86rem; color:var(--text-muted); font-style:italic;">' +
-            (m.note ? m.note : 'Lineup and set scores will be recorded upon clan war commencement.') +
+            escapeMatchHtml(m.note || 'Lineup and set scores will be recorded upon clan war commencement.') +
           '</div>';
         }
 
-var displayTitle = (m.title || '').trim() || 'Untitled Match';
+        card.innerHTML =
+          '<div class="match-header" style="align-items:flex-start; gap:12px;">' +
+            '<div style="display:flex; flex-direction:column; gap:5px; min-width:0;">' +
+              '<strong style="font-family:Orbitron,sans-serif; color:#fff; font-size:1rem; line-height:1.35; overflow-wrap:anywhere;">' +
+                escapeMatchHtml(displayTitle) +
+              '</strong>' +
+              '<span class="week">' +
+                escapeMatchHtml(displayDate) +
+                ' <span style="font-size:0.65rem; color:var(--cyan); border:1px solid var(--cyan); padding:1px 5px; border-radius:3px; margin-left:4px; font-family:monospace; text-transform:uppercase;">' +
+                  escapeMatchHtml(displayCategory) +
+                '</span>' +
+              '</span>' +
+            '</div>' +
+            '<div style="display:flex; align-items:center; gap:10px; flex-shrink:0;">' +
+              '<span class="' + resClass + '">' + escapeMatchHtml(displayScore) + '</span>' +
+              adminActionBtns +
+            '</div>' +
+          '</div>' +
+          setsHtml +
+          '<div style="display:flex; justify-content:space-between; align-items:center; gap:10px; border-top:1px dotted var(--border-color); padding-top:8px; font-size:0.75rem; color:var(--text-dim);">' +
+            '<span style="font-family:\'Share Tech Mono\',monospace; overflow-wrap:anywhere;">' + escapeMatchHtml(displayNote) + '</span>' +
+            '<button type="button" class="match-rep-badge" data-match-action="replay">💾 REPLAY (.REP)</button>' +
+          '</div>';
 
-var displayDate = (m.week || '').trim();
-if (!displayDate || displayDate === 'MATCH FIXTURE') {
-  displayDate = 'DATE TBD';
-}
+        var editButton = card.querySelector('[data-match-action="edit"]');
+        if (editButton) {
+          editButton.addEventListener('click', function() {
+            editMatchRecord(String(m.id));
+          });
+        }
 
-card.innerHTML =
-  '<div class="match-header">' +
-    '<div style="display:flex; flex-direction:column; gap:5px;">' +
-      '<strong style="font-family:Orbitron,sans-serif; color:#fff; font-size:1rem;">' +
-        displayTitle +
-      '</strong>' +
-      '<span class="week">' +
-        displayDate +
-        ' <span style="font-size:0.65rem; color:var(--cyan); border:1px solid var(--cyan); padding:1px 5px; border-radius:3px;">' +
-          (m.category || 'MATCH').toUpperCase() +
-        '</span>' +
-      '</span>' +
-    '</div>' +
-    '<div style="display:flex; align-items:center; gap:10px;">' +
-      '<span class="' + resClass + '">' + (m.score || '') + '</span>' +
-      adminActionBtns +
-    '</div>' +
-  '</div>' +
-  setsHtml +
-  '<div style="display:flex; justify-content:space-between; align-items:center; border-top:1px dotted var(--border-color); padding-top:8px; font-size:0.75rem; color:var(--text-dim);">' +
-    '<span>' + (m.note || 'STATUS: ' + m.resultType) + '</span>' +
-    '<button onclick="downloadMatchReplay(\'' + m.title + '\', \'' + m.title + '\')" class="match-rep-badge">💾 REPLAY (.REP)</button>' +
-  '</div>';
+        var deleteButton = card.querySelector('[data-match-action="delete"]');
+        if (deleteButton) {
+          deleteButton.addEventListener('click', function() {
+            deleteMatchRecord(String(m.id));
+          });
+        }
+
+        var replayButton = card.querySelector('[data-match-action="replay"]');
+        if (replayButton) {
+          replayButton.addEventListener('click', function() {
+            downloadMatchReplay(displayTitle, displayTitle);
+          });
+        }
+
+        grid.appendChild(card);
+      });
+    }
 
     function toggleMatchCMS() {
       var terminal = document.getElementById('admin-match-terminal');
@@ -5859,7 +5901,7 @@ card.innerHTML =
 
       initBuilderMemberSelects();
       document.getElementById('match-edit-id').value = m.id;
-      document.getElementById('match-cms-heading').innerText = '⚡ EDIT MATCH INTEL // ' + m.title.toUpperCase();
+      document.getElementById('match-cms-heading').innerText = '⚡ EDIT MATCH INTEL // ' + String(m.title || 'UNTITLED MATCH').toUpperCase();
       document.getElementById('match-inp-cat').value = m.category || 'Clan League';
       document.getElementById('match-inp-date').value = m.week || '';
       document.getElementById('match-inp-title').value = m.title || '';
