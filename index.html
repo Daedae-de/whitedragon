@@ -5795,21 +5795,36 @@ async function renderUserMaps() {
           '</div>';
         }
 
-        card.innerHTML = 
-          '<div class="match-header">' +
-            '<span class="week">' + m.week + ' <span style="font-size:0.65rem; color:var(--cyan); border:1px solid var(--cyan); padding:1px 5px; border-radius:3px; margin-left:4px; font-family:monospace; text-transform:uppercase;">' + m.category + '</span></span>' +
-            '<div style="display:flex; align-items:center; gap:10px;"><span class="' + resClass + '">' + m.score + '</span>' + adminActionBtns + '</div>' +
-          '</div>' +
-          '<div style="font-weight:800; color:#fff; font-size:1.05rem; margin-bottom:4px;">' + m.title + '</div>' +
-          setsHtml +
-          '<div style="display:flex; justify-content:space-between; align-items:center; border-top:1px dotted var(--border-color); padding-top:8px; font-size:0.75rem; color:var(--text-dim);">' +
-            '<span style="font-family:\'Share Tech Mono\',monospace;">' + (m.note || 'STATUS: ' + m.resultType) + '</span>' +
-            '<button onclick="downloadMatchReplay(\'' + m.title + '\', \'' + m.title + '\')" class="match-rep-badge">💾 REPLAY (.REP)</button>' +
-          '</div>';
-        
-        grid.appendChild(card);
-      });
-    }
+var displayTitle = (m.title || '').trim() || 'Untitled Match';
+
+var displayDate = (m.week || '').trim();
+if (!displayDate || displayDate === 'MATCH FIXTURE') {
+  displayDate = 'DATE TBD';
+}
+
+card.innerHTML =
+  '<div class="match-header">' +
+    '<div style="display:flex; flex-direction:column; gap:5px;">' +
+      '<strong style="font-family:Orbitron,sans-serif; color:#fff; font-size:1rem;">' +
+        displayTitle +
+      '</strong>' +
+      '<span class="week">' +
+        displayDate +
+        ' <span style="font-size:0.65rem; color:var(--cyan); border:1px solid var(--cyan); padding:1px 5px; border-radius:3px;">' +
+          (m.category || 'MATCH').toUpperCase() +
+        '</span>' +
+      '</span>' +
+    '</div>' +
+    '<div style="display:flex; align-items:center; gap:10px;">' +
+      '<span class="' + resClass + '">' + (m.score || '') + '</span>' +
+      adminActionBtns +
+    '</div>' +
+  '</div>' +
+  setsHtml +
+  '<div style="display:flex; justify-content:space-between; align-items:center; border-top:1px dotted var(--border-color); padding-top:8px; font-size:0.75rem; color:var(--text-dim);">' +
+    '<span>' + (m.note || 'STATUS: ' + m.resultType) + '</span>' +
+    '<button onclick="downloadMatchReplay(\'' + m.title + '\', \'' + m.title + '\')" class="match-rep-badge">💾 REPLAY (.REP)</button>' +
+  '</div>';
 
     function toggleMatchCMS() {
       var terminal = document.getElementById('admin-match-terminal');
