@@ -2849,7 +2849,7 @@
           <button onclick="closeArticleModal()" class="btn-download-rep" style="padding:8px 18px; cursor:pointer; background:transparent; border-color:var(--text-dim); color:var(--text-muted);">
             ✕ CLOSE
           </button>
-          <div id="art-modal-admin-actions" style="display:flex; gap:8px; align-items:center;"></div>
+          <div id="art-modal-admin-actions" style="display:flex; gap:8px; align-items:center; margin-left:auto;"></div>
         </div>
       </div>
     </div>
@@ -3144,7 +3144,7 @@
         <td><strong style="color:var(--cyan);">WD-A</strong></td>
         <td>${flagSvg} ${p.country}</td>
         <td>${getRaceBadgeHtml(p.race)}</td>
-        <td style="text-align:right;"><span style="color:var(--text-dim); font-size:0.75rem; font-family:'Share Tech Mono', monospace;">ROSTERED</span></td>
+        <td style="text-align:right;"><span style="color:var(--win); font-family:'Share Tech Mono',monospace; font-size:0.8rem; font-weight:bold;">● ACTIVE</span></td>
       `;
       rosterTbody.appendChild(tr);
     });
@@ -4514,18 +4514,16 @@ async function renderUserMaps() {
       filtered.forEach(function(item) {
         var card = document.createElement('div');
         card.className = 'news-card';
+        card.style.cursor = 'pointer';
         
-        var isOwnerOrAdmin = user && (isUserAdmin(user.email) || (item.userEmail && item.userEmail.toLowerCase() === user.email.toLowerCase()));
-        
-        var actionBtns = isOwnerOrAdmin ? 
-          '<div style="float:right; display:flex; gap:6px;">' +
-            '<button onclick="editClanNews(\'' + item.id + '\')" class="admin-del-btn" style="display:inline-block; border-color:var(--cyan); color:var(--cyan); background:rgba(0,229,255,0.15); margin:0;">✏️ EDIT</button>' +
-            '<button onclick="deleteClanNews(\'' + item.id + '\')" class="admin-del-btn" style="display:inline-block; margin:0;">🗑️ REMOVE</button>' +
-          '</div>' : '';
+        // Klick auf den Beitrag öffnet das detaillierte Modal-Fenster
+        (function(artItem) {
+          card.onclick = function() { openArticleModal(artItem); };
+        })(item);
 
-        var displayCategory = item.category || (item.tag ? item.tag.replace('//', '').trim() : 'NEWS');
+        var displayCategory = item.category || (item.tag ? item.tag.replace(/^\/\//, '').trim() : 'NEWS');
 
-        card.innerHTML = actionBtns +
+        card.innerHTML = 
           '<span class="news-tag">// ' + displayCategory.toUpperCase() + '</span>' +
           '<h3>' + item.title + '</h3>' +
           '<p>' + item.body + '</p>' +
@@ -6927,8 +6925,13 @@ async function renderUserMaps() {
             '<img src="' + p.avatar + '" class="table-avatar" onerror="this.style.display=\'none\'">' : '';
           
           var removeBtn = canModerate 
-            ? '<button onclick="event.stopPropagation(); removeMemberFromRoster(\'' + p.id + '\')" class="admin-del-btn" style="display:inline-block; margin-left:8px; padding:2px 6px;">✕</button>'
+            ? '<button onclick="event.stopPropagation(); removeMemberFromRoster(\'' + p.id + '\')" class="admin-del-btn" title="Aus Squad entfernen" style="display:inline-flex; align-items:center; justify-content:center; width:26px; height:26px; padding:0; margin-left:10px; font-weight:bold; cursor:pointer;">✕</button>'
             : '';
+
+          var isMemberActive = (p.status !== 'Inactive');
+          var statusBadge = isMemberActive 
+            ? '<span style="color:var(--win); font-family:\'Share Tech Mono\',monospace; font-size:0.8rem; font-weight:bold;">● ACTIVE</span>' 
+            : '<span style="color:var(--text-dim); font-family:\'Share Tech Mono\',monospace; font-size:0.8rem;">○ INACTIVE</span>';
 
           var squadTag = entry.squad || 'WD-A';
 
@@ -6936,8 +6939,9 @@ async function renderUserMaps() {
             '<td><span class="player-tag">' + miniAvatar + p.name + ' <span class="click-hint">INTEL</span></span></td>' +
             '<td>' + roleBadge + '</td>' +
             '<td><strong style="color:var(--cyan);">' + squadTag + '</strong></td>' +
-            '<td>' + flagSvg + ' ' + p.country + removeBtn + '</td>' +
-            '<td>' + getRaceBadgeHtml(p.race) + '</td>';
+            '<td>' + flagSvg + ' ' + p.country + '</td>' +
+            '<td>' + getRaceBadgeHtml(p.race) + '</td>' +
+            '<td style="text-align:right; white-space:nowrap;">' + statusBadge + removeBtn + '</td>';
           
           rTbody.appendChild(tr);
         });
