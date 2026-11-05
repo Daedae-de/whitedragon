@@ -1417,11 +1417,7 @@
         <img src="logo.jpg" alt="White Dragon Crest" class="crest-nav-img" onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 100 100\'><circle cx=\'50\' cy=\'50\' r=\'46\' fill=\'%23070a12\' stroke=\'%2300e5ff\' stroke-width=\'3\'/><polygon points=\'50,20 75,40 65,75 50,85 35,75 25,40\' fill=\'%23111a2f\' stroke=\'%2300e5ff\' stroke-width=\'2\'/><text x=\'50\' y=\'55\' font-family=\'sans-serif\' font-size=\'18\' fill=\'%2300e5ff\' font-weight=\'bold\' text-anchor=\'middle\'>WD</text></svg>'">
         <div class="brand-title">WHITE <span>DRAGON</span></div>
       </a>
-      <div class="world-clocks-hud" id="world-clocks" title="Live Tactical Synchronized Clocks">
-        <div class="clock-badge"><span style="color:#fbbf24;">⚡ ET:</span> <strong id="clock-et">--:--:--</strong></div>
-        <span class="clock-divider">|</span>
-        <div class="clock-badge"><span style="color:var(--cyan);">🌐 BER:</span> <strong id="clock-berlin">--:--:--</strong></div>
-      </div>
+
       <ul class="nav-links">
         <li><button class="nav-tab-btn active" id="btn-tab-overview" onclick="switchTab('overview')">Overview</button></li>
         <li><button class="nav-tab-btn" id="btn-tab-roster" onclick="switchTab('roster')">Roster</button></li>
@@ -1462,6 +1458,12 @@
           <text x="100" y="166" font-family="'Orbitron', sans-serif" font-size="10" fill="#00e5ff" font-weight="900" text-anchor="middle">WHITE DRAGON</text>
         </svg>
         <div style="font-family:'Orbitron', sans-serif; font-size:0.75rem; letter-spacing:1px; color:var(--cyan); margin-top:4px; font-weight:800;">EST. 2021</div>
+        <!-- TACTICAL LIVE WORLD CLOCKS (OBEN RECHTS) -->
+        <div class="world-clocks-hud" id="world-clocks" title="Live Synchronized Clocks" style="margin-top:10px; display:inline-flex; justify-content:center; gap:8px; background:rgba(7,12,22,0.85); border:1px solid var(--border-color); border-radius:6px; padding:6px 12px; font-family:'Share Tech Mono', monospace; font-size:0.78rem;">
+          <div class="clock-badge"><span style="color:#fbbf24;">⚡ ET:</span> <strong id="clock-et" style="color:#fff;">--:--:--</strong></div>
+          <span class="clock-divider">|</span>
+          <div class="clock-badge"><span style="color:var(--cyan);">🌐 BER:</span> <strong id="clock-berlin" style="color:#fff;">--:--:--</strong></div>
+        </div>
       </div>
     </div>
   </section>
@@ -1659,6 +1661,7 @@
             <th>SQUAD</th>
             <th>COUNTRY</th>
             <th>PREFERRED RACE</th>
+            <th style="text-align:right;">ACTION</th>
           </tr>
         </thead>
         <tbody id="roster-tbody">
@@ -2842,11 +2845,11 @@
         <div id="art-modal-body" style="color:#cbd5e1; font-size:0.96rem; line-height:1.75; white-space:pre-wrap; background:rgba(7,12,22,0.6); padding:16px; border-radius:8px; border:1px solid var(--border-color); margin-bottom:18px;">
           Transmission content goes here...
         </div>
-        <div style="display:flex; justify-content:space-between; align-items:center;">
-          <div id="art-modal-admin-actions"></div>
-          <button onclick="closeArticleModal()" class="btn-download-rep" style="padding:8px 20px; cursor:pointer;">
-            CLOSE TRANSMISSION
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; border-top:1px solid var(--border-color); padding-top:14px;">
+          <button onclick="closeArticleModal()" class="btn-download-rep" style="padding:8px 18px; cursor:pointer; background:transparent; border-color:var(--text-dim); color:var(--text-muted);">
+            ✕ CLOSE
           </button>
+          <div id="art-modal-admin-actions" style="display:flex; gap:8px; align-items:center;"></div>
         </div>
       </div>
     </div>
@@ -3139,9 +3142,9 @@
         <td><span class="player-tag">${miniAvatar}${p.name} <span class="click-hint">INTEL</span></span></td>
         <td>${roleBadge}</td>
         <td><strong style="color:var(--cyan);">WD-A</strong></td>
-        <td>White Dragon</td>
         <td>${flagSvg} ${p.country}</td>
         <td>${getRaceBadgeHtml(p.race)}</td>
+        <td style="text-align:right;"><span style="color:var(--text-dim); font-size:0.75rem; font-family:'Share Tech Mono', monospace;">ROSTERED</span></td>
       `;
       rosterTbody.appendChild(tr);
     });
@@ -3336,7 +3339,78 @@
       }
     };
 
+
+    // ========================================================
+    // WORLD CLOCKS ENGINE (LIVE RUNNING ET & BERLIN TIME)
+    // ========================================================
+    function updateClocks() {
+      try {
+        var now = new Date();
+        var elET = document.getElementById('clock-et');
+        var elBER = document.getElementById('clock-berlin');
+        if (elET) {
+          elET.textContent = now.toLocaleTimeString('en-US', { timeZone: 'America/New_York', hour12: false });
+        }
+        if (elBER) {
+          elBER.textContent = now.toLocaleTimeString('de-DE', { timeZone: 'Europe/Berlin', hour12: false });
+        }
+      } catch(e) {}
+    }
+    setInterval(updateClocks, 1000);
+    updateClocks();
+
+    // ========================================================
+    // COMMUNITY TRANSMISSION DETAIL MODAL ENGINE
+    // ========================================================
+    function openArticleModal(item) {
+      if (!item) return;
+      var modal = document.getElementById('articleDetailModal');
+      if (!modal) return;
+
+      var user = (typeof firebase !== 'undefined' && firebase.auth && firebase.auth().currentUser) 
+        ? firebase.auth().currentUser 
+        : currentUser;
+      var isOwnerOrAdmin = user && (isUserAdmin(user.email) || (item.userEmail && item.userEmail.toLowerCase() === user.email.toLowerCase()));
+
+      var cat = item.category || (item.tag ? item.tag.replace(/^\/\//, '').trim() : 'NEWS');
+      var catEl = document.getElementById('art-modal-category');
+      var tagEl = document.getElementById('art-modal-tag');
+      var titleEl = document.getElementById('art-modal-title');
+      var dateEl = document.getElementById('art-modal-date');
+      var authorEl = document.getElementById('art-modal-author');
+      var bodyEl = document.getElementById('art-modal-body');
+
+      if (catEl) catEl.textContent = String(cat).toUpperCase();
+      if (tagEl) tagEl.textContent = '// ' + String(cat).toUpperCase();
+      if (titleEl) titleEl.textContent = item.title || 'Untitled Transmission';
+      if (dateEl) dateEl.textContent = item.date || 'RECENT';
+      if (authorEl) authorEl.textContent = item.author || 'HIGH COMMAND';
+      if (bodyEl) bodyEl.textContent = item.body || '';
+
+      var actionContainer = document.getElementById('art-modal-admin-actions');
+      if (actionContainer) {
+        actionContainer.innerHTML = '';
+        if (isOwnerOrAdmin) {
+          actionContainer.innerHTML = 
+            '<button onclick="closeArticleModal(); editClanNews(\'' + item.id + '\')" class="btn-download-rep" style="background:rgba(0,229,255,0.15); border-color:var(--cyan); color:var(--cyan); padding:8px 16px; cursor:pointer;">✏️ EDIT</button>' +
+            '<button onclick="closeArticleModal(); deleteClanNews(\'' + item.id + '\')" class="btn-download-rep" style="background:rgba(239,68,68,0.2); border-color:var(--loss); color:var(--loss); padding:8px 16px; cursor:pointer;">🗑️ REMOVE</button>';
+        }
+      }
+
+      modal.classList.add('active');
+    }
+
+    function closeArticleModal() {
+      var modal = document.getElementById('articleDetailModal');
+      if (modal) modal.classList.remove('active');
+    }
+
+    function handleArticleModalBackdrop(e) {
+      if (e.target.id === 'articleDetailModal') closeArticleModal();
+    }
+
 window.addEventListener('DOMContentLoaded', function() {
+  updateClocks();
   initVisitorCounter();
   recalculateAllMemberScores();
   renderMatches();
@@ -4371,7 +4445,13 @@ async function renderUserMaps() {
 
       latestTwo.forEach(function(article, index) {
         var card = document.createElement('div');
-        card.style.cssText = 'background:rgba(7, 12, 22, 0.7); padding:14px; border-radius:8px; border:1px solid var(--border-color);';
+        card.style.cssText = 'background:rgba(7, 12, 22, 0.7); padding:14px; border-radius:8px; border:1px solid var(--border-color); cursor:pointer; transition:all 0.2s;';
+        card.title = "Click to inspect transmission details";
+        card.onmouseenter = function() { card.style.borderColor = 'var(--cyan)'; card.style.background = 'rgba(0, 229, 255, 0.08)'; card.style.transform = 'translateY(-2px)'; };
+        card.onmouseleave = function() { card.style.borderColor = 'var(--border-color)'; card.style.background = 'rgba(7, 12, 22, 0.7)'; card.style.transform = 'translateY(0)'; };
+        (function(artItem) {
+          card.onclick = function() { openArticleModal(artItem); };
+        })(article);
 
         var category = article.tag ? article.tag.replace(/^\/\//, '').trim() : (article.category || 'NEWS');
         var timestamp = getNewsSortTimestamp(article);
@@ -4381,7 +4461,7 @@ async function renderUserMaps() {
 
         var meta = document.createElement('span');
         meta.style.cssText = 'color:var(--cyan); font-size:0.75rem; font-family:Share Tech Mono, monospace; font-weight:bold;';
-        meta.textContent = (index === 0 ? 'LATEST // ' : 'PREVIOUS // ') + dateLabel + ' // ' + String(category).toUpperCase();
+        meta.textContent = (index === 0 ? 'LATEST // ' : 'PREVIOUS // ') + dateLabel + ' // ' + String(category).toUpperCase() + ' ↗';
 
         var title = document.createElement('h4');
         title.style.cssText = 'font-family:Orbitron, sans-serif; color:#fff; font-size:1.02rem; margin:6px 0 8px; font-weight:800;';
