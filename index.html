@@ -1704,9 +1704,10 @@
           🛠️ MATCH-SETS TABELLE (Punkte: Clan League Sieg +2 Pkt / Niederlage +1 Pkt)
         </div>
         
-        <table style="width:100%; min-width:700px; border-collapse: collapse; font-size:0.8rem; text-align:left;">
+        <table style="width:100%; min-width:750px; border-collapse: collapse; font-size:0.8rem; text-align:left;">
           <thead style="border-bottom:1px solid var(--border-color); color:var(--text-muted); font-family:'Orbitron',sans-serif; font-size:0.65rem;">
             <tr>
+              <th style="padding:6px 4px;">SET #</th>
               <th style="padding:6px 4px;">TYPE</th>
               <th style="padding:6px 4px;">MAP</th>
               <th style="padding:6px 4px;">WD PLAYER(S)</th>
@@ -1718,6 +1719,7 @@
           </thead>
           <tbody id="builder-table-body">
             <tr>
+              <td style="padding:4px;"><input type="number" id="b-set-number" min="1" step="1" value="1" aria-label="Set number" title="Set number" style="width:48px; background:#0d1627; border:1px solid var(--border-color); color:#fff; padding:4px; text-align:center;"></td>
               <td style="padding:4px;"><select id="b-type" onchange="toggleTable2v2Mode()" style="background:#0d1627; border:1px solid var(--border-color); color:var(--cyan); padding:4px;"><option value="1v1">1v1</option><option value="2v2">2v2</option></select></td>
               <td style="padding:4px;"><input type="text" id="b-map" placeholder="Map..." style="width:90px; background:#0d1627; border:1px solid var(--border-color); color:#fff; padding:4px;"></td>
               <td style="padding:4px;">
@@ -1750,7 +1752,7 @@
         <label style="display:block; font-size:0.68rem; color:var(--text-muted); font-family:'Orbitron',sans-serif; margin-bottom:4px;">
           GENERIERTE MATCH-DATEN (Wird automatisch von der Tabelle oben befüllt)
         </label>
-        <textarea id="match-inp-sets" rows="4" placeholder="1v1 | Map | [T] KaRDiNaL[WD] 2:0 dB)Opponent [Z] | WIN" style="width:100%; background:#070a12; border:1px solid var(--border-color); color:#fff; padding:8px 10px; border-radius:4px; font-family:'Share Tech Mono',monospace; font-size:0.85rem; line-height:1.45; resize:vertical;"></textarea>
+        <textarea id="match-inp-sets" rows="4" placeholder="#1 1v1 | Map | [T] KaRDiNaL[WD] 2:0 dB)Opponent [Z] | WIN" style="width:100%; background:#070a12; border:1px solid var(--border-color); color:#fff; padding:8px 10px; border-radius:4px; font-family:'Share Tech Mono',monospace; font-size:0.85rem; line-height:1.45; resize:vertical;"></textarea>
       </div>
 
       <div style="margin-bottom:12px;">
@@ -5635,49 +5637,6 @@ async function renderUserMaps() {
       return allMembers;
     }
 
-    function addSetFromTableBuilder() {
-      var allMembers = (typeof getFullClanMembersList === 'function') ? getFullClanMembersList() : membersData;
-      var type = document.getElementById('b-type').value;
-      var map = document.getElementById('b-map').value.trim() || 'Unknown Map';
-      var score = document.getElementById('b-score').value;
-      var result = document.getElementById('b-result').value;
-      var oppClan = document.getElementById('b-opp-clan').value.trim() || '';
-      
-      var p1Id = document.getElementById('b-wd1').value;
-      var r1 = document.getElementById('b-wdr1').value;
-      var oppP1 = document.getElementById('b-opp1').value.trim() || 'Opponent';
-      var oppR1 = document.getElementById('b-oppr1').value;
-
-      var mem1 = allMembers.find(function(m) { return m.id === p1Id; });
-      var mem1Name = mem1 ? mem1.name : (p1Id + '[WD]');
-
-      var generatedLine = '';
-
-      if (type === '1v1') {
-        generatedLine = type + ' | ' + map + ' | [' + r1 + '] ' + mem1Name + ' ' + score + ' ' + (oppClan ? oppClan + '|' : '') + oppP1 + ' [' + oppR1 + '] | ' + result;
-      } else {
-        var p2Id = document.getElementById('b-wd2').value.trim() || 'Partner';
-        var r2 = document.getElementById('b-wdr2').value;
-        var oppP2 = document.getElementById('b-opp2').value.trim() || 'Opp2';
-        var oppR2 = document.getElementById('b-oppr2').value;
-
-        var mem2 = allMembers.find(function(m) { return m.id === p2Id; });
-        var mem2Name = mem2 ? mem2.name.replace('[WD]', '') : p2Id;
-        var cleanMem1 = mem1Name.replace('[WD]', '');
-
-        generatedLine = type + ' | ' + map + ' | [' + r1 + '/' + r2 + '] ' + cleanMem1 + ' & ' + mem2Name + ' ' + score + ' ' + (oppClan ? oppClan + '|' : '') + oppP1 + ' & ' + oppP2 + ' [' + oppR1 + '/' + oppR2 + '] | ' + result;
-      }
-
-      var textarea = document.getElementById('match-inp-sets');
-      if (textarea) {
-        if (textarea.value.trim().length > 0) textarea.value += '\n' + generatedLine;
-        else textarea.value = generatedLine;
-      }
-
-      document.getElementById('b-opp1').value = '';
-      document.getElementById('b-opp2').value = '';
-    }
-
     // Schaltet die 2v2-Felder in der Tabelle ein/aus
     function toggleTable2v2Mode() {
       var type = document.getElementById('b-type').value;
@@ -5689,6 +5648,9 @@ async function renderUserMaps() {
 
     function addSetFromTableBuilder() {
       var allMembers = (typeof getFullClanMembersList === 'function') ? getFullClanMembersList() : membersData;
+      var setNumberInput = document.getElementById('b-set-number');
+      var setNumber = Math.max(1, parseInt(setNumberInput ? setNumberInput.value : '1', 10) || 1);
+      var setPrefix = '#' + setNumber + ' ';
       var type = document.getElementById('b-type').value;
       var map = document.getElementById('b-map').value.trim() || 'Unknown Map';
       var score = document.getElementById('b-score').value.trim() || '2 - 0';
@@ -5705,7 +5667,7 @@ async function renderUserMaps() {
       var generatedLine = '';
 
       if (type === '1v1') {
-        generatedLine = type + ' | ' + map + ' | [' + r1 + '] ' + mem1Name + ' ' + score + ' ' + oppP1 + ' [' + oppR1 + '] | ' + result;
+        generatedLine = setPrefix + type + ' | ' + map + ' | [' + r1 + '] ' + mem1Name + ' ' + score + ' ' + oppP1 + ' [' + oppR1 + '] | ' + result;
       } else {
         var p2Id = document.getElementById('b-wd2').value;
         var r2 = document.getElementById('b-wdr2').value;
@@ -5716,7 +5678,7 @@ async function renderUserMaps() {
         var mem2Name = mem2 ? mem2.name : (p2Id + '[WD]');
         var cleanMem1 = mem1Name.replace('[WD]', '');
 
-        generatedLine = type + ' | ' + map + ' | [' + r1 + '/' + r2 + '] ' + cleanMem1 + ' & ' + mem2Name + ' ' + score + ' ' + oppP1 + ' & ' + oppP2 + ' [' + oppR1 + '/' + oppR2 + '] | ' + result;
+        generatedLine = setPrefix + type + ' | ' + map + ' | [' + r1 + '/' + r2 + '] ' + cleanMem1 + ' & ' + mem2Name + ' ' + score + ' ' + oppP1 + ' & ' + oppP2 + ' [' + oppR1 + '/' + oppR2 + '] | ' + result;
       }
 
       var textarea = document.getElementById('match-inp-sets');
@@ -5727,6 +5689,7 @@ async function renderUserMaps() {
 
       document.getElementById('b-opp1').value = '';
       document.getElementById('b-opp2').value = '';
+      if (setNumberInput) setNumberInput.value = String(setNumber + 1);
     }
 
     function initBuilderMemberSelects() {
@@ -5888,6 +5851,8 @@ async function renderUserMaps() {
         document.getElementById('match-edit-id').value = '';
         document.getElementById('match-cms-heading').innerText = '⚡ MATCH INTEL DISPATCH TERMINAL // NEW FIXTURE';
         document.getElementById('match-inp-title').value = '';
+        var setNumberInput = document.getElementById('b-set-number');
+        if (setNumberInput) setNumberInput.value = '1';
         document.getElementById('match-inp-date').value = '';
         document.getElementById('match-inp-score').value = '';
         document.getElementById('match-inp-note').value = '';
