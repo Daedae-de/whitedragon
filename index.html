@@ -1675,9 +1675,14 @@
             <option value="Clan Match">🛡️ Clan Match (Friendly CW)</option>
           </select>
         </div>
-	<div>
-          <label style="display:block; font-size:0.68rem; color:var(--text-muted); font-family:'Orbitron',sans-serif;">DATE / CALENDAR</label>
-          <input type="date" id="match-inp-date" style="width:100%; background:#070a12; border:1px solid var(--border-color); color:#fff; padding:7px; border-radius:4px; font-family:'Share Tech Mono', monospace;">
+        <div>
+          <label for="match-inp-date" style="display:block; font-size:0.68rem; color:var(--text-muted); font-family:'Orbitron',sans-serif; margin-bottom:4px;">DATE / CALENDAR</label>
+          <div style="display:flex; align-items:stretch; gap:6px;">
+            <input type="date" id="match-inp-date" aria-label="Match date" onclick="openMatchDatePicker()" style="flex:1; min-width:0; width:100%; background:#070a12; border:1px solid var(--border-color); color:#fff; color-scheme:dark; padding:7px; border-radius:4px; font-family:'Share Tech Mono', monospace; cursor:pointer;">
+            <button type="button" onclick="openMatchDatePicker()" aria-label="Open calendar" title="Choose date from calendar" class="btn-download-rep" style="display:inline-flex; align-items:center; justify-content:center; min-width:42px; padding:6px 10px; cursor:pointer;">
+              📅
+            </button>
+          </div>
         </div>
         <div>
           <label style="display:block; font-size:0.68rem; color:var(--text-muted); font-family:'Orbitron',sans-serif;">MATCH TITLE</label>
@@ -5840,6 +5845,23 @@ async function renderUserMaps() {
       });
     }
 
+    // Open the browser's native date picker from either the input or calendar button.
+    // showPicker() is supported in current Chromium browsers; focus/click is the fallback.
+    function openMatchDatePicker() {
+      var dateInput = document.getElementById('match-inp-date');
+      if (!dateInput) return;
+      try {
+        if (typeof dateInput.showPicker === 'function') {
+          dateInput.showPicker();
+        } else {
+          dateInput.focus();
+          dateInput.click();
+        }
+      } catch (error) {
+        dateInput.focus();
+      }
+    }
+
     function toggleMatchCMS() {
       var terminal = document.getElementById('admin-match-terminal');
       if (!terminal) return;
@@ -6410,12 +6432,15 @@ async function renderUserMaps() {
 
     // ========================================================
     // 4. REAL FIREBASE VISITOR COUNTER (NO ONLINE ESTIMATE)
-    // Counts one anonymous browser identity once per Berlin calendar day
-    // and once for the lifetime total. No local/demo fallback is used.
+    // Counts one anonymous Firebase identity once per Berlin calendar day
+    // and once for the lifetime total. This is a browser/device identity count,
+    // not a guaranteed count of individual humans. No local/demo fallback is used.
     // ========================================================
     var wdVisitorDailyUnsubscribe = null;
     var wdVisitorTotalUnsubscribe = null;
-    var wdVisitorLastCountedDate = null;
+    var wdVisitorWatchedDate = null;
+    var wdVisitorCountedDates = Object.create(null);
+    var wdVisitorInFlightDates = Object.create(null);
     var wdVisitorDayCheckTimer = null;
 
     function getBerlinDateKey(date) {
@@ -6504,22 +6529,33 @@ async function renderUserMaps() {
 
       function updateDailyCounterForCurrentDate() {
         var dateKey = getBerlinDateKey(new Date());
-        if (dateKey === wdVisitorLastCountedDate) return;
-        wdVisitorLastCountedDate = dateKey;
 
-        if (wdVisitorDailyUnsubscribe) wdVisitorDailyUnsubscribe();
-        var dailyCounterRef = db.collection('wd_visitor_daily').doc(dateKey);
-        wdVisitorDailyUnsubscribe = dailyCounterRef.onSnapshot(function(snapshot) {
-          setVisitorCounterValue('visitors-today-live', snapshot.exists ? snapshot.data().count : 0);
-        }, function(error) {
-          console.warn('Daily visitor listener unavailable:', error);
-          setVisitorCounterValue('visitors-today-live', null);
-        });
+        // Keep exactly one listener on the current Berlin calendar day.
+        if (dateKey !== wdVisitorWatchedDate) {
+          wdVisitorWatchedDate = dateKey;
+          if (wdVisitorDailyUnsubscribe) wdVisitorDailyUnsubscribe();
+          var dailyCounterRef = db.collection('wd_visitor_daily').doc(dateKey);
+          wdVisitorDailyUnsubscribe = dailyCounterRef.onSnapshot(function(snapshot) {
+            setVisitorCounterValue('visitors-today-live', snapshot.exists ? snapshot.data().count : 0);
+          }, function(error) {
+            console.warn('Daily visitor listener unavailable:', error);
+            setVisitorCounterValue('visitors-today-live', null);
+          });
+        }
 
-        registerVisitorForDay(db, visitorUid, dateKey).catch(function(error) {
+        // Do not mark the day as counted until Firestore confirms the transaction.
+        // A permission/network failure can therefore retry on the next minute check.
+        if (wdVisitorCountedDates[dateKey] || wdVisitorInFlightDates[dateKey]) return;
+        wdVisitorInFlightDates[dateKey] = true;
+
+        registerVisitorForDay(db, visitorUid, dateKey).then(function() {
+          wdVisitorCountedDates[dateKey] = true;
+        }).catch(function(error) {
           console.error('Visitor count could not be recorded:', error);
           setVisitorCounterValue('visitors-today-live', null);
           setVisitorCounterValue('visitors-total-live', null);
+        }).then(function() {
+          delete wdVisitorInFlightDates[dateKey];
         });
       }
 
