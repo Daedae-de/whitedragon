@@ -491,6 +491,7 @@
       letter-spacing: 1px;
       text-transform: uppercase;
       font-family: 'Orbitron', sans-serif;
+      white-space: nowrap;
     }
     .race-terran { background: rgba(59, 130, 246, 0.2); color: #60a5fa; border: 1px solid rgba(59, 130, 246, 0.5); }
     .race-protoss { background: rgba(245, 158, 11, 0.2); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.5); }
@@ -498,6 +499,58 @@
     /* Random in Red, UMS in Green */
     .race-random { background: rgba(239, 68, 68, 0.2); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.5); }
     .race-ums { background: rgba(16, 185, 129, 0.2); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.5); }
+    .race-icon-wrap {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 21px;
+      height: 21px;
+      flex: 0 0 21px;
+      vertical-align: middle;
+      border-radius: 4px;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 0.76rem;
+      line-height: 1;
+      font-weight: 900;
+      letter-spacing: -0.04em;
+      background: rgba(7, 10, 18, 0.55);
+    }
+    .race-mark-terran { color: #60a5fa; border: 1px solid rgba(59,130,246,0.65); }
+    .race-mark-protoss { color: #fbbf24; border: 1px solid rgba(245,158,11,0.65); }
+    .race-mark-zerg { color: #c084fc; border: 1px solid rgba(168,85,247,0.65); }
+    .race-mark-random { color: #ef4444; border: 1px solid rgba(239,68,68,0.65); font-size: 0.62rem; }
+    .race-mark-random svg { width: 13px; height: 13px; display: block; }
+    .race-badge-compact .race-mark-random svg { width: 11px; height: 11px; }
+    .race-badge-compact {
+      gap: 4px;
+      padding: 2px 6px;
+      font-size: 0.65rem;
+      letter-spacing: 0.6px;
+    }
+    .race-badge-compact .race-icon-wrap {
+      width: 17px;
+      height: 17px;
+      flex-basis: 17px;
+      font-size: 0.65rem;
+    }
+    .race-badge-compact .race-mark-random { font-size: 0.54rem; }
+    .race-icon-token {
+
+      display: inline-flex;
+      width: 16px;
+      height: 16px;
+      vertical-align: middle;
+      align-items: center;
+      justify-content: center;
+      margin: 0 2px;
+      border-radius: 3px;
+      overflow: hidden;
+    }
+    .race-icon-token .race-icon-wrap {
+      width: 17px;
+      height: 17px;
+      flex-basis: 17px;
+    }
 
     .role-badge {
       display: inline-flex;
@@ -2218,7 +2271,7 @@
             </div>
           </div>
           <div id="m-race-badge">
-            <span class="race-badge race-terran">Terran</span>
+            <span class="race-badge race-terran" title="Terran"><span class="race-icon-wrap race-mark-terran">T</span><span>Terran</span></span>
           </div>
         </div>
 
@@ -2720,22 +2773,61 @@
   </footer>
 
   <script>
-    // Flag SVGs
-    
-  function getRaceBadgeHtml(race) {
-      if (!race) race = 'Terran';
-      var r = race.toLowerCase();
-      if (r.startsWith('t')) {
-        return '<span class="race-badge race-terran" title="Terran">🛡️ Terran</span>';
-      } else if (r.startsWith('p')) {
-        return '<span class="race-badge race-protoss" title="Protoss">⚡ Protoss</span>';
-      } else if (r.startsWith('z')) {
-        return '<span class="race-badge race-zerg" title="Zerg">🕷️ Zerg</span>';
-      } else if (r === 'ums') {
-        return '<span class="race-badge race-ums" title="UMS" style="background:rgba(16,185,129,0.2);color:#10b981;border:1px solid rgba(16,185,129,0.5);">🎮 UMS</span>';
+    // Race markers: the standard StarCraft race initials T / P / Z.
+    // Random uses a simple dice symbol in the same compact badge style.
+    var WD_RACE_ICON_LABELS = {
+      terran: 'T',
+      protoss: 'P',
+      zerg: 'Z'
+    };
+
+    function getRaceKey(race) {
+      var r = String(race || 'Random').trim().toLowerCase();
+      if (r.startsWith('t')) return 'terran';
+      if (r.startsWith('p')) return 'protoss';
+      if (r.startsWith('z')) return 'zerg';
+      if (r === 'ums') return 'ums';
+      return 'random';
+    }
+
+    function getRaceIconHtml(race, compact) {
+      var key = getRaceKey(race);
+      if (key === 'ums') return '';
+      var label = key.charAt(0).toUpperCase() + key.slice(1);
+      var wrapClass = 'race-icon-wrap' + (compact ? ' race-icon-compact' : '');
+      var marker;
+
+      if (key === 'random') {
+        marker = '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">' +
+          '<rect x="3.5" y="3.5" width="17" height="17" rx="3" fill="none" stroke="currentColor" stroke-width="2"/>' +
+          '<circle cx="8" cy="8" r="1.45" fill="currentColor"/>' +
+          '<circle cx="16" cy="8" r="1.45" fill="currentColor"/>' +
+          '<circle cx="12" cy="12" r="1.45" fill="currentColor"/>' +
+          '<circle cx="8" cy="16" r="1.45" fill="currentColor"/>' +
+          '<circle cx="16" cy="16" r="1.45" fill="currentColor"/>' +
+          '</svg>';
       } else {
-        return '<span class="race-badge race-random" title="Random" style="background:rgba(239,68,68,0.2);color:#ef4444;border:1px solid rgba(239,68,68,0.5);">🎲 Random</span>';
+        marker = WD_RACE_ICON_LABELS[key] || key.charAt(0).toUpperCase();
       }
+
+      return '<span class="' + wrapClass + ' race-mark-' + key + '" role="img" aria-label="' + label + ' race marker">' + marker + '</span>';
+    }
+
+    function getRaceIconTokenHtml(race) {
+      var key = getRaceKey(race);
+      if (key === 'ums') return '<span class="race-icon-token race-ums" title="UMS">U</span>';
+      var label = key.charAt(0).toUpperCase() + key.slice(1);
+      return '<span class="race-icon-token race-' + key + '" title="' + label + '">' + getRaceIconHtml(label, true) + '</span>';
+    }
+
+    function getRaceBadgeHtml(race, compact) {
+      var key = getRaceKey(race);
+      if (key === 'ums') {
+        return '<span class="race-badge race-ums' + (compact ? ' race-badge-compact' : '') + '" title="UMS">🎮 UMS</span>';
+      }
+      var label = key.charAt(0).toUpperCase() + key.slice(1);
+      return '<span class="race-badge race-' + key + (compact ? ' race-badge-compact' : '') + '" title="' + label + '">' +
+        getRaceIconHtml(label, compact) + '<span>' + label + '</span></span>';
     }
 
 // Helper function to return official vector flag SVG from CDN
@@ -3008,12 +3100,11 @@
       pill.className = 'member-pill';
       pill.onclick = () => openDossier(p.id);
 
-      const raceColor = p.race === 'Terran' ? '#60a5fa' : (p.race === 'Protoss' ? '#fbbf24' : '#c084fc');
       const pillAvatar = p.avatar ? 
         `<img src="${p.avatar}" class="pill-avatar" onerror="this.style.display=\'none\'">` : '';
       pill.innerHTML = `
         <span class="tag">${pillAvatar}${p.name}</span>
-        <span class="pill-race" style="color:${raceColor}">[${p.race[0]}]</span>
+        ${getRaceBadgeHtml(p.race, true)}
       `;
       container.appendChild(pill);
     });
@@ -5322,16 +5413,16 @@ async function renderUserMaps() {
       }
 
       textPart = textPart
-        .replace(/\[T\]|\(T\)/gi, '<span class="race-badge race-terran" style="font-size:0.62rem; padding:1px 5px; margin:0 3px;">T</span>')
-        .replace(/\[P\]|\(P\)/gi, '<span class="race-badge race-protoss" style="font-size:0.62rem; padding:1px 5px; margin:0 3px;">P</span>')
-        .replace(/\[Z\]|\(Z\)/gi, '<span class="race-badge race-zerg" style="font-size:0.62rem; padding:1px 5px; margin:0 3px;">Z</span>')
-        .replace(/\[R\]|\(R\)/gi, '<span class="race-badge race-random" style="font-size:0.62rem; padding:1px 5px; margin:0 3px;">R</span>')
-        .replace(/\[P\/T\]|\(P\/T\)/gi, '<span class="race-badge race-protoss" style="font-size:0.62rem; padding:1px 4px; margin:0 1px;">P</span><span class="race-badge race-terran" style="font-size:0.62rem; padding:1px 4px; margin:0 1px;">T</span>')
-        .replace(/\[T\/P\]|\(T\/P\)/gi, '<span class="race-badge race-terran" style="font-size:0.62rem; padding:1px 4px; margin:0 1px;">T</span><span class="race-badge race-protoss" style="font-size:0.62rem; padding:1px 4px; margin:0 1px;">P</span>')
-        .replace(/\[Z\/T\]|\(Z\/T\)/gi, '<span class="race-badge race-zerg" style="font-size:0.62rem; padding:1px 4px; margin:0 1px;">Z</span><span class="race-badge race-terran" style="font-size:0.62rem; padding:1px 4px; margin:0 1px;">T</span>')
-        .replace(/\[T\/Z\]|\(T\/Z\)/gi, '<span class="race-badge race-terran" style="font-size:0.62rem; padding:1px 4px; margin:0 1px;">T</span><span class="race-badge race-zerg" style="font-size:0.62rem; padding:1px 4px; margin:0 1px;">Z</span>')
-        .replace(/\[Z\/P\]|\(Z\/P\)/gi, '<span class="race-badge race-zerg" style="font-size:0.62rem; padding:1px 4px; margin:0 1px;">Z</span><span class="race-badge race-protoss" style="font-size:0.62rem; padding:1px 4px; margin:0 1px;">P</span>')
-        .replace(/\[T\/T\]|\(T\/T\)/gi, '<span class="race-badge race-terran" style="font-size:0.62rem; padding:1px 4px; margin:0 1px;">T</span><span class="race-badge race-terran" style="font-size:0.62rem; padding:1px 4px; margin:0 1px;">T</span>');
+        .replace(/\[T\]|\(T\)/gi, getRaceIconTokenHtml('Terran'))
+        .replace(/\[P\]|\(P\)/gi, getRaceIconTokenHtml('Protoss'))
+        .replace(/\[Z\]|\(Z\)/gi, getRaceIconTokenHtml('Zerg'))
+        .replace(/\[R\]|\(R\)/gi, getRaceIconTokenHtml('Random'))
+        .replace(/\[P\/T\]|\(P\/T\)/gi, getRaceIconTokenHtml('Protoss') + getRaceIconTokenHtml('Terran'))
+        .replace(/\[T\/P\]|\(T\/P\)/gi, getRaceIconTokenHtml('Terran') + getRaceIconTokenHtml('Protoss'))
+        .replace(/\[Z\/T\]|\(Z\/T\)/gi, getRaceIconTokenHtml('Zerg') + getRaceIconTokenHtml('Terran'))
+        .replace(/\[T\/Z\]|\(T\/Z\)/gi, getRaceIconTokenHtml('Terran') + getRaceIconTokenHtml('Zerg'))
+        .replace(/\[Z\/P\]|\(Z\/P\)/gi, getRaceIconTokenHtml('Zerg') + getRaceIconTokenHtml('Protoss'))
+        .replace(/\[T\/T\]|\(T\/T\)/gi, getRaceIconTokenHtml('Terran') + getRaceIconTokenHtml('Terran'));
 
       return '<div class="set-row"><span>' + textPart + '</span>' + resBadge + '</div>';
     }
@@ -6234,13 +6325,10 @@ async function renderUserMaps() {
         name.textContent = member.name || member.id;
         identity.appendChild(name);
 
-        var race = String(member.race || 'Random').toLowerCase();
-        var raceClass = race === 'terran' ? 'race-terran' : (race === 'protoss' ? 'race-protoss' : (race === 'zerg' ? 'race-zerg' : 'race-random'));
-        var badge = document.createElement('span');
-        badge.className = 'race-badge ' + raceClass;
-        badge.style.cssText = 'font-size:0.65rem; padding:2px 6px;';
-        badge.textContent = member.race || 'Random';
-        identity.appendChild(badge);
+        var badgeHolder = document.createElement('span');
+        badgeHolder.innerHTML = getRaceBadgeHtml(member.race || 'Random', true);
+        var badge = badgeHolder.firstElementChild;
+        if (badge) identity.appendChild(badge);
 
         var score = document.createElement('span');
         score.style.cssText = 'color:' + podiumStyle.color + '; font-family:Share Tech Mono, monospace; font-size:0.88rem; font-weight:bold; white-space:nowrap;';
@@ -6720,23 +6808,7 @@ async function renderUserMaps() {
         pill.className = 'member-pill';
         pill.onclick = function() { openDossier(p.id); };
 
-        var raceLower = (p.race || '').toLowerCase();
-        var raceColor = '#60a5fa';
-        var raceTag = '[T]';
-
-        if (raceLower.startsWith('t')) {
-          raceColor = '#60a5fa'; raceTag = '[T]';
-        } else if (raceLower.startsWith('p')) {
-          raceColor = '#fbbf24'; raceTag = '[P]';
-        } else if (raceLower.startsWith('z')) {
-          raceColor = '#c084fc'; raceTag = '[Z]';
-        } else if (raceLower === 'ums') {
-          raceColor = '#10b981'; raceTag = '[UMS]'; // Green UMS
-        } else {
-          raceColor = '#ef4444'; raceTag = '[R]'; // Red Random
-        }
-
-	var pillAvatar = p.avatar ? 
+        var pillAvatar = p.avatar ? 
           '<img src="' + p.avatar + '" class="pill-avatar" onerror="this.style.display=\'none\'">' : '';
 
         var delBtnHtml = canModerate ?
@@ -6744,7 +6816,7 @@ async function renderUserMaps() {
 
         pill.innerHTML = 
           '<span class="tag">' + pillAvatar + p.name + '</span>' +
-          '<span class="pill-race" style="color:' + raceColor + '">' + raceTag + '</span>' +
+          getRaceBadgeHtml(p.race, true) +
           delBtnHtml;
 
         container.appendChild(pill);
