@@ -4687,42 +4687,103 @@ async function renderUserMaps() {
       alert("Beitrag im lokalen Vault gespeichert!");
     }
 
-    function editClanNews(id) {
-      var card = event.target.closest('.news-card');
-      if (card) {
-        var tagText = card.querySelector('.news-tag').innerText.replace('//', '').trim();
-        var title = card.querySelector('h3').innerText;
-        var body = card.querySelector('p').innerText;
-        
-        document.getElementById('cms-edit-article-id').value = id;
-        document.getElementById('cms-news-title').value = title;
-        document.getElementById('cms-news-body').value = body;
-        
-        var catSelect = document.getElementById('cms-news-cat');
-        if (catSelect) {
-          for (var i = 0; i < catSelect.options.length; i++) {
-            if (catSelect.options[i].value.toLowerCase() === tagText.toLowerCase()) {
-              catSelect.selectedIndex = i;
-              break;
-            }
+        function editClanNews(id) {
+      var articles = (Array.isArray(wdNewsCache) && wdNewsCache.length > 0) 
+        ? wdNewsCache 
+        : getLocalNewsArticles();
+      
+      var article = articles.find(function(a) { return String(a.id) === String(id); });
+      if (!article) {
+        // Fallback: check modal fields if open
+        var modalTitle = document.getElementById('art-modal-title');
+        var modalBody = document.getElementById('art-modal-body');
+        var modalAuthor = document.getElementById('art-modal-author');
+        var modalCat = document.getElementById('art-modal-category');
+        if (modalTitle && modalTitle.textContent) {
+          article = {
+            id: id,
+            title: modalTitle.textContent,
+            body: modalBody ? modalBody.textContent : '',
+            author: modalAuthor ? modalAuthor.textContent : 'HIGH COMMAND',
+            category: modalCat ? modalCat.textContent : 'News'
+          };
+        }
+      }
+
+      if (!article) {
+        alert("Transmission nicht gefunden.");
+        return;
+      }
+
+      // Close modal if open
+      if (typeof closeArticleModal === 'function') {
+        closeArticleModal();
+      }
+
+      // Switch to community tab where the CMS terminal is located
+      if (typeof switchTab === 'function') {
+        switchTab('community');
+      }
+
+      // Ensure the CMS terminal is displayed
+      var terminal = document.getElementById('admin-news-terminal');
+      if (terminal) {
+        terminal.style.display = 'block';
+      }
+
+      // Fill in form values
+      var editIdInput = document.getElementById('cms-edit-article-id');
+      var titleInput = document.getElementById('cms-news-title');
+      var bodyInput = document.getElementById('cms-news-body');
+      var authorInput = document.getElementById('cms-news-author');
+      var catSelect = document.getElementById('cms-news-cat');
+
+      if (editIdInput) editIdInput.value = article.id;
+      if (titleInput) titleInput.value = article.title || '';
+      if (bodyInput) bodyInput.value = article.body || '';
+      if (authorInput) authorInput.value = article.author || 'HIGH COMMAND';
+
+      if (catSelect) {
+        var rawCat = String(article.category || (article.tag ? article.tag.replace(/^\/\//, '').trim() : 'News')).toLowerCase();
+        for (var i = 0; i < catSelect.options.length; i++) {
+          if (catSelect.options[i].value.toLowerCase() === rawCat) {
+            catSelect.selectedIndex = i;
+            break;
           }
         }
-
-        document.getElementById('cms-form-heading').innerText = '⚡ EDIT COMMUNITY TRANSMISSION';
-        document.getElementById('cms-submit-btn').innerText = '💾 SAVE CHANGES';
-        document.getElementById('cms-cancel-btn').style.display = 'inline-block';
-
-        window.scrollTo({ top: document.getElementById('admin-news-terminal').offsetTop - 100, behavior: 'smooth' });
       }
+
+      var heading = document.getElementById('cms-form-heading');
+      var submitBtn = document.getElementById('cms-submit-btn');
+      var cancelBtn = document.getElementById('cms-cancel-btn');
+
+      if (heading) heading.innerText = '⚡ EDIT COMMUNITY TRANSMISSION';
+      if (submitBtn) submitBtn.innerText = '💾 SAVE CHANGES';
+      if (cancelBtn) cancelBtn.style.display = 'inline-block';
+
+      setTimeout(function() {
+        if (terminal) {
+          terminal.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }, 200);
     }
 
     function cancelClanNewsEdit() {
-      document.getElementById('cms-edit-article-id').value = '';
-      document.getElementById('cms-news-title').value = '';
-      document.getElementById('cms-news-body').value = '';
-      document.getElementById('cms-form-heading').innerText = 'TRANSMISSION DISPATCH TERMINAL // COMMUNITY CMS';
-      document.getElementById('cms-submit-btn').innerText = '📡 BROADCAST TRANSMISSION';
-      document.getElementById('cms-cancel-btn').style.display = 'none';
+      var editIdInput = document.getElementById('cms-edit-article-id');
+      var titleInput = document.getElementById('cms-news-title');
+      var bodyInput = document.getElementById('cms-news-body');
+      var authorInput = document.getElementById('cms-news-author');
+      var heading = document.getElementById('cms-form-heading');
+      var submitBtn = document.getElementById('cms-submit-btn');
+      var cancelBtn = document.getElementById('cms-cancel-btn');
+
+      if (editIdInput) editIdInput.value = '';
+      if (titleInput) titleInput.value = '';
+      if (bodyInput) bodyInput.value = '';
+      if (authorInput) authorInput.value = '';
+      if (heading) heading.innerText = 'TRANSMISSION DISPATCH TERMINAL // COMMUNITY CMS';
+      if (submitBtn) submitBtn.innerText = '📡 BROADCAST TRANSMISSION';
+      if (cancelBtn) cancelBtn.style.display = 'none';
     }
 
     function deleteClanNews(newsId) {
