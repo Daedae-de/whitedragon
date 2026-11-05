@@ -3180,6 +3180,7 @@ window.addEventListener('DOMContentLoaded', function() {
   // Realtime Cloud-Sync für alle Geräte (Firebase Firestore)
   initNewsRealtimeListener();
   initClanMembersRealtimeListener();
+  initClanRosterRealtimeListener();
   initMatchesRealtimeListener(); // <-- WICHTIG: Muss hier stehen!
   initVaultRealtimeListener();       
   fetchBWCLStandings();
@@ -4792,6 +4793,7 @@ async function renderUserMaps() {
       if (memAddPanel) memAddPanel.style.display = (isAdmin || isWebmaster) ? 'block' : 'none';
 
       initNewsRealtimeListener();
+      maybeSeedInitialClanRoster();
       renderMatches();
       renderRosterTableAndTiers();
     }
@@ -5035,26 +5037,33 @@ async function renderUserMaps() {
         return;
       }
 
-      // 1. Direkt aus Cloud Firestore für ALLE Geräte löschen
+      // 1. Aus beiden Cloud-Collections löschen. Die jeweiligen onSnapshot-
+      // Listener aktualisieren Mitgliederliste und Squad-Roster auf allen Geräten.
       if (typeof firebase !== 'undefined' && firebase.firestore) {
-        firebase.firestore().collection('clan_members').doc(memberId).delete()
+        var db = firebase.firestore();
+        db.collection('clan_members').doc(memberId).delete()
           .then(function() {
-            console.log("Mitglied aus Cloud gelöscht:", memberId);
+            console.log("Mitglied aus clan_members gelöscht:", memberId);
           })
           .catch(function(err) {
-            console.error("Firestore Löschfehler:", err);
+            console.error("Firestore Mitglieder-Löschfehler:", err);
+          });
+        db.collection('clan_roster').doc(memberId).delete()
+          .then(function() {
+            console.log("Squad-Zuordnung aus clan_roster gelöscht:", memberId);
+          })
+          .catch(function(err) {
+            console.error("Firestore Squad-Löschfehler:", err);
           });
       }
 
-      // 2. Aus lokalem Speicher entfernen
+      // 2. Lokale Mitglieder-Fallbackliste aktualisieren. Das Squad-Roster
+      // wird ausschließlich durch den clan_roster onSnapshot-Listener gepflegt.
       var idx = membersData.findIndex(function(m) { return m.id === memberId; });
       if (idx !== -1) membersData.splice(idx, 1);
 
       var fullList = getFullClanMembersList().filter(function(m) { return m.id !== memberId; });
       localStorage.setItem('wd_all_clan_members', JSON.stringify(fullList));
-
-      var rosterList = getDynamicRosterList().filter(function(r) { return r.id !== memberId; });
-      localStorage.setItem('wd_competitive_roster', JSON.stringify(rosterList));
 
       var customs = getCustomProfiles();
       if (customs[memberId]) {
@@ -6025,14 +6034,21 @@ async function renderUserMaps() {
       renderRosterTableAndTiers();
     }
 
-    // Dynamic Roster Storage with Squad Designations
-    function getDynamicRosterList() {
-      try {
-        var stored = JSON.parse(localStorage.getItem('wd_competitive_roster') || 'null');
-        if (Array.isArray(stored) && stored.length > 0) return stored;
-      } catch(e) {}
-      
-      var defaultRoster = [
+    // ========================================================
+    // FIRESTORE-SYNCHRONIZED SQUAD ROSTER (WD-A / WD-B / WD-C)
+    // ========================================================
+    // Firestore is the authoritative source after its first snapshot.
+    // localStorage is retained only as an offline fallback and for the
+    // one-time migration of the existing browser roster into Firestore.
+    var firestoreRoster = [];
+    var firestoreRosterLoaded = false;
+    var firestoreRosterSnapshotReceived = false;
+    var firestoreRosterIsEmpty = false;
+    var firestoreRosterSeedStarted = false;
+    var firestoreRosterUnsubscribe = null;
+
+    function getDefaultRosterList() {
+      return [
         { id: 'CheesyCake', squad: 'WD-A', role: 'Player' },
         { id: 'Battousai', squad: 'WD-A', role: 'Player' },
         { id: 'Miwaco', squad: 'WD-A', role: 'Player' },
@@ -6051,8 +6067,112 @@ async function renderUserMaps() {
         { id: 'Wolf', squad: 'WD-C', role: 'Player' },
         { id: 'carcar', squad: 'WD-C', role: 'Player' }
       ];
-      localStorage.setItem('wd_competitive_roster', JSON.stringify(defaultRoster));
-      return defaultRoster;
+    }
+
+    function getLocalRosterFallback() {
+      try {
+        var stored = JSON.parse(localStorage.getItem('wd_competitive_roster') || 'null');
+        if (Array.isArray(stored) && stored.length > 0) return stored;
+      } catch(e) {
+        console.warn('Could not read local squad roster:', e);
+      }
+      var defaults = getDefaultRosterList();
+      localStorage.setItem('wd_competitive_roster', JSON.stringify(defaults));
+      return defaults;
+    }
+
+    function getDynamicRosterList() {
+      if (firestoreRosterLoaded) return firestoreRoster.slice();
+      return getLocalRosterFallback();
+    }
+
+    // Keep this allow-list aligned with the isAdmin() function in the
+    // currently supplied Firestore rules. The local UI admin list alone
+    // cannot grant Firestore write access.
+    function canWriteClanRosterToFirestore() {
+      if (!firebaseInitialized || typeof firebase === 'undefined' || !firebase.auth) return false;
+      var user = firebase.auth().currentUser;
+      if (!user || !user.emailVerified || !user.email) return false;
+      var email = user.email.toLowerCase().trim();
+      return email === 'daehyeon0206@gmail.com' || email === 'abecul323@outlook.com';
+    }
+
+    function maybeSeedInitialClanRoster() {
+      if (!firestoreRosterSnapshotReceived || !firestoreRosterIsEmpty ||
+          firestoreRosterSeedStarted || !canWriteClanRosterToFirestore() ||
+          typeof firebase === 'undefined' || !firebase.firestore) return;
+
+      firestoreRosterSeedStarted = true;
+      var initialRoster = getLocalRosterFallback();
+      var db = firebase.firestore();
+      var batch = db.batch();
+
+      initialRoster.forEach(function(entry) {
+        if (!entry || !entry.id) return;
+        var cleanEntry = {
+          id: String(entry.id),
+          squad: ['WD-A', 'WD-B', 'WD-C'].indexOf(entry.squad) !== -1 ? entry.squad : 'WD-A',
+          role: ['Player', 'Starter', 'Captain', 'Squadleader'].indexOf(entry.role) !== -1 ? entry.role : 'Player',
+          updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+        };
+        batch.set(db.collection('clan_roster').doc(cleanEntry.id), cleanEntry);
+      });
+
+      // This marker distinguishes an initialized-but-empty roster from a
+      // brand-new collection, so deleting the last player will not reseed
+      // default members on the next page load.
+      batch.set(db.collection('clan_roster').doc('__meta__'), {
+        initialized: true,
+        schemaVersion: 1,
+        initializedAt: firebase.firestore.FieldValue.serverTimestamp()
+      });
+
+      batch.commit().then(function() {
+        console.info('Initial clan roster migrated to Firestore.');
+      }).catch(function(error) {
+        firestoreRosterSeedStarted = false;
+        console.error('Could not migrate the initial clan roster to Firestore:', error);
+      });
+    }
+
+    function initClanRosterRealtimeListener() {
+      if (firestoreRosterUnsubscribe || typeof firebase === 'undefined' ||
+          !firebase.firestore || !firebaseInitialized) return;
+
+      var db = firebase.firestore();
+      firestoreRosterUnsubscribe = db.collection('clan_roster').onSnapshot(function(snapshot) {
+        firestoreRosterSnapshotReceived = true;
+        firestoreRosterIsEmpty = snapshot.empty;
+
+        if (snapshot.empty) {
+          // Keep the old local roster visible until an authorized admin has
+          // completed the one-time migration. Do not write from public clients.
+          maybeSeedInitialClanRoster();
+          renderRosterTableAndTiers();
+          return;
+        }
+
+        var liveRoster = [];
+        snapshot.forEach(function(doc) {
+          if (doc.id === '__meta__') return;
+          var data = doc.data() || {};
+          liveRoster.push({
+            id: doc.id,
+            squad: ['WD-A', 'WD-B', 'WD-C'].indexOf(data.squad) !== -1 ? data.squad : 'WD-A',
+            role: ['Player', 'Starter', 'Captain', 'Squadleader'].indexOf(data.role) !== -1 ? data.role : 'Player'
+          });
+        });
+
+        firestoreRoster = liveRoster;
+        firestoreRosterLoaded = true;
+        firestoreRosterIsEmpty = false;
+        localStorage.setItem('wd_competitive_roster', JSON.stringify(liveRoster));
+        renderRosterTableAndTiers();
+      }, function(error) {
+        console.error('Firestore squad roster sync failed; using local fallback:', error);
+        firestoreRosterLoaded = false;
+        renderRosterTableAndTiers();
+      });
     }
 
     function renderOverviewPointsRanking() {
@@ -6149,31 +6269,84 @@ async function renderUserMaps() {
       var select = document.getElementById('roster-add-member-select');
       var squadSel = document.getElementById('roster-add-squad-select');
       var roleSelect = document.getElementById('roster-add-role-select');
+      if (!select) return;
 
       var memberId = select.value;
       var squad = squadSel ? squadSel.value : 'WD-A';
       var role = roleSelect ? roleSelect.value : 'Player';
-
       if (!memberId) { alert('Please select a clan member first.'); return; }
+      if (['WD-A', 'WD-B', 'WD-C'].indexOf(squad) === -1) squad = 'WD-A';
+      if (['Player', 'Starter', 'Captain', 'Squadleader'].indexOf(role) === -1) role = 'Player';
 
-      var list = getDynamicRosterList();
-      var existingIdx = list.findIndex(function(r) { return r.id === memberId; });
-      if (existingIdx !== -1) {
-        list[existingIdx].squad = squad;
-        list[existingIdx].role = role;
-      } else {
-        list.push({ id: memberId, squad: squad, role: role });
+      if (firebaseInitialized && typeof firebase !== 'undefined' && firebase.firestore) {
+        if (!canWriteClanRosterToFirestore()) {
+          alert('Keine Firestore-Berechtigung. Bitte mit einem verifizierten Firebase-Admin-Konto anmelden. Laut deinen Firestore Rules sind nur daehyeon0206@gmail.com und abecul323@outlook.com für clan_roster schreibberechtigt.');
+          return;
+        }
+        if (!firestoreRosterLoaded) {
+          maybeSeedInitialClanRoster();
+          alert('Die Squad-Daten werden gerade aus Firebase geladen bzw. initialisiert. Bitte warte, bis das Roster angezeigt wird, und versuche es dann erneut.');
+          return;
+        }
+
+        var rosterEntry = {
+          id: memberId,
+          squad: squad,
+          role: role,
+          updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+        };
+        firebase.firestore().collection('clan_roster').doc(memberId).set(rosterEntry, { merge: true })
+          .then(function() {
+            // onSnapshot updates every connected device; this cache is only for offline fallback.
+            alert('Commander successfully assigned to ' + squad + ' and synchronized with all devices!');
+          })
+          .catch(function(error) {
+            console.error('Squad assignment failed:', error);
+            alert('Fehler beim Synchronisieren der Squad-Zuordnung: ' + error.message);
+          });
+        return;
       }
 
-      localStorage.setItem('wd_competitive_roster', JSON.stringify(list));
+      // Local fallback is used only when Firebase is not configured/available.
+      var localList = getDynamicRosterList();
+      var existingIdx = localList.findIndex(function(entry) { return entry.id === memberId; });
+      if (existingIdx !== -1) {
+        localList[existingIdx].squad = squad;
+        localList[existingIdx].role = role;
+      } else {
+        localList.push({ id: memberId, squad: squad, role: role });
+      }
+      localStorage.setItem('wd_competitive_roster', JSON.stringify(localList));
       renderRosterTableAndTiers();
-      alert('Commander successfully assigned to ' + squad + '!');
+      alert('Commander assigned locally. Firebase is not available, so this change is not shared across devices.');
     }
 
     function removeMemberFromRoster(memberId) {
       if (!confirm('Remove this player from the tournament squad?')) return;
-      var list = getDynamicRosterList().filter(function(r) { return r.id !== memberId; });
-      localStorage.setItem('wd_competitive_roster', JSON.stringify(list));
+
+      if (firebaseInitialized && typeof firebase !== 'undefined' && firebase.firestore) {
+        if (!canWriteClanRosterToFirestore()) {
+          alert('Keine Firestore-Berechtigung. Bitte mit einem verifizierten Firebase-Admin-Konto anmelden. Laut deinen Firestore Rules sind nur daehyeon0206@gmail.com und abecul323@outlook.com für clan_roster schreibberechtigt.');
+          return;
+        }
+        if (!firestoreRosterLoaded) {
+          maybeSeedInitialClanRoster();
+          alert('Die Squad-Daten werden gerade aus Firebase geladen bzw. initialisiert. Bitte versuche es erneut, sobald das Roster angezeigt wird.');
+          return;
+        }
+        firebase.firestore().collection('clan_roster').doc(memberId).delete()
+          .then(function() {
+            // onSnapshot removes the member from every connected device.
+          })
+          .catch(function(error) {
+            console.error('Squad member removal failed:', error);
+            alert('Fehler beim Entfernen aus Firebase: ' + error.message);
+          });
+        return;
+      }
+
+      var localList = getDynamicRosterList().filter(function(entry) { return entry.id !== memberId; });
+      localStorage.setItem('wd_competitive_roster', JSON.stringify(localList));
       renderRosterTableAndTiers();
     }
 
