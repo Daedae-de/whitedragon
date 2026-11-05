@@ -2695,19 +2695,14 @@
     </div>
   </div>
 
-  <!-- BOTTOM-LEFT LIVE TRAFFIC HUD -->
-  <div class="traffic-floating-cluster" id="traffic-monitor-hud">
+  <!-- BOTTOM-LEFT VISITOR COUNTER (REAL FIREBASE COUNTS) -->
+  <div class="traffic-floating-cluster" id="traffic-monitor-hud" aria-label="Website visitor statistics">
     <div class="traffic-item">
-      <span style="display:inline-block; width:7px; height:7px; border-radius:50%; background:var(--win); box-shadow:0 0 8px var(--win);"></span>
-      <span>ONLINE: <strong style="color:var(--win);" id="online-users-live">3</strong></span>
+      <span>TODAY: <strong style="color:var(--cyan);" id="visitors-today-live">—</strong></span>
     </div>
     <span class="traffic-divider">|</span>
     <div class="traffic-item">
-      <span>TODAY: <strong style="color:var(--cyan);" id="visitors-today-live">42</strong></span>
-    </div>
-    <span class="traffic-divider">|</span>
-    <div class="traffic-item">
-      <span>VISITORS: <strong style="color:#fff;" id="visitors-total-live">1,420</strong></span>
+      <span>TOTAL VISITORS: <strong style="color:#fff;" id="visitors-total-live">—</strong></span>
     </div>
   </div>
 
@@ -6219,43 +6214,165 @@ async function renderUserMaps() {
     }
 
     // ========================================================
-    // 4. LIVE VISITOR & ONLINE PRESENCE ENGINE (BOTTOM-LEFT)
+    // 4. REAL FIREBASE VISITOR COUNTER (NO ONLINE ESTIMATE)
+    // Counts one anonymous browser identity once per Berlin calendar day
+    // and once for the lifetime total. No local/demo fallback is used.
     // ========================================================
-    function initVisitorCounter() {
-      var baseVisits = 1420;
-      var totalCount = parseInt(localStorage.getItem('wd_visitor_count') || baseVisits, 10);
+    var wdVisitorDailyUnsubscribe = null;
+    var wdVisitorTotalUnsubscribe = null;
+    var wdVisitorLastCountedDate = null;
+    var wdVisitorDayCheckTimer = null;
 
-      // Track daily visitors
-      var todayKey = 'wd_visits_' + new Date().toISOString().slice(0, 10);
-      var todayCount = parseInt(localStorage.getItem(todayKey) || '42', 10);
+    function getBerlinDateKey(date) {
+      var parts = new Intl.DateTimeFormat('en-GB', {
+        timeZone: 'Europe/Berlin',
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit'
+      }).formatToParts(date || new Date());
+      var values = {};
+      parts.forEach(function(part) {
+        if (part.type !== 'literal') values[part.type] = part.value;
+      });
+      return values.year + '-' + values.month + '-' + values.day;
+    }
 
-      if (!sessionStorage.getItem('wd_visit_counted')) {
-        totalCount += 1;
-        todayCount += 1;
-        localStorage.setItem('wd_visitor_count', totalCount);
-        localStorage.setItem(todayKey, todayCount);
-        sessionStorage.setItem('wd_visit_counted', 'true');
+    function setVisitorCounterValue(elementId, value) {
+      var el = document.getElementById(elementId);
+      if (el) {
+        var count = Number(value);
+        el.innerText = Number.isFinite(count) && count >= 0
+          ? Math.floor(count).toLocaleString('de-DE')
+          : '—';
+      }
+    }
+
+    function registerVisitorForDay(db, visitorUid, dateKey) {
+      var dailyCounterRef = db.collection('wd_visitor_daily').doc(dateKey);
+      var dailyVisitorRef = dailyCounterRef.collection('visitors').doc(visitorUid);
+      var totalCounterRef = db.collection('wd_visitor_total').doc('global');
+      var totalVisitorRef = totalCounterRef.collection('visitors').doc(visitorUid);
+      var serverTimestamp = firebase.firestore.FieldValue.serverTimestamp;
+
+      return db.runTransaction(function(transaction) {
+        // Complete all reads before any writes in this transaction.
+        return Promise.all([
+          transaction.get(dailyVisitorRef),
+          transaction.get(totalVisitorRef),
+          transaction.get(dailyCounterRef),
+          transaction.get(totalCounterRef)
+        ]).then(function(snapshots) {
+          var dailyVisitorSnap = snapshots[0];
+          var totalVisitorSnap = snapshots[1];
+          var dailyCounterSnap = snapshots[2];
+          var totalCounterSnap = snapshots[3];
+
+          if (!dailyVisitorSnap.exists) {
+            var dailyCount = dailyCounterSnap.exists
+              ? (Number(dailyCounterSnap.data().count) || 0)
+              : 0;
+            transaction.set(dailyVisitorRef, {
+              createdAt: serverTimestamp()
+            });
+            transaction.set(dailyCounterRef, {
+              count: dailyCount + 1,
+              updatedAt: serverTimestamp()
+            }, { merge: true });
+          }
+
+          if (!totalVisitorSnap.exists) {
+            var totalCount = totalCounterSnap.exists
+              ? (Number(totalCounterSnap.data().count) || 0)
+              : 0;
+            transaction.set(totalVisitorRef, {
+              createdAt: serverTimestamp()
+            });
+            transaction.set(totalCounterRef, {
+              count: totalCount + 1,
+              updatedAt: serverTimestamp()
+            }, { merge: true });
+          }
+        });
+      });
+    }
+
+    function watchVisitorCounterDocuments(db, visitorUid) {
+      var totalCounterRef = db.collection('wd_visitor_total').doc('global');
+
+      if (wdVisitorTotalUnsubscribe) wdVisitorTotalUnsubscribe();
+      wdVisitorTotalUnsubscribe = totalCounterRef.onSnapshot(function(snapshot) {
+        setVisitorCounterValue('visitors-total-live', snapshot.exists ? snapshot.data().count : 0);
+      }, function(error) {
+        console.warn('Visitor total listener unavailable:', error);
+        setVisitorCounterValue('visitors-total-live', null);
+      });
+
+      function updateDailyCounterForCurrentDate() {
+        var dateKey = getBerlinDateKey(new Date());
+        if (dateKey === wdVisitorLastCountedDate) return;
+        wdVisitorLastCountedDate = dateKey;
+
+        if (wdVisitorDailyUnsubscribe) wdVisitorDailyUnsubscribe();
+        var dailyCounterRef = db.collection('wd_visitor_daily').doc(dateKey);
+        wdVisitorDailyUnsubscribe = dailyCounterRef.onSnapshot(function(snapshot) {
+          setVisitorCounterValue('visitors-today-live', snapshot.exists ? snapshot.data().count : 0);
+        }, function(error) {
+          console.warn('Daily visitor listener unavailable:', error);
+          setVisitorCounterValue('visitors-today-live', null);
+        });
+
+        registerVisitorForDay(db, visitorUid, dateKey).catch(function(error) {
+          console.error('Visitor count could not be recorded:', error);
+          setVisitorCounterValue('visitors-today-live', null);
+          setVisitorCounterValue('visitors-total-live', null);
+        });
       }
 
-      var totalEl = document.getElementById('visitors-total-live');
-      if (totalEl) totalEl.innerText = totalCount.toLocaleString();
+      updateDailyCounterForCurrentDate();
 
-      var todayEl = document.getElementById('visitors-today-live');
-      if (todayEl) todayEl.innerText = todayCount.toLocaleString();
+      // If a tab remains open across midnight, switch to the new Berlin day.
+      if (wdVisitorDayCheckTimer) clearInterval(wdVisitorDayCheckTimer);
+      wdVisitorDayCheckTimer = setInterval(updateDailyCounterForCurrentDate, 60 * 1000);
+    }
 
-      // Live online presence counter with natural fluctuations
-      var onlineEl = document.getElementById('online-users-live');
-      if (onlineEl) {
-        var liveOnline = Math.floor(Math.random() * 3) + 3; // 3 to 5 online
-        onlineEl.innerText = liveOnline;
+    async function initVisitorCounter() {
+      setVisitorCounterValue('visitors-today-live', null);
+      setVisitorCounterValue('visitors-total-live', null);
 
-        // Periodic live heartbeat
-        setInterval(function() {
-          var delta = Math.floor(Math.random() * 3) - 1; // -1, 0, +1
-          var current = parseInt(onlineEl.innerText, 10) || 3;
-          var next = Math.max(2, Math.min(8, current + delta));
-          onlineEl.innerText = next;
-        }, 12000);
+      if (!firebaseInitialized || typeof firebase === 'undefined' || !firebase.firestore || !firebase.auth) {
+        console.warn('Visitor counter unavailable: Firebase is not initialized.');
+        return;
+      }
+
+      try {
+        // A separate Firebase app keeps anonymous visitor tracking independent
+        // from the site's normal member login/logout state.
+        var visitorApp;
+        try {
+          visitorApp = firebase.app('wdVisitorCounter');
+        } catch (appError) {
+          visitorApp = firebase.initializeApp(firebaseConfig, 'wdVisitorCounter');
+        }
+
+        var visitorAuth = visitorApp.auth();
+        var visitorCredential;
+        if (visitorAuth.currentUser) {
+          visitorCredential = { user: visitorAuth.currentUser };
+        } else {
+          // Enable the Anonymous provider in Firebase Authentication first.
+          visitorCredential = await visitorAuth.signInAnonymously();
+        }
+
+        if (!visitorCredential || !visitorCredential.user || !visitorCredential.user.uid) {
+          throw new Error('Firebase did not return an anonymous visitor ID.');
+        }
+
+        watchVisitorCounterDocuments(visitorApp.firestore(), visitorCredential.user.uid);
+      } catch (error) {
+        console.error('Real visitor counter could not start:', error);
+        // Never show fabricated or local-only numbers when cloud counting fails.
+        setVisitorCounterValue('visitors-today-live', null);
+        setVisitorCounterValue('visitors-total-live', null);
       }
     }
 
