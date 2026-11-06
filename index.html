@@ -5690,7 +5690,7 @@ function initReplaysRealtimeListener() {
 function saveReplay() {
   if (!ensureVerifiedAccess("Replays speichern")) return;
   if (!currentSelectedFile) {
-    alert('Please choose a .rep or .zip file first.');
+    alert('Bitte wähle zuerst eine .rep- oder .zip-Datei aus.');
     return;
   }
 
@@ -5698,63 +5698,39 @@ function saveReplay() {
   var title = document.getElementById('rep-title-input').value.trim() || file.name;
   var players = document.getElementById('rep-players-input').value.trim() || 'White Dragon Match';
   var map = document.getElementById('rep-map-input').value.trim() || 'StarCraft Map';
-  var user = firebase.auth().currentUser;
+  var user = (typeof firebase !== 'undefined' && firebase.auth && firebase.auth().currentUser) 
+    ? firebase.auth().currentUser 
+    : currentUser;
 
-  var replayRecord = {
-    title: title,
-    players: players,
-    map: map,
-    fileName: file.name,
-    fileSize: (file.size / 1024).toFixed(1) + ' KB',
-    date: new Date().toLocaleDateString(),
-    createdAt: Date.now(),
-    uploader: user ? user.email : 'Unbekannt'
-  };
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    var fileDataUrl = e.target.result;
 
-  if (typeof firebase !== 'undefined' && firebase.firestore) {
-    firebase.firestore().collection('clan_replays').add(replayRecord)
-      .then(function() {
-        cancelUpload();
-        alert('Replay synchronized successfully');
-      })
-      .catch(function(err) {
-        alert('Error saving: ' + err.message);
-      });
-  }
-}
+    var replayRecord = {
+      title: title,
+      players: players,
+      map: map,
+      fileName: file.name,
+      fileSize: (file.size / 1024).toFixed(1) + ' KB',
+      fileData: fileDataUrl,
+      date: new Date().toLocaleDateString(),
+      createdAt: Date.now(),
+      uploader: user ? user.email : 'Unbekannt'
+    };
 
-      var file = currentSelectedFile;
-      var title = document.getElementById('rep-title-input').value.trim() || file.name;
-      var players = document.getElementById('rep-players-input').value.trim() || 'White Dragon Commander Match';
-      var map = document.getElementById('rep-map-input').value.trim() || 'Koprulu Sector Map';
-      var dateStr = new Date().toLocaleDateString();
-
-      var replayItem = {
-        id: 'rep_' + Date.now(),
-        title: title,
-        players: players,
-        map: map,
-        fileName: file.name,
-        fileSize: (file.size / 1024).toFixed(1) + ' KB',
-        date: dateStr,
-        uploader: currentUser ? currentUser.email : 'Verified Member',
-        fileBlob: file
-      };
-
-      try {
-        const db = await getVaultDB();
-        const tx = db.transaction('replays', 'readwrite');
-        tx.objectStore('replays').put(replayItem);
-        tx.oncomplete = function() {
-          renderUserReplays();
+    if (typeof firebase !== 'undefined' && firebase.firestore) {
+      firebase.firestore().collection('clan_replays').add(replayRecord)
+        .then(function() {
           cancelUpload();
-          alert('Replay saved to Clan Vault successfully!');
-        };
-      } catch(err) {
-        console.error('Error saving replay to IndexedDB:', err);
-        alert('Failed to save replay: ' + err.message);
-      }
+          alert('Replay erfolgreich synchronisiert!');
+        })
+        .catch(function(err) {
+          alert('Fehler beim Speichern: ' + err.message);
+        });
     }
+  };
+  reader.readAsDataURL(file);
+}
 
     async function downloadSavedReplay(replayId) {
       if (!ensureVerifiedAccess("download replays")) return;
