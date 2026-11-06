@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>White Dragon [WD] | StarCraft: Remastered Clan</title>
   <link rel="icon" type="image/jpeg" href="logo.jpg">
   <meta name="description" content="White Dragon [WD] is a competitive and casual StarCraft: Remastered clan founded in 2021. BWCL league results, active roster, replays, and community discussions.">
@@ -2764,6 +2764,38 @@
     }
     .member-pill .tag { color: #fff; font-size: 0.95rem; }
     .member-pill .pill-race { font-size: 0.72rem; text-transform: uppercase; font-family: 'Orbitron', sans-serif; font-weight: 800; }
+    .member-pill .pill-squad {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      margin-left: auto;
+      color: var(--cyan);
+      font-family: 'Orbitron', sans-serif;
+      font-size: 0.68rem;
+      letter-spacing: 0.4px;
+    }
+    .squad-mark {
+      width: 28px;
+      height: 22px;
+      object-fit: contain;
+      vertical-align: middle;
+      flex-shrink: 0;
+    }
+    .squad-crest-lg {
+      width: 78px;
+      height: 56px;
+      object-fit: contain;
+      display: none;
+    }
+    .squad-filter-bar .squad-mark {
+      width: 42px;
+      height: 34px;
+    }
+    #m-team {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
 
     /* DOSSIER MODAL */
     .modal-backdrop {
@@ -3302,6 +3334,169 @@
     body.is-webmaster .admin-del-btn {
       display: inline-block !important;
     }
+    /* White Dragon mood: original tile row, cyan glow, new line icons */
+    .nav-ico,
+    .dash-icon svg {
+      width: 16px;
+      height: 16px;
+      display: block;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 1.8;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+    .nav-tab-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .hero-panel {
+      border-left: 4px solid #00e5ff;
+      box-shadow: 0 0 28px rgba(0, 229, 255, 0.14);
+    }
+    .dash-icon {
+      color: #00e5ff;
+      filter: drop-shadow(0 0 6px rgba(0, 229, 255, 0.45));
+    }
+    .dash-btn {
+      border-color: rgba(56, 189, 248, 0.38);
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
+    }
+    .dash-btn:hover,
+    .dash-btn.active {
+      border-color: #00e5ff;
+      box-shadow: 0 0 16px rgba(0, 229, 255, 0.28);
+      background: rgba(0, 229, 255, 0.06);
+    }
+    .dashboard-nav-grid {
+      display: grid;
+      grid-template-columns: repeat(9, 1fr);
+      gap: 10px;
+    }
+    #authModal .dossier-card {
+      max-width: 880px;
+    }
+    @media (max-width: 1100px) {
+      .dashboard-nav-grid { grid-template-columns: repeat(3, 1fr); }
+    }
+    @media (max-width: 600px) {
+      .dashboard-nav-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    header .nav-tab-btn {
+      letter-spacing: 0.4px;
+      padding: 7px 8px;
+      font-size: 0.8rem;
+    }
+    body.tab-hero-hidden .hero-banner { display: none; }
+    .league-partners {
+      max-width: 920px;
+      margin: 0 auto 18px;
+    }
+    .league-partners-label {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 0.72rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--cyan);
+      margin-bottom: 10px;
+    }
+    .league-partner-row {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+    }
+    .league-partner {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-height: 92px;
+      padding: 10px 12px;
+      border-radius: 10px;
+      border: 1px solid rgba(0, 229, 255, 0.28);
+      background: rgba(7, 12, 22, 0.9);
+      color: #fff;
+      text-decoration: none;
+      text-align: left;
+    }
+    .league-partner:hover {
+      border-color: #00e5ff;
+      box-shadow: 0 0 16px rgba(0, 229, 255, 0.22);
+    }
+    .league-partner img {
+      width: 72px;
+      height: 72px;
+      object-fit: contain;
+      flex-shrink: 0;
+      background: #05070d;
+      border-radius: 8px;
+    }
+    .league-partner strong {
+      display: block;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 0.78rem;
+      letter-spacing: 0.4px;
+      line-height: 1.25;
+    }
+    .league-partner span {
+      display: block;
+      margin-top: 4px;
+      color: var(--text-muted);
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+    @media (max-width: 1180px) {
+      .nav-container {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 8px;
+      }
+      .logo-brand { justify-content: center; }
+      header .nav-links {
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+    }
+    @media (max-width: 700px) {
+      header .nav-links {
+        display: grid !important;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        overflow: visible;
+        gap: 6px;
+        padding-bottom: 0;
+      }
+      header .nav-links .nav-tab-btn {
+        width: 100%;
+        justify-content: center;
+        font-size: 0.72rem;
+        padding: 8px 4px;
+        gap: 4px;
+      }
+      .section-head {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 6px;
+      }
+      .section-head h2 {
+        font-size: 1.12rem;
+        letter-spacing: 0.4px;
+      }
+      .league-partner-row { grid-template-columns: 1fr; }
+      .league-partner { min-height: 76px; }
+      body { padding-bottom: 108px; }
+      .traffic-floating-cluster {
+        left: 8px;
+        right: 8px;
+        bottom: 52px;
+        justify-content: center;
+      }
+      .floating-action-cluster {
+        left: 8px;
+        right: 8px;
+        bottom: 8px;
+        justify-content: center;
+      }
+    }
   </style>
 </head>
 <body>
@@ -3317,15 +3512,15 @@
       </a>
 
       <ul class="nav-links">
-        <li><button class="nav-tab-btn active" id="btn-tab-overview" onclick="switchTab('overview')">Overview</button></li>
-        <li><button class="nav-tab-btn" id="btn-tab-roster" onclick="switchTab('roster')">Roster</button></li>
-        <li><button class="nav-tab-btn" id="btn-tab-bwcl" onclick="switchTab('bwcl')">Clan League</button></li>
-        <li><button class="nav-tab-btn" id="btn-tab-matches" onclick="switchTab('matches')">Matches</button></li>
-        <li><button class="nav-tab-btn" id="btn-tab-replays" onclick="switchTab('replays')">Replays</button></li>
-        <li><button class="nav-tab-btn" id="btn-tab-downloads" onclick="switchTab('downloads')">Downloads</button></li>
-        <li><button class="nav-tab-btn" id="btn-tab-community" onclick="switchTab('community')">Community</button></li>
-        <li><button class="nav-tab-btn" id="btn-tab-members" onclick="switchTab('members')">Members</button></li>
-        <li><button class="nav-tab-btn" id="btn-tab-about" onclick="switchTab('about')">About Us</button></li>
+        <li><button class="nav-tab-btn active" id="btn-tab-overview" onclick="switchTab('overview')"><svg class="nav-ico" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect></svg>Overview</button></li>
+        <li><button class="nav-tab-btn" id="btn-tab-roster" onclick="switchTab('roster')"><svg class="nav-ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3"></circle><path d="M3.5 19c.6-3 2.8-4.5 5.5-4.5S14 16 14.5 19"></path><circle cx="17" cy="9" r="2"></circle><path d="M16 19c.2-2 .9-3.2 2.5-3.8"></path></svg>Roster</button></li>
+        <li><button class="nav-tab-btn" id="btn-tab-bwcl" onclick="switchTab('bwcl')"><svg class="nav-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19V10M10 19V5M16 19v-7M21 19H3"></path></svg>Clan League</button></li>
+        <li><button class="nav-tab-btn" id="btn-tab-matches" onclick="switchTab('matches')"><svg class="nav-ico" viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="16" height="15" rx="2"></rect><path d="M8 3v4M16 3v4M4 10h16"></path></svg>Matches</button></li>
+        <li><button class="nav-tab-btn" id="btn-tab-replays" onclick="switchTab('replays')"><svg class="nav-ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"></circle><path d="M10 9l6 3-6 3V9z"></path></svg>Replays</button></li>
+        <li><button class="nav-tab-btn" id="btn-tab-downloads" onclick="switchTab('downloads')"><svg class="nav-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v10M8 10l4 4 4-4M5 19h14"></path></svg>Downloads</button></li>
+        <li><button class="nav-tab-btn" id="btn-tab-community" onclick="switchTab('community')"><svg class="nav-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 6h14v9H8l-3 3V6z"></path></svg>Community</button></li>
+        <li><button class="nav-tab-btn" id="btn-tab-members" onclick="switchTab('members')"><svg class="nav-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l7 3v6c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6l7-3z"></path></svg>Members</button></li>
+        <li><button class="nav-tab-btn" id="btn-tab-about" onclick="switchTab('about')"><svg class="nav-ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"></circle><path d="M12 11v5"></path><circle cx="12" cy="8" r="0.8" fill="currentColor" stroke="none"></circle></svg>About</button></li>
       </ul>
     </div>
   </header>
@@ -3365,55 +3560,6 @@
       </div>
     </div>
   </section>
-
-  <!-- DASHBOARD QUICK NAV (All 8 Clan Sections Available on Mobile & Desktop) -->
-  <div class="dashboard-nav-grid">
-    <div class="dash-btn active" id="dash-overview" onclick="switchTab('overview')">
-      <span class="dash-icon">⚡</span>
-      <span class="dash-label">OVERVIEW</span>
-      <span class="dash-sub">Quick Intel</span>
-    </div>
-    <div class="dash-btn" id="dash-roster" onclick="switchTab('roster')">
-      <span class="dash-icon">👥</span>
-      <span class="dash-label">ROSTER</span>
-      <span class="dash-sub">WD-A Squad</span>
-    </div>
-    <div class="dash-btn" id="dash-bwcl" onclick="switchTab('bwcl')">
-      <span class="dash-icon">🏆</span>
-      <span class="dash-label">STANDINGS</span>
-      <span class="dash-sub">BWCL S65 Div-D</span>
-    </div>
-    <div class="dash-btn" id="dash-matches" onclick="switchTab('matches')">
-      <span class="dash-icon">⚔️</span>
-      <span class="dash-label">MATCHES</span>
-      <span class="dash-sub">Scores & Sched.</span>
-    </div>
-    <div class="dash-btn" id="dash-replays" onclick="switchTab('replays')">
-      <span class="dash-icon">💾</span>
-      <span class="dash-label">REPLAYS</span>
-      <span class="dash-sub">.rep Packs</span>
-    </div>
-    <div class="dash-btn" id="dash-downloads" onclick="switchTab('downloads')">
-      <span class="dash-icon">📦</span>
-      <span class="dash-label">DOWNLOADS</span>
-      <span class="dash-sub">Map Packs</span>
-    </div>
-    <div class="dash-btn" id="dash-community" onclick="switchTab('community')">
-      <span class="dash-icon">📡</span>
-      <span class="dash-label">COMMUNITY</span>
-      <span class="dash-sub">News, League, Board</span>
-    </div>
-    <div class="dash-btn" id="dash-members" onclick="switchTab('members')">
-      <span class="dash-icon">🎖️</span>
-      <span class="dash-label">MEMBERS</span>
-      <span class="dash-sub" id="members-nav-count">32 Commanders</span>
-    </div>
-    <div class="dash-btn" id="dash-about" onclick="switchTab('about')">
-      <span class="dash-icon">🛡️</span>
-      <span class="dash-label">ABOUT US</span>
-      <span class="dash-sub">Clan Ethos</span>
-    </div>
-  </div>
 
   <!-- ==================== 1. OVERVIEW TAB ==================== -->
   <section id="tab-overview" class="section-wrap active-tab">
@@ -3518,14 +3664,15 @@
 
     <!-- Squad Selection Tabs -->
     <div class="squad-filter-bar">
-      <button onclick="filterSquadView('WD-A')" id="btn-squad-WDA" class="nav-tab-btn active">🏆 WD-A SQUAD</button>
-      <button onclick="filterSquadView('WD-B')" id="btn-squad-WDB" class="nav-tab-btn">⚔️ WB-B SQUAD (Babydragons)</button>
-      <button onclick="filterSquadView('WD-C')" id="btn-squad-WDC" class="nav-tab-btn">🛡️ WD-C SQUAD</button>
+      <button onclick="filterSquadView('WD-A')" id="btn-squad-WDA" class="nav-tab-btn active"><img class="squad-mark" src="squad-wd-a.png" alt="">WD-A SQUAD</button>
+      <button onclick="filterSquadView('WD-B')" id="btn-squad-WDB" class="nav-tab-btn"><img class="squad-mark" src="squad-wd-b.png" alt="">WD-B SQUAD (Babydragons)</button>
+      <button onclick="filterSquadView('WD-C')" id="btn-squad-WDC" class="nav-tab-btn"><img class="squad-mark" src="squad-wd-c.png" alt="">WD-C SQUAD</button>
       <button onclick="filterSquadView('ALL')" id="btn-squad-ALL" class="nav-tab-btn">ALL SQUADS</button>
     </div>
 
     <!-- Squad Header Badge -->
     <div class="team-badge-header" id="current-squad-badge">
+      <img id="roster-squad-crest" class="squad-crest-lg" src="squad-wd-a.png" alt="WD-A" style="display:inline-block;">
       <span>TEAM: <strong id="roster-squad-title">WD-A</strong></span>
       <span class="pill" id="roster-squad-pill">BWCL S65 DIVISION D</span>
       <span style="color:var(--text-muted); font-size:0.8rem; font-family:'Share Tech Mono', monospace;" id="roster-squad-desc">[Main Competitive Squad]</span>
@@ -3540,7 +3687,7 @@
         <select id="roster-add-member-select" style="background:#070a12; border:1px solid var(--border-color); color:#fff; padding:7px 10px; border-radius:5px; font-size:0.85rem; min-width:180px;"></select>
         <select id="roster-add-squad-select" style="background:#070a12; border:1px solid var(--border-color); color:var(--cyan); padding:7px 10px; border-radius:5px; font-weight:bold; font-size:0.85rem;">
           <option value="WD-A">Squad: WD-A (Main Competitive)</option>
-          <option value="WD-B">Squad: WB-B (Babydragons)</option>
+          <option value="WD-B">Squad: WD-B (Babydragons)</option>
           <option value="WD-C">Squad: WD-C (Academy / In-House)</option>
         </select>
         <select id="roster-add-role-select" style="background:#070a12; border:1px solid var(--border-color); color:#fbbf24; padding:7px 10px; border-radius:5px; font-weight:bold; font-size:0.85rem;">
@@ -4803,9 +4950,34 @@
   </div>
 
   <footer>
+    <div class="league-partners">
+      <p class="league-partners-label">Leagues</p>
+      <div class="league-partner-row">
+        <a class="league-partner" href="https://bombasticstarleague.com/seasons/100bc3e7-adee-4917-b438-db5eb540c055" target="_blank" rel="noopener noreferrer">
+          <img src="league-bsl.png" alt="Bombastic Star League" onerror="this.onerror=null;this.src='https://bombasticstarleague.com/android-chrome-192x192.png'">
+          <div>
+            <strong>Bombastic Star League</strong>
+            <span>Current season</span>
+          </div>
+        </a>
+        <a class="league-partner" href="https://cplbw.com/cpl/" target="_blank" rel="noopener noreferrer">
+          <img src="league-cpl.png" alt="Coach Pupil League" onerror="this.onerror=null;this.src='https://cplbw.com/static/images/logo/cpl_13.f6301e9c1218.png'">
+          <div>
+            <strong>CPL</strong>
+            <span>Coach Pupil League</span>
+          </div>
+        </a>
+        <a class="league-partner" href="https://www.platinumesport.com/ipsl" target="_blank" rel="noopener noreferrer">
+          <img src="league-ipsl.png" alt="Platinum Esports IPSL" onerror="this.onerror=null;this.src='https://images.squarespace-cdn.com/content/v1/6884da600280e65f46ec171c/ef32bfc7-4d6c-4bc7-8cd2-72ad5dd4f7dd/Platinum_Esports_2-01_better.png?format=500w'">
+          <div>
+            <strong>IPSL</strong>
+            <span>Platinum Esports</span>
+          </div>
+        </a>
+      </div>
+    </div>
     <p>© 2021–2026 White Dragon [WD] Clan. StarCraft® and StarCraft: Remastered are registered trademarks of Blizzard Entertainment.</p>
     <p style="margin-top:4px; color:var(--text-dim);">Competitive Brood War eSports | Channel: Op White-Dragon (US West)</p>
-  
   </footer>
 
   <script>
@@ -4815,15 +4987,15 @@
       if (!race) race = 'Terran';
       var r = race.toLowerCase();
       if (r.startsWith('t')) {
-        return '<span class="race-badge race-terran" title="Terran">🛡️ Terran</span>';
+        return '<span class="race-badge race-terran" title="Terran">Terran</span>';
       } else if (r.startsWith('p')) {
-        return '<span class="race-badge race-protoss" title="Protoss">⚡ Protoss</span>';
+        return '<span class="race-badge race-protoss" title="Protoss">Protoss</span>';
       } else if (r.startsWith('z')) {
-        return '<span class="race-badge race-zerg" title="Zerg">🕷️ Zerg</span>';
+        return '<span class="race-badge race-zerg" title="Zerg">Zerg</span>';
       } else if (r === 'ums') {
-        return '<span class="race-badge race-ums" title="UMS" style="background:rgba(16,185,129,0.2);color:#10b981;border:1px solid rgba(16,185,129,0.5);">🎮 UMS</span>';
+        return '<span class="race-badge race-ums" title="UMS" style="background:rgba(16,185,129,0.2);color:#10b981;border:1px solid rgba(16,185,129,0.5);">UMS</span>';
       } else {
-        return '<span class="race-badge race-random" title="Random" style="background:rgba(239,68,68,0.2);color:#ef4444;border:1px solid rgba(239,68,68,0.5);">🎲 Random</span>';
+        return '<span class="race-badge race-random" title="Random" style="background:rgba(239,68,68,0.2);color:#ef4444;border:1px solid rgba(239,68,68,0.5);">Random</span>';
       }
     }
 
@@ -5115,7 +5287,7 @@
         sections[i].classList.remove('active-tab');
       }
 
-      var navBtns = document.querySelectorAll('.nav-tab-btn');
+      var navBtns = document.querySelectorAll('header .nav-links .nav-tab-btn');
       for (var j = 0; j < navBtns.length; j++) {
         navBtns[j].classList.remove('active');
       }
@@ -5133,6 +5305,7 @@
 
       var dashBtn = document.getElementById('dash-' + tabName);
       if (dashBtn) dashBtn.classList.add('active');
+      document.body.classList.toggle('tab-hero-hidden', tabName !== 'overview');
 
       if (updateHistory) {
         try {
@@ -5483,6 +5656,19 @@ function renderFirestoreReplays(cloudReplays) {
   });
 }
 
+    function memberSquadKey(memberId) {
+      var list = [];
+      try { list = getDynamicRosterList(); } catch (e) { list = []; }
+      var entry = list.find(function(item) { return item && item.id === memberId; });
+      return entry && entry.squad ? entry.squad : '';
+    }
+
+    function squadCrestHtml(squad) {
+      var file = squad === 'WD-A' ? 'squad-wd-a.png' : (squad === 'WD-B' ? 'squad-wd-b.png' : (squad === 'WD-C' ? 'squad-wd-c.png' : ''));
+      if (!file) return '';
+      return '<img class="squad-mark" src="' + file + '" alt="' + squad + '">';
+    }
+
     function openDossier(memberId) {
       applyProfileCustomizationsToRoster();
       currentInspectedMemberId = memberId;
@@ -5503,7 +5689,8 @@ function renderFirestoreReplays(cloudReplays) {
       }
       document.getElementById('m-name').innerText = p.name;
       document.getElementById('m-rank').innerText = `${p.rank} ${p.insignia ? p.insignia : ''}`;
-      document.getElementById('m-team').innerText = (p.role ? p.role + ' // ' : '') + (p.team || 'WD Squad');
+      var squadKey = memberSquadKey(p.id);
+      document.getElementById('m-team').innerHTML = squadCrestHtml(squadKey) + '<span>' + (squadKey || 'Unassigned') + '</span>';
       document.getElementById('m-race-text').innerText = p.race;
       document.getElementById('m-country-name').innerText = p.country;
       document.getElementById('m-flag').innerHTML = flags[p.flagKey] || flags.global;
@@ -8872,6 +9059,16 @@ async function renderUserMaps() {
       var titleEl = document.getElementById('roster-squad-title');
       var pillEl = document.getElementById('roster-squad-pill');
       var descEl = document.getElementById('roster-squad-desc');
+      var crestEl = document.getElementById('roster-squad-crest');
+      if (crestEl) {
+        if (squadKey === 'WD-A' || squadKey === 'WD-B' || squadKey === 'WD-C') {
+          crestEl.src = squadKey === 'WD-A' ? 'squad-wd-a.png' : (squadKey === 'WD-B' ? 'squad-wd-b.png' : 'squad-wd-c.png');
+          crestEl.alt = squadKey;
+          crestEl.style.display = 'inline-block';
+        } else {
+          crestEl.style.display = 'none';
+        }
+      }
 
       if (squadKey === 'WD-A') {
         if (titleEl) titleEl.innerText = 'WD-A';
@@ -9533,6 +9730,20 @@ async function renderUserMaps() {
           return currentActiveSquad === 'ALL' || (entry.squad || 'WD-A') === currentActiveSquad;
         });
 
+        function rosterRoleRank(role) {
+          if (role === 'Squadleader') return 0;
+          if (role === 'Captain') return 1;
+          if (role === 'Starter') return 2;
+          return 3;
+        }
+        filteredRoster.sort(function(a, b) {
+          var memberA = allMembers.find(function(m) { return m.id === a.id; }) || {};
+          var memberB = allMembers.find(function(m) { return m.id === b.id; }) || {};
+          var rankDiff = rosterRoleRank(a.role || memberA.role || 'Player') - rosterRoleRank(b.role || memberB.role || 'Player');
+          if (rankDiff !== 0) return rankDiff;
+          return String(memberA.name || a.id || '').localeCompare(String(memberB.name || b.id || ''));
+        });
+
         filteredRoster.forEach(function(entry) {
           var p = allMembers.find(function(m) { return m.id === entry.id; });
           if (!p) return;
@@ -9572,7 +9783,7 @@ async function renderUserMaps() {
           tr.innerHTML = 
             '<td><span class="player-tag">' + miniAvatar + p.name + ' <span class="click-hint">INTEL</span></span></td>' +
             '<td>' + roleBadge + '</td>' +
-            '<td><strong style="color:var(--cyan);">' + squadTag + '</strong></td>' +
+            '<td>' + squadCrestHtml(squadTag) + '<strong style="color:var(--cyan);">' + squadTag + '</strong></td>' +
             '<td>' + flagSvg + ' ' + p.country + '</td>' +
             '<td>' + getRaceBadgeHtml(p.race) + '</td>' +
             '<td style="text-align:right; white-space:nowrap;">' + statusBadge + removeBtn + '</td>';
