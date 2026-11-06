@@ -4944,7 +4944,15 @@ async function renderUserMaps() {
     }
 
     function initNewsRealtimeListener() {
-      if (typeof firebase !== 'undefined' && firebase.firestore) {
+      var fallbackTriggered = false;
+      var timer = setTimeout(function() {
+        if (!fallbackTriggered) {
+          fallbackTriggered = true;
+          renderClanNews(getLocalNewsArticles());
+        }
+      }, 1200);
+
+      if (typeof firebase !== 'undefined' && firebase.firestore && firebaseInitialized) {
         try {
           var db = firebase.firestore();
           if (newsRealtimeUnsubscribe) {
@@ -4952,6 +4960,10 @@ async function renderUserMaps() {
             newsRealtimeUnsubscribe = null;
           }
           newsRealtimeUnsubscribe = db.collection('clan_news').orderBy('createdAt', 'desc').onSnapshot(function(snapshot) {
+            if (!fallbackTriggered) {
+              clearTimeout(timer);
+              fallbackTriggered = true;
+            }
             if (!snapshot.empty) {
               var liveArticles = [];
               snapshot.forEach(function(doc) {
@@ -4960,21 +4972,27 @@ async function renderUserMaps() {
                 liveArticles.push(d);
               });
               renderClanNews(liveArticles);
-              return;
             } else {
-              // Firestore is the source of truth while connected. An empty cloud
-              // collection means the Overview must show no transmission, not
-              // revive deleted/stale local default articles.
-              renderClanNews([]);
+              renderClanNews(getLocalNewsArticles());
             }
           }, function(err) {
-            console.warn("Firestore sync offline:", err);
+            if (!fallbackTriggered) {
+              clearTimeout(timer);
+              fallbackTriggered = true;
+            }
             renderClanNews(getLocalNewsArticles());
           });
           return;
         } catch(e) {
-          console.warn("Firestore onSnapshot error:", e);
+          if (!fallbackTriggered) {
+            clearTimeout(timer);
+            fallbackTriggered = true;
+          }
         }
+      }
+      if (!fallbackTriggered) {
+        clearTimeout(timer);
+        fallbackTriggered = true;
       }
       renderClanNews(getLocalNewsArticles());
     }
