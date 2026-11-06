@@ -16,193 +16,365 @@
   <!-- Firebase Authentication SDKs -->
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js">
     function handleCmsPaste(e) {
-      var clipboardData = e.clipboardData || window.clipboardData;
-      if (!clipboardData || !clipboardData.items) return;
-      var items = clipboardData.items;
-      for (var i = 0; i < items.length; i++) {
-        if (items[i].type && items[i].type.indexOf('image') !== -1) {
-          var blob = items[i].getAsFile();
-          if (!blob) continue;
-          var reader = new FileReader();
-          reader.onload = function(event) {
-            var rawData = event.target.result;
-            var img = new Image();
-            img.onload = function() {
-              var canvas = document.createElement('canvas');
-              var maxDim = 800;
-              var w = img.width;
-              var h = img.height;
-              if (w > h) {
-                if (w > maxDim) { h = Math.round((h * maxDim) / w); w = maxDim; }
-              } else {
-                if (h > maxDim) { w = Math.round((w * maxDim) / h); h = maxDim; }
-              }
-              canvas.width = w;
-              canvas.height = h;
-              var ctx = canvas.getContext('2d');
-              ctx.drawImage(img, 0, 0, w, h);
-              var optimizedUrl = canvas.toDataURL('image/jpeg', 0.88);
+      var clipboardData = e.clipboardData || window.clipboardData || (e.originalEvent && e.originalEvent.clipboardData);
+      if (!clipboardData) return;
 
-              var urlInp = document.getElementById('cms-news-image-url');
-              var prev = document.getElementById('cms-news-image-preview');
-              if (urlInp) urlInp.value = optimizedUrl;
-              if (prev) {
-                prev.src = optimizedUrl;
-                prev.style.display = 'block';
-              }
-              alert('Image pasted and attached successfully!');
-            };
-            img.src = rawData;
-          };
-          reader.readAsDataURL(blob);
-          e.preventDefault();
-          break;
+      // 1. Check items
+      var items = clipboardData.items;
+      var imageFile = null;
+
+      if (items) {
+        for (var i = 0; i < items.length; i++) {
+          if (items[i].type && items[i].type.indexOf('image') !== -1) {
+            imageFile = items[i].getAsFile();
+            break;
+          }
         }
       }
+
+      // 2. Fallback to files if items didn't yield an image
+      if (!imageFile && clipboardData.files && clipboardData.files.length > 0) {
+        for (var j = 0; j < clipboardData.files.length; j++) {
+          if (clipboardData.files[j].type && clipboardData.files[j].type.indexOf('image') !== -1) {
+            imageFile = clipboardData.files[j];
+            break;
+          }
+        }
+      }
+
+      if (imageFile) {
+        var reader = new FileReader();
+        reader.onload = function(event) {
+          var rawData = event.target.result;
+          var img = new Image();
+          img.onload = function() {
+            var canvas = document.createElement('canvas');
+            var maxDim = 800;
+            var w = img.width;
+            var h = img.height;
+            if (w > h) {
+              if (w > maxDim) { h = Math.round((h * maxDim) / w); w = maxDim; }
+            } else {
+              if (h > maxDim) { w = Math.round((w * maxDim) / h); h = maxDim; }
+            }
+            canvas.width = w;
+            canvas.height = h;
+            var ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, w, h);
+            var optimizedUrl = canvas.toDataURL('image/jpeg', 0.88);
+
+            var urlInp = document.getElementById('cms-news-image-url');
+            var prev = document.getElementById('cms-news-image-preview');
+            if (urlInp) urlInp.value = optimizedUrl;
+            if (prev) {
+              prev.src = optimizedUrl;
+              prev.style.display = 'block';
+            }
+            alert('Image pasted and attached successfully!');
+          };
+          img.src = rawData;
+        };
+        reader.readAsDataURL(imageFile);
+        e.preventDefault();
+      }
+    }
+
+  
+    function formatTransmissionBody(text, mainImageUrl) {
+      if (!text) text = '';
+      // Escape HTML to prevent XSS
+      var div = document.createElement('div');
+      div.textContent = text;
+      var safeText = div.innerHTML;
+
+      // Regex to detect standalone image URLs or markdown images ![alt](url)
+      // and replace them with responsive image elements
+      safeText = safeText.replace(/!\\[(.*?)\\]\\((https?:\/\/\\S+)\)/g, '<div style="margin:12px 0; text-align:center;"><img src="$2" alt="$1" style="max-width:100%; max-height:400px; border-radius:6px; border:1px solid var(--cyan); object-fit:contain; cursor:zoom-in;" onclick="openAvatarLightbox(this.src)"></div>');
+
+      // Also detect raw image URLs (ending in .png, .jpg, .jpeg, .gif, .webp or data:image/...)
+      safeText = safeText.replace(/(https?:\/\/\\S+\.(?:png|jpg|jpeg|gif|webp)|data:image\/[a-zA-Z]+;base64,[\s\S]+?)(?=\s|$|<)/g, '<div style="margin:12px 0; text-align:center;"><img src="$1" style="max-width:100%; max-height:400px; border-radius:6px; border:1px solid var(--cyan); object-fit:contain; cursor:zoom-in;" onclick="openAvatarLightbox(this.src)"></div>');
+
+      // Convert newlines to <br>
+      safeText = safeText.replace(/\n/g, '<br>');
+
+      var html = '<div style="margin-bottom:12px;">' + safeText + '</div>';
+      if (mainImageUrl) {
+        html += '<div style="margin-top:14px; text-align:center;"><img src="' + mainImageUrl + '" style="max-width:100%; max-height:400px; border-radius:6px; border:1px solid var(--cyan); object-fit:contain; cursor:zoom-in;" onclick="openAvatarLightbox(this.src)"></div>';
+      }
+      return html;
     }
 
   </script>
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js">
     function handleCmsPaste(e) {
-      var clipboardData = e.clipboardData || window.clipboardData;
-      if (!clipboardData || !clipboardData.items) return;
-      var items = clipboardData.items;
-      for (var i = 0; i < items.length; i++) {
-        if (items[i].type && items[i].type.indexOf('image') !== -1) {
-          var blob = items[i].getAsFile();
-          if (!blob) continue;
-          var reader = new FileReader();
-          reader.onload = function(event) {
-            var rawData = event.target.result;
-            var img = new Image();
-            img.onload = function() {
-              var canvas = document.createElement('canvas');
-              var maxDim = 800;
-              var w = img.width;
-              var h = img.height;
-              if (w > h) {
-                if (w > maxDim) { h = Math.round((h * maxDim) / w); w = maxDim; }
-              } else {
-                if (h > maxDim) { w = Math.round((w * maxDim) / h); h = maxDim; }
-              }
-              canvas.width = w;
-              canvas.height = h;
-              var ctx = canvas.getContext('2d');
-              ctx.drawImage(img, 0, 0, w, h);
-              var optimizedUrl = canvas.toDataURL('image/jpeg', 0.88);
+      var clipboardData = e.clipboardData || window.clipboardData || (e.originalEvent && e.originalEvent.clipboardData);
+      if (!clipboardData) return;
 
-              var urlInp = document.getElementById('cms-news-image-url');
-              var prev = document.getElementById('cms-news-image-preview');
-              if (urlInp) urlInp.value = optimizedUrl;
-              if (prev) {
-                prev.src = optimizedUrl;
-                prev.style.display = 'block';
-              }
-              alert('Image pasted and attached successfully!');
-            };
-            img.src = rawData;
-          };
-          reader.readAsDataURL(blob);
-          e.preventDefault();
-          break;
+      // 1. Check items
+      var items = clipboardData.items;
+      var imageFile = null;
+
+      if (items) {
+        for (var i = 0; i < items.length; i++) {
+          if (items[i].type && items[i].type.indexOf('image') !== -1) {
+            imageFile = items[i].getAsFile();
+            break;
+          }
         }
       }
+
+      // 2. Fallback to files if items didn't yield an image
+      if (!imageFile && clipboardData.files && clipboardData.files.length > 0) {
+        for (var j = 0; j < clipboardData.files.length; j++) {
+          if (clipboardData.files[j].type && clipboardData.files[j].type.indexOf('image') !== -1) {
+            imageFile = clipboardData.files[j];
+            break;
+          }
+        }
+      }
+
+      if (imageFile) {
+        var reader = new FileReader();
+        reader.onload = function(event) {
+          var rawData = event.target.result;
+          var img = new Image();
+          img.onload = function() {
+            var canvas = document.createElement('canvas');
+            var maxDim = 800;
+            var w = img.width;
+            var h = img.height;
+            if (w > h) {
+              if (w > maxDim) { h = Math.round((h * maxDim) / w); w = maxDim; }
+            } else {
+              if (h > maxDim) { w = Math.round((w * maxDim) / h); h = maxDim; }
+            }
+            canvas.width = w;
+            canvas.height = h;
+            var ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, w, h);
+            var optimizedUrl = canvas.toDataURL('image/jpeg', 0.88);
+
+            var urlInp = document.getElementById('cms-news-image-url');
+            var prev = document.getElementById('cms-news-image-preview');
+            if (urlInp) urlInp.value = optimizedUrl;
+            if (prev) {
+              prev.src = optimizedUrl;
+              prev.style.display = 'block';
+            }
+            alert('Image pasted and attached successfully!');
+          };
+          img.src = rawData;
+        };
+        reader.readAsDataURL(imageFile);
+        e.preventDefault();
+      }
+    }
+
+  
+    function formatTransmissionBody(text, mainImageUrl) {
+      if (!text) text = '';
+      // Escape HTML to prevent XSS
+      var div = document.createElement('div');
+      div.textContent = text;
+      var safeText = div.innerHTML;
+
+      // Regex to detect standalone image URLs or markdown images ![alt](url)
+      // and replace them with responsive image elements
+      safeText = safeText.replace(/!\\[(.*?)\\]\\((https?:\/\/\\S+)\)/g, '<div style="margin:12px 0; text-align:center;"><img src="$2" alt="$1" style="max-width:100%; max-height:400px; border-radius:6px; border:1px solid var(--cyan); object-fit:contain; cursor:zoom-in;" onclick="openAvatarLightbox(this.src)"></div>');
+
+      // Also detect raw image URLs (ending in .png, .jpg, .jpeg, .gif, .webp or data:image/...)
+      safeText = safeText.replace(/(https?:\/\/\\S+\.(?:png|jpg|jpeg|gif|webp)|data:image\/[a-zA-Z]+;base64,[\s\S]+?)(?=\s|$|<)/g, '<div style="margin:12px 0; text-align:center;"><img src="$1" style="max-width:100%; max-height:400px; border-radius:6px; border:1px solid var(--cyan); object-fit:contain; cursor:zoom-in;" onclick="openAvatarLightbox(this.src)"></div>');
+
+      // Convert newlines to <br>
+      safeText = safeText.replace(/\n/g, '<br>');
+
+      var html = '<div style="margin-bottom:12px;">' + safeText + '</div>';
+      if (mainImageUrl) {
+        html += '<div style="margin-top:14px; text-align:center;"><img src="' + mainImageUrl + '" style="max-width:100%; max-height:400px; border-radius:6px; border:1px solid var(--cyan); object-fit:contain; cursor:zoom-in;" onclick="openAvatarLightbox(this.src)"></div>';
+      }
+      return html;
     }
 
   </script>
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-storage-compat.js">
     function handleCmsPaste(e) {
-      var clipboardData = e.clipboardData || window.clipboardData;
-      if (!clipboardData || !clipboardData.items) return;
-      var items = clipboardData.items;
-      for (var i = 0; i < items.length; i++) {
-        if (items[i].type && items[i].type.indexOf('image') !== -1) {
-          var blob = items[i].getAsFile();
-          if (!blob) continue;
-          var reader = new FileReader();
-          reader.onload = function(event) {
-            var rawData = event.target.result;
-            var img = new Image();
-            img.onload = function() {
-              var canvas = document.createElement('canvas');
-              var maxDim = 800;
-              var w = img.width;
-              var h = img.height;
-              if (w > h) {
-                if (w > maxDim) { h = Math.round((h * maxDim) / w); w = maxDim; }
-              } else {
-                if (h > maxDim) { w = Math.round((w * maxDim) / h); h = maxDim; }
-              }
-              canvas.width = w;
-              canvas.height = h;
-              var ctx = canvas.getContext('2d');
-              ctx.drawImage(img, 0, 0, w, h);
-              var optimizedUrl = canvas.toDataURL('image/jpeg', 0.88);
+      var clipboardData = e.clipboardData || window.clipboardData || (e.originalEvent && e.originalEvent.clipboardData);
+      if (!clipboardData) return;
 
-              var urlInp = document.getElementById('cms-news-image-url');
-              var prev = document.getElementById('cms-news-image-preview');
-              if (urlInp) urlInp.value = optimizedUrl;
-              if (prev) {
-                prev.src = optimizedUrl;
-                prev.style.display = 'block';
-              }
-              alert('Image pasted and attached successfully!');
-            };
-            img.src = rawData;
-          };
-          reader.readAsDataURL(blob);
-          e.preventDefault();
-          break;
+      // 1. Check items
+      var items = clipboardData.items;
+      var imageFile = null;
+
+      if (items) {
+        for (var i = 0; i < items.length; i++) {
+          if (items[i].type && items[i].type.indexOf('image') !== -1) {
+            imageFile = items[i].getAsFile();
+            break;
+          }
         }
       }
+
+      // 2. Fallback to files if items didn't yield an image
+      if (!imageFile && clipboardData.files && clipboardData.files.length > 0) {
+        for (var j = 0; j < clipboardData.files.length; j++) {
+          if (clipboardData.files[j].type && clipboardData.files[j].type.indexOf('image') !== -1) {
+            imageFile = clipboardData.files[j];
+            break;
+          }
+        }
+      }
+
+      if (imageFile) {
+        var reader = new FileReader();
+        reader.onload = function(event) {
+          var rawData = event.target.result;
+          var img = new Image();
+          img.onload = function() {
+            var canvas = document.createElement('canvas');
+            var maxDim = 800;
+            var w = img.width;
+            var h = img.height;
+            if (w > h) {
+              if (w > maxDim) { h = Math.round((h * maxDim) / w); w = maxDim; }
+            } else {
+              if (h > maxDim) { w = Math.round((w * maxDim) / h); h = maxDim; }
+            }
+            canvas.width = w;
+            canvas.height = h;
+            var ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, w, h);
+            var optimizedUrl = canvas.toDataURL('image/jpeg', 0.88);
+
+            var urlInp = document.getElementById('cms-news-image-url');
+            var prev = document.getElementById('cms-news-image-preview');
+            if (urlInp) urlInp.value = optimizedUrl;
+            if (prev) {
+              prev.src = optimizedUrl;
+              prev.style.display = 'block';
+            }
+            alert('Image pasted and attached successfully!');
+          };
+          img.src = rawData;
+        };
+        reader.readAsDataURL(imageFile);
+        e.preventDefault();
+      }
+    }
+
+  
+    function formatTransmissionBody(text, mainImageUrl) {
+      if (!text) text = '';
+      // Escape HTML to prevent XSS
+      var div = document.createElement('div');
+      div.textContent = text;
+      var safeText = div.innerHTML;
+
+      // Regex to detect standalone image URLs or markdown images ![alt](url)
+      // and replace them with responsive image elements
+      safeText = safeText.replace(/!\\[(.*?)\\]\\((https?:\/\/\\S+)\)/g, '<div style="margin:12px 0; text-align:center;"><img src="$2" alt="$1" style="max-width:100%; max-height:400px; border-radius:6px; border:1px solid var(--cyan); object-fit:contain; cursor:zoom-in;" onclick="openAvatarLightbox(this.src)"></div>');
+
+      // Also detect raw image URLs (ending in .png, .jpg, .jpeg, .gif, .webp or data:image/...)
+      safeText = safeText.replace(/(https?:\/\/\\S+\.(?:png|jpg|jpeg|gif|webp)|data:image\/[a-zA-Z]+;base64,[\s\S]+?)(?=\s|$|<)/g, '<div style="margin:12px 0; text-align:center;"><img src="$1" style="max-width:100%; max-height:400px; border-radius:6px; border:1px solid var(--cyan); object-fit:contain; cursor:zoom-in;" onclick="openAvatarLightbox(this.src)"></div>');
+
+      // Convert newlines to <br>
+      safeText = safeText.replace(/\n/g, '<br>');
+
+      var html = '<div style="margin-bottom:12px;">' + safeText + '</div>';
+      if (mainImageUrl) {
+        html += '<div style="margin-top:14px; text-align:center;"><img src="' + mainImageUrl + '" style="max-width:100%; max-height:400px; border-radius:6px; border:1px solid var(--cyan); object-fit:contain; cursor:zoom-in;" onclick="openAvatarLightbox(this.src)"></div>';
+      }
+      return html;
     }
 
   </script>
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js">
     function handleCmsPaste(e) {
-      var clipboardData = e.clipboardData || window.clipboardData;
-      if (!clipboardData || !clipboardData.items) return;
-      var items = clipboardData.items;
-      for (var i = 0; i < items.length; i++) {
-        if (items[i].type && items[i].type.indexOf('image') !== -1) {
-          var blob = items[i].getAsFile();
-          if (!blob) continue;
-          var reader = new FileReader();
-          reader.onload = function(event) {
-            var rawData = event.target.result;
-            var img = new Image();
-            img.onload = function() {
-              var canvas = document.createElement('canvas');
-              var maxDim = 800;
-              var w = img.width;
-              var h = img.height;
-              if (w > h) {
-                if (w > maxDim) { h = Math.round((h * maxDim) / w); w = maxDim; }
-              } else {
-                if (h > maxDim) { w = Math.round((w * maxDim) / h); h = maxDim; }
-              }
-              canvas.width = w;
-              canvas.height = h;
-              var ctx = canvas.getContext('2d');
-              ctx.drawImage(img, 0, 0, w, h);
-              var optimizedUrl = canvas.toDataURL('image/jpeg', 0.88);
+      var clipboardData = e.clipboardData || window.clipboardData || (e.originalEvent && e.originalEvent.clipboardData);
+      if (!clipboardData) return;
 
-              var urlInp = document.getElementById('cms-news-image-url');
-              var prev = document.getElementById('cms-news-image-preview');
-              if (urlInp) urlInp.value = optimizedUrl;
-              if (prev) {
-                prev.src = optimizedUrl;
-                prev.style.display = 'block';
-              }
-              alert('Image pasted and attached successfully!');
-            };
-            img.src = rawData;
-          };
-          reader.readAsDataURL(blob);
-          e.preventDefault();
-          break;
+      // 1. Check items
+      var items = clipboardData.items;
+      var imageFile = null;
+
+      if (items) {
+        for (var i = 0; i < items.length; i++) {
+          if (items[i].type && items[i].type.indexOf('image') !== -1) {
+            imageFile = items[i].getAsFile();
+            break;
+          }
         }
       }
+
+      // 2. Fallback to files if items didn't yield an image
+      if (!imageFile && clipboardData.files && clipboardData.files.length > 0) {
+        for (var j = 0; j < clipboardData.files.length; j++) {
+          if (clipboardData.files[j].type && clipboardData.files[j].type.indexOf('image') !== -1) {
+            imageFile = clipboardData.files[j];
+            break;
+          }
+        }
+      }
+
+      if (imageFile) {
+        var reader = new FileReader();
+        reader.onload = function(event) {
+          var rawData = event.target.result;
+          var img = new Image();
+          img.onload = function() {
+            var canvas = document.createElement('canvas');
+            var maxDim = 800;
+            var w = img.width;
+            var h = img.height;
+            if (w > h) {
+              if (w > maxDim) { h = Math.round((h * maxDim) / w); w = maxDim; }
+            } else {
+              if (h > maxDim) { w = Math.round((w * maxDim) / h); h = maxDim; }
+            }
+            canvas.width = w;
+            canvas.height = h;
+            var ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, w, h);
+            var optimizedUrl = canvas.toDataURL('image/jpeg', 0.88);
+
+            var urlInp = document.getElementById('cms-news-image-url');
+            var prev = document.getElementById('cms-news-image-preview');
+            if (urlInp) urlInp.value = optimizedUrl;
+            if (prev) {
+              prev.src = optimizedUrl;
+              prev.style.display = 'block';
+            }
+            alert('Image pasted and attached successfully!');
+          };
+          img.src = rawData;
+        };
+        reader.readAsDataURL(imageFile);
+        e.preventDefault();
+      }
+    }
+
+  
+    function formatTransmissionBody(text, mainImageUrl) {
+      if (!text) text = '';
+      // Escape HTML to prevent XSS
+      var div = document.createElement('div');
+      div.textContent = text;
+      var safeText = div.innerHTML;
+
+      // Regex to detect standalone image URLs or markdown images ![alt](url)
+      // and replace them with responsive image elements
+      safeText = safeText.replace(/!\\[(.*?)\\]\\((https?:\/\/\\S+)\)/g, '<div style="margin:12px 0; text-align:center;"><img src="$2" alt="$1" style="max-width:100%; max-height:400px; border-radius:6px; border:1px solid var(--cyan); object-fit:contain; cursor:zoom-in;" onclick="openAvatarLightbox(this.src)"></div>');
+
+      // Also detect raw image URLs (ending in .png, .jpg, .jpeg, .gif, .webp or data:image/...)
+      safeText = safeText.replace(/(https?:\/\/\\S+\.(?:png|jpg|jpeg|gif|webp)|data:image\/[a-zA-Z]+;base64,[\s\S]+?)(?=\s|$|<)/g, '<div style="margin:12px 0; text-align:center;"><img src="$1" style="max-width:100%; max-height:400px; border-radius:6px; border:1px solid var(--cyan); object-fit:contain; cursor:zoom-in;" onclick="openAvatarLightbox(this.src)"></div>');
+
+      // Convert newlines to <br>
+      safeText = safeText.replace(/\n/g, '<br>');
+
+      var html = '<div style="margin-bottom:12px;">' + safeText + '</div>';
+      if (mainImageUrl) {
+        html += '<div style="margin-top:14px; text-align:center;"><img src="' + mainImageUrl + '" style="max-width:100%; max-height:400px; border-radius:6px; border:1px solid var(--cyan); object-fit:contain; cursor:zoom-in;" onclick="openAvatarLightbox(this.src)"></div>';
+      }
+      return html;
     }
 
   </script>
@@ -3606,7 +3778,9 @@
       if (titleEl) titleEl.textContent = item.title || 'Untitled Transmission';
       if (dateEl) dateEl.textContent = item.date || 'RECENT';
       if (authorEl) authorEl.textContent = item.author || 'HIGH COMMAND';
-      if (bodyEl) bodyEl.textContent = item.body || '';
+      if (bodyEl) {
+        bodyEl.innerHTML = formatTransmissionBody(item.body, item.imageUrl);
+      }
 
       var actionContainer = document.getElementById('art-modal-admin-actions');
       if (actionContainer) {
@@ -7295,49 +7469,92 @@ async function renderUserMaps() {
 
   
     function handleCmsPaste(e) {
-      var clipboardData = e.clipboardData || window.clipboardData;
-      if (!clipboardData || !clipboardData.items) return;
-      var items = clipboardData.items;
-      for (var i = 0; i < items.length; i++) {
-        if (items[i].type && items[i].type.indexOf('image') !== -1) {
-          var blob = items[i].getAsFile();
-          if (!blob) continue;
-          var reader = new FileReader();
-          reader.onload = function(event) {
-            var rawData = event.target.result;
-            var img = new Image();
-            img.onload = function() {
-              var canvas = document.createElement('canvas');
-              var maxDim = 800;
-              var w = img.width;
-              var h = img.height;
-              if (w > h) {
-                if (w > maxDim) { h = Math.round((h * maxDim) / w); w = maxDim; }
-              } else {
-                if (h > maxDim) { w = Math.round((w * maxDim) / h); h = maxDim; }
-              }
-              canvas.width = w;
-              canvas.height = h;
-              var ctx = canvas.getContext('2d');
-              ctx.drawImage(img, 0, 0, w, h);
-              var optimizedUrl = canvas.toDataURL('image/jpeg', 0.88);
+      var clipboardData = e.clipboardData || window.clipboardData || (e.originalEvent && e.originalEvent.clipboardData);
+      if (!clipboardData) return;
 
-              var urlInp = document.getElementById('cms-news-image-url');
-              var prev = document.getElementById('cms-news-image-preview');
-              if (urlInp) urlInp.value = optimizedUrl;
-              if (prev) {
-                prev.src = optimizedUrl;
-                prev.style.display = 'block';
-              }
-              alert('Image pasted and attached successfully!');
-            };
-            img.src = rawData;
-          };
-          reader.readAsDataURL(blob);
-          e.preventDefault();
-          break;
+      // 1. Check items
+      var items = clipboardData.items;
+      var imageFile = null;
+
+      if (items) {
+        for (var i = 0; i < items.length; i++) {
+          if (items[i].type && items[i].type.indexOf('image') !== -1) {
+            imageFile = items[i].getAsFile();
+            break;
+          }
         }
       }
+
+      // 2. Fallback to files if items didn't yield an image
+      if (!imageFile && clipboardData.files && clipboardData.files.length > 0) {
+        for (var j = 0; j < clipboardData.files.length; j++) {
+          if (clipboardData.files[j].type && clipboardData.files[j].type.indexOf('image') !== -1) {
+            imageFile = clipboardData.files[j];
+            break;
+          }
+        }
+      }
+
+      if (imageFile) {
+        var reader = new FileReader();
+        reader.onload = function(event) {
+          var rawData = event.target.result;
+          var img = new Image();
+          img.onload = function() {
+            var canvas = document.createElement('canvas');
+            var maxDim = 800;
+            var w = img.width;
+            var h = img.height;
+            if (w > h) {
+              if (w > maxDim) { h = Math.round((h * maxDim) / w); w = maxDim; }
+            } else {
+              if (h > maxDim) { w = Math.round((w * maxDim) / h); h = maxDim; }
+            }
+            canvas.width = w;
+            canvas.height = h;
+            var ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, w, h);
+            var optimizedUrl = canvas.toDataURL('image/jpeg', 0.88);
+
+            var urlInp = document.getElementById('cms-news-image-url');
+            var prev = document.getElementById('cms-news-image-preview');
+            if (urlInp) urlInp.value = optimizedUrl;
+            if (prev) {
+              prev.src = optimizedUrl;
+              prev.style.display = 'block';
+            }
+            alert('Image pasted and attached successfully!');
+          };
+          img.src = rawData;
+        };
+        reader.readAsDataURL(imageFile);
+        e.preventDefault();
+      }
+    }
+
+  
+    function formatTransmissionBody(text, mainImageUrl) {
+      if (!text) text = '';
+      // Escape HTML to prevent XSS
+      var div = document.createElement('div');
+      div.textContent = text;
+      var safeText = div.innerHTML;
+
+      // Regex to detect standalone image URLs or markdown images ![alt](url)
+      // and replace them with responsive image elements
+      safeText = safeText.replace(/!\\[(.*?)\\]\\((https?:\/\/\\S+)\)/g, '<div style="margin:12px 0; text-align:center;"><img src="$2" alt="$1" style="max-width:100%; max-height:400px; border-radius:6px; border:1px solid var(--cyan); object-fit:contain; cursor:zoom-in;" onclick="openAvatarLightbox(this.src)"></div>');
+
+      // Also detect raw image URLs (ending in .png, .jpg, .jpeg, .gif, .webp or data:image/...)
+      safeText = safeText.replace(/(https?:\/\/\\S+\.(?:png|jpg|jpeg|gif|webp)|data:image\/[a-zA-Z]+;base64,[\s\S]+?)(?=\s|$|<)/g, '<div style="margin:12px 0; text-align:center;"><img src="$1" style="max-width:100%; max-height:400px; border-radius:6px; border:1px solid var(--cyan); object-fit:contain; cursor:zoom-in;" onclick="openAvatarLightbox(this.src)"></div>');
+
+      // Convert newlines to <br>
+      safeText = safeText.replace(/\n/g, '<br>');
+
+      var html = '<div style="margin-bottom:12px;">' + safeText + '</div>';
+      if (mainImageUrl) {
+        html += '<div style="margin-top:14px; text-align:center;"><img src="' + mainImageUrl + '" style="max-width:100%; max-height:400px; border-radius:6px; border:1px solid var(--cyan); object-fit:contain; cursor:zoom-in;" onclick="openAvatarLightbox(this.src)"></div>';
+      }
+      return html;
     }
 
   </script>
