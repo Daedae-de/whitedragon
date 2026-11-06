@@ -4520,7 +4520,19 @@
               </div>
             </div>
           </div>
-  
+
+ <div style="display:flex; justify-content:flex-end; gap:8px;">
+            <button onclick="saveDossierChanges()" class="btn-download-rep" style="background:var(--win); color:#070a12; font-weight:800; cursor:pointer;">
+              💾 SAVE CHANGES
+            </button>
+            <button onclick="cancelDossierEdit()" class="btn-download-rep" style="background:transparent; border-color:var(--text-dim); color:var(--text-muted); cursor:pointer;">
+              CANCEL
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 
 
   <!-- WEBMASTER TOP BAR -->
@@ -7474,6 +7486,10 @@ async function renderUserMaps() {
             }
           }
         }
+      }
+    }
+
+    function cancelDossierEdit() {
 
     function cancelDossierEdit() {
       var form = document.getElementById('dossier-edit-form');
