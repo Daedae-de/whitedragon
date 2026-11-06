@@ -142,119 +142,119 @@
       return html;
     }
 
-  </script>
-  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js">
-    function handleCmsImageUpload(event) {
-      var file = event.target.files && event.target.files[0];
-      if (!file) return;
-      var reader = new FileReader();
-      reader.onload = function(e) {
-        var rawData = e.target.result;
-        var img = new Image();
-        img.onload = function() {
-          var canvas = document.createElement('canvas');
-          var maxDim = 800;
-          var w = img.width;
-          var h = img.height;
-          if (w > h) {
-            if (w > maxDim) { h = Math.round((h * maxDim) / w); w = maxDim; }
-          } else {
-            if (h > maxDim) { w = Math.round((w * maxDim) / h); h = maxDim; }
-          }
-          canvas.width = w;
-          canvas.height = h;
-          var ctx = canvas.getContext('2d');
-          ctx.drawImage(img, 0, 0, w, h);
-          var optimizedUrl = canvas.toDataURL('image/jpeg', 0.88);
+  
+    var cmsAttachedImages = [];
 
-          var urlInp = document.getElementById('cms-news-image-url');
-          var prev = document.getElementById('cms-news-image-preview');
-          if (urlInp) urlInp.value = optimizedUrl;
-          if (prev) {
-            prev.src = optimizedUrl;
-            prev.style.display = 'block';
-          }
-        };
-        img.src = rawData;
-      };
-      reader.readAsDataURL(file);
-    }
-
-    function previewCmsImageUrl(val) {
-      var prev = document.getElementById('cms-news-image-preview');
-      if (prev) {
-        if (val && val.trim().length > 5) {
-          prev.src = val.trim();
-          prev.style.display = 'block';
-        } else {
-          prev.style.display = 'none';
-        }
+    function handleCmsImageFileInput(e) {
+      if (e.target.files) {
+        handleCmsMultipleImages(e.target.files);
+        e.target.value = '';
       }
     }
 
+    function handleCmsMultipleImages(files) {
+      if (!files || files.length === 0) return;
+      for (var i = 0; i < files.length; i++) {
+        (function(file) {
+          if (!file.type || file.type.indexOf('image') === -1) return;
+          var reader = new FileReader();
+          reader.onload = function(event) {
+            var rawData = event.target.result;
+            var img = new Image();
+            img.onload = function() {
+              var canvas = document.createElement('canvas');
+              var maxDim = 800;
+              var w = img.width;
+              var h = img.height;
+              if (w > h) {
+                if (w > maxDim) { h = Math.round((h * maxDim) / w); w = maxDim; }
+              } else {
+                if (h > maxDim) { w = Math.round((w * maxDim) / h); h = maxDim; }
+              }
+              canvas.width = w;
+              canvas.height = h;
+              var ctx = canvas.getContext('2d');
+              ctx.drawImage(img, 0, 0, w, h);
+              var optimizedUrl = canvas.toDataURL('image/jpeg', 0.88);
+              cmsAttachedImages.push(optimizedUrl);
+              renderCmsImagesPreview();
+            };
+            img.src = rawData;
+          };
+          reader.readAsDataURL(file);
+        })(files[i]);
+      }
+    }
+
+    // Override handleCmsPaste to support multiple images
     function handleCmsPaste(e) {
       var clipboardData = e.clipboardData || window.clipboardData || (e.originalEvent && e.originalEvent.clipboardData);
       if (!clipboardData) return;
-
       var items = clipboardData.items;
-      var imageFile = null;
+      var filesFound = [];
 
       if (items) {
         for (var i = 0; i < items.length; i++) {
           if (items[i].type && items[i].type.indexOf('image') !== -1) {
-            imageFile = items[i].getAsFile();
-            break;
+            var f = items[i].getAsFile();
+            if (f) filesFound.push(f);
           }
         }
       }
 
-      if (!imageFile && clipboardData.files && clipboardData.files.length > 0) {
+      if (filesFound.length === 0 && clipboardData.files && clipboardData.files.length > 0) {
         for (var j = 0; j < clipboardData.files.length; j++) {
           if (clipboardData.files[j].type && clipboardData.files[j].type.indexOf('image') !== -1) {
-            imageFile = clipboardData.files[j];
-            break;
+            filesFound.push(clipboardData.files[j]);
           }
         }
       }
 
-      if (imageFile) {
-        var reader = new FileReader();
-        reader.onload = function(event) {
-          var rawData = event.target.result;
-          var img = new Image();
-          img.onload = function() {
-            var canvas = document.createElement('canvas');
-            var maxDim = 800;
-            var w = img.width;
-            var h = img.height;
-            if (w > h) {
-              if (w > maxDim) { h = Math.round((h * maxDim) / w); w = maxDim; }
-            } else {
-              if (h > maxDim) { w = Math.round((w * maxDim) / h); h = maxDim; }
-            }
-            canvas.width = w;
-            canvas.height = h;
-            var ctx = canvas.getContext('2d');
-            ctx.drawImage(img, 0, 0, w, h);
-            var optimizedUrl = canvas.toDataURL('image/jpeg', 0.88);
-
-            var urlInp = document.getElementById('cms-news-image-url');
-            var prev = document.getElementById('cms-news-image-preview');
-            if (urlInp) urlInp.value = optimizedUrl;
-            if (prev) {
-              prev.src = optimizedUrl;
-              prev.style.display = 'block';
-            }
-            alert('Image pasted and attached successfully!');
-          };
-          img.src = rawData;
-        };
-        reader.readAsDataURL(imageFile);
+      if (filesFound.length > 0) {
+        handleCmsMultipleImages(filesFound);
         e.preventDefault();
+        alert(filesFound.length + ' image(s) pasted and attached successfully!');
       }
     }
 
-    function formatTransmissionBody(text, mainImageUrl) {
+    function removeCmsImage(index) {
+      cmsAttachedImages.splice(index, 1);
+      renderCmsImagesPreview();
+    }
+
+    function renderCmsImagesPreview() {
+      var grid = document.getElementById('cms-images-preview-grid');
+      if (!grid) return;
+      grid.innerHTML = '';
+      if (cmsAttachedImages.length === 0) {
+        grid.style.display = 'none';
+        return;
+      }
+      grid.style.display = 'flex';
+      cmsAttachedImages.forEach(function(url, idx) {
+        var wrap = document.createElement('div');
+        wrap.style.cssText = 'position:relative; width:64px; height:64px; border-radius:6px; border:1px solid var(--cyan); overflow:hidden; background:#070a12; flex-shrink:0;';
+        
+        var thumb = document.createElement('img');
+        thumb.src = url;
+        thumb.style.cssText = 'width:100%; height:100%; object-fit:cover; display:block; cursor:zoom-in;';
+        thumb.onclick = function() { openAvatarLightbox(url); };
+        wrap.appendChild(thumb);
+
+        var delBtn = document.createElement('button');
+        delBtn.innerHTML = '&times;';
+        delBtn.title = 'Remove Image';
+        delBtn.style.cssText = 'position:absolute; top:2px; right:2px; background:rgba(239,68,68,0.85); border:none; color:#fff; width:20px; height:20px; border-radius:50%; font-size:13px; font-weight:bold; display:flex; align-items:center; justify-content:center; cursor:pointer; line-height:1;';
+        (function(i) {
+          delBtn.onclick = function() { removeCmsImage(i); };
+        })(idx);
+        wrap.appendChild(delBtn);
+
+        grid.appendChild(wrap);
+      });
+    }
+
+    function formatTransmissionBody(text, images, mainImageUrl) {
       if (!text) text = '';
       var div = document.createElement('div');
       div.textContent = text;
@@ -265,266 +265,17 @@
       safeText = safeText.replace(/\n/g, '<br>');
 
       var html = '<div style="margin-bottom:12px;">' + safeText + '</div>';
-      if (mainImageUrl) {
-        html += '<div style="margin-top:14px; text-align:center;"><img src="' + mainImageUrl + '" style="max-width:100%; max-height:400px; border-radius:6px; border:1px solid var(--cyan); object-fit:contain; cursor:zoom-in;" onclick="openAvatarLightbox(this.src)"></div>';
-      }
-      return html;
-    }
 
-  </script>
-  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-storage-compat.js">
-    function handleCmsImageUpload(event) {
-      var file = event.target.files && event.target.files[0];
-      if (!file) return;
-      var reader = new FileReader();
-      reader.onload = function(e) {
-        var rawData = e.target.result;
-        var img = new Image();
-        img.onload = function() {
-          var canvas = document.createElement('canvas');
-          var maxDim = 800;
-          var w = img.width;
-          var h = img.height;
-          if (w > h) {
-            if (w > maxDim) { h = Math.round((h * maxDim) / w); w = maxDim; }
-          } else {
-            if (h > maxDim) { w = Math.round((w * maxDim) / h); h = maxDim; }
-          }
-          canvas.width = w;
-          canvas.height = h;
-          var ctx = canvas.getContext('2d');
-          ctx.drawImage(img, 0, 0, w, h);
-          var optimizedUrl = canvas.toDataURL('image/jpeg', 0.88);
+      var allImgs = [];
+      if (Array.isArray(images)) allImgs = allImgs.concat(images);
+      if (mainImageUrl && allImgs.indexOf(mainImageUrl) === -1) allImgs.push(mainImageUrl);
 
-          var urlInp = document.getElementById('cms-news-image-url');
-          var prev = document.getElementById('cms-news-image-preview');
-          if (urlInp) urlInp.value = optimizedUrl;
-          if (prev) {
-            prev.src = optimizedUrl;
-            prev.style.display = 'block';
-          }
-        };
-        img.src = rawData;
-      };
-      reader.readAsDataURL(file);
-    }
-
-    function previewCmsImageUrl(val) {
-      var prev = document.getElementById('cms-news-image-preview');
-      if (prev) {
-        if (val && val.trim().length > 5) {
-          prev.src = val.trim();
-          prev.style.display = 'block';
-        } else {
-          prev.style.display = 'none';
-        }
-      }
-    }
-
-    function handleCmsPaste(e) {
-      var clipboardData = e.clipboardData || window.clipboardData || (e.originalEvent && e.originalEvent.clipboardData);
-      if (!clipboardData) return;
-
-      var items = clipboardData.items;
-      var imageFile = null;
-
-      if (items) {
-        for (var i = 0; i < items.length; i++) {
-          if (items[i].type && items[i].type.indexOf('image') !== -1) {
-            imageFile = items[i].getAsFile();
-            break;
-          }
-        }
-      }
-
-      if (!imageFile && clipboardData.files && clipboardData.files.length > 0) {
-        for (var j = 0; j < clipboardData.files.length; j++) {
-          if (clipboardData.files[j].type && clipboardData.files[j].type.indexOf('image') !== -1) {
-            imageFile = clipboardData.files[j];
-            break;
-          }
-        }
-      }
-
-      if (imageFile) {
-        var reader = new FileReader();
-        reader.onload = function(event) {
-          var rawData = event.target.result;
-          var img = new Image();
-          img.onload = function() {
-            var canvas = document.createElement('canvas');
-            var maxDim = 800;
-            var w = img.width;
-            var h = img.height;
-            if (w > h) {
-              if (w > maxDim) { h = Math.round((h * maxDim) / w); w = maxDim; }
-            } else {
-              if (h > maxDim) { w = Math.round((w * maxDim) / h); h = maxDim; }
-            }
-            canvas.width = w;
-            canvas.height = h;
-            var ctx = canvas.getContext('2d');
-            ctx.drawImage(img, 0, 0, w, h);
-            var optimizedUrl = canvas.toDataURL('image/jpeg', 0.88);
-
-            var urlInp = document.getElementById('cms-news-image-url');
-            var prev = document.getElementById('cms-news-image-preview');
-            if (urlInp) urlInp.value = optimizedUrl;
-            if (prev) {
-              prev.src = optimizedUrl;
-              prev.style.display = 'block';
-            }
-            alert('Image pasted and attached successfully!');
-          };
-          img.src = rawData;
-        };
-        reader.readAsDataURL(imageFile);
-        e.preventDefault();
-      }
-    }
-
-    function formatTransmissionBody(text, mainImageUrl) {
-      if (!text) text = '';
-      var div = document.createElement('div');
-      div.textContent = text;
-      var safeText = div.innerHTML;
-
-      safeText = safeText.replace(/!\[(.*?)\]\((https?:\/\/\S+)\)/g, '<div style="margin:12px 0; text-align:center;"><img src="$2" alt="$1" style="max-width:100%; max-height:400px; border-radius:6px; border:1px solid var(--cyan); object-fit:contain; cursor:zoom-in;" onclick="openAvatarLightbox(this.src)"></div>');
-      safeText = safeText.replace(/(https?:\/\/\S+\.(?:png|jpg|jpeg|gif|webp)|data:image\/[a-zA-Z]+;base64,[\s\S]+?)(?=\s|$|<)/g, '<div style="margin:12px 0; text-align:center;"><img src="$1" style="max-width:100%; max-height:400px; border-radius:6px; border:1px solid var(--cyan); object-fit:contain; cursor:zoom-in;" onclick="openAvatarLightbox(this.src)"></div>');
-      safeText = safeText.replace(/\n/g, '<br>');
-
-      var html = '<div style="margin-bottom:12px;">' + safeText + '</div>';
-      if (mainImageUrl) {
-        html += '<div style="margin-top:14px; text-align:center;"><img src="' + mainImageUrl + '" style="max-width:100%; max-height:400px; border-radius:6px; border:1px solid var(--cyan); object-fit:contain; cursor:zoom-in;" onclick="openAvatarLightbox(this.src)"></div>';
-      }
-      return html;
-    }
-
-  </script>
-  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js">
-    function handleCmsImageUpload(event) {
-      var file = event.target.files && event.target.files[0];
-      if (!file) return;
-      var reader = new FileReader();
-      reader.onload = function(e) {
-        var rawData = e.target.result;
-        var img = new Image();
-        img.onload = function() {
-          var canvas = document.createElement('canvas');
-          var maxDim = 800;
-          var w = img.width;
-          var h = img.height;
-          if (w > h) {
-            if (w > maxDim) { h = Math.round((h * maxDim) / w); w = maxDim; }
-          } else {
-            if (h > maxDim) { w = Math.round((w * maxDim) / h); h = maxDim; }
-          }
-          canvas.width = w;
-          canvas.height = h;
-          var ctx = canvas.getContext('2d');
-          ctx.drawImage(img, 0, 0, w, h);
-          var optimizedUrl = canvas.toDataURL('image/jpeg', 0.88);
-
-          var urlInp = document.getElementById('cms-news-image-url');
-          var prev = document.getElementById('cms-news-image-preview');
-          if (urlInp) urlInp.value = optimizedUrl;
-          if (prev) {
-            prev.src = optimizedUrl;
-            prev.style.display = 'block';
-          }
-        };
-        img.src = rawData;
-      };
-      reader.readAsDataURL(file);
-    }
-
-    function previewCmsImageUrl(val) {
-      var prev = document.getElementById('cms-news-image-preview');
-      if (prev) {
-        if (val && val.trim().length > 5) {
-          prev.src = val.trim();
-          prev.style.display = 'block';
-        } else {
-          prev.style.display = 'none';
-        }
-      }
-    }
-
-    function handleCmsPaste(e) {
-      var clipboardData = e.clipboardData || window.clipboardData || (e.originalEvent && e.originalEvent.clipboardData);
-      if (!clipboardData) return;
-
-      var items = clipboardData.items;
-      var imageFile = null;
-
-      if (items) {
-        for (var i = 0; i < items.length; i++) {
-          if (items[i].type && items[i].type.indexOf('image') !== -1) {
-            imageFile = items[i].getAsFile();
-            break;
-          }
-        }
-      }
-
-      if (!imageFile && clipboardData.files && clipboardData.files.length > 0) {
-        for (var j = 0; j < clipboardData.files.length; j++) {
-          if (clipboardData.files[j].type && clipboardData.files[j].type.indexOf('image') !== -1) {
-            imageFile = clipboardData.files[j];
-            break;
-          }
-        }
-      }
-
-      if (imageFile) {
-        var reader = new FileReader();
-        reader.onload = function(event) {
-          var rawData = event.target.result;
-          var img = new Image();
-          img.onload = function() {
-            var canvas = document.createElement('canvas');
-            var maxDim = 800;
-            var w = img.width;
-            var h = img.height;
-            if (w > h) {
-              if (w > maxDim) { h = Math.round((h * maxDim) / w); w = maxDim; }
-            } else {
-              if (h > maxDim) { w = Math.round((w * maxDim) / h); h = maxDim; }
-            }
-            canvas.width = w;
-            canvas.height = h;
-            var ctx = canvas.getContext('2d');
-            ctx.drawImage(img, 0, 0, w, h);
-            var optimizedUrl = canvas.toDataURL('image/jpeg', 0.88);
-
-            var urlInp = document.getElementById('cms-news-image-url');
-            var prev = document.getElementById('cms-news-image-preview');
-            if (urlInp) urlInp.value = optimizedUrl;
-            if (prev) {
-              prev.src = optimizedUrl;
-              prev.style.display = 'block';
-            }
-            alert('Image pasted and attached successfully!');
-          };
-          img.src = rawData;
-        };
-        reader.readAsDataURL(imageFile);
-        e.preventDefault();
-      }
-    }
-
-    function formatTransmissionBody(text, mainImageUrl) {
-      if (!text) text = '';
-      var div = document.createElement('div');
-      div.textContent = text;
-      var safeText = div.innerHTML;
-
-      safeText = safeText.replace(/!\[(.*?)\]\((https?:\/\/\S+)\)/g, '<div style="margin:12px 0; text-align:center;"><img src="$2" alt="$1" style="max-width:100%; max-height:400px; border-radius:6px; border:1px solid var(--cyan); object-fit:contain; cursor:zoom-in;" onclick="openAvatarLightbox(this.src)"></div>');
-      safeText = safeText.replace(/(https?:\/\/\S+\.(?:png|jpg|jpeg|gif|webp)|data:image\/[a-zA-Z]+;base64,[\s\S]+?)(?=\s|$|<)/g, '<div style="margin:12px 0; text-align:center;"><img src="$1" style="max-width:100%; max-height:400px; border-radius:6px; border:1px solid var(--cyan); object-fit:contain; cursor:zoom-in;" onclick="openAvatarLightbox(this.src)"></div>');
-      safeText = safeText.replace(/\n/g, '<br>');
-
-      var html = '<div style="margin-bottom:12px;">' + safeText + '</div>';
-      if (mainImageUrl) {
-        html += '<div style="margin-top:14px; text-align:center;"><img src="' + mainImageUrl + '" style="max-width:100%; max-height:400px; border-radius:6px; border:1px solid var(--cyan); object-fit:contain; cursor:zoom-in;" onclick="openAvatarLightbox(this.src)"></div>';
+      if (allImgs.length > 0) {
+        html += '<div style="margin-top:14px; display:flex; flex-direction:column; gap:10px; align-items:center;">';
+        allImgs.forEach(function(url) {
+          html += '<div style="text-align:center;"><img src="' + url + '" style="max-width:100%; max-height:420px; border-radius:6px; border:1px solid var(--cyan); object-fit:contain; cursor:zoom-in;" onclick="openAvatarLightbox(this.src)"></div>';
+        });
+        html += '</div>';
       }
       return html;
     }
@@ -658,6 +409,144 @@
       return html;
     }
 
+  
+    var cmsAttachedImages = [];
+
+    function handleCmsImageFileInput(e) {
+      if (e.target.files) {
+        handleCmsMultipleImages(e.target.files);
+        e.target.value = '';
+      }
+    }
+
+    function handleCmsMultipleImages(files) {
+      if (!files || files.length === 0) return;
+      for (var i = 0; i < files.length; i++) {
+        (function(file) {
+          if (!file.type || file.type.indexOf('image') === -1) return;
+          var reader = new FileReader();
+          reader.onload = function(event) {
+            var rawData = event.target.result;
+            var img = new Image();
+            img.onload = function() {
+              var canvas = document.createElement('canvas');
+              var maxDim = 800;
+              var w = img.width;
+              var h = img.height;
+              if (w > h) {
+                if (w > maxDim) { h = Math.round((h * maxDim) / w); w = maxDim; }
+              } else {
+                if (h > maxDim) { w = Math.round((w * maxDim) / h); h = maxDim; }
+              }
+              canvas.width = w;
+              canvas.height = h;
+              var ctx = canvas.getContext('2d');
+              ctx.drawImage(img, 0, 0, w, h);
+              var optimizedUrl = canvas.toDataURL('image/jpeg', 0.88);
+              cmsAttachedImages.push(optimizedUrl);
+              renderCmsImagesPreview();
+            };
+            img.src = rawData;
+          };
+          reader.readAsDataURL(file);
+        })(files[i]);
+      }
+    }
+
+    // Override handleCmsPaste to support multiple images
+    function handleCmsPaste(e) {
+      var clipboardData = e.clipboardData || window.clipboardData || (e.originalEvent && e.originalEvent.clipboardData);
+      if (!clipboardData) return;
+      var items = clipboardData.items;
+      var filesFound = [];
+
+      if (items) {
+        for (var i = 0; i < items.length; i++) {
+          if (items[i].type && items[i].type.indexOf('image') !== -1) {
+            var f = items[i].getAsFile();
+            if (f) filesFound.push(f);
+          }
+        }
+      }
+
+      if (filesFound.length === 0 && clipboardData.files && clipboardData.files.length > 0) {
+        for (var j = 0; j < clipboardData.files.length; j++) {
+          if (clipboardData.files[j].type && clipboardData.files[j].type.indexOf('image') !== -1) {
+            filesFound.push(clipboardData.files[j]);
+          }
+        }
+      }
+
+      if (filesFound.length > 0) {
+        handleCmsMultipleImages(filesFound);
+        e.preventDefault();
+        alert(filesFound.length + ' image(s) pasted and attached successfully!');
+      }
+    }
+
+    function removeCmsImage(index) {
+      cmsAttachedImages.splice(index, 1);
+      renderCmsImagesPreview();
+    }
+
+    function renderCmsImagesPreview() {
+      var grid = document.getElementById('cms-images-preview-grid');
+      if (!grid) return;
+      grid.innerHTML = '';
+      if (cmsAttachedImages.length === 0) {
+        grid.style.display = 'none';
+        return;
+      }
+      grid.style.display = 'flex';
+      cmsAttachedImages.forEach(function(url, idx) {
+        var wrap = document.createElement('div');
+        wrap.style.cssText = 'position:relative; width:64px; height:64px; border-radius:6px; border:1px solid var(--cyan); overflow:hidden; background:#070a12; flex-shrink:0;';
+        
+        var thumb = document.createElement('img');
+        thumb.src = url;
+        thumb.style.cssText = 'width:100%; height:100%; object-fit:cover; display:block; cursor:zoom-in;';
+        thumb.onclick = function() { openAvatarLightbox(url); };
+        wrap.appendChild(thumb);
+
+        var delBtn = document.createElement('button');
+        delBtn.innerHTML = '&times;';
+        delBtn.title = 'Remove Image';
+        delBtn.style.cssText = 'position:absolute; top:2px; right:2px; background:rgba(239,68,68,0.85); border:none; color:#fff; width:20px; height:20px; border-radius:50%; font-size:13px; font-weight:bold; display:flex; align-items:center; justify-content:center; cursor:pointer; line-height:1;';
+        (function(i) {
+          delBtn.onclick = function() { removeCmsImage(i); };
+        })(idx);
+        wrap.appendChild(delBtn);
+
+        grid.appendChild(wrap);
+      });
+    }
+
+    function formatTransmissionBody(text, images, mainImageUrl) {
+      if (!text) text = '';
+      var div = document.createElement('div');
+      div.textContent = text;
+      var safeText = div.innerHTML;
+
+      safeText = safeText.replace(/!\[(.*?)\]\((https?:\/\/\S+)\)/g, '<div style="margin:12px 0; text-align:center;"><img src="$2" alt="$1" style="max-width:100%; max-height:400px; border-radius:6px; border:1px solid var(--cyan); object-fit:contain; cursor:zoom-in;" onclick="openAvatarLightbox(this.src)"></div>');
+      safeText = safeText.replace(/(https?:\/\/\S+\.(?:png|jpg|jpeg|gif|webp)|data:image\/[a-zA-Z]+;base64,[\s\S]+?)(?=\s|$|<)/g, '<div style="margin:12px 0; text-align:center;"><img src="$1" style="max-width:100%; max-height:400px; border-radius:6px; border:1px solid var(--cyan); object-fit:contain; cursor:zoom-in;" onclick="openAvatarLightbox(this.src)"></div>');
+      safeText = safeText.replace(/\n/g, '<br>');
+
+      var html = '<div style="margin-bottom:12px;">' + safeText + '</div>';
+
+      var allImgs = [];
+      if (Array.isArray(images)) allImgs = allImgs.concat(images);
+      if (mainImageUrl && allImgs.indexOf(mainImageUrl) === -1) allImgs.push(mainImageUrl);
+
+      if (allImgs.length > 0) {
+        html += '<div style="margin-top:14px; display:flex; flex-direction:column; gap:10px; align-items:center;">';
+        allImgs.forEach(function(url) {
+          html += '<div style="text-align:center;"><img src="' + url + '" style="max-width:100%; max-height:420px; border-radius:6px; border:1px solid var(--cyan); object-fit:contain; cursor:zoom-in;" onclick="openAvatarLightbox(this.src)"></div>';
+        });
+        html += '</div>';
+      }
+      return html;
+    }
+
   </script>
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-storage-compat.js">
     function handleCmsImageUpload(event) {
@@ -787,6 +676,144 @@
       return html;
     }
 
+  
+    var cmsAttachedImages = [];
+
+    function handleCmsImageFileInput(e) {
+      if (e.target.files) {
+        handleCmsMultipleImages(e.target.files);
+        e.target.value = '';
+      }
+    }
+
+    function handleCmsMultipleImages(files) {
+      if (!files || files.length === 0) return;
+      for (var i = 0; i < files.length; i++) {
+        (function(file) {
+          if (!file.type || file.type.indexOf('image') === -1) return;
+          var reader = new FileReader();
+          reader.onload = function(event) {
+            var rawData = event.target.result;
+            var img = new Image();
+            img.onload = function() {
+              var canvas = document.createElement('canvas');
+              var maxDim = 800;
+              var w = img.width;
+              var h = img.height;
+              if (w > h) {
+                if (w > maxDim) { h = Math.round((h * maxDim) / w); w = maxDim; }
+              } else {
+                if (h > maxDim) { w = Math.round((w * maxDim) / h); h = maxDim; }
+              }
+              canvas.width = w;
+              canvas.height = h;
+              var ctx = canvas.getContext('2d');
+              ctx.drawImage(img, 0, 0, w, h);
+              var optimizedUrl = canvas.toDataURL('image/jpeg', 0.88);
+              cmsAttachedImages.push(optimizedUrl);
+              renderCmsImagesPreview();
+            };
+            img.src = rawData;
+          };
+          reader.readAsDataURL(file);
+        })(files[i]);
+      }
+    }
+
+    // Override handleCmsPaste to support multiple images
+    function handleCmsPaste(e) {
+      var clipboardData = e.clipboardData || window.clipboardData || (e.originalEvent && e.originalEvent.clipboardData);
+      if (!clipboardData) return;
+      var items = clipboardData.items;
+      var filesFound = [];
+
+      if (items) {
+        for (var i = 0; i < items.length; i++) {
+          if (items[i].type && items[i].type.indexOf('image') !== -1) {
+            var f = items[i].getAsFile();
+            if (f) filesFound.push(f);
+          }
+        }
+      }
+
+      if (filesFound.length === 0 && clipboardData.files && clipboardData.files.length > 0) {
+        for (var j = 0; j < clipboardData.files.length; j++) {
+          if (clipboardData.files[j].type && clipboardData.files[j].type.indexOf('image') !== -1) {
+            filesFound.push(clipboardData.files[j]);
+          }
+        }
+      }
+
+      if (filesFound.length > 0) {
+        handleCmsMultipleImages(filesFound);
+        e.preventDefault();
+        alert(filesFound.length + ' image(s) pasted and attached successfully!');
+      }
+    }
+
+    function removeCmsImage(index) {
+      cmsAttachedImages.splice(index, 1);
+      renderCmsImagesPreview();
+    }
+
+    function renderCmsImagesPreview() {
+      var grid = document.getElementById('cms-images-preview-grid');
+      if (!grid) return;
+      grid.innerHTML = '';
+      if (cmsAttachedImages.length === 0) {
+        grid.style.display = 'none';
+        return;
+      }
+      grid.style.display = 'flex';
+      cmsAttachedImages.forEach(function(url, idx) {
+        var wrap = document.createElement('div');
+        wrap.style.cssText = 'position:relative; width:64px; height:64px; border-radius:6px; border:1px solid var(--cyan); overflow:hidden; background:#070a12; flex-shrink:0;';
+        
+        var thumb = document.createElement('img');
+        thumb.src = url;
+        thumb.style.cssText = 'width:100%; height:100%; object-fit:cover; display:block; cursor:zoom-in;';
+        thumb.onclick = function() { openAvatarLightbox(url); };
+        wrap.appendChild(thumb);
+
+        var delBtn = document.createElement('button');
+        delBtn.innerHTML = '&times;';
+        delBtn.title = 'Remove Image';
+        delBtn.style.cssText = 'position:absolute; top:2px; right:2px; background:rgba(239,68,68,0.85); border:none; color:#fff; width:20px; height:20px; border-radius:50%; font-size:13px; font-weight:bold; display:flex; align-items:center; justify-content:center; cursor:pointer; line-height:1;';
+        (function(i) {
+          delBtn.onclick = function() { removeCmsImage(i); };
+        })(idx);
+        wrap.appendChild(delBtn);
+
+        grid.appendChild(wrap);
+      });
+    }
+
+    function formatTransmissionBody(text, images, mainImageUrl) {
+      if (!text) text = '';
+      var div = document.createElement('div');
+      div.textContent = text;
+      var safeText = div.innerHTML;
+
+      safeText = safeText.replace(/!\[(.*?)\]\((https?:\/\/\S+)\)/g, '<div style="margin:12px 0; text-align:center;"><img src="$2" alt="$1" style="max-width:100%; max-height:400px; border-radius:6px; border:1px solid var(--cyan); object-fit:contain; cursor:zoom-in;" onclick="openAvatarLightbox(this.src)"></div>');
+      safeText = safeText.replace(/(https?:\/\/\S+\.(?:png|jpg|jpeg|gif|webp)|data:image\/[a-zA-Z]+;base64,[\s\S]+?)(?=\s|$|<)/g, '<div style="margin:12px 0; text-align:center;"><img src="$1" style="max-width:100%; max-height:400px; border-radius:6px; border:1px solid var(--cyan); object-fit:contain; cursor:zoom-in;" onclick="openAvatarLightbox(this.src)"></div>');
+      safeText = safeText.replace(/\n/g, '<br>');
+
+      var html = '<div style="margin-bottom:12px;">' + safeText + '</div>';
+
+      var allImgs = [];
+      if (Array.isArray(images)) allImgs = allImgs.concat(images);
+      if (mainImageUrl && allImgs.indexOf(mainImageUrl) === -1) allImgs.push(mainImageUrl);
+
+      if (allImgs.length > 0) {
+        html += '<div style="margin-top:14px; display:flex; flex-direction:column; gap:10px; align-items:center;">';
+        allImgs.forEach(function(url) {
+          html += '<div style="text-align:center;"><img src="' + url + '" style="max-width:100%; max-height:420px; border-radius:6px; border:1px solid var(--cyan); object-fit:contain; cursor:zoom-in;" onclick="openAvatarLightbox(this.src)"></div>';
+        });
+        html += '</div>';
+      }
+      return html;
+    }
+
   </script>
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js">
     function handleCmsImageUpload(event) {
@@ -912,6 +939,945 @@
       var html = '<div style="margin-bottom:12px;">' + safeText + '</div>';
       if (mainImageUrl) {
         html += '<div style="margin-top:14px; text-align:center;"><img src="' + mainImageUrl + '" style="max-width:100%; max-height:400px; border-radius:6px; border:1px solid var(--cyan); object-fit:contain; cursor:zoom-in;" onclick="openAvatarLightbox(this.src)"></div>';
+      }
+      return html;
+    }
+
+  
+    var cmsAttachedImages = [];
+
+    function handleCmsImageFileInput(e) {
+      if (e.target.files) {
+        handleCmsMultipleImages(e.target.files);
+        e.target.value = '';
+      }
+    }
+
+    function handleCmsMultipleImages(files) {
+      if (!files || files.length === 0) return;
+      for (var i = 0; i < files.length; i++) {
+        (function(file) {
+          if (!file.type || file.type.indexOf('image') === -1) return;
+          var reader = new FileReader();
+          reader.onload = function(event) {
+            var rawData = event.target.result;
+            var img = new Image();
+            img.onload = function() {
+              var canvas = document.createElement('canvas');
+              var maxDim = 800;
+              var w = img.width;
+              var h = img.height;
+              if (w > h) {
+                if (w > maxDim) { h = Math.round((h * maxDim) / w); w = maxDim; }
+              } else {
+                if (h > maxDim) { w = Math.round((w * maxDim) / h); h = maxDim; }
+              }
+              canvas.width = w;
+              canvas.height = h;
+              var ctx = canvas.getContext('2d');
+              ctx.drawImage(img, 0, 0, w, h);
+              var optimizedUrl = canvas.toDataURL('image/jpeg', 0.88);
+              cmsAttachedImages.push(optimizedUrl);
+              renderCmsImagesPreview();
+            };
+            img.src = rawData;
+          };
+          reader.readAsDataURL(file);
+        })(files[i]);
+      }
+    }
+
+    // Override handleCmsPaste to support multiple images
+    function handleCmsPaste(e) {
+      var clipboardData = e.clipboardData || window.clipboardData || (e.originalEvent && e.originalEvent.clipboardData);
+      if (!clipboardData) return;
+      var items = clipboardData.items;
+      var filesFound = [];
+
+      if (items) {
+        for (var i = 0; i < items.length; i++) {
+          if (items[i].type && items[i].type.indexOf('image') !== -1) {
+            var f = items[i].getAsFile();
+            if (f) filesFound.push(f);
+          }
+        }
+      }
+
+      if (filesFound.length === 0 && clipboardData.files && clipboardData.files.length > 0) {
+        for (var j = 0; j < clipboardData.files.length; j++) {
+          if (clipboardData.files[j].type && clipboardData.files[j].type.indexOf('image') !== -1) {
+            filesFound.push(clipboardData.files[j]);
+          }
+        }
+      }
+
+      if (filesFound.length > 0) {
+        handleCmsMultipleImages(filesFound);
+        e.preventDefault();
+        alert(filesFound.length + ' image(s) pasted and attached successfully!');
+      }
+    }
+
+    function removeCmsImage(index) {
+      cmsAttachedImages.splice(index, 1);
+      renderCmsImagesPreview();
+    }
+
+    function renderCmsImagesPreview() {
+      var grid = document.getElementById('cms-images-preview-grid');
+      if (!grid) return;
+      grid.innerHTML = '';
+      if (cmsAttachedImages.length === 0) {
+        grid.style.display = 'none';
+        return;
+      }
+      grid.style.display = 'flex';
+      cmsAttachedImages.forEach(function(url, idx) {
+        var wrap = document.createElement('div');
+        wrap.style.cssText = 'position:relative; width:64px; height:64px; border-radius:6px; border:1px solid var(--cyan); overflow:hidden; background:#070a12; flex-shrink:0;';
+        
+        var thumb = document.createElement('img');
+        thumb.src = url;
+        thumb.style.cssText = 'width:100%; height:100%; object-fit:cover; display:block; cursor:zoom-in;';
+        thumb.onclick = function() { openAvatarLightbox(url); };
+        wrap.appendChild(thumb);
+
+        var delBtn = document.createElement('button');
+        delBtn.innerHTML = '&times;';
+        delBtn.title = 'Remove Image';
+        delBtn.style.cssText = 'position:absolute; top:2px; right:2px; background:rgba(239,68,68,0.85); border:none; color:#fff; width:20px; height:20px; border-radius:50%; font-size:13px; font-weight:bold; display:flex; align-items:center; justify-content:center; cursor:pointer; line-height:1;';
+        (function(i) {
+          delBtn.onclick = function() { removeCmsImage(i); };
+        })(idx);
+        wrap.appendChild(delBtn);
+
+        grid.appendChild(wrap);
+      });
+    }
+
+    function formatTransmissionBody(text, images, mainImageUrl) {
+      if (!text) text = '';
+      var div = document.createElement('div');
+      div.textContent = text;
+      var safeText = div.innerHTML;
+
+      safeText = safeText.replace(/!\[(.*?)\]\((https?:\/\/\S+)\)/g, '<div style="margin:12px 0; text-align:center;"><img src="$2" alt="$1" style="max-width:100%; max-height:400px; border-radius:6px; border:1px solid var(--cyan); object-fit:contain; cursor:zoom-in;" onclick="openAvatarLightbox(this.src)"></div>');
+      safeText = safeText.replace(/(https?:\/\/\S+\.(?:png|jpg|jpeg|gif|webp)|data:image\/[a-zA-Z]+;base64,[\s\S]+?)(?=\s|$|<)/g, '<div style="margin:12px 0; text-align:center;"><img src="$1" style="max-width:100%; max-height:400px; border-radius:6px; border:1px solid var(--cyan); object-fit:contain; cursor:zoom-in;" onclick="openAvatarLightbox(this.src)"></div>');
+      safeText = safeText.replace(/\n/g, '<br>');
+
+      var html = '<div style="margin-bottom:12px;">' + safeText + '</div>';
+
+      var allImgs = [];
+      if (Array.isArray(images)) allImgs = allImgs.concat(images);
+      if (mainImageUrl && allImgs.indexOf(mainImageUrl) === -1) allImgs.push(mainImageUrl);
+
+      if (allImgs.length > 0) {
+        html += '<div style="margin-top:14px; display:flex; flex-direction:column; gap:10px; align-items:center;">';
+        allImgs.forEach(function(url) {
+          html += '<div style="text-align:center;"><img src="' + url + '" style="max-width:100%; max-height:420px; border-radius:6px; border:1px solid var(--cyan); object-fit:contain; cursor:zoom-in;" onclick="openAvatarLightbox(this.src)"></div>';
+        });
+        html += '</div>';
+      }
+      return html;
+    }
+
+  </script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js">
+    function handleCmsImageUpload(event) {
+      var file = event.target.files && event.target.files[0];
+      if (!file) return;
+      var reader = new FileReader();
+      reader.onload = function(e) {
+        var rawData = e.target.result;
+        var img = new Image();
+        img.onload = function() {
+          var canvas = document.createElement('canvas');
+          var maxDim = 800;
+          var w = img.width;
+          var h = img.height;
+          if (w > h) {
+            if (w > maxDim) { h = Math.round((h * maxDim) / w); w = maxDim; }
+          } else {
+            if (h > maxDim) { w = Math.round((w * maxDim) / h); h = maxDim; }
+          }
+          canvas.width = w;
+          canvas.height = h;
+          var ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, w, h);
+          var optimizedUrl = canvas.toDataURL('image/jpeg', 0.88);
+
+          var urlInp = document.getElementById('cms-news-image-url');
+          var prev = document.getElementById('cms-news-image-preview');
+          if (urlInp) urlInp.value = optimizedUrl;
+          if (prev) {
+            prev.src = optimizedUrl;
+            prev.style.display = 'block';
+          }
+        };
+        img.src = rawData;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function previewCmsImageUrl(val) {
+      var prev = document.getElementById('cms-news-image-preview');
+      if (prev) {
+        if (val && val.trim().length > 5) {
+          prev.src = val.trim();
+          prev.style.display = 'block';
+        } else {
+          prev.style.display = 'none';
+        }
+      }
+    }
+
+    function handleCmsPaste(e) {
+      var clipboardData = e.clipboardData || window.clipboardData || (e.originalEvent && e.originalEvent.clipboardData);
+      if (!clipboardData) return;
+
+      var items = clipboardData.items;
+      var imageFile = null;
+
+      if (items) {
+        for (var i = 0; i < items.length; i++) {
+          if (items[i].type && items[i].type.indexOf('image') !== -1) {
+            imageFile = items[i].getAsFile();
+            break;
+          }
+        }
+      }
+
+      if (!imageFile && clipboardData.files && clipboardData.files.length > 0) {
+        for (var j = 0; j < clipboardData.files.length; j++) {
+          if (clipboardData.files[j].type && clipboardData.files[j].type.indexOf('image') !== -1) {
+            imageFile = clipboardData.files[j];
+            break;
+          }
+        }
+      }
+
+      if (imageFile) {
+        var reader = new FileReader();
+        reader.onload = function(event) {
+          var rawData = event.target.result;
+          var img = new Image();
+          img.onload = function() {
+            var canvas = document.createElement('canvas');
+            var maxDim = 800;
+            var w = img.width;
+            var h = img.height;
+            if (w > h) {
+              if (w > maxDim) { h = Math.round((h * maxDim) / w); w = maxDim; }
+            } else {
+              if (h > maxDim) { w = Math.round((w * maxDim) / h); h = maxDim; }
+            }
+            canvas.width = w;
+            canvas.height = h;
+            var ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, w, h);
+            var optimizedUrl = canvas.toDataURL('image/jpeg', 0.88);
+
+            var urlInp = document.getElementById('cms-news-image-url');
+            var prev = document.getElementById('cms-news-image-preview');
+            if (urlInp) urlInp.value = optimizedUrl;
+            if (prev) {
+              prev.src = optimizedUrl;
+              prev.style.display = 'block';
+            }
+            alert('Image pasted and attached successfully!');
+          };
+          img.src = rawData;
+        };
+        reader.readAsDataURL(imageFile);
+        e.preventDefault();
+      }
+    }
+
+    function formatTransmissionBody(text, mainImageUrl) {
+      if (!text) text = '';
+      var div = document.createElement('div');
+      div.textContent = text;
+      var safeText = div.innerHTML;
+
+      safeText = safeText.replace(/!\[(.*?)\]\((https?:\/\/\S+)\)/g, '<div style="margin:12px 0; text-align:center;"><img src="$2" alt="$1" style="max-width:100%; max-height:400px; border-radius:6px; border:1px solid var(--cyan); object-fit:contain; cursor:zoom-in;" onclick="openAvatarLightbox(this.src)"></div>');
+      safeText = safeText.replace(/(https?:\/\/\S+\.(?:png|jpg|jpeg|gif|webp)|data:image\/[a-zA-Z]+;base64,[\s\S]+?)(?=\s|$|<)/g, '<div style="margin:12px 0; text-align:center;"><img src="$1" style="max-width:100%; max-height:400px; border-radius:6px; border:1px solid var(--cyan); object-fit:contain; cursor:zoom-in;" onclick="openAvatarLightbox(this.src)"></div>');
+      safeText = safeText.replace(/\n/g, '<br>');
+
+      var html = '<div style="margin-bottom:12px;">' + safeText + '</div>';
+      if (mainImageUrl) {
+        html += '<div style="margin-top:14px; text-align:center;"><img src="' + mainImageUrl + '" style="max-width:100%; max-height:400px; border-radius:6px; border:1px solid var(--cyan); object-fit:contain; cursor:zoom-in;" onclick="openAvatarLightbox(this.src)"></div>';
+      }
+      return html;
+    }
+
+  
+    var cmsAttachedImages = [];
+
+    function handleCmsImageFileInput(e) {
+      if (e.target.files) {
+        handleCmsMultipleImages(e.target.files);
+        e.target.value = '';
+      }
+    }
+
+    function handleCmsMultipleImages(files) {
+      if (!files || files.length === 0) return;
+      for (var i = 0; i < files.length; i++) {
+        (function(file) {
+          if (!file.type || file.type.indexOf('image') === -1) return;
+          var reader = new FileReader();
+          reader.onload = function(event) {
+            var rawData = event.target.result;
+            var img = new Image();
+            img.onload = function() {
+              var canvas = document.createElement('canvas');
+              var maxDim = 800;
+              var w = img.width;
+              var h = img.height;
+              if (w > h) {
+                if (w > maxDim) { h = Math.round((h * maxDim) / w); w = maxDim; }
+              } else {
+                if (h > maxDim) { w = Math.round((w * maxDim) / h); h = maxDim; }
+              }
+              canvas.width = w;
+              canvas.height = h;
+              var ctx = canvas.getContext('2d');
+              ctx.drawImage(img, 0, 0, w, h);
+              var optimizedUrl = canvas.toDataURL('image/jpeg', 0.88);
+              cmsAttachedImages.push(optimizedUrl);
+              renderCmsImagesPreview();
+            };
+            img.src = rawData;
+          };
+          reader.readAsDataURL(file);
+        })(files[i]);
+      }
+    }
+
+    // Override handleCmsPaste to support multiple images
+    function handleCmsPaste(e) {
+      var clipboardData = e.clipboardData || window.clipboardData || (e.originalEvent && e.originalEvent.clipboardData);
+      if (!clipboardData) return;
+      var items = clipboardData.items;
+      var filesFound = [];
+
+      if (items) {
+        for (var i = 0; i < items.length; i++) {
+          if (items[i].type && items[i].type.indexOf('image') !== -1) {
+            var f = items[i].getAsFile();
+            if (f) filesFound.push(f);
+          }
+        }
+      }
+
+      if (filesFound.length === 0 && clipboardData.files && clipboardData.files.length > 0) {
+        for (var j = 0; j < clipboardData.files.length; j++) {
+          if (clipboardData.files[j].type && clipboardData.files[j].type.indexOf('image') !== -1) {
+            filesFound.push(clipboardData.files[j]);
+          }
+        }
+      }
+
+      if (filesFound.length > 0) {
+        handleCmsMultipleImages(filesFound);
+        e.preventDefault();
+        alert(filesFound.length + ' image(s) pasted and attached successfully!');
+      }
+    }
+
+    function removeCmsImage(index) {
+      cmsAttachedImages.splice(index, 1);
+      renderCmsImagesPreview();
+    }
+
+    function renderCmsImagesPreview() {
+      var grid = document.getElementById('cms-images-preview-grid');
+      if (!grid) return;
+      grid.innerHTML = '';
+      if (cmsAttachedImages.length === 0) {
+        grid.style.display = 'none';
+        return;
+      }
+      grid.style.display = 'flex';
+      cmsAttachedImages.forEach(function(url, idx) {
+        var wrap = document.createElement('div');
+        wrap.style.cssText = 'position:relative; width:64px; height:64px; border-radius:6px; border:1px solid var(--cyan); overflow:hidden; background:#070a12; flex-shrink:0;';
+        
+        var thumb = document.createElement('img');
+        thumb.src = url;
+        thumb.style.cssText = 'width:100%; height:100%; object-fit:cover; display:block; cursor:zoom-in;';
+        thumb.onclick = function() { openAvatarLightbox(url); };
+        wrap.appendChild(thumb);
+
+        var delBtn = document.createElement('button');
+        delBtn.innerHTML = '&times;';
+        delBtn.title = 'Remove Image';
+        delBtn.style.cssText = 'position:absolute; top:2px; right:2px; background:rgba(239,68,68,0.85); border:none; color:#fff; width:20px; height:20px; border-radius:50%; font-size:13px; font-weight:bold; display:flex; align-items:center; justify-content:center; cursor:pointer; line-height:1;';
+        (function(i) {
+          delBtn.onclick = function() { removeCmsImage(i); };
+        })(idx);
+        wrap.appendChild(delBtn);
+
+        grid.appendChild(wrap);
+      });
+    }
+
+    function formatTransmissionBody(text, images, mainImageUrl) {
+      if (!text) text = '';
+      var div = document.createElement('div');
+      div.textContent = text;
+      var safeText = div.innerHTML;
+
+      safeText = safeText.replace(/!\[(.*?)\]\((https?:\/\/\S+)\)/g, '<div style="margin:12px 0; text-align:center;"><img src="$2" alt="$1" style="max-width:100%; max-height:400px; border-radius:6px; border:1px solid var(--cyan); object-fit:contain; cursor:zoom-in;" onclick="openAvatarLightbox(this.src)"></div>');
+      safeText = safeText.replace(/(https?:\/\/\S+\.(?:png|jpg|jpeg|gif|webp)|data:image\/[a-zA-Z]+;base64,[\s\S]+?)(?=\s|$|<)/g, '<div style="margin:12px 0; text-align:center;"><img src="$1" style="max-width:100%; max-height:400px; border-radius:6px; border:1px solid var(--cyan); object-fit:contain; cursor:zoom-in;" onclick="openAvatarLightbox(this.src)"></div>');
+      safeText = safeText.replace(/\n/g, '<br>');
+
+      var html = '<div style="margin-bottom:12px;">' + safeText + '</div>';
+
+      var allImgs = [];
+      if (Array.isArray(images)) allImgs = allImgs.concat(images);
+      if (mainImageUrl && allImgs.indexOf(mainImageUrl) === -1) allImgs.push(mainImageUrl);
+
+      if (allImgs.length > 0) {
+        html += '<div style="margin-top:14px; display:flex; flex-direction:column; gap:10px; align-items:center;">';
+        allImgs.forEach(function(url) {
+          html += '<div style="text-align:center;"><img src="' + url + '" style="max-width:100%; max-height:420px; border-radius:6px; border:1px solid var(--cyan); object-fit:contain; cursor:zoom-in;" onclick="openAvatarLightbox(this.src)"></div>';
+        });
+        html += '</div>';
+      }
+      return html;
+    }
+
+  </script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-storage-compat.js">
+    function handleCmsImageUpload(event) {
+      var file = event.target.files && event.target.files[0];
+      if (!file) return;
+      var reader = new FileReader();
+      reader.onload = function(e) {
+        var rawData = e.target.result;
+        var img = new Image();
+        img.onload = function() {
+          var canvas = document.createElement('canvas');
+          var maxDim = 800;
+          var w = img.width;
+          var h = img.height;
+          if (w > h) {
+            if (w > maxDim) { h = Math.round((h * maxDim) / w); w = maxDim; }
+          } else {
+            if (h > maxDim) { w = Math.round((w * maxDim) / h); h = maxDim; }
+          }
+          canvas.width = w;
+          canvas.height = h;
+          var ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, w, h);
+          var optimizedUrl = canvas.toDataURL('image/jpeg', 0.88);
+
+          var urlInp = document.getElementById('cms-news-image-url');
+          var prev = document.getElementById('cms-news-image-preview');
+          if (urlInp) urlInp.value = optimizedUrl;
+          if (prev) {
+            prev.src = optimizedUrl;
+            prev.style.display = 'block';
+          }
+        };
+        img.src = rawData;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function previewCmsImageUrl(val) {
+      var prev = document.getElementById('cms-news-image-preview');
+      if (prev) {
+        if (val && val.trim().length > 5) {
+          prev.src = val.trim();
+          prev.style.display = 'block';
+        } else {
+          prev.style.display = 'none';
+        }
+      }
+    }
+
+    function handleCmsPaste(e) {
+      var clipboardData = e.clipboardData || window.clipboardData || (e.originalEvent && e.originalEvent.clipboardData);
+      if (!clipboardData) return;
+
+      var items = clipboardData.items;
+      var imageFile = null;
+
+      if (items) {
+        for (var i = 0; i < items.length; i++) {
+          if (items[i].type && items[i].type.indexOf('image') !== -1) {
+            imageFile = items[i].getAsFile();
+            break;
+          }
+        }
+      }
+
+      if (!imageFile && clipboardData.files && clipboardData.files.length > 0) {
+        for (var j = 0; j < clipboardData.files.length; j++) {
+          if (clipboardData.files[j].type && clipboardData.files[j].type.indexOf('image') !== -1) {
+            imageFile = clipboardData.files[j];
+            break;
+          }
+        }
+      }
+
+      if (imageFile) {
+        var reader = new FileReader();
+        reader.onload = function(event) {
+          var rawData = event.target.result;
+          var img = new Image();
+          img.onload = function() {
+            var canvas = document.createElement('canvas');
+            var maxDim = 800;
+            var w = img.width;
+            var h = img.height;
+            if (w > h) {
+              if (w > maxDim) { h = Math.round((h * maxDim) / w); w = maxDim; }
+            } else {
+              if (h > maxDim) { w = Math.round((w * maxDim) / h); h = maxDim; }
+            }
+            canvas.width = w;
+            canvas.height = h;
+            var ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, w, h);
+            var optimizedUrl = canvas.toDataURL('image/jpeg', 0.88);
+
+            var urlInp = document.getElementById('cms-news-image-url');
+            var prev = document.getElementById('cms-news-image-preview');
+            if (urlInp) urlInp.value = optimizedUrl;
+            if (prev) {
+              prev.src = optimizedUrl;
+              prev.style.display = 'block';
+            }
+            alert('Image pasted and attached successfully!');
+          };
+          img.src = rawData;
+        };
+        reader.readAsDataURL(imageFile);
+        e.preventDefault();
+      }
+    }
+
+    function formatTransmissionBody(text, mainImageUrl) {
+      if (!text) text = '';
+      var div = document.createElement('div');
+      div.textContent = text;
+      var safeText = div.innerHTML;
+
+      safeText = safeText.replace(/!\[(.*?)\]\((https?:\/\/\S+)\)/g, '<div style="margin:12px 0; text-align:center;"><img src="$2" alt="$1" style="max-width:100%; max-height:400px; border-radius:6px; border:1px solid var(--cyan); object-fit:contain; cursor:zoom-in;" onclick="openAvatarLightbox(this.src)"></div>');
+      safeText = safeText.replace(/(https?:\/\/\S+\.(?:png|jpg|jpeg|gif|webp)|data:image\/[a-zA-Z]+;base64,[\s\S]+?)(?=\s|$|<)/g, '<div style="margin:12px 0; text-align:center;"><img src="$1" style="max-width:100%; max-height:400px; border-radius:6px; border:1px solid var(--cyan); object-fit:contain; cursor:zoom-in;" onclick="openAvatarLightbox(this.src)"></div>');
+      safeText = safeText.replace(/\n/g, '<br>');
+
+      var html = '<div style="margin-bottom:12px;">' + safeText + '</div>';
+      if (mainImageUrl) {
+        html += '<div style="margin-top:14px; text-align:center;"><img src="' + mainImageUrl + '" style="max-width:100%; max-height:400px; border-radius:6px; border:1px solid var(--cyan); object-fit:contain; cursor:zoom-in;" onclick="openAvatarLightbox(this.src)"></div>';
+      }
+      return html;
+    }
+
+  
+    var cmsAttachedImages = [];
+
+    function handleCmsImageFileInput(e) {
+      if (e.target.files) {
+        handleCmsMultipleImages(e.target.files);
+        e.target.value = '';
+      }
+    }
+
+    function handleCmsMultipleImages(files) {
+      if (!files || files.length === 0) return;
+      for (var i = 0; i < files.length; i++) {
+        (function(file) {
+          if (!file.type || file.type.indexOf('image') === -1) return;
+          var reader = new FileReader();
+          reader.onload = function(event) {
+            var rawData = event.target.result;
+            var img = new Image();
+            img.onload = function() {
+              var canvas = document.createElement('canvas');
+              var maxDim = 800;
+              var w = img.width;
+              var h = img.height;
+              if (w > h) {
+                if (w > maxDim) { h = Math.round((h * maxDim) / w); w = maxDim; }
+              } else {
+                if (h > maxDim) { w = Math.round((w * maxDim) / h); h = maxDim; }
+              }
+              canvas.width = w;
+              canvas.height = h;
+              var ctx = canvas.getContext('2d');
+              ctx.drawImage(img, 0, 0, w, h);
+              var optimizedUrl = canvas.toDataURL('image/jpeg', 0.88);
+              cmsAttachedImages.push(optimizedUrl);
+              renderCmsImagesPreview();
+            };
+            img.src = rawData;
+          };
+          reader.readAsDataURL(file);
+        })(files[i]);
+      }
+    }
+
+    // Override handleCmsPaste to support multiple images
+    function handleCmsPaste(e) {
+      var clipboardData = e.clipboardData || window.clipboardData || (e.originalEvent && e.originalEvent.clipboardData);
+      if (!clipboardData) return;
+      var items = clipboardData.items;
+      var filesFound = [];
+
+      if (items) {
+        for (var i = 0; i < items.length; i++) {
+          if (items[i].type && items[i].type.indexOf('image') !== -1) {
+            var f = items[i].getAsFile();
+            if (f) filesFound.push(f);
+          }
+        }
+      }
+
+      if (filesFound.length === 0 && clipboardData.files && clipboardData.files.length > 0) {
+        for (var j = 0; j < clipboardData.files.length; j++) {
+          if (clipboardData.files[j].type && clipboardData.files[j].type.indexOf('image') !== -1) {
+            filesFound.push(clipboardData.files[j]);
+          }
+        }
+      }
+
+      if (filesFound.length > 0) {
+        handleCmsMultipleImages(filesFound);
+        e.preventDefault();
+        alert(filesFound.length + ' image(s) pasted and attached successfully!');
+      }
+    }
+
+    function removeCmsImage(index) {
+      cmsAttachedImages.splice(index, 1);
+      renderCmsImagesPreview();
+    }
+
+    function renderCmsImagesPreview() {
+      var grid = document.getElementById('cms-images-preview-grid');
+      if (!grid) return;
+      grid.innerHTML = '';
+      if (cmsAttachedImages.length === 0) {
+        grid.style.display = 'none';
+        return;
+      }
+      grid.style.display = 'flex';
+      cmsAttachedImages.forEach(function(url, idx) {
+        var wrap = document.createElement('div');
+        wrap.style.cssText = 'position:relative; width:64px; height:64px; border-radius:6px; border:1px solid var(--cyan); overflow:hidden; background:#070a12; flex-shrink:0;';
+        
+        var thumb = document.createElement('img');
+        thumb.src = url;
+        thumb.style.cssText = 'width:100%; height:100%; object-fit:cover; display:block; cursor:zoom-in;';
+        thumb.onclick = function() { openAvatarLightbox(url); };
+        wrap.appendChild(thumb);
+
+        var delBtn = document.createElement('button');
+        delBtn.innerHTML = '&times;';
+        delBtn.title = 'Remove Image';
+        delBtn.style.cssText = 'position:absolute; top:2px; right:2px; background:rgba(239,68,68,0.85); border:none; color:#fff; width:20px; height:20px; border-radius:50%; font-size:13px; font-weight:bold; display:flex; align-items:center; justify-content:center; cursor:pointer; line-height:1;';
+        (function(i) {
+          delBtn.onclick = function() { removeCmsImage(i); };
+        })(idx);
+        wrap.appendChild(delBtn);
+
+        grid.appendChild(wrap);
+      });
+    }
+
+    function formatTransmissionBody(text, images, mainImageUrl) {
+      if (!text) text = '';
+      var div = document.createElement('div');
+      div.textContent = text;
+      var safeText = div.innerHTML;
+
+      safeText = safeText.replace(/!\[(.*?)\]\((https?:\/\/\S+)\)/g, '<div style="margin:12px 0; text-align:center;"><img src="$2" alt="$1" style="max-width:100%; max-height:400px; border-radius:6px; border:1px solid var(--cyan); object-fit:contain; cursor:zoom-in;" onclick="openAvatarLightbox(this.src)"></div>');
+      safeText = safeText.replace(/(https?:\/\/\S+\.(?:png|jpg|jpeg|gif|webp)|data:image\/[a-zA-Z]+;base64,[\s\S]+?)(?=\s|$|<)/g, '<div style="margin:12px 0; text-align:center;"><img src="$1" style="max-width:100%; max-height:400px; border-radius:6px; border:1px solid var(--cyan); object-fit:contain; cursor:zoom-in;" onclick="openAvatarLightbox(this.src)"></div>');
+      safeText = safeText.replace(/\n/g, '<br>');
+
+      var html = '<div style="margin-bottom:12px;">' + safeText + '</div>';
+
+      var allImgs = [];
+      if (Array.isArray(images)) allImgs = allImgs.concat(images);
+      if (mainImageUrl && allImgs.indexOf(mainImageUrl) === -1) allImgs.push(mainImageUrl);
+
+      if (allImgs.length > 0) {
+        html += '<div style="margin-top:14px; display:flex; flex-direction:column; gap:10px; align-items:center;">';
+        allImgs.forEach(function(url) {
+          html += '<div style="text-align:center;"><img src="' + url + '" style="max-width:100%; max-height:420px; border-radius:6px; border:1px solid var(--cyan); object-fit:contain; cursor:zoom-in;" onclick="openAvatarLightbox(this.src)"></div>';
+        });
+        html += '</div>';
+      }
+      return html;
+    }
+
+  </script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js">
+    function handleCmsImageUpload(event) {
+      var file = event.target.files && event.target.files[0];
+      if (!file) return;
+      var reader = new FileReader();
+      reader.onload = function(e) {
+        var rawData = e.target.result;
+        var img = new Image();
+        img.onload = function() {
+          var canvas = document.createElement('canvas');
+          var maxDim = 800;
+          var w = img.width;
+          var h = img.height;
+          if (w > h) {
+            if (w > maxDim) { h = Math.round((h * maxDim) / w); w = maxDim; }
+          } else {
+            if (h > maxDim) { w = Math.round((w * maxDim) / h); h = maxDim; }
+          }
+          canvas.width = w;
+          canvas.height = h;
+          var ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, w, h);
+          var optimizedUrl = canvas.toDataURL('image/jpeg', 0.88);
+
+          var urlInp = document.getElementById('cms-news-image-url');
+          var prev = document.getElementById('cms-news-image-preview');
+          if (urlInp) urlInp.value = optimizedUrl;
+          if (prev) {
+            prev.src = optimizedUrl;
+            prev.style.display = 'block';
+          }
+        };
+        img.src = rawData;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function previewCmsImageUrl(val) {
+      var prev = document.getElementById('cms-news-image-preview');
+      if (prev) {
+        if (val && val.trim().length > 5) {
+          prev.src = val.trim();
+          prev.style.display = 'block';
+        } else {
+          prev.style.display = 'none';
+        }
+      }
+    }
+
+    function handleCmsPaste(e) {
+      var clipboardData = e.clipboardData || window.clipboardData || (e.originalEvent && e.originalEvent.clipboardData);
+      if (!clipboardData) return;
+
+      var items = clipboardData.items;
+      var imageFile = null;
+
+      if (items) {
+        for (var i = 0; i < items.length; i++) {
+          if (items[i].type && items[i].type.indexOf('image') !== -1) {
+            imageFile = items[i].getAsFile();
+            break;
+          }
+        }
+      }
+
+      if (!imageFile && clipboardData.files && clipboardData.files.length > 0) {
+        for (var j = 0; j < clipboardData.files.length; j++) {
+          if (clipboardData.files[j].type && clipboardData.files[j].type.indexOf('image') !== -1) {
+            imageFile = clipboardData.files[j];
+            break;
+          }
+        }
+      }
+
+      if (imageFile) {
+        var reader = new FileReader();
+        reader.onload = function(event) {
+          var rawData = event.target.result;
+          var img = new Image();
+          img.onload = function() {
+            var canvas = document.createElement('canvas');
+            var maxDim = 800;
+            var w = img.width;
+            var h = img.height;
+            if (w > h) {
+              if (w > maxDim) { h = Math.round((h * maxDim) / w); w = maxDim; }
+            } else {
+              if (h > maxDim) { w = Math.round((w * maxDim) / h); h = maxDim; }
+            }
+            canvas.width = w;
+            canvas.height = h;
+            var ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, w, h);
+            var optimizedUrl = canvas.toDataURL('image/jpeg', 0.88);
+
+            var urlInp = document.getElementById('cms-news-image-url');
+            var prev = document.getElementById('cms-news-image-preview');
+            if (urlInp) urlInp.value = optimizedUrl;
+            if (prev) {
+              prev.src = optimizedUrl;
+              prev.style.display = 'block';
+            }
+            alert('Image pasted and attached successfully!');
+          };
+          img.src = rawData;
+        };
+        reader.readAsDataURL(imageFile);
+        e.preventDefault();
+      }
+    }
+
+    function formatTransmissionBody(text, mainImageUrl) {
+      if (!text) text = '';
+      var div = document.createElement('div');
+      div.textContent = text;
+      var safeText = div.innerHTML;
+
+      safeText = safeText.replace(/!\[(.*?)\]\((https?:\/\/\S+)\)/g, '<div style="margin:12px 0; text-align:center;"><img src="$2" alt="$1" style="max-width:100%; max-height:400px; border-radius:6px; border:1px solid var(--cyan); object-fit:contain; cursor:zoom-in;" onclick="openAvatarLightbox(this.src)"></div>');
+      safeText = safeText.replace(/(https?:\/\/\S+\.(?:png|jpg|jpeg|gif|webp)|data:image\/[a-zA-Z]+;base64,[\s\S]+?)(?=\s|$|<)/g, '<div style="margin:12px 0; text-align:center;"><img src="$1" style="max-width:100%; max-height:400px; border-radius:6px; border:1px solid var(--cyan); object-fit:contain; cursor:zoom-in;" onclick="openAvatarLightbox(this.src)"></div>');
+      safeText = safeText.replace(/\n/g, '<br>');
+
+      var html = '<div style="margin-bottom:12px;">' + safeText + '</div>';
+      if (mainImageUrl) {
+        html += '<div style="margin-top:14px; text-align:center;"><img src="' + mainImageUrl + '" style="max-width:100%; max-height:400px; border-radius:6px; border:1px solid var(--cyan); object-fit:contain; cursor:zoom-in;" onclick="openAvatarLightbox(this.src)"></div>';
+      }
+      return html;
+    }
+
+  
+    var cmsAttachedImages = [];
+
+    function handleCmsImageFileInput(e) {
+      if (e.target.files) {
+        handleCmsMultipleImages(e.target.files);
+        e.target.value = '';
+      }
+    }
+
+    function handleCmsMultipleImages(files) {
+      if (!files || files.length === 0) return;
+      for (var i = 0; i < files.length; i++) {
+        (function(file) {
+          if (!file.type || file.type.indexOf('image') === -1) return;
+          var reader = new FileReader();
+          reader.onload = function(event) {
+            var rawData = event.target.result;
+            var img = new Image();
+            img.onload = function() {
+              var canvas = document.createElement('canvas');
+              var maxDim = 800;
+              var w = img.width;
+              var h = img.height;
+              if (w > h) {
+                if (w > maxDim) { h = Math.round((h * maxDim) / w); w = maxDim; }
+              } else {
+                if (h > maxDim) { w = Math.round((w * maxDim) / h); h = maxDim; }
+              }
+              canvas.width = w;
+              canvas.height = h;
+              var ctx = canvas.getContext('2d');
+              ctx.drawImage(img, 0, 0, w, h);
+              var optimizedUrl = canvas.toDataURL('image/jpeg', 0.88);
+              cmsAttachedImages.push(optimizedUrl);
+              renderCmsImagesPreview();
+            };
+            img.src = rawData;
+          };
+          reader.readAsDataURL(file);
+        })(files[i]);
+      }
+    }
+
+    // Override handleCmsPaste to support multiple images
+    function handleCmsPaste(e) {
+      var clipboardData = e.clipboardData || window.clipboardData || (e.originalEvent && e.originalEvent.clipboardData);
+      if (!clipboardData) return;
+      var items = clipboardData.items;
+      var filesFound = [];
+
+      if (items) {
+        for (var i = 0; i < items.length; i++) {
+          if (items[i].type && items[i].type.indexOf('image') !== -1) {
+            var f = items[i].getAsFile();
+            if (f) filesFound.push(f);
+          }
+        }
+      }
+
+      if (filesFound.length === 0 && clipboardData.files && clipboardData.files.length > 0) {
+        for (var j = 0; j < clipboardData.files.length; j++) {
+          if (clipboardData.files[j].type && clipboardData.files[j].type.indexOf('image') !== -1) {
+            filesFound.push(clipboardData.files[j]);
+          }
+        }
+      }
+
+      if (filesFound.length > 0) {
+        handleCmsMultipleImages(filesFound);
+        e.preventDefault();
+        alert(filesFound.length + ' image(s) pasted and attached successfully!');
+      }
+    }
+
+    function removeCmsImage(index) {
+      cmsAttachedImages.splice(index, 1);
+      renderCmsImagesPreview();
+    }
+
+    function renderCmsImagesPreview() {
+      var grid = document.getElementById('cms-images-preview-grid');
+      if (!grid) return;
+      grid.innerHTML = '';
+      if (cmsAttachedImages.length === 0) {
+        grid.style.display = 'none';
+        return;
+      }
+      grid.style.display = 'flex';
+      cmsAttachedImages.forEach(function(url, idx) {
+        var wrap = document.createElement('div');
+        wrap.style.cssText = 'position:relative; width:64px; height:64px; border-radius:6px; border:1px solid var(--cyan); overflow:hidden; background:#070a12; flex-shrink:0;';
+        
+        var thumb = document.createElement('img');
+        thumb.src = url;
+        thumb.style.cssText = 'width:100%; height:100%; object-fit:cover; display:block; cursor:zoom-in;';
+        thumb.onclick = function() { openAvatarLightbox(url); };
+        wrap.appendChild(thumb);
+
+        var delBtn = document.createElement('button');
+        delBtn.innerHTML = '&times;';
+        delBtn.title = 'Remove Image';
+        delBtn.style.cssText = 'position:absolute; top:2px; right:2px; background:rgba(239,68,68,0.85); border:none; color:#fff; width:20px; height:20px; border-radius:50%; font-size:13px; font-weight:bold; display:flex; align-items:center; justify-content:center; cursor:pointer; line-height:1;';
+        (function(i) {
+          delBtn.onclick = function() { removeCmsImage(i); };
+        })(idx);
+        wrap.appendChild(delBtn);
+
+        grid.appendChild(wrap);
+      });
+    }
+
+    function formatTransmissionBody(text, images, mainImageUrl) {
+      if (!text) text = '';
+      var div = document.createElement('div');
+      div.textContent = text;
+      var safeText = div.innerHTML;
+
+      safeText = safeText.replace(/!\[(.*?)\]\((https?:\/\/\S+)\)/g, '<div style="margin:12px 0; text-align:center;"><img src="$2" alt="$1" style="max-width:100%; max-height:400px; border-radius:6px; border:1px solid var(--cyan); object-fit:contain; cursor:zoom-in;" onclick="openAvatarLightbox(this.src)"></div>');
+      safeText = safeText.replace(/(https?:\/\/\S+\.(?:png|jpg|jpeg|gif|webp)|data:image\/[a-zA-Z]+;base64,[\s\S]+?)(?=\s|$|<)/g, '<div style="margin:12px 0; text-align:center;"><img src="$1" style="max-width:100%; max-height:400px; border-radius:6px; border:1px solid var(--cyan); object-fit:contain; cursor:zoom-in;" onclick="openAvatarLightbox(this.src)"></div>');
+      safeText = safeText.replace(/\n/g, '<br>');
+
+      var html = '<div style="margin-bottom:12px;">' + safeText + '</div>';
+
+      var allImgs = [];
+      if (Array.isArray(images)) allImgs = allImgs.concat(images);
+      if (mainImageUrl && allImgs.indexOf(mainImageUrl) === -1) allImgs.push(mainImageUrl);
+
+      if (allImgs.length > 0) {
+        html += '<div style="margin-top:14px; display:flex; flex-direction:column; gap:10px; align-items:center;">';
+        allImgs.forEach(function(url) {
+          html += '<div style="text-align:center;"><img src="' + url + '" style="max-width:100%; max-height:420px; border-radius:6px; border:1px solid var(--cyan); object-fit:contain; cursor:zoom-in;" onclick="openAvatarLightbox(this.src)"></div>';
+        });
+        html += '</div>';
       }
       return html;
     }
@@ -3057,6 +4023,19 @@
         <textarea id="cms-news-body" rows="3" onpaste="handleCmsPaste(event)" placeholder="Enter post or transmission text..." style="width:100%; background:#070a12; border:1px solid var(--border-color); color:#fff; padding:10px 12px; border-radius:6px; font-family:'Rajdhani',sans-serif; font-size:0.95rem; line-height:1.5; resize:vertical;"></textarea>
       </div>
 
+      <div style="margin-bottom:14px;">
+        <label style="display:block; font-family:'Orbitron',sans-serif; font-size:0.72rem; color:var(--text-muted); margin-bottom:4px; text-transform:uppercase;">Attach Multiple Images / Graphics (Optional)</label>
+        <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap; margin-bottom:8px;">
+          <input type="file" id="cms-news-multi-file-input" accept="image/png, image/jpeg, image/webp, image/gif" multiple style="display:none;" onchange="handleCmsImageFileInput(event)">
+          <button type="button" onclick="document.getElementById('cms-news-multi-file-input').click()" class="btn-download-rep" style="background:rgba(0,229,255,0.15); color:var(--cyan); border-color:var(--cyan); font-size:0.78rem; padding:7px 14px; cursor:pointer;">
+            📁 UPLOAD MULTIPLE IMAGES
+          </button>
+          <span style="font-size:0.75rem; color:var(--text-muted); font-family:'Share Tech Mono',monospace;">(You can also paste images with Ctrl+V)</span>
+        </div>
+        <!-- Images Preview Grid with Delete Buttons -->
+        <div id="cms-images-preview-grid" style="display:none; gap:8px; flex-wrap:wrap; padding:8px; background:rgba(7,12,22,0.8); border:1px solid var(--border-color); border-radius:6px;"></div>
+      </div>
+
       <div style="display:flex; justify-content:flex-end; gap:8px;">
         <button onclick="publishClanNews()" class="btn-download-rep" style="background:var(--cyan); color:#070a12; cursor:pointer; font-weight:800; padding:8px 20px;" id="cms-submit-btn">
           📡 BROADCAST TRANSMISSION
@@ -4318,7 +5297,7 @@
       if (dateEl) dateEl.textContent = item.date || 'RECENT';
       if (authorEl) authorEl.textContent = item.author || 'HIGH COMMAND';
       if (bodyEl) {
-        bodyEl.innerHTML = formatTransmissionBody(item.body, item.imageUrl);
+        bodyEl.innerHTML = formatTransmissionBody(item.body, item.images, item.imageUrl);
       }
 
       var actionContainer = document.getElementById('art-modal-admin-actions');
@@ -5645,6 +6624,14 @@ async function renderUserMaps() {
       if (titleInput) titleInput.value = article.title || '';
       if (bodyInput) bodyInput.value = article.body || '';
       if (authorInput) authorInput.value = article.author || 'HIGH COMMAND';
+
+      cmsAttachedImages = [];
+      if (Array.isArray(article.images)) {
+        cmsAttachedImages = article.images.slice();
+      } else if (article.imageUrl) {
+        cmsAttachedImages = [article.imageUrl];
+      }
+      renderCmsImagesPreview();
 
       if (catSelect) {
         var rawCat = String(article.category || (article.tag ? article.tag.replace(/^\/\//, '').trim() : 'News')).toLowerCase();
@@ -8138,6 +9125,144 @@ async function renderUserMaps() {
       var html = '<div style="margin-bottom:12px;">' + safeText + '</div>';
       if (mainImageUrl) {
         html += '<div style="margin-top:14px; text-align:center;"><img src="' + mainImageUrl + '" style="max-width:100%; max-height:400px; border-radius:6px; border:1px solid var(--cyan); object-fit:contain; cursor:zoom-in;" onclick="openAvatarLightbox(this.src)"></div>';
+      }
+      return html;
+    }
+
+  
+    var cmsAttachedImages = [];
+
+    function handleCmsImageFileInput(e) {
+      if (e.target.files) {
+        handleCmsMultipleImages(e.target.files);
+        e.target.value = '';
+      }
+    }
+
+    function handleCmsMultipleImages(files) {
+      if (!files || files.length === 0) return;
+      for (var i = 0; i < files.length; i++) {
+        (function(file) {
+          if (!file.type || file.type.indexOf('image') === -1) return;
+          var reader = new FileReader();
+          reader.onload = function(event) {
+            var rawData = event.target.result;
+            var img = new Image();
+            img.onload = function() {
+              var canvas = document.createElement('canvas');
+              var maxDim = 800;
+              var w = img.width;
+              var h = img.height;
+              if (w > h) {
+                if (w > maxDim) { h = Math.round((h * maxDim) / w); w = maxDim; }
+              } else {
+                if (h > maxDim) { w = Math.round((w * maxDim) / h); h = maxDim; }
+              }
+              canvas.width = w;
+              canvas.height = h;
+              var ctx = canvas.getContext('2d');
+              ctx.drawImage(img, 0, 0, w, h);
+              var optimizedUrl = canvas.toDataURL('image/jpeg', 0.88);
+              cmsAttachedImages.push(optimizedUrl);
+              renderCmsImagesPreview();
+            };
+            img.src = rawData;
+          };
+          reader.readAsDataURL(file);
+        })(files[i]);
+      }
+    }
+
+    // Override handleCmsPaste to support multiple images
+    function handleCmsPaste(e) {
+      var clipboardData = e.clipboardData || window.clipboardData || (e.originalEvent && e.originalEvent.clipboardData);
+      if (!clipboardData) return;
+      var items = clipboardData.items;
+      var filesFound = [];
+
+      if (items) {
+        for (var i = 0; i < items.length; i++) {
+          if (items[i].type && items[i].type.indexOf('image') !== -1) {
+            var f = items[i].getAsFile();
+            if (f) filesFound.push(f);
+          }
+        }
+      }
+
+      if (filesFound.length === 0 && clipboardData.files && clipboardData.files.length > 0) {
+        for (var j = 0; j < clipboardData.files.length; j++) {
+          if (clipboardData.files[j].type && clipboardData.files[j].type.indexOf('image') !== -1) {
+            filesFound.push(clipboardData.files[j]);
+          }
+        }
+      }
+
+      if (filesFound.length > 0) {
+        handleCmsMultipleImages(filesFound);
+        e.preventDefault();
+        alert(filesFound.length + ' image(s) pasted and attached successfully!');
+      }
+    }
+
+    function removeCmsImage(index) {
+      cmsAttachedImages.splice(index, 1);
+      renderCmsImagesPreview();
+    }
+
+    function renderCmsImagesPreview() {
+      var grid = document.getElementById('cms-images-preview-grid');
+      if (!grid) return;
+      grid.innerHTML = '';
+      if (cmsAttachedImages.length === 0) {
+        grid.style.display = 'none';
+        return;
+      }
+      grid.style.display = 'flex';
+      cmsAttachedImages.forEach(function(url, idx) {
+        var wrap = document.createElement('div');
+        wrap.style.cssText = 'position:relative; width:64px; height:64px; border-radius:6px; border:1px solid var(--cyan); overflow:hidden; background:#070a12; flex-shrink:0;';
+        
+        var thumb = document.createElement('img');
+        thumb.src = url;
+        thumb.style.cssText = 'width:100%; height:100%; object-fit:cover; display:block; cursor:zoom-in;';
+        thumb.onclick = function() { openAvatarLightbox(url); };
+        wrap.appendChild(thumb);
+
+        var delBtn = document.createElement('button');
+        delBtn.innerHTML = '&times;';
+        delBtn.title = 'Remove Image';
+        delBtn.style.cssText = 'position:absolute; top:2px; right:2px; background:rgba(239,68,68,0.85); border:none; color:#fff; width:20px; height:20px; border-radius:50%; font-size:13px; font-weight:bold; display:flex; align-items:center; justify-content:center; cursor:pointer; line-height:1;';
+        (function(i) {
+          delBtn.onclick = function() { removeCmsImage(i); };
+        })(idx);
+        wrap.appendChild(delBtn);
+
+        grid.appendChild(wrap);
+      });
+    }
+
+    function formatTransmissionBody(text, images, mainImageUrl) {
+      if (!text) text = '';
+      var div = document.createElement('div');
+      div.textContent = text;
+      var safeText = div.innerHTML;
+
+      safeText = safeText.replace(/!\[(.*?)\]\((https?:\/\/\S+)\)/g, '<div style="margin:12px 0; text-align:center;"><img src="$2" alt="$1" style="max-width:100%; max-height:400px; border-radius:6px; border:1px solid var(--cyan); object-fit:contain; cursor:zoom-in;" onclick="openAvatarLightbox(this.src)"></div>');
+      safeText = safeText.replace(/(https?:\/\/\S+\.(?:png|jpg|jpeg|gif|webp)|data:image\/[a-zA-Z]+;base64,[\s\S]+?)(?=\s|$|<)/g, '<div style="margin:12px 0; text-align:center;"><img src="$1" style="max-width:100%; max-height:400px; border-radius:6px; border:1px solid var(--cyan); object-fit:contain; cursor:zoom-in;" onclick="openAvatarLightbox(this.src)"></div>');
+      safeText = safeText.replace(/\n/g, '<br>');
+
+      var html = '<div style="margin-bottom:12px;">' + safeText + '</div>';
+
+      var allImgs = [];
+      if (Array.isArray(images)) allImgs = allImgs.concat(images);
+      if (mainImageUrl && allImgs.indexOf(mainImageUrl) === -1) allImgs.push(mainImageUrl);
+
+      if (allImgs.length > 0) {
+        html += '<div style="margin-top:14px; display:flex; flex-direction:column; gap:10px; align-items:center;">';
+        allImgs.forEach(function(url) {
+          html += '<div style="text-align:center;"><img src="' + url + '" style="max-width:100%; max-height:420px; border-radius:6px; border:1px solid var(--cyan); object-fit:contain; cursor:zoom-in;" onclick="openAvatarLightbox(this.src)"></div>';
+        });
+        html += '</div>';
       }
       return html;
     }
