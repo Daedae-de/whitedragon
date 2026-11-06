@@ -3805,24 +3805,25 @@
     }
 
 window.addEventListener('DOMContentLoaded', function() {
-  updateClocks();
-  initVisitorCounter();
-  recalculateAllMemberScores();
-  renderMatches();
-  renderRosterTableAndTiers();
+  try { updateClocks(); } catch(e) {}
+  try { initVisitorCounter(); } catch(e) {}
+  try { recalculateAllMemberScores(); } catch(e) {}
+  try { renderMatches(); } catch(e) {}
+  try { renderRosterTableAndTiers(); } catch(e) {}
   
-  // Realtime Cloud-Sync für alle Geräte (Firebase Firestore)
-  initNewsRealtimeListener();
-  initClanMembersRealtimeListener();
-  initClanRosterRealtimeListener();
-  initMatchesRealtimeListener(); // <-- WICHTIG: Muss hier stehen!
-  initVaultRealtimeListener();       
-  fetchBWCLStandings();
+  try { initNewsRealtimeListener(); } catch(e) {}
+  try { initClanMembersRealtimeListener(); } catch(e) {}
+  try { initClanRosterRealtimeListener(); } catch(e) {}
+  try { initMatchesRealtimeListener(); } catch(e) {}
+  try { initVaultRealtimeListener(); } catch(e) {}
+  try { fetchBWCLStandings(); } catch(e) {}
   
-  var hash = window.location.hash.replace('#', '');
-  if (hash && document.getElementById('tab-' + hash)) {
-    switchTab(hash, false);
-  }
+  try {
+    var hash = window.location.hash.replace('#', '');
+    if (hash && document.getElementById('tab-' + hash)) {
+      switchTab(hash, false);
+    }
+  } catch(e) {}
 });
 
     function openDossier(memberId) {
