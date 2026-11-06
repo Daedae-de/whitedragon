@@ -3806,7 +3806,7 @@
     </div>
 
     <!-- REPLAY UPLOAD TERMINAL -->
-    <div class="card" style="margin-bottom: 22px; border: 1.5px solid var(--cyan); background: linear-gradient(135deg, rgba(14, 25, 45, 0.94) 0%, rgba(9, 16, 30, 0.98) 100%); box-shadow: 0 0 25px rgba(0, 229, 255, 0.18);">
+    <div id="replay-upload-card" class="card" style="display:none; margin-bottom: 22px; border: 1.5px solid var(--cyan); background: linear-gradient(135deg, rgba(14, 25, 45, 0.94) 0%, rgba(9, 16, 30, 0.98) 100%); box-shadow: 0 0 25px rgba(0, 229, 255, 0.18);">
       <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
         <span style="display: inline-block; width: 8px; height: 8px; background: var(--cyan); border-radius: 50%; box-shadow: 0 0 8px var(--cyan);"></span>
         <span style="font-family: 'Orbitron', sans-serif; font-size: 0.82rem; font-weight: 800; color: var(--cyan); letter-spacing: 1.5px; text-transform: uppercase;">TRANSMIT CLAN REPLAY (.REP / .ZIP)</span>
@@ -3890,7 +3890,7 @@
     </div>
 
     <!-- UPLOAD TERMINAL -->
-    <div class="card" style="margin-bottom: 22px; border: 1.5px solid var(--cyan); background: linear-gradient(135deg, rgba(14, 25, 45, 0.94) 0%, rgba(9, 16, 30, 0.98) 100%); box-shadow: 0 0 25px rgba(0, 229, 255, 0.18);">
+    <div id="map-upload-card" class="card" style="display:none; margin-bottom: 22px; border: 1.5px solid var(--cyan); background: linear-gradient(135deg, rgba(14, 25, 45, 0.94) 0%, rgba(9, 16, 30, 0.98) 100%); box-shadow: 0 0 25px rgba(0, 229, 255, 0.18);">
       <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
         <span style="display: inline-block; width: 8px; height: 8px; background: var(--cyan); border-radius: 50%; box-shadow: 0 0 8px var(--cyan);"></span>
         <span style="font-family: 'Orbitron', sans-serif; font-size: 0.82rem; font-weight: 800; color: var(--cyan); letter-spacing: 1.5px; text-transform: uppercase;">TRANSMIT FILE TO CLAN VAULT</span>
@@ -4633,6 +4633,7 @@
             <div style="margin-top:8px; font-size:0.82rem;" id="user-verified-status">
               <span style="color:var(--win);">✓ Email Verified</span>
             </div>
+            <div id="guest-clearance-note" style="display:none; margin-top:8px; color:#fbbf24; font-size:0.8rem; line-height:1.4;">Gast-Freigabe: Beiträge sind sichtbar. Schreiben ist gesperrt, bis ein Admin dieses Konto einem Mitglied Name[WD] zuordnet.</div>
           </div>
 
           <!-- Resend verification if not verified -->
@@ -4649,7 +4650,7 @@
               <span style="font-family:'Orbitron',sans-serif; font-size:0.8rem; color:var(--cyan); font-weight:800; letter-spacing:1px;">👥 REGISTERED OPERATORS // ROLE & MEMBER ID ASSIGNMENT</span>
               <button onclick="loadRegisteredUsers()" class="btn-download-rep" style="font-size:0.68rem; padding:3px 8px; cursor:pointer;">🔄 REFRESH</button>
             </div>
-            <p style="color:#cbd5e1; font-size:0.78rem; line-height:1.4; margin-bottom:10px;">Newly registered users start as <strong>Guest</strong>. As Webmaster, you can inspect registered email addresses, link them to a Member ID handle, and promote them to Member or Admin.</p>
+            <p style="color:#cbd5e1; font-size:0.78rem; line-height:1.4; margin-bottom:10px;">Neue Konten starten als <strong>Guest</strong> und dürfen nur lesen. Webmaster und Admin ordnen die E-Mail einem Mitglied im Format <strong>Name[WD]</strong> zu. Danach darf dieses Konto schreiben.</p>
             
             <div style="overflow-x:auto;">
               <table style="width:100%; border-collapse:collapse; font-size:0.78rem; font-family:'Share Tech Mono',monospace;">
@@ -5735,6 +5736,20 @@ function renderFirestoreReplays(cloudReplays) {
       return true;
     }
 
+    function ensureClanWriter(actionName) {
+      if (!ensureVerifiedAccess(actionName)) return false;
+      var user = (typeof firebase !== 'undefined' && firebase.auth && firebase.auth().currentUser)
+        ? firebase.auth().currentUser
+        : currentUser;
+      if (!isClanWriter(user)) {
+        alert("ACCESS DENIED // GUEST CLEARANCE:\n\nDieses Konto ist noch Gast. Beiträge kannst du lesen. Schreiben geht erst, wenn ein Admin die E-Mail einem Mitglied Name[WD] zuordnet.");
+        openAuthModal();
+        switchAuthView('profile');
+        return false;
+      }
+      return true;
+    }
+
     // ========================================================
     // REPLAY UPLOAD VAULT (INDEXEDDB)
     // ========================================================
@@ -5770,7 +5785,7 @@ function renderFirestoreReplays(cloudReplays) {
     }
 
     function processFile(file) {
-      if (!ensureVerifiedAccess("upload replays")) {
+      if (!ensureClanWriter("upload replays")) {
         cancelUpload();
         return;
       }
@@ -5844,7 +5859,7 @@ function publishReplayToFirestore(file, meta) {
 }
 
 function saveReplay() {
-  if (!ensureVerifiedAccess("Replays speichern")) return;
+  if (!ensureClanWriter("Replays speichern")) return;
   if (!currentSelectedFile) {
     alert('Bitte wähle zuerst eine .rep- oder .zip-Datei aus.');
     return;
@@ -5904,7 +5919,7 @@ function handleMatchReplayFile(event) {
   pendingMatchReplayUpload = null;
   event.target.value = '';
   if (!file || !meta) return;
-  if (!ensureVerifiedAccess("Replays speichern")) return;
+  if (!ensureClanWriter("Replays speichern")) return;
 
   publishReplayToFirestore(file, meta).then(function() {
     alert('Replay für "' + meta.matchTitle + '" wurde in Firestore gespeichert.');
@@ -6103,7 +6118,7 @@ function handleMatchReplayFile(event) {
     }
 
     function processMapFile(file) {
-      if (!ensureVerifiedAccess("upload maps or tools")) {
+      if (!ensureClanWriter("upload maps or tools")) {
         cancelMapUpload();
         return;
       }
@@ -6192,7 +6207,7 @@ function handleMatchReplayFile(event) {
     }
 
     function saveMapDownload() {
-      if (!ensureVerifiedAccess("Dateien im Clan-Vault speichern")) return;
+      if (!ensureClanWriter("Dateien im Clan-Vault speichern")) return;
       var file = currentSelectedMapFile;
       if (!file) {
         alert('Please select a file first.');
@@ -6489,6 +6504,11 @@ async function renderUserMaps() {
     const WEBMASTER_EMAIL = "daehyeon0206@gmail.com";
     var firebaseInitialized = false;
     var currentUser = null;
+    var currentUserProfile = null;
+    var userProfileUnsubscribe = null;
+    var profilesUnsubscribe = null;
+    var registeredProfiles = [];
+    var ownProfileCreateStarted = false;
 
     // Webmaster Admin Management Engine
     function getAdminList() {
@@ -6744,6 +6764,7 @@ async function renderUserMaps() {
     }
 
     function publishClanNews() {
+      if (!ensureClanWriter("Nachrichten veröffentlichen")) return;
       var editId = document.getElementById('cms-edit-article-id').value;
       var titleInp = document.getElementById('cms-news-title');
       var catInp = document.getElementById('cms-news-cat');
@@ -6937,6 +6958,7 @@ async function renderUserMaps() {
     }
 
     function deleteClanNews(newsId) {
+      if (!ensureClanWriter("Nachrichten löschen")) return;
       if (!confirm("Are you sure you want to remove this transmission?")) return;
       if (typeof firebase !== 'undefined' && firebase.firestore) {
         try {
@@ -6948,10 +6970,320 @@ async function renderUserMaps() {
       renderClanNews(news);
     }
 
+    function isRootOperator(email) {
+      var clean = String(email || '').toLowerCase().trim();
+      return clean === WEBMASTER_EMAIL.toLowerCase() || clean === 'abecul323@outlook.com';
+    }
+
+    function currentProfileRole() {
+      return (currentUserProfile && currentUserProfile.role) || 'Guest';
+    }
+
+    function isClanWriter(user) {
+      if (!user || !user.email) return false;
+      if (isRootOperator(user.email)) return true;
+      var role = currentProfileRole();
+      return role === 'Member' || role === 'Admin' || role === 'Webmaster';
+    }
+
+    function isStaffUser(user) {
+      if (!user || !user.email) return false;
+      if (isRootOperator(user.email)) return true;
+      var role = currentProfileRole();
+      return role === 'Admin' || role === 'Webmaster';
+    }
+
     function isUserAdmin(email) {
       if (!email) return false;
       var clean = email.toLowerCase().trim();
-      return getAdminList().includes(clean);
+      if (isRootOperator(clean)) return true;
+      if (currentUser && currentUser.email && currentUser.email.toLowerCase() === clean) {
+        var role = currentProfileRole();
+        return role === 'Admin' || role === 'Webmaster';
+      }
+      return false;
+    }
+
+    function memberHandle(member) {
+      var name = String((member && member.name) || '').trim();
+      if (/\[WD\]\s*$/i.test(name)) return name;
+      var id = String((member && member.id) || '').trim();
+      return id ? id + '[WD]' : '';
+    }
+
+    function findMemberByHandle(handle) {
+      var needle = String(handle || '').trim().toLowerCase();
+      if (!needle) return null;
+      var members = (typeof getFullClanMembersList === 'function') ? getFullClanMembersList() : membersData;
+      for (var i = 0; i < members.length; i++) {
+        if (memberHandle(members[i]).toLowerCase() === needle) return members[i];
+      }
+      return null;
+    }
+
+    function ensureOwnGuestProfile(user) {
+      if (!user || !user.uid || !firebase.firestore || ownProfileCreateStarted) return;
+      ownProfileCreateStarted = true;
+      firebase.firestore().collection('user_profiles').doc(user.uid).set({
+        uid: user.uid,
+        email: user.email || '',
+        role: 'Guest',
+        memberId: '',
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+      }).catch(function(err) {
+        ownProfileCreateStarted = false;
+        console.warn('Gast-Profil konnte nicht angelegt werden:', err);
+      });
+    }
+
+    function watchOwnUserProfile(user) {
+      if (!user || !user.uid || !firebase.firestore) return;
+      if (userProfileUnsubscribe) userProfileUnsubscribe();
+      userProfileUnsubscribe = firebase.firestore().collection('user_profiles').doc(user.uid).onSnapshot(function(doc) {
+        if (!doc.exists) {
+          currentUserProfile = null;
+          ensureOwnGuestProfile(user);
+        } else {
+          currentUserProfile = doc.data();
+          currentUserProfile.uid = doc.id;
+        }
+        refreshOperatorConsole(user);
+      }, function(err) {
+        console.warn('Profil-Sync fehlgeschlagen:', err);
+      });
+    }
+
+    function watchRegisteredProfiles() {
+      if (profilesUnsubscribe || !firebase.firestore) return;
+      profilesUnsubscribe = firebase.firestore().collection('user_profiles').onSnapshot(function(snapshot) {
+        registeredProfiles = [];
+        snapshot.forEach(function(doc) {
+          var item = doc.data();
+          item.uid = doc.id;
+          registeredProfiles.push(item);
+        });
+        registeredProfiles.sort(function(a, b) {
+          return String(a.email || '').localeCompare(String(b.email || ''));
+        });
+        renderRegisteredUsers();
+      }, function(err) {
+        var tbody = document.getElementById('registered-users-tbody');
+        if (tbody) {
+          tbody.innerHTML = '<tr><td colspan="4" style="padding:10px; color:#fca5a5;">Konten konnten nicht geladen werden. Die Firestore-Regeln für user_profiles müssen veröffentlicht sein.</td></tr>';
+        }
+        console.warn(err);
+      });
+    }
+
+    function loadRegisteredUsers() {
+      var user = (firebase.auth && firebase.auth().currentUser) || currentUser;
+      if (!isStaffUser(user)) return;
+      if (!profilesUnsubscribe) watchRegisteredProfiles();
+      else renderRegisteredUsers();
+    }
+
+    function renderRegisteredUsers() {
+      var tbody = document.getElementById('registered-users-tbody');
+      if (!tbody) return;
+      tbody.innerHTML = '';
+      if (!registeredProfiles.length) {
+        tbody.innerHTML = '<tr><td colspan="4" style="padding:10px; text-align:center; color:var(--text-muted);">Noch keine registrierten Konten.</td></tr>';
+        return;
+      }
+      var members = (typeof getFullClanMembersList === 'function') ? getFullClanMembersList() : membersData;
+      var viewer = (firebase.auth && firebase.auth().currentUser) || currentUser;
+      var viewerIsWebmaster = viewer && viewer.email && viewer.email.toLowerCase() === WEBMASTER_EMAIL.toLowerCase();
+
+      registeredProfiles.forEach(function(profile) {
+        var tr = document.createElement('tr');
+        tr.style.borderBottom = '1px solid rgba(56,189,248,0.15)';
+
+        var emailCell = document.createElement('td');
+        emailCell.style.padding = '6px 4px';
+        emailCell.style.color = '#fff';
+        emailCell.textContent = profile.email || profile.uid;
+        tr.appendChild(emailCell);
+
+        var memberCell = document.createElement('td');
+        memberCell.style.padding = '6px 4px';
+        var memberSelect = document.createElement('select');
+        memberSelect.id = 'assign-member-' + profile.uid;
+        memberSelect.style.cssText = 'width:100%; background:#070a12; color:#fff; border:1px solid var(--border-color); border-radius:4px; padding:4px;';
+        var emptyOption = document.createElement('option');
+        emptyOption.value = '';
+        emptyOption.textContent = '— nicht zugeordnet —';
+        memberSelect.appendChild(emptyOption);
+        members.forEach(function(member) {
+          var handle = memberHandle(member);
+          if (!handle) return;
+          var option = document.createElement('option');
+          option.value = handle;
+          option.textContent = handle;
+          if (String(profile.memberId || '') === handle) option.selected = true;
+          memberSelect.appendChild(option);
+        });
+        if (profile.memberId && !findMemberByHandle(profile.memberId)) {
+          var custom = document.createElement('option');
+          custom.value = profile.memberId;
+          custom.textContent = profile.memberId;
+          custom.selected = true;
+          memberSelect.appendChild(custom);
+        }
+        memberCell.appendChild(memberSelect);
+        tr.appendChild(memberCell);
+
+        var roleCell = document.createElement('td');
+        roleCell.style.padding = '6px 4px';
+        var lockedWebmaster = profile.email && profile.email.toLowerCase() === WEBMASTER_EMAIL.toLowerCase();
+        if (lockedWebmaster) {
+          roleCell.textContent = 'Webmaster';
+          roleCell.style.color = 'var(--cyan)';
+        } else {
+          var roleSelect = document.createElement('select');
+          roleSelect.id = 'assign-role-' + profile.uid;
+          roleSelect.style.cssText = 'width:100%; background:#070a12; color:#fff; border:1px solid var(--border-color); border-radius:4px; padding:4px;';
+          ['Guest', 'Member'].concat(viewerIsWebmaster ? ['Admin'] : []).forEach(function(roleName) {
+            var option = document.createElement('option');
+            option.value = roleName;
+            option.textContent = roleName;
+            if ((profile.role || 'Guest') === roleName) option.selected = true;
+            roleSelect.appendChild(option);
+          });
+          if (!viewerIsWebmaster && profile.role === 'Admin') {
+            var adminOption = document.createElement('option');
+            adminOption.value = 'Admin';
+            adminOption.textContent = 'Admin';
+            adminOption.selected = true;
+            roleSelect.appendChild(adminOption);
+            roleSelect.disabled = true;
+          }
+          roleCell.appendChild(roleSelect);
+        }
+        tr.appendChild(roleCell);
+
+        var actionCell = document.createElement('td');
+        actionCell.style.padding = '6px 4px';
+        actionCell.style.textAlign = 'right';
+        if (!lockedWebmaster) {
+          var saveBtn = document.createElement('button');
+          saveBtn.className = 'btn-download-rep';
+          saveBtn.style.cssText = 'padding:4px 8px; font-size:0.68rem; cursor:pointer;';
+          saveBtn.textContent = 'ZUORDNEN';
+          saveBtn.onclick = function() { saveOperatorAssignment(profile.uid); };
+          actionCell.appendChild(saveBtn);
+        }
+        tr.appendChild(actionCell);
+        tbody.appendChild(tr);
+      });
+    }
+
+    function saveOperatorAssignment(uid) {
+      var viewer = (firebase.auth && firebase.auth().currentUser) || currentUser;
+      if (!isStaffUser(viewer)) {
+        alert('Nur Webmaster oder Admin kann Konten zuordnen.');
+        return;
+      }
+      var profile = registeredProfiles.find(function(item) { return item.uid === uid; });
+      if (!profile) return;
+      var memberSelect = document.getElementById('assign-member-' + uid);
+      var roleSelect = document.getElementById('assign-role-' + uid);
+      var memberId = memberSelect ? memberSelect.value : '';
+      var role = roleSelect ? roleSelect.value : (profile.role || 'Guest');
+      var viewerIsWebmaster = viewer.email && viewer.email.toLowerCase() === WEBMASTER_EMAIL.toLowerCase();
+      if ((role === 'Admin' || role === 'Webmaster') && !viewerIsWebmaster) {
+        alert('Nur der Webmaster kann Admin vergeben.');
+        return;
+      }
+      if (role === 'Guest') memberId = '';
+      if (role !== 'Guest' && !memberId) {
+        alert('Bitte ein Mitglied im Format Name[WD] wählen.');
+        return;
+      }
+      var duplicate = registeredProfiles.some(function(item) {
+        return item.uid !== uid && item.memberId && item.memberId === memberId;
+      });
+      if (memberId && duplicate) {
+        alert(memberId + ' ist bereits einem anderen Konto zugeordnet.');
+        return;
+      }
+
+      var previousHandle = profile.memberId || '';
+      firebase.firestore().collection('user_profiles').doc(uid).set({
+        role: role,
+        memberId: memberId,
+        assignedAt: firebase.firestore.FieldValue.serverTimestamp(),
+        assignedBy: viewer.email || ''
+      }, { merge: true }).then(function() {
+        var writes = [];
+        if (previousHandle && previousHandle !== memberId) {
+          var previousMember = findMemberByHandle(previousHandle);
+          if (previousMember && previousMember.email && profile.email && previousMember.email.toLowerCase() === profile.email.toLowerCase()) {
+            writes.push(firebase.firestore().collection('clan_members').doc(previousMember.id).set({
+              email: firebase.firestore.FieldValue.delete()
+            }, { merge: true }));
+          }
+        }
+        var nextMember = findMemberByHandle(memberId);
+        if (nextMember) {
+          writes.push(firebase.firestore().collection('clan_members').doc(nextMember.id).set({
+            email: profile.email || ''
+          }, { merge: true }));
+        }
+        return Promise.all(writes);
+      }).then(function() {
+        alert('Zuordnung gespeichert.');
+      }).catch(function(err) {
+        alert('Zuordnung fehlgeschlagen: ' + (err && err.message ? err.message : err));
+      });
+    }
+
+    function syncWriteSurfaces(user) {
+      var writer = isClanWriter(user);
+      var replayCard = document.getElementById('replay-upload-card');
+      var mapCard = document.getElementById('map-upload-card');
+      if (replayCard) replayCard.style.display = writer ? 'block' : 'none';
+      if (mapCard) mapCard.style.display = writer ? 'block' : 'none';
+    }
+
+    function refreshOperatorConsole(user) {
+      var staff = isStaffUser(user);
+      var usersPanel = document.getElementById('webmaster-users-panel');
+      if (usersPanel) usersPanel.style.display = staff ? 'block' : 'none';
+      var adminPanel = document.getElementById('webmaster-admin-panel');
+      if (adminPanel) adminPanel.style.display = 'none';
+      if (staff) loadRegisteredUsers();
+      syncWriteSurfaces(user);
+
+      var cmsTerminal = document.getElementById('admin-news-terminal');
+      var cmsBadge = document.getElementById('news-admin-badge');
+      if (cmsTerminal) cmsTerminal.style.display = staff ? 'block' : 'none';
+      if (cmsBadge) cmsBadge.style.display = staff ? 'inline-block' : 'none';
+      var btnMatchCms = document.getElementById('btn-toggle-match-cms');
+      if (btnMatchCms) btnMatchCms.style.display = staff ? 'inline-block' : 'none';
+      var rosterCtrlPanel = document.getElementById('admin-roster-control-panel');
+      if (rosterCtrlPanel) rosterCtrlPanel.style.display = staff ? 'block' : 'none';
+      var memAddPanel = document.getElementById('admin-members-add-panel');
+      if (memAddPanel) memAddPanel.style.display = staff ? 'block' : 'none';
+      if (staff) document.body.classList.add('is-webmaster');
+      else document.body.classList.remove('is-webmaster');
+
+      if (user) updateProfileUI(user);
+      if (typeof renderMatches === 'function') renderMatches();
+      if (typeof renderRosterTableAndTiers === 'function') renderRosterTableAndTiers();
+    }
+
+    function stopProfileWatchers() {
+      if (userProfileUnsubscribe) {
+        userProfileUnsubscribe();
+        userProfileUnsubscribe = null;
+      }
+      if (profilesUnsubscribe) {
+        profilesUnsubscribe();
+        profilesUnsubscribe = null;
+      }
+      currentUserProfile = null;
+      registeredProfiles = [];
+      ownProfileCreateStarted = false;
     }
 
     function uiPromoteNewAdmin() {
@@ -7143,8 +7475,17 @@ async function renderUserMaps() {
       showAuthMessage("Connecting to command mainframe...", false);
       firebase.auth().createUserWithEmailAndPassword(email, pass)
         .then(function(userCredential) {
-          return userCredential.user.sendEmailVerification().then(function() {
-            showAuthMessage("Verification email dispatched to " + email + ". Confirm your link!", false);
+          var user = userCredential.user;
+          return firebase.firestore().collection('user_profiles').doc(user.uid).set({
+            uid: user.uid,
+            email: user.email,
+            role: 'Guest',
+            memberId: '',
+            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+          }).then(function() {
+            return user.sendEmailVerification();
+          }).then(function() {
+            showAuthMessage("Konto angelegt. Du bist Gast, bis ein Admin dich einem Mitglied Name[WD] zuordnet. Bestätige zuerst die E-Mail an " + email + ".", false);
             setTimeout(function() { switchAuthView('profile'); }, 1500);
           });
         })
@@ -7277,10 +7618,8 @@ async function renderUserMaps() {
       }
 
       var adminPanel = document.getElementById('webmaster-admin-panel');
-      if (adminPanel) {
-        adminPanel.style.display = isWebmaster ? 'block' : 'none';
-        if (isWebmaster) renderAdminManagerList();
-      }
+      if (adminPanel) adminPanel.style.display = 'none';
+      refreshOperatorConsole(user);
 
       updateProfileUI(user);
 
@@ -7323,6 +7662,10 @@ async function renderUserMaps() {
 
       var adminPanel = document.getElementById('webmaster-admin-panel');
       if (adminPanel) adminPanel.style.display = 'none';
+      var usersPanel = document.getElementById('webmaster-users-panel');
+      if (usersPanel) usersPanel.style.display = 'none';
+      stopProfileWatchers();
+      syncWriteSurfaces(null);
 
       document.body.classList.remove('is-webmaster');
       switchAuthView('login');
@@ -7353,12 +7696,17 @@ async function renderUserMaps() {
       var resendBox = document.getElementById('resend-verification-box');
       var authLabel = document.getElementById('authLabel');
 
-      var isWebmaster = (user.email && user.email.toLowerCase() === WEBMASTER_EMAIL.toLowerCase());
-      var isAdmin = isUserAdmin(user.email);
-
-      var matchedMember = membersData.find(function(m) {
-        return m.email && m.email.toLowerCase() === user.email.toLowerCase();
+      var handle = currentUserProfile && currentUserProfile.memberId;
+      var allMembers = (typeof getFullClanMembersList === 'function') ? getFullClanMembersList() : membersData;
+      var matchedMember = allMembers.find(function(m) {
+        return m.email && user.email && m.email.toLowerCase() === user.email.toLowerCase();
       });
+      if (!matchedMember && handle) matchedMember = findMemberByHandle(handle);
+      var role = isRootOperator(user.email) && user.email.toLowerCase() === WEBMASTER_EMAIL.toLowerCase()
+        ? 'Webmaster'
+        : (isUserAdmin(user.email) ? 'Admin' : currentProfileRole());
+      var guestNote = document.getElementById('guest-clearance-note');
+      if (guestNote) guestNote.style.display = (role === 'Guest') ? 'block' : 'none';
 
       if (emailEl) {
         if (matchedMember) {
@@ -7369,28 +7717,30 @@ async function renderUserMaps() {
       }
 
       if (badgeEl) {
-        if (isWebmaster) {
+        if (role === 'Webmaster') {
           badgeEl.className = 'role-badge role-squadleader';
           badgeEl.innerText = '★ WEBMASTER (ROOT ACCESS)';
           badgeEl.style.boxShadow = '0 0 14px var(--cyan)';
-        } else if (isAdmin) {
+        } else if (role === 'Admin') {
           badgeEl.className = 'role-badge role-squadleader';
           badgeEl.innerText = '🛡️ CLAN ADMIN (HIGH COUNCIL)';
           badgeEl.style.boxShadow = '0 0 14px rgba(245, 158, 11, 0.6)';
-        } else if (matchedMember) {
+        } else if (role === 'Member') {
           badgeEl.className = 'role-badge role-starter';
-          badgeEl.innerText = (matchedMember.rank || 'MEMBER').toUpperCase();
+          badgeEl.innerText = memberHandle(matchedMember || { id: handle || 'Member' });
           badgeEl.style.boxShadow = 'none';
         } else {
           badgeEl.className = 'role-badge role-captain';
-          badgeEl.innerText = 'CLAN MEMBER';
+          badgeEl.innerText = 'GUEST';
           badgeEl.style.boxShadow = 'none';
         }
       }
 
-      if (authLabel && matchedMember) {
-        if (isWebmaster) authLabel.innerText = 'WEBMASTER';
-        else if (isAdmin) authLabel.innerText = matchedMember.name.replace('[WD]', '');
+      if (authLabel) {
+        if (role === 'Webmaster') authLabel.innerText = 'WEBMASTER';
+        else if (role === 'Admin') authLabel.innerText = 'ADMIN';
+        else if (role === 'Member') authLabel.innerText = handle || 'MEMBER';
+        else authLabel.innerText = 'GUEST';
       }
 
       if (verStatus) {
@@ -7426,6 +7776,7 @@ async function renderUserMaps() {
         firebase.auth().onAuthStateChanged(function(user) {
           if (user) {
             applyLoggedInState(user);
+            watchOwnUserProfile(user);
           } else {
             applyLoggedOutState();
           }
