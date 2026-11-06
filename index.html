@@ -1493,9 +1493,9 @@
         <div style="font-family:'Orbitron', sans-serif; font-size:0.75rem; letter-spacing:1px; color:var(--cyan); margin-top:4px; font-weight:800;">EST. 2021</div>
         <!-- TACTICAL LIVE WORLD CLOCKS (OBEN RECHTS) -->
         <div class="world-clocks-hud" id="world-clocks" title="Live Synchronized Clocks" style="margin-top:10px; display:inline-flex; justify-content:center; gap:8px; background:rgba(7,12,22,0.85); border:1px solid var(--border-color); border-radius:6px; padding:6px 12px; font-family:'Share Tech Mono', monospace; font-size:0.78rem;">
-          <div class="clock-badge"><span style="color:#fbbf24;">⚡ ET:</span> <strong id="clock-et" style="color:#fff;">--:--:--</strong></div>
+          <div class="clock-badge"><span style="color:#fbbf24;">EST:</span> <strong id="clock-et" style="color:#fff;">--:--:--</strong></div>
           <span class="clock-divider">|</span>
-          <div class="clock-badge"><span style="color:var(--cyan);">🌐 BER:</span> <strong id="clock-berlin" style="color:#fff;">--:--:--</strong></div>
+          <div class="clock-badge"><span style="color:var(--cyan);">CET:</span> <strong id="clock-berlin" style="color:#fff;">--:--:--</strong></div>
         </div>
       </div>
     </div>
@@ -4084,7 +4084,7 @@ window.addEventListener('DOMContentLoaded', function() {
       if (!ensureVerifiedAccess("Dateien im Clan-Vault speichern")) return;
       var file = currentSelectedMapFile;
       if (!file) {
-        alert('Bitte wählen Sie zuerst eine Datei aus.');
+        alert('Please select a file first.');
         return;
       }
 
@@ -4106,10 +4106,10 @@ window.addEventListener('DOMContentLoaded', function() {
         firebase.firestore().collection('clan_vault').add(downloadRecord)
           .then(function() {
             cancelMapUpload();
-            alert('Datei-Eintrag global synchronisiert! Alle Geräte sehen diesen Download nun.');
+            alert('File record synchronized globally! All devices can now access this download.');
           })
           .catch(function(e) {
-            alert('Upload fehlgeschlagen: ' + e.message);
+            alert('Upload failed: ' + e.message);
           });
       }
     }
@@ -4629,7 +4629,7 @@ async function renderUserMaps() {
       var body = bodyInp ? bodyInp.value.trim() : '';
 
       if (!title || !body) {
-        alert("Bitte geben Sie einen Titel und Nachrichtentext ein.");
+        alert("Please provide a headline/title and message text.");
         return;
       }
 
@@ -4653,16 +4653,16 @@ async function renderUserMaps() {
           db.collection('clan_news').doc(editId).set(articleData, { merge: true })
             .then(function() {
               cancelClanNewsEdit();
-              alert("Beitrag erfolgreich aktualisiert!");
+              alert("Transmission successfully updated!");
             })
-            .catch(function(e) { alert("Fehler: " + e.message); });
+            .catch(function(e) { alert("Error: " + e.message); });
         } else {
           db.collection('clan_news').add(articleData)
             .then(function() {
               cancelClanNewsEdit();
-              alert("Beitrag erfolgreich veröffentlicht!");
+              alert("Transmission successfully broadcasted!");
             })
-            .catch(function(e) { alert("Fehler: " + e.message); });
+            .catch(function(e) { alert("Error: " + e.message); });
         }
       } else {
         saveNewsLocallyFallback(articleData, editId);
@@ -4684,7 +4684,7 @@ async function renderUserMaps() {
       localStorage.setItem('wd_clan_news', JSON.stringify(news));
       renderClanNews(news);
       cancelClanNewsEdit();
-      alert("Beitrag im lokalen Vault gespeichert!");
+      alert("Transmission saved to local vault!");
     }
 
         function editClanNews(id) {
@@ -4787,7 +4787,7 @@ async function renderUserMaps() {
     }
 
     function deleteClanNews(newsId) {
-      if (!confirm("Möchtest du diesen Beitrag wirklich löschen?")) return;
+      if (!confirm("Are you sure you want to remove this transmission?")) return;
       if (typeof firebase !== 'undefined' && firebase.firestore) {
         try {
           firebase.firestore().collection('clan_news').doc(newsId).delete();
@@ -5380,12 +5380,12 @@ async function renderUserMaps() {
       var canModerate = user && (isUserAdmin(user.email) || (user.email && user.email.toLowerCase() === WEBMASTER_EMAIL.toLowerCase()));
 
       if (!canModerate) {
-        alert("ZUGRIFF VERWEIGERT // Bitte logge dich als Admin oder Webmaster ein.");
+        alert("ACCESS DENIED // Please log in as Admin or Webmaster.");
         openAuthModal();
         return;
       }
 
-      if (!confirm("MITGLIED ENTFERNEN: Möchtest du " + memberId + " wirklich aus dem Clan löschen?")) {
+      if (!confirm("EXPEL OPERATOR: Do you want to expel " + memberId + " from the clan permanently?")) {
         return;
       }
 
@@ -5395,7 +5395,7 @@ async function renderUserMaps() {
         var db = firebase.firestore();
         db.collection('clan_members').doc(memberId).delete()
           .then(function() {
-            console.log("Mitglied aus clan_members gelöscht:", memberId);
+            console.log("Operator aus clan_members gelöscht:", memberId);
           })
           .catch(function(err) {
             console.error("Firestore Mitglieder-Löschfehler:", err);
@@ -5425,7 +5425,7 @@ async function renderUserMaps() {
 
       closeModal();
       renderRosterTableAndTiers();
-      alert("Commander " + memberId + " wurde erfolgreich gelöscht.");
+      alert("Commander " + memberId + " was successfully expelled.");
     }
 
         function handleAvatarFileUpload(event) {
@@ -5620,10 +5620,10 @@ async function renderUserMaps() {
           .then(function() {
             cancelDossierEdit();
             closeModal();
-            alert("Änderungen wurden live in der Cloud gespeichert!");
+            alert("Changes saved live to the cloud successfully!");
           })
           .catch(function(err) {
-            alert("Fehler beim Speichern: " + err.message);
+            alert("Error saving: " + err.message);
           });
       } else {
         var customs = getCustomProfiles();
@@ -5980,7 +5980,7 @@ async function renderUserMaps() {
         try {
           localStorage.setItem('wd_all_clan_members', JSON.stringify(allMembers));
         } catch(e) {
-          console.warn('Konnte berechnete Mitgliederstatistiken nicht lokal speichern:', e);
+          console.warn('Could not save calculated member stats locally:', e);
         }
       }
 
@@ -6277,7 +6277,7 @@ async function renderUserMaps() {
       var note = document.getElementById('match-inp-note').value.trim();
       var setsText = document.getElementById('match-inp-sets').value.trim();
 
-      if (!title) { alert('Bitte Match-Titel eingeben.'); return; }
+      if (!title) { alert('Please enter a match title.'); return; }
 
       var setsArray = [];
       if (setsText) {
@@ -6300,7 +6300,7 @@ async function renderUserMaps() {
         firebase.firestore().collection('clan_matches').doc(matchId).set(matchRecord, { merge: true })
           .then(function() {
             cancelMatchCMS();
-            alert('Match erfolgreich in Firebase gespeichert und synchronisiert!');
+            alert('Match successfully saved and synchronized in Firebase!');
           })
           .catch(function(e) {
             alert('Fehler beim Speichern in Firebase: ' + e.message);
@@ -6311,10 +6311,10 @@ async function renderUserMaps() {
     }
 
     function deleteMatchRecord(id) {
-      if (!confirm('Möchtest du dieses Match wirklich für alle Geräte löschen?')) return;
+      if (!confirm('Are you sure you want to delete this match for all devices?')) return;
       if (typeof firebase !== 'undefined' && firebase.firestore) {
         firebase.firestore().collection('clan_matches').doc(id).delete()
-          .catch(function(e) { alert('Fehler beim Löschen: ' + e.message); });
+          .catch(function(e) { alert('Error deleting: ' + e.message); });
       }
       var matches = getMatchesList().filter(function(m) { return m.id !== id; });
       localStorage.setItem('wd_matches_vault', JSON.stringify(matches));
@@ -6612,12 +6612,12 @@ async function renderUserMaps() {
 
       if (firebaseInitialized && typeof firebase !== 'undefined' && firebase.firestore) {
         if (!canWriteClanRosterToFirestore()) {
-          alert('Keine Firestore-Berechtigung. Bitte mit einem verifizierten Firebase-Admin-Konto anmelden. Laut deinen Firestore Rules sind nur daehyeon0206@gmail.com und abecul323@outlook.com für clan_roster schreibberechtigt.');
+          alert('No Firestore permission. Please log in with a verified Firebase admin account.');
           return;
         }
         if (!firestoreRosterLoaded) {
           maybeSeedInitialClanRoster();
-          alert('Die Squad-Daten werden gerade aus Firebase geladen bzw. initialisiert. Bitte warte, bis das Roster angezeigt wird, und versuche es dann erneut.');
+          alert('Squad data is currently loading/initializing from Firebase. Please wait until the roster appears and try again.');
           return;
         }
 
@@ -6658,12 +6658,12 @@ async function renderUserMaps() {
 
       if (firebaseInitialized && typeof firebase !== 'undefined' && firebase.firestore) {
         if (!canWriteClanRosterToFirestore()) {
-          alert('Keine Firestore-Berechtigung. Bitte mit einem verifizierten Firebase-Admin-Konto anmelden. Laut deinen Firestore Rules sind nur daehyeon0206@gmail.com und abecul323@outlook.com für clan_roster schreibberechtigt.');
+          alert('No Firestore permission. Please log in with a verified Firebase admin account.');
           return;
         }
         if (!firestoreRosterLoaded) {
           maybeSeedInitialClanRoster();
-          alert('Die Squad-Daten werden gerade aus Firebase geladen bzw. initialisiert. Bitte versuche es erneut, sobald das Roster angezeigt wird.');
+          alert('Squad data is currently loading/initializing from Firebase. Please try again once the roster appears.');
           return;
         }
         firebase.firestore().collection('clan_roster').doc(memberId).delete()
@@ -6672,7 +6672,7 @@ async function renderUserMaps() {
           })
           .catch(function(error) {
             console.error('Squad member removal failed:', error);
-            alert('Fehler beim Entfernen aus Firebase: ' + error.message);
+            alert('Error removing from Firebase: ' + error.message);
           });
         return;
       }
@@ -6762,10 +6762,10 @@ async function renderUserMaps() {
         firebase.firestore().collection('clan_members').doc(id).set(newMember)
           .then(function() {
             document.getElementById('new-mem-name').value = '';
-            alert('Mitglied ' + newMember.name + ' erfolgreich für alle Geräte synchronisiert!');
+            alert('Operator ' + newMember.name + ' successfully synchronized across all devices!');
           })
           .catch(function(err) {
-            alert('Fehler beim Synchronisieren: ' + err.message);
+            alert('Sync error: ' + err.message);
           });
       } else {
         var fullList = getFullClanMembersList();
