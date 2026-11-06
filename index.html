@@ -3713,7 +3713,7 @@
 <!-- TABELLARISCHER SET BUILDER (AKTUALISIERT) -->
       <div style="background:rgba(7,12,22,0.8); border:1px solid rgba(0,229,255,0.3); border-radius:8px; padding:12px; margin-bottom:12px; overflow-x:auto;">
         <div style="font-family:'Orbitron',sans-serif; font-size:0.75rem; color:var(--cyan); font-weight:800; margin-bottom:8px;">
-          🛠️ MATCH-SETS TABELLE (Punkte: Clan League Sieg +2 Pkt / Niederlage +1 Pkt)
+          🛠️ MATCH SET TABLE (Points: Clan League win +2 pts / loss +1 pt)
         </div>
         
         <table style="width:100%; min-width:750px; border-collapse: collapse; font-size:0.8rem; text-align:left;">
@@ -3762,7 +3762,7 @@
       <!-- Sets Textarea (Speichert die formatierte Tabelle für die Datenbank) -->
       <div style="margin-bottom:12px;">
         <label style="display:block; font-size:0.68rem; color:var(--text-muted); font-family:'Orbitron',sans-serif; margin-bottom:4px;">
-          GENERIERTE MATCH-DATEN (Wird automatisch von der Tabelle oben befüllt)
+          GENERATED MATCH DATA (Filled automatically from the table above)
         </label>
         <textarea id="match-inp-sets" rows="4" placeholder="#1 1v1 | Map | [T] KaRDiNaL[WD] 2:0 dB)Opponent [Z] | WIN" style="width:100%; background:#070a12; border:1px solid var(--border-color); color:#fff; padding:8px 10px; border-radius:4px; font-family:'Share Tech Mono',monospace; font-size:0.85rem; line-height:1.45; resize:vertical;"></textarea>
       </div>
@@ -4633,7 +4633,7 @@
             <div style="margin-top:8px; font-size:0.82rem;" id="user-verified-status">
               <span style="color:var(--win);">✓ Email Verified</span>
             </div>
-            <div id="guest-clearance-note" style="display:none; margin-top:8px; color:#fbbf24; font-size:0.8rem; line-height:1.4;">Gast-Freigabe: Beiträge sind sichtbar. Schreiben ist gesperrt, bis ein Admin dieses Konto einem Mitglied Name[WD] zuordnet.</div>
+            <div id="guest-clearance-note" style="display:none; margin-top:8px; color:#fbbf24; font-size:0.8rem; line-height:1.4;">Guest clearance: posts stay visible. Writing stays locked until an admin links this account to a Name[WD] member.</div>
           </div>
 
           <!-- Resend verification if not verified -->
@@ -4650,7 +4650,7 @@
               <span style="font-family:'Orbitron',sans-serif; font-size:0.8rem; color:var(--cyan); font-weight:800; letter-spacing:1px;">👥 REGISTERED OPERATORS // ROLE & MEMBER ID ASSIGNMENT</span>
               <button onclick="loadRegisteredUsers()" class="btn-download-rep" style="font-size:0.68rem; padding:3px 8px; cursor:pointer;">🔄 REFRESH</button>
             </div>
-            <p style="color:#cbd5e1; font-size:0.78rem; line-height:1.4; margin-bottom:10px;">Neue Konten starten als <strong>Guest</strong> und dürfen nur lesen. Webmaster und Admin ordnen die E-Mail einem Mitglied im Format <strong>Name[WD]</strong> zu. Danach darf dieses Konto schreiben.</p>
+            <p style="color:#cbd5e1; font-size:0.78rem; line-height:1.4; margin-bottom:10px;">New accounts start as <strong>Guest</strong> and can only read. Webmaster and Admin link the email to a member in the format <strong>Name[WD]</strong>. That account can write after the link is saved.</p>
             
             <div style="overflow-x:auto;">
               <table style="width:100%; border-collapse:collapse; font-size:0.78rem; font-family:'Share Tech Mono',monospace;">
@@ -5450,7 +5450,7 @@ function renderFirestoreReplays(cloudReplays) {
     dlBtn.innerText = 'DOWNLOAD (.REP)';
     dlBtn.onclick = function() {
       if (!item.fileData) {
-        alert('Keine Dateidaten hinterlegt.');
+        alert('No file data is stored for this replay.');
         return;
       }
       var a = document.createElement('a');
@@ -5469,10 +5469,10 @@ function renderFirestoreReplays(cloudReplays) {
       adminBtn.style.display = 'inline-block';
       adminBtn.innerText = '🗑️ REMOVE';
       adminBtn.onclick = function() {
-        if (!confirm('Replay unwiderruflich aus Firestore löschen?')) return;
+        if (!confirm('Delete this replay from Firestore permanently?')) return;
         firebase.firestore().collection('clan_replays').doc(item.id).delete()
           .catch(function(err) {
-            alert('Löschen fehlgeschlagen: ' + (err && err.message ? err.message : err));
+            alert('Delete failed: ' + (err && err.message ? err.message : err));
           });
       };
       btnGroup.appendChild(adminBtn);
@@ -5742,7 +5742,7 @@ function renderFirestoreReplays(cloudReplays) {
         ? firebase.auth().currentUser
         : currentUser;
       if (!isClanWriter(user)) {
-        alert("ACCESS DENIED // GUEST CLEARANCE:\n\nDieses Konto ist noch Gast. Beiträge kannst du lesen. Schreiben geht erst, wenn ein Admin die E-Mail einem Mitglied Name[WD] zuordnet.");
+        alert("ACCESS DENIED // GUEST CLEARANCE:\n\nThis account is still a guest. You can read posts. Writing unlocks after an admin links the email to a Name[WD] member.");
         openAuthModal();
         switchAuthView('profile');
         return false;
@@ -5816,20 +5816,20 @@ function currentReplayUser() {
 function publishReplayToFirestore(file, meta) {
   return new Promise(function(resolve, reject) {
     if (!file) {
-      reject(new Error('Keine Datei ausgewählt.'));
+      reject(new Error('No file selected.'));
       return;
     }
     if (file.size > 700 * 1024) {
-      reject(new Error('Die Datei ist zu groß für Firestore (maximal etwa 700 KB).'));
+      reject(new Error('The file is too large for Firestore (about 700 KB maximum).'));
       return;
     }
     if (typeof firebase === 'undefined' || !firebase.firestore) {
-      reject(new Error('Firestore ist nicht verfügbar.'));
+      reject(new Error('Firestore is not available.'));
       return;
     }
     var user = currentReplayUser();
     if (!user || !user.email) {
-      reject(new Error('Zum Speichern muss ein Konto angemeldet sein.'));
+      reject(new Error('You must be signed in to save.'));
       return;
     }
 
@@ -5852,16 +5852,16 @@ function publishReplayToFirestore(file, meta) {
         .catch(reject);
     };
     reader.onerror = function() {
-      reject(reader.error || new Error('Datei konnte nicht gelesen werden.'));
+      reject(reader.error || new Error('The file could not be read.'));
     };
     reader.readAsDataURL(file);
   });
 }
 
 function saveReplay() {
-  if (!ensureClanWriter("Replays speichern")) return;
+  if (!ensureClanWriter("save replays")) return;
   if (!currentSelectedFile) {
-    alert('Bitte wähle zuerst eine .rep- oder .zip-Datei aus.');
+    alert('Choose a .rep or .zip file first.');
     return;
   }
 
@@ -5872,9 +5872,9 @@ function saveReplay() {
     map: document.getElementById('rep-map-input').value.trim() || 'StarCraft Map'
   }).then(function() {
     cancelUpload();
-    alert('Replay erfolgreich synchronisiert!');
+    alert('Replay saved to Firestore.');
   }).catch(function(err) {
-    alert('Fehler beim Speichern: ' + (err && err.message ? err.message : err));
+    alert('Save failed: ' + (err && err.message ? err.message : err));
   });
 }
 
@@ -5888,7 +5888,7 @@ function replayBelongsToMatch(item, matchTitle) {
 
 function downloadCloudReplayFile(item) {
   if (!item || !item.fileData) {
-    alert('Keine Dateidaten hinterlegt.');
+    alert('No file data is stored for this replay.');
     return;
   }
   var a = document.createElement('a');
@@ -5919,12 +5919,12 @@ function handleMatchReplayFile(event) {
   pendingMatchReplayUpload = null;
   event.target.value = '';
   if (!file || !meta) return;
-  if (!ensureClanWriter("Replays speichern")) return;
+  if (!ensureClanWriter("save replays")) return;
 
   publishReplayToFirestore(file, meta).then(function() {
-    alert('Replay für "' + meta.matchTitle + '" wurde in Firestore gespeichert.');
+    alert('Replay for "' + meta.matchTitle + '" was saved to Firestore.');
   }).catch(function(err) {
-    alert('Fehler beim Speichern: ' + (err && err.message ? err.message : err));
+    alert('Save failed: ' + (err && err.message ? err.message : err));
   });
 }
 
@@ -5967,7 +5967,7 @@ function handleMatchReplayFile(event) {
       if (!ensureVerifiedAccess("download match replays")) return;
       var title = String(matchTitle || '').trim();
       if (typeof firebase === 'undefined' || !firebase.firestore) {
-        alert('Firestore ist nicht verfügbar.');
+        alert('Firestore is not available.');
         return;
       }
 
@@ -5985,11 +5985,11 @@ function handleMatchReplayFile(event) {
         }
         offerMatchReplayUpload(title, matchDate, matchNote);
       }).catch(function(err) {
-        alert('Replay-Suche fehlgeschlagen: ' + (err && err.message ? err.message : err));
+        alert('Replay search failed: ' + (err && err.message ? err.message : err));
       });
 
       function offerMatchReplayUpload(title, matchDate, matchNote) {
-        var msg = 'Für "' + title + '" liegt noch kein Replay in Firestore.\n\nJetzt hochladen?';
+        var msg = 'No Firestore replay is linked to "' + title + '" yet.\n\nUpload one now?';
         if (!confirm(msg)) return;
         pendingMatchReplayUpload = {
           title: title,
@@ -6200,7 +6200,7 @@ function handleMatchReplayFile(event) {
             <span class="replay-title">${item.title} <span style="font-size:0.68rem; color:var(--cyan); border:1px solid var(--cyan); padding:1px 6px; border-radius:4px; font-family:monospace;">${item.category}</span></span>
             <span class="replay-sub">${item.desc} (${item.fileSize} • ${item.date})</span>
           </div>
-          <button class="btn-download-rep" onclick="alert('Download bereitgestellt via Cloud Mainframe.')">DOWNLOAD</button>
+          <button class="btn-download-rep" onclick="alert('This cloud record has no file attached.')">DOWNLOAD</button>
         `;
         container.appendChild(card);
       });
@@ -6214,18 +6214,18 @@ function handleMatchReplayFile(event) {
         return;
       }
       if (file.size > 700 * 1024) {
-        alert('Die Datei ist zu groß für Firestore (maximal etwa 700 KB).');
+        alert('The file is too large for Firestore (about 700 KB maximum).');
         return;
       }
       var user = (typeof firebase !== 'undefined' && firebase.auth && firebase.auth().currentUser)
         ? firebase.auth().currentUser
         : currentUser;
       if (!user || !user.email) {
-        alert('Zum Speichern muss ein Konto angemeldet sein.');
+        alert('You must be signed in to save.');
         return;
       }
       if (typeof firebase === 'undefined' || !firebase.firestore) {
-        alert('Firestore ist nicht verfügbar.');
+        alert('Firestore is not available.');
         return;
       }
 
@@ -6248,14 +6248,14 @@ function handleMatchReplayFile(event) {
         firebase.firestore().collection('clan_vault').add(downloadRecord)
           .then(function() {
             cancelMapUpload();
-            alert('Datei in Firestore gespeichert. Alle Geräte sehen sie sofort.');
+            alert('File saved to Firestore. Every device can see it now.');
           })
           .catch(function(err) {
             alert('Upload failed: ' + (err && err.message ? err.message : err));
           });
       };
       reader.onerror = function() {
-        alert('Datei konnte nicht gelesen werden.');
+        alert('The file could not be read.');
       };
       reader.readAsDataURL(file);
     }
@@ -6764,7 +6764,7 @@ async function renderUserMaps() {
     }
 
     function publishClanNews() {
-      if (!ensureClanWriter("Nachrichten veröffentlichen")) return;
+      if (!ensureClanWriter("publish a post")) return;
       var editId = document.getElementById('cms-edit-article-id').value;
       var titleInp = document.getElementById('cms-news-title');
       var catInp = document.getElementById('cms-news-cat');
@@ -6868,7 +6868,7 @@ async function renderUserMaps() {
       }
 
       if (!article) {
-        alert("Transmission nicht gefunden.");
+        alert("Transmission not found.");
         return;
       }
 
@@ -6958,7 +6958,7 @@ async function renderUserMaps() {
     }
 
     function deleteClanNews(newsId) {
-      if (!ensureClanWriter("Nachrichten löschen")) return;
+      if (!ensureClanWriter("delete a post")) return;
       if (!confirm("Are you sure you want to remove this transmission?")) return;
       if (typeof firebase !== 'undefined' && firebase.firestore) {
         try {
@@ -7069,7 +7069,7 @@ async function renderUserMaps() {
       }, function(err) {
         var tbody = document.getElementById('registered-users-tbody');
         if (tbody) {
-          tbody.innerHTML = '<tr><td colspan="4" style="padding:10px; color:#fca5a5;">Konten konnten nicht geladen werden. Die Firestore-Regeln für user_profiles müssen veröffentlicht sein.</td></tr>';
+          tbody.innerHTML = '<tr><td colspan="4" style="padding:10px; color:#fca5a5;">Accounts could not be loaded. Publish the Firestore rules for user_profiles.</td></tr>';
         }
         console.warn(err);
       });
@@ -7087,7 +7087,7 @@ async function renderUserMaps() {
       if (!tbody) return;
       tbody.innerHTML = '';
       if (!registeredProfiles.length) {
-        tbody.innerHTML = '<tr><td colspan="4" style="padding:10px; text-align:center; color:var(--text-muted);">Noch keine registrierten Konten.</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="4" style="padding:10px; text-align:center; color:var(--text-muted);">No registered accounts yet.</td></tr>';
         return;
       }
       var members = (typeof getFullClanMembersList === 'function') ? getFullClanMembersList() : membersData;
@@ -7111,7 +7111,7 @@ async function renderUserMaps() {
         memberSelect.style.cssText = 'width:100%; background:#070a12; color:#fff; border:1px solid var(--border-color); border-radius:4px; padding:4px;';
         var emptyOption = document.createElement('option');
         emptyOption.value = '';
-        emptyOption.textContent = '— nicht zugeordnet —';
+        emptyOption.textContent = '— not linked —';
         memberSelect.appendChild(emptyOption);
         members.forEach(function(member) {
           var handle = memberHandle(member);
@@ -7129,7 +7129,20 @@ async function renderUserMaps() {
           custom.selected = true;
           memberSelect.appendChild(custom);
         }
-        memberCell.appendChild(memberSelect);
+        var memberWrap = document.createElement('div');
+        memberWrap.style.cssText = 'display:flex; gap:6px; align-items:center;';
+        memberSelect.style.flex = '1';
+        memberWrap.appendChild(memberSelect);
+        var saveBtn = document.createElement('button');
+        saveBtn.type = 'button';
+        saveBtn.className = 'btn-download-rep';
+        saveBtn.style.cssText = 'padding:4px 8px; font-size:0.68rem; cursor:pointer; white-space:nowrap;';
+        saveBtn.textContent = 'SAVE';
+        (function(profileUid) {
+          saveBtn.onclick = function() { saveOperatorAssignment(profileUid); };
+        })(profile.uid);
+        memberWrap.appendChild(saveBtn);
+        memberCell.appendChild(memberWrap);
         tr.appendChild(memberCell);
 
         var roleCell = document.createElement('td');
@@ -7164,14 +7177,8 @@ async function renderUserMaps() {
         var actionCell = document.createElement('td');
         actionCell.style.padding = '6px 4px';
         actionCell.style.textAlign = 'right';
-        if (!lockedWebmaster) {
-          var saveBtn = document.createElement('button');
-          saveBtn.className = 'btn-download-rep';
-          saveBtn.style.cssText = 'padding:4px 8px; font-size:0.68rem; cursor:pointer;';
-          saveBtn.textContent = 'ZUORDNEN';
-          saveBtn.onclick = function() { saveOperatorAssignment(profile.uid); };
-          actionCell.appendChild(saveBtn);
-        }
+        actionCell.style.color = 'var(--text-dim)';
+        actionCell.textContent = lockedWebmaster ? 'Role locked' : '';
         tr.appendChild(actionCell);
         tbody.appendChild(tr);
       });
@@ -7180,7 +7187,7 @@ async function renderUserMaps() {
     function saveOperatorAssignment(uid) {
       var viewer = (firebase.auth && firebase.auth().currentUser) || currentUser;
       if (!isStaffUser(viewer)) {
-        alert('Nur Webmaster oder Admin kann Konten zuordnen.');
+        alert('Only the Webmaster or an Admin can link accounts.');
         return;
       }
       var profile = registeredProfiles.find(function(item) { return item.uid === uid; });
@@ -7188,22 +7195,23 @@ async function renderUserMaps() {
       var memberSelect = document.getElementById('assign-member-' + uid);
       var roleSelect = document.getElementById('assign-role-' + uid);
       var memberId = memberSelect ? memberSelect.value : '';
-      var role = roleSelect ? roleSelect.value : (profile.role || 'Guest');
+      var lockedWebmaster = profile.email && profile.email.toLowerCase() === WEBMASTER_EMAIL.toLowerCase();
+      var role = lockedWebmaster ? 'Webmaster' : (roleSelect ? roleSelect.value : (profile.role || 'Guest'));
       var viewerIsWebmaster = viewer.email && viewer.email.toLowerCase() === WEBMASTER_EMAIL.toLowerCase();
       if ((role === 'Admin' || role === 'Webmaster') && !viewerIsWebmaster) {
-        alert('Nur der Webmaster kann Admin vergeben.');
+        alert('Only the Webmaster can grant Admin.');
         return;
       }
       if (role === 'Guest') memberId = '';
       if (role !== 'Guest' && !memberId) {
-        alert('Bitte ein Mitglied im Format Name[WD] wählen.');
+        alert('Choose a member in the Name[WD] format.');
         return;
       }
       var duplicate = registeredProfiles.some(function(item) {
         return item.uid !== uid && item.memberId && item.memberId === memberId;
       });
       if (memberId && duplicate) {
-        alert(memberId + ' ist bereits einem anderen Konto zugeordnet.');
+        alert(memberId + ' is already linked to another account.');
         return;
       }
 
@@ -7231,9 +7239,9 @@ async function renderUserMaps() {
         }
         return Promise.all(writes);
       }).then(function() {
-        alert('Zuordnung gespeichert.');
+        alert('Link saved.');
       }).catch(function(err) {
-        alert('Zuordnung fehlgeschlagen: ' + (err && err.message ? err.message : err));
+        alert('Link failed: ' + (err && err.message ? err.message : err));
       });
     }
 
@@ -7485,7 +7493,7 @@ async function renderUserMaps() {
           }).then(function() {
             return user.sendEmailVerification();
           }).then(function() {
-            showAuthMessage("Konto angelegt. Du bist Gast, bis ein Admin dich einem Mitglied Name[WD] zuordnet. Bestätige zuerst die E-Mail an " + email + ".", false);
+            showAuthMessage("Account created. You stay a guest until an admin links you to a Name[WD] member. Confirm the email sent to " + email + " first.", false);
             setTimeout(function() { switchAuthView('profile'); }, 1500);
           });
         })
@@ -8107,7 +8115,7 @@ async function renderUserMaps() {
       var isSelf = user && p.email && (user.email.toLowerCase() === p.email.toLowerCase());
 
       if (!isSelf && !isAdminUser && !isWebmaster) {
-        alert("ACCESS DENIED // Sie können nur Ihr eigenes Profil bearbeiten.");
+        alert("ACCESS DENIED // You can only edit your own profile.");
         openAuthModal();
         return;
       }
@@ -8823,10 +8831,10 @@ async function renderUserMaps() {
             alert('Match successfully saved and synchronized in Firebase!');
           })
           .catch(function(e) {
-            alert('Fehler beim Speichern in Firebase: ' + e.message);
+            alert('Save to Firebase failed: ' + e.message);
           });
       } else {
-        alert('Keine Verbindung zu Firebase. Speichern abgebrochen.');
+        alert('No Firebase connection. Save cancelled.');
       }
     }
 
@@ -9154,7 +9162,7 @@ async function renderUserMaps() {
           })
           .catch(function(error) {
             console.error('Squad assignment failed:', error);
-            alert('Fehler beim Synchronisieren der Squad-Zuordnung: ' + error.message);
+            alert('Squad sync failed: ' + error.message);
           });
         return;
       }
