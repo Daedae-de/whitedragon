@@ -15,200 +15,192 @@
   <meta property="og:type" content="website">
   <!-- Firebase Authentication SDKs -->
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js">
-    function handleCmsImageUpload(event) {
-      var file = event.target.files && event.target.files[0];
-      if (!file) return;
-      var reader = new FileReader();
-      reader.onload = function(e) {
-        var rawData = e.target.result;
-        var img = new Image();
-        img.onload = function() {
-          var canvas = document.createElement('canvas');
-          var maxDim = 800;
-          var w = img.width;
-          var h = img.height;
-          if (w > h) {
-            if (w > maxDim) { h = Math.round((h * maxDim) / w); w = maxDim; }
-          } else {
-            if (h > maxDim) { w = Math.round((w * maxDim) / h); h = maxDim; }
-          }
-          canvas.width = w;
-          canvas.height = h;
-          var ctx = canvas.getContext('2d');
-          ctx.drawImage(img, 0, 0, w, h);
-          var optimizedUrl = canvas.toDataURL('image/jpeg', 0.88);
+    function handleCmsPaste(e) {
+      var clipboardData = e.clipboardData || window.clipboardData;
+      if (!clipboardData || !clipboardData.items) return;
+      var items = clipboardData.items;
+      for (var i = 0; i < items.length; i++) {
+        if (items[i].type && items[i].type.indexOf('image') !== -1) {
+          var blob = items[i].getAsFile();
+          if (!blob) continue;
+          var reader = new FileReader();
+          reader.onload = function(event) {
+            var rawData = event.target.result;
+            var img = new Image();
+            img.onload = function() {
+              var canvas = document.createElement('canvas');
+              var maxDim = 800;
+              var w = img.width;
+              var h = img.height;
+              if (w > h) {
+                if (w > maxDim) { h = Math.round((h * maxDim) / w); w = maxDim; }
+              } else {
+                if (h > maxDim) { w = Math.round((w * maxDim) / h); h = maxDim; }
+              }
+              canvas.width = w;
+              canvas.height = h;
+              var ctx = canvas.getContext('2d');
+              ctx.drawImage(img, 0, 0, w, h);
+              var optimizedUrl = canvas.toDataURL('image/jpeg', 0.88);
 
-          var urlInp = document.getElementById('cms-news-image-url');
-          var prev = document.getElementById('cms-news-image-preview');
-          if (urlInp) urlInp.value = optimizedUrl;
-          if (prev) {
-            prev.src = optimizedUrl;
-            prev.style.display = 'block';
-          }
-        };
-        img.src = rawData;
-      };
-      reader.readAsDataURL(file);
-    }
-
-    function previewCmsImageUrl(val) {
-      var prev = document.getElementById('cms-news-image-preview');
-      if (prev) {
-        if (val && val.trim().length > 5) {
-          prev.src = val.trim();
-          prev.style.display = 'block';
-        } else {
-          prev.style.display = 'none';
+              var urlInp = document.getElementById('cms-news-image-url');
+              var prev = document.getElementById('cms-news-image-preview');
+              if (urlInp) urlInp.value = optimizedUrl;
+              if (prev) {
+                prev.src = optimizedUrl;
+                prev.style.display = 'block';
+              }
+              alert('Image pasted and attached successfully!');
+            };
+            img.src = rawData;
+          };
+          reader.readAsDataURL(blob);
+          e.preventDefault();
+          break;
         }
       }
     }
 
   </script>
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js">
-    function handleCmsImageUpload(event) {
-      var file = event.target.files && event.target.files[0];
-      if (!file) return;
-      var reader = new FileReader();
-      reader.onload = function(e) {
-        var rawData = e.target.result;
-        var img = new Image();
-        img.onload = function() {
-          var canvas = document.createElement('canvas');
-          var maxDim = 800;
-          var w = img.width;
-          var h = img.height;
-          if (w > h) {
-            if (w > maxDim) { h = Math.round((h * maxDim) / w); w = maxDim; }
-          } else {
-            if (h > maxDim) { w = Math.round((w * maxDim) / h); h = maxDim; }
-          }
-          canvas.width = w;
-          canvas.height = h;
-          var ctx = canvas.getContext('2d');
-          ctx.drawImage(img, 0, 0, w, h);
-          var optimizedUrl = canvas.toDataURL('image/jpeg', 0.88);
+    function handleCmsPaste(e) {
+      var clipboardData = e.clipboardData || window.clipboardData;
+      if (!clipboardData || !clipboardData.items) return;
+      var items = clipboardData.items;
+      for (var i = 0; i < items.length; i++) {
+        if (items[i].type && items[i].type.indexOf('image') !== -1) {
+          var blob = items[i].getAsFile();
+          if (!blob) continue;
+          var reader = new FileReader();
+          reader.onload = function(event) {
+            var rawData = event.target.result;
+            var img = new Image();
+            img.onload = function() {
+              var canvas = document.createElement('canvas');
+              var maxDim = 800;
+              var w = img.width;
+              var h = img.height;
+              if (w > h) {
+                if (w > maxDim) { h = Math.round((h * maxDim) / w); w = maxDim; }
+              } else {
+                if (h > maxDim) { w = Math.round((w * maxDim) / h); h = maxDim; }
+              }
+              canvas.width = w;
+              canvas.height = h;
+              var ctx = canvas.getContext('2d');
+              ctx.drawImage(img, 0, 0, w, h);
+              var optimizedUrl = canvas.toDataURL('image/jpeg', 0.88);
 
-          var urlInp = document.getElementById('cms-news-image-url');
-          var prev = document.getElementById('cms-news-image-preview');
-          if (urlInp) urlInp.value = optimizedUrl;
-          if (prev) {
-            prev.src = optimizedUrl;
-            prev.style.display = 'block';
-          }
-        };
-        img.src = rawData;
-      };
-      reader.readAsDataURL(file);
-    }
-
-    function previewCmsImageUrl(val) {
-      var prev = document.getElementById('cms-news-image-preview');
-      if (prev) {
-        if (val && val.trim().length > 5) {
-          prev.src = val.trim();
-          prev.style.display = 'block';
-        } else {
-          prev.style.display = 'none';
+              var urlInp = document.getElementById('cms-news-image-url');
+              var prev = document.getElementById('cms-news-image-preview');
+              if (urlInp) urlInp.value = optimizedUrl;
+              if (prev) {
+                prev.src = optimizedUrl;
+                prev.style.display = 'block';
+              }
+              alert('Image pasted and attached successfully!');
+            };
+            img.src = rawData;
+          };
+          reader.readAsDataURL(blob);
+          e.preventDefault();
+          break;
         }
       }
     }
 
   </script>
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-storage-compat.js">
-    function handleCmsImageUpload(event) {
-      var file = event.target.files && event.target.files[0];
-      if (!file) return;
-      var reader = new FileReader();
-      reader.onload = function(e) {
-        var rawData = e.target.result;
-        var img = new Image();
-        img.onload = function() {
-          var canvas = document.createElement('canvas');
-          var maxDim = 800;
-          var w = img.width;
-          var h = img.height;
-          if (w > h) {
-            if (w > maxDim) { h = Math.round((h * maxDim) / w); w = maxDim; }
-          } else {
-            if (h > maxDim) { w = Math.round((w * maxDim) / h); h = maxDim; }
-          }
-          canvas.width = w;
-          canvas.height = h;
-          var ctx = canvas.getContext('2d');
-          ctx.drawImage(img, 0, 0, w, h);
-          var optimizedUrl = canvas.toDataURL('image/jpeg', 0.88);
+    function handleCmsPaste(e) {
+      var clipboardData = e.clipboardData || window.clipboardData;
+      if (!clipboardData || !clipboardData.items) return;
+      var items = clipboardData.items;
+      for (var i = 0; i < items.length; i++) {
+        if (items[i].type && items[i].type.indexOf('image') !== -1) {
+          var blob = items[i].getAsFile();
+          if (!blob) continue;
+          var reader = new FileReader();
+          reader.onload = function(event) {
+            var rawData = event.target.result;
+            var img = new Image();
+            img.onload = function() {
+              var canvas = document.createElement('canvas');
+              var maxDim = 800;
+              var w = img.width;
+              var h = img.height;
+              if (w > h) {
+                if (w > maxDim) { h = Math.round((h * maxDim) / w); w = maxDim; }
+              } else {
+                if (h > maxDim) { w = Math.round((w * maxDim) / h); h = maxDim; }
+              }
+              canvas.width = w;
+              canvas.height = h;
+              var ctx = canvas.getContext('2d');
+              ctx.drawImage(img, 0, 0, w, h);
+              var optimizedUrl = canvas.toDataURL('image/jpeg', 0.88);
 
-          var urlInp = document.getElementById('cms-news-image-url');
-          var prev = document.getElementById('cms-news-image-preview');
-          if (urlInp) urlInp.value = optimizedUrl;
-          if (prev) {
-            prev.src = optimizedUrl;
-            prev.style.display = 'block';
-          }
-        };
-        img.src = rawData;
-      };
-      reader.readAsDataURL(file);
-    }
-
-    function previewCmsImageUrl(val) {
-      var prev = document.getElementById('cms-news-image-preview');
-      if (prev) {
-        if (val && val.trim().length > 5) {
-          prev.src = val.trim();
-          prev.style.display = 'block';
-        } else {
-          prev.style.display = 'none';
+              var urlInp = document.getElementById('cms-news-image-url');
+              var prev = document.getElementById('cms-news-image-preview');
+              if (urlInp) urlInp.value = optimizedUrl;
+              if (prev) {
+                prev.src = optimizedUrl;
+                prev.style.display = 'block';
+              }
+              alert('Image pasted and attached successfully!');
+            };
+            img.src = rawData;
+          };
+          reader.readAsDataURL(blob);
+          e.preventDefault();
+          break;
         }
       }
     }
 
   </script>
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js">
-    function handleCmsImageUpload(event) {
-      var file = event.target.files && event.target.files[0];
-      if (!file) return;
-      var reader = new FileReader();
-      reader.onload = function(e) {
-        var rawData = e.target.result;
-        var img = new Image();
-        img.onload = function() {
-          var canvas = document.createElement('canvas');
-          var maxDim = 800;
-          var w = img.width;
-          var h = img.height;
-          if (w > h) {
-            if (w > maxDim) { h = Math.round((h * maxDim) / w); w = maxDim; }
-          } else {
-            if (h > maxDim) { w = Math.round((w * maxDim) / h); h = maxDim; }
-          }
-          canvas.width = w;
-          canvas.height = h;
-          var ctx = canvas.getContext('2d');
-          ctx.drawImage(img, 0, 0, w, h);
-          var optimizedUrl = canvas.toDataURL('image/jpeg', 0.88);
+    function handleCmsPaste(e) {
+      var clipboardData = e.clipboardData || window.clipboardData;
+      if (!clipboardData || !clipboardData.items) return;
+      var items = clipboardData.items;
+      for (var i = 0; i < items.length; i++) {
+        if (items[i].type && items[i].type.indexOf('image') !== -1) {
+          var blob = items[i].getAsFile();
+          if (!blob) continue;
+          var reader = new FileReader();
+          reader.onload = function(event) {
+            var rawData = event.target.result;
+            var img = new Image();
+            img.onload = function() {
+              var canvas = document.createElement('canvas');
+              var maxDim = 800;
+              var w = img.width;
+              var h = img.height;
+              if (w > h) {
+                if (w > maxDim) { h = Math.round((h * maxDim) / w); w = maxDim; }
+              } else {
+                if (h > maxDim) { w = Math.round((w * maxDim) / h); h = maxDim; }
+              }
+              canvas.width = w;
+              canvas.height = h;
+              var ctx = canvas.getContext('2d');
+              ctx.drawImage(img, 0, 0, w, h);
+              var optimizedUrl = canvas.toDataURL('image/jpeg', 0.88);
 
-          var urlInp = document.getElementById('cms-news-image-url');
-          var prev = document.getElementById('cms-news-image-preview');
-          if (urlInp) urlInp.value = optimizedUrl;
-          if (prev) {
-            prev.src = optimizedUrl;
-            prev.style.display = 'block';
-          }
-        };
-        img.src = rawData;
-      };
-      reader.readAsDataURL(file);
-    }
-
-    function previewCmsImageUrl(val) {
-      var prev = document.getElementById('cms-news-image-preview');
-      if (prev) {
-        if (val && val.trim().length > 5) {
-          prev.src = val.trim();
-          prev.style.display = 'block';
-        } else {
-          prev.style.display = 'none';
+              var urlInp = document.getElementById('cms-news-image-url');
+              var prev = document.getElementById('cms-news-image-preview');
+              if (urlInp) urlInp.value = optimizedUrl;
+              if (prev) {
+                prev.src = optimizedUrl;
+                prev.style.display = 'block';
+              }
+              alert('Image pasted and attached successfully!');
+            };
+            img.src = rawData;
+          };
+          reader.readAsDataURL(blob);
+          e.preventDefault();
+          break;
         }
       }
     }
@@ -867,7 +859,7 @@
       border-radius: 6px;
       padding: 12px 18px;
       display: grid;
-      grid-template-columns: 110px 1fr auto auto 24px;
+      grid-template-columns: 110px 240px 1fr auto 24px;
       align-items: center;
       gap: 16px;
       cursor: pointer;
@@ -2351,19 +2343,7 @@
 
       <div style="margin-bottom:14px;">
         <label style="display:block; font-family:'Orbitron',sans-serif; font-size:0.72rem; color:var(--text-muted); margin-bottom:4px; text-transform:uppercase;">Content / Message</label>
-        <textarea id="cms-news-body" rows="3" placeholder="Enter post or transmission text..." style="width:100%; background:#070a12; border:1px solid var(--border-color); color:#fff; padding:10px 12px; border-radius:6px; font-family:'Rajdhani',sans-serif; font-size:0.95rem; line-height:1.5; resize:vertical;"></textarea>
-      </div>
-
-      <div style="margin-bottom:14px;">
-        <label style="display:block; font-family:'Orbitron',sans-serif; font-size:0.72rem; color:var(--text-muted); margin-bottom:4px; text-transform:uppercase;">Attach Image / Graphic (Optional)</label>
-        <div style="display:flex; gap:10px; align-items:center;">
-          <input type="file" id="cms-news-image-file" accept="image/png, image/jpeg, image/webp, image/gif" style="display:none;" onchange="handleCmsImageUpload(event)">
-          <button type="button" onclick="document.getElementById('cms-news-image-file').click()" class="btn-download-rep" style="background:rgba(0,229,255,0.15); color:var(--cyan); border-color:var(--cyan); font-size:0.78rem; padding:7px 14px; cursor:pointer;">
-            📁 UPLOAD IMAGE GRAPHIC
-          </button>
-          <input type="text" id="cms-news-image-url" placeholder="Or paste image URL..." style="flex:1; background:#070a12; border:1px solid var(--border-color); color:#fff; padding:7px 10px; border-radius:4px; font-size:0.85rem;" oninput="previewCmsImageUrl(this.value)">
-          <img id="cms-news-image-preview" src="" alt="Preview" style="display:none; width:40px; height:40px; border-radius:4px; border:1px solid var(--cyan); object-fit:cover;">
-        </div>
+        <textarea id="cms-news-body" rows="3" onpaste="handleCmsPaste(event)" placeholder="Enter post or transmission text..." style="width:100%; background:#070a12; border:1px solid var(--border-color); color:#fff; padding:10px 12px; border-radius:6px; font-family:'Rajdhani',sans-serif; font-size:0.95rem; line-height:1.5; resize:vertical;"></textarea>
       </div>
 
       <div style="display:flex; justify-content:flex-end; gap:8px;">
@@ -3083,9 +3063,6 @@
             <span>TRANSMITTED BY: <strong id="art-modal-author" style="color:var(--cyan);">HIGH COMMAND</strong></span>
           </div>
         </div>
-        <div id="art-modal-image-container" style="margin-bottom:14px; display:none; text-align:center; background:rgba(7,12,22,0.8); padding:10px; border-radius:8px; border:1px solid var(--border-color);">
-          <img id="art-modal-img" src="" alt="Transmission Graphic" style="max-width:100%; max-height:350px; border-radius:6px; border:1px solid var(--cyan); object-fit:contain; cursor:zoom-in;" onclick="openAvatarLightbox(this.src)">
-        </div>
         <div id="art-modal-body" style="color:#cbd5e1; font-size:0.96rem; line-height:1.75; white-space:pre-wrap; background:rgba(7,12,22,0.6); padding:16px; border-radius:8px; border:1px solid var(--border-color); margin-bottom:18px;">
           Transmission content goes here...
         </div>
@@ -3630,18 +3607,6 @@
       if (dateEl) dateEl.textContent = item.date || 'RECENT';
       if (authorEl) authorEl.textContent = item.author || 'HIGH COMMAND';
       if (bodyEl) bodyEl.textContent = item.body || '';
-
-      var imgContainer = document.getElementById('art-modal-image-container');
-      var modalImg = document.getElementById('art-modal-img');
-      if (imgContainer && modalImg) {
-        if (item.imageUrl) {
-          modalImg.src = item.imageUrl;
-          imgContainer.style.display = 'block';
-        } else {
-          modalImg.src = '';
-          imgContainer.style.display = 'none';
-        }
-      }
 
       var actionContainer = document.getElementById('art-modal-admin-actions');
       if (actionContainer) {
@@ -4789,11 +4754,10 @@ async function renderUserMaps() {
         var dateText = item.date || 'RECENT';
         var authorText = item.author || 'HIGH COMMAND';
 
-        var hasImageTag = item.imageUrl ? '<span style="color:var(--cyan); font-size:0.8rem; margin-left:8px;" title="Includes Graphic">📷</span>' : '';
         card.innerHTML = 
           '<div><span class="news-badge ' + badgeClass + '">// ' + displayCategory.toUpperCase() + '</span></div>' +
-          '<div class="news-card-title" title="' + titleText.replace(/"/g, '&quot;') + '">' + titleText + hasImageTag + '</div>' +
-          '<div></div>' +
+          '<div class="news-card-title" title="' + titleText.replace(/"/g, '&quot;') + '">' + titleText + '</div>' +
+          '<div class="news-card-preview">' + bodyText + '</div>' +
           '<div class="news-card-meta">' +
             '<span>' + dateText + '</span>' +
             '<span>BY <strong>' + authorText + '</strong></span>' +
@@ -4860,14 +4824,12 @@ async function renderUserMaps() {
       var user = (typeof firebase !== 'undefined' && firebase.auth && firebase.auth().currentUser) ? firebase.auth().currentUser : currentUser;
       var userEmail = user ? user.email : 'Anonymous';
 
-      var imageUrl = document.getElementById('cms-news-image-url').value.trim();
       var articleData = {
         title: title,
         category: category,
         tag: '// ' + category.toUpperCase(),
         author: author,
         body: body,
-        imageUrl: imageUrl,
         userEmail: userEmail,
         date: new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }).toUpperCase(),
         createdAt: Date.now()
@@ -4968,17 +4930,6 @@ async function renderUserMaps() {
       if (titleInput) titleInput.value = article.title || '';
       if (bodyInput) bodyInput.value = article.body || '';
       if (authorInput) authorInput.value = article.author || 'HIGH COMMAND';
-      var imgUrlInput = document.getElementById('cms-news-image-url');
-      var imgPreview = document.getElementById('cms-news-image-preview');
-      if (imgUrlInput) imgUrlInput.value = article.imageUrl || '';
-      if (imgPreview) {
-        if (article.imageUrl) {
-          imgPreview.src = article.imageUrl;
-          imgPreview.style.display = 'block';
-        } else {
-          imgPreview.style.display = 'none';
-        }
-      }
 
       if (catSelect) {
         var rawCat = String(article.category || (article.tag ? article.tag.replace(/^\/\//, '').trim() : 'News')).toLowerCase();
@@ -5018,12 +4969,6 @@ async function renderUserMaps() {
       if (titleInput) titleInput.value = '';
       if (bodyInput) bodyInput.value = '';
       if (authorInput) authorInput.value = '';
-      var imgUrlInput = document.getElementById('cms-news-image-url');
-      var imgFileInp = document.getElementById('cms-news-image-file');
-      var imgPreview = document.getElementById('cms-news-image-preview');
-      if (imgUrlInput) imgUrlInput.value = '';
-      if (imgFileInp) imgFileInp.value = '';
-      if (imgPreview) imgPreview.style.display = 'none';
       if (heading) heading.innerText = 'TRANSMISSION DISPATCH TERMINAL // COMMUNITY CMS';
       if (submitBtn) submitBtn.innerText = '📡 BROADCAST TRANSMISSION';
       if (cancelBtn) cancelBtn.style.display = 'none';
@@ -7349,50 +7294,48 @@ async function renderUserMaps() {
     }
 
   
-    function handleCmsImageUpload(event) {
-      var file = event.target.files && event.target.files[0];
-      if (!file) return;
-      var reader = new FileReader();
-      reader.onload = function(e) {
-        var rawData = e.target.result;
-        var img = new Image();
-        img.onload = function() {
-          var canvas = document.createElement('canvas');
-          var maxDim = 800;
-          var w = img.width;
-          var h = img.height;
-          if (w > h) {
-            if (w > maxDim) { h = Math.round((h * maxDim) / w); w = maxDim; }
-          } else {
-            if (h > maxDim) { w = Math.round((w * maxDim) / h); h = maxDim; }
-          }
-          canvas.width = w;
-          canvas.height = h;
-          var ctx = canvas.getContext('2d');
-          ctx.drawImage(img, 0, 0, w, h);
-          var optimizedUrl = canvas.toDataURL('image/jpeg', 0.88);
+    function handleCmsPaste(e) {
+      var clipboardData = e.clipboardData || window.clipboardData;
+      if (!clipboardData || !clipboardData.items) return;
+      var items = clipboardData.items;
+      for (var i = 0; i < items.length; i++) {
+        if (items[i].type && items[i].type.indexOf('image') !== -1) {
+          var blob = items[i].getAsFile();
+          if (!blob) continue;
+          var reader = new FileReader();
+          reader.onload = function(event) {
+            var rawData = event.target.result;
+            var img = new Image();
+            img.onload = function() {
+              var canvas = document.createElement('canvas');
+              var maxDim = 800;
+              var w = img.width;
+              var h = img.height;
+              if (w > h) {
+                if (w > maxDim) { h = Math.round((h * maxDim) / w); w = maxDim; }
+              } else {
+                if (h > maxDim) { w = Math.round((w * maxDim) / h); h = maxDim; }
+              }
+              canvas.width = w;
+              canvas.height = h;
+              var ctx = canvas.getContext('2d');
+              ctx.drawImage(img, 0, 0, w, h);
+              var optimizedUrl = canvas.toDataURL('image/jpeg', 0.88);
 
-          var urlInp = document.getElementById('cms-news-image-url');
-          var prev = document.getElementById('cms-news-image-preview');
-          if (urlInp) urlInp.value = optimizedUrl;
-          if (prev) {
-            prev.src = optimizedUrl;
-            prev.style.display = 'block';
-          }
-        };
-        img.src = rawData;
-      };
-      reader.readAsDataURL(file);
-    }
-
-    function previewCmsImageUrl(val) {
-      var prev = document.getElementById('cms-news-image-preview');
-      if (prev) {
-        if (val && val.trim().length > 5) {
-          prev.src = val.trim();
-          prev.style.display = 'block';
-        } else {
-          prev.style.display = 'none';
+              var urlInp = document.getElementById('cms-news-image-url');
+              var prev = document.getElementById('cms-news-image-preview');
+              if (urlInp) urlInp.value = optimizedUrl;
+              if (prev) {
+                prev.src = optimizedUrl;
+                prev.style.display = 'block';
+              }
+              alert('Image pasted and attached successfully!');
+            };
+            img.src = rawData;
+          };
+          reader.readAsDataURL(blob);
+          e.preventDefault();
+          break;
         }
       }
     }
