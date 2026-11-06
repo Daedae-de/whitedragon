@@ -3717,42 +3717,53 @@ window.addEventListener('DOMContentLoaded', function() {
     }
 
     // ========================================================
-    // REPLAY UPLOAD VAULT (FIREBASE STORAGE + FIRESTORE)
-    // Replay files live in Storage; searchable metadata syncs through Firestore.
+    // REPLAY UPLOAD VAULT (INDEXEDDB)
     // ========================================================
     var currentSelectedFile = null;
-    var replayCloudUnsubscribe = null;
 
     function handleDragOver(e) {
-      e.preventDefault(); e.stopPropagation();
+      e.preventDefault();
+      e.stopPropagation();
       document.getElementById('drop-zone').style.borderColor = 'var(--cyan)';
       document.getElementById('drop-zone').style.background = 'rgba(0, 229, 255, 0.1)';
     }
+
     function handleDragLeave(e) {
-      e.preventDefault(); e.stopPropagation();
+      e.preventDefault();
+      e.stopPropagation();
       document.getElementById('drop-zone').style.borderColor = 'rgba(56, 189, 248, 0.45)';
       document.getElementById('drop-zone').style.background = 'rgba(7, 12, 22, 0.6)';
     }
+
     function handleDrop(e) {
-      e.preventDefault(); e.stopPropagation(); handleDragLeave(e);
-      if (e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files.length) processFile(e.dataTransfer.files[0]);
-    }
-    function handleFileSelect(e) {
-      if (e.target.files && e.target.files.length) processFile(e.target.files[0]);
-    }
-    function processFile(file) {
-      if (!ensureVerifiedAccess('upload replays')) { cancelUpload(); return; }
-      if (!file || !/\.(rep|zip)$/i.test(file.name)) {
-        alert('Please choose a .rep or .zip replay file.'); return;
+      e.preventDefault();
+      e.stopPropagation();
+      handleDragLeave(e);
+      if (e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+        processFile(e.dataTransfer.files[0]);
       }
-      if (file.size >= 100 * 1024 * 1024) {
-        alert('Replay files must be smaller than 100 MB.'); return;
+    }
+
+    function handleFileSelect(e) {
+      if (e.target.files && e.target.files.length > 0) {
+        processFile(e.target.files[0]);
+      }
+    }
+
+    function processFile(file) {
+      if (!ensureVerifiedAccess("upload replays")) {
+        cancelUpload();
+        return;
       }
       currentSelectedFile = file;
-      document.getElementById('file-info-text').innerText = 'Selected: ' + file.name + ' (' + (file.size / 1024).toFixed(1) + ' KB)';
-      if (!document.getElementById('rep-title-input').value) document.getElementById('rep-title-input').value = file.name.replace(/\.[^/.]+$/, '');
+      var kb = (file.size / 1024).toFixed(1);
+      document.getElementById('file-info-text').innerText = 'Selected: ' + file.name + ' (' + kb + ' KB)';
+      if (!document.getElementById('rep-title-input').value) {
+        document.getElementById('rep-title-input').value = file.name.replace(/\.[^/.]+$/, '');
+      }
       document.getElementById('upload-form').style.display = 'block';
     }
+
     function cancelUpload() {
       currentSelectedFile = null;
       document.getElementById('rep-file-input').value = '';
@@ -3763,72 +3774,100 @@ window.addEventListener('DOMContentLoaded', function() {
     }
 
     async function saveReplay() {
-      if (!ensureVerifiedAccess('save files to Clan Vault')) return;
-      var user = firebase.auth().currentUser;
-      var file = currentSelectedFile;
-      if (!file) { alert('Please choose a .rep or .zip file first.'); return; }
-      if (!user || !user.emailVerified) { alert('A verified Firebase account is required.'); return; }
-      if (!firebase.storage || !firebase.firestore) { alert('Firebase Storage or Firestore is not available.'); return; }
+      if (!ensureVerifiedAccess("save files to Clan Vault")) return;
+      if (!currentSelectedFile) {
+        alert('Please choose a .rep or .zip file first.');
+        return;
+      }
 
+      var file = currentSelectedFile;
       var title = document.getElementById('rep-title-input').value.trim() || file.name;
       var players = document.getElementById('rep-players-input').value.trim() || 'White Dragon Commander Match';
       var map = document.getElementById('rep-map-input').value.trim() || 'Koprulu Sector Map';
-      var docRef = firebase.firestore().collection('clan_vault').doc();
-      var storagePath = 'replays/' + user.uid + '/' + docRef.id + '/' + file.name.replace(/[\\#?\[\]]/g, '_');
-      var storageRef = firebase.storage().ref().child(storagePath);
-      var saveBtn = document.querySelector('#upload-form button[onclick="saveReplay()"]');
-      if (saveBtn) { saveBtn.disabled = true; saveBtn.textContent = 'UPLOADING…'; }
+      var dateStr = new Date().toLocaleDateString();
+
+      var replayItem = {
+        id: 'rep_' + Date.now(),
+        title: title,
+        players: players,
+        map: map,
+        fileName: file.name,
+        fileSize: (file.size / 1024).toFixed(1) + ' KB',
+        date: dateStr,
+        uploader: currentUser ? currentUser.email : 'Verified Member',
+        fileBlob: file
+      };
+
       try {
-        await storageRef.put(file, { contentType: file.type || 'application/octet-stream' });
-        await docRef.set({
-          type: 'replay', title: title, players: players, map: map,
-          fileName: file.name, fileSize: (file.size / 1024).toFixed(1) + ' KB',
-          fileSizeBytes: file.size, date: new Date().toLocaleDateString(),
-          uploader: user.email, uploaderUid: user.uid, storagePath: storagePath,
-          createdAt: firebase.firestore.FieldValue.serverTimestamp()
-        });
-        cancelUpload();
-        alert('Replay uploaded to the cloud. All verified members can now see it.');
-      } catch (err) {
-        console.error('Replay cloud upload failed:', err);
-        // Remove an orphaned Storage object if the metadata write failed.
-        try { await storageRef.delete(); } catch (_) {}
-        alert('Replay upload failed: ' + (err.message || err));
-      } finally {
-        if (saveBtn) { saveBtn.disabled = false; saveBtn.textContent = 'UPLOAD TO CLAN VAULT'; }
+        const db = await getVaultDB();
+        const tx = db.transaction('replays', 'readwrite');
+        tx.objectStore('replays').put(replayItem);
+        tx.oncomplete = function() {
+          renderUserReplays();
+          cancelUpload();
+          alert('Replay saved to Clan Vault successfully!');
+        };
+      } catch(err) {
+        console.error('Error saving replay to IndexedDB:', err);
+        alert('Failed to save replay: ' + err.message);
       }
     }
 
     async function downloadSavedReplay(replayId) {
-      if (!ensureVerifiedAccess('download replays')) return;
+      if (!ensureVerifiedAccess("download replays")) return;
       try {
-        var doc = await firebase.firestore().collection('clan_vault').doc(replayId).get();
-        if (!doc.exists || doc.data().type !== 'replay') { alert('Replay record not found.'); return; }
-        var item = doc.data();
-        if (!item.storagePath) { alert('This replay has no cloud file attached.'); return; }
-        var url = await firebase.storage().ref().child(item.storagePath).getDownloadURL();
-        var a = document.createElement('a'); a.href = url; a.download = item.fileName || 'Replay.rep';
-        document.body.appendChild(a); a.click(); document.body.removeChild(a);
-      } catch (err) {
-        console.error('Replay download failed:', err);
-        alert('Replay download failed: ' + (err.message || err));
+        const db = await getVaultDB();
+        const tx = db.transaction('replays', 'readonly');
+        const req = tx.objectStore('replays').get(replayId);
+        req.onsuccess = function() {
+          var item = req.result;
+          if (item && item.fileBlob) {
+            var url = URL.createObjectURL(item.fileBlob);
+            var a = document.createElement('a');
+            a.href = url;
+            a.download = item.fileName || 'Replay.rep';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            setTimeout(() => URL.revokeObjectURL(url), 1000);
+          } else if (item && item.data) {
+            var a = document.createElement('a');
+            a.href = item.data;
+            a.download = item.fileName || 'Replay.rep';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+          } else {
+            alert('Replay data not found.');
+          }
+        };
+      } catch(err) {
+        alert('Error downloading replay.');
       }
     }
 
     async function downloadMatchReplay(week, matchName) {
-      if (!ensureVerifiedAccess('download match replays')) return;
+      if (!ensureVerifiedAccess("download match replays")) return;
       try {
-        var snapshot = await firebase.firestore().collection('clan_vault').where('type', '==', 'replay').get();
-        var needle = String(week || '').toLowerCase();
-        var matches = [];
-        snapshot.forEach(function(doc) {
-          var r = doc.data();
-          if ((r.title && r.title.toLowerCase().indexOf(needle) !== -1) ||
-              (r.players && r.players.toLowerCase().indexOf(needle) !== -1)) matches.push(doc.id);
-        });
-        if (matches.length) { await downloadSavedReplay(matches[0]); return; }
-      } catch (e) { console.warn('Cloud replay lookup failed:', e); }
-      offerUploadPrompt();
+        const db = await getVaultDB();
+        const tx = db.transaction('replays', 'readonly');
+        const req = tx.objectStore('replays').getAll();
+        req.onsuccess = function() {
+          var list = req.result || [];
+          var matchRep = list.find(function(r) {
+            return (r.title && r.title.toLowerCase().indexOf(week.toLowerCase()) !== -1) ||
+                   (r.players && r.players.toLowerCase().indexOf(week.toLowerCase()) !== -1);
+          });
+          if (matchRep) {
+            downloadSavedReplay(matchRep.id);
+            return;
+          }
+          offerUploadPrompt();
+        };
+      } catch(e) {
+        offerUploadPrompt();
+      }
+
       function offerUploadPrompt() {
         var msg = 'Replay pack for ' + week + ' (' + matchName + ') will be available here once uploaded by clan staff.\n\nWant to upload a replay file for this match now?';
         if (confirm(msg)) {
@@ -3841,75 +3880,78 @@ window.addEventListener('DOMContentLoaded', function() {
       }
     }
 
-    function renderUserReplays() {
+    async function renderUserReplays() {
       var container = document.getElementById('user-replays-list');
       var emptyMsg = document.getElementById('no-replays-msg');
       if (!container) return;
-      var user = firebase.auth().currentUser;
-      if (!user || !user.emailVerified) {
-        container.innerHTML = '';
-        var count = document.getElementById('rep-count'); if (count) count.innerText = '0';
-        if (emptyMsg) emptyMsg.style.display = 'block';
-        return;
-      }
-      if (replayCloudUnsubscribe) replayCloudUnsubscribe();
-      replayCloudUnsubscribe = firebase.firestore().collection('clan_vault').where('type', '==', 'replay')
-        .onSnapshot(function(snapshot) {
-          var existing = [];
-          snapshot.forEach(function(doc) { var item = doc.data(); item.id = doc.id; existing.push(item); });
-          existing.sort(function(a, b) {
-            var at = a.createdAt && a.createdAt.toMillis ? a.createdAt.toMillis() : 0;
-            var bt = b.createdAt && b.createdAt.toMillis ? b.createdAt.toMillis() : 0;
-            return bt - at;
-          });
+
+      try {
+        const db = await getVaultDB();
+        const tx = db.transaction('replays', 'readonly');
+        const req = tx.objectStore('replays').getAll();
+        req.onsuccess = function() {
+          var existing = req.result || [];
           container.innerHTML = '';
-          var countEl = document.getElementById('rep-count'); if (countEl) countEl.innerText = existing.length;
-          if (emptyMsg) emptyMsg.style.display = existing.length ? 'none' : 'block';
+          var countEl = document.getElementById('rep-count');
+          if (countEl) countEl.innerText = existing.length;
+
+          if (emptyMsg) {
+            emptyMsg.style.display = existing.length === 0 ? 'block' : 'none';
+          }
+
           var clearBtn = document.getElementById('btn-clear-reps');
-          if (clearBtn) clearBtn.style.display = existing.some(function(x) { return x.uploaderUid === user.uid; }) ? 'inline-block' : 'none';
+          if (clearBtn) {
+            clearBtn.style.display = existing.length > 0 ? 'inline-block' : 'none';
+          }
+
           existing.forEach(function(item) {
-            var card = document.createElement('div'); card.className = 'replay-card'; card.style.borderLeft = '4px solid var(--cyan)';
-            var metaDiv = document.createElement('div'); metaDiv.className = 'replay-meta';
-            var titleEl = document.createElement('span'); titleEl.className = 'replay-title'; titleEl.textContent = item.title || item.fileName || 'Replay';
-            var tag = document.createElement('span'); tag.textContent = ' CLOUD ARCHIVE';
-            tag.style.cssText = 'font-size:0.7rem;color:var(--cyan);border:1px solid var(--cyan);padding:1px 6px;border-radius:3px;margin-left:6px;font-family:monospace;';
-            titleEl.appendChild(tag);
-            var sub = document.createElement('span'); sub.className = 'replay-sub';
-            sub.textContent = (item.players || 'Unknown players') + ' | Map: ' + (item.map || 'Unknown') + ' (' + (item.fileSize || '') + ' • ' + (item.date || '') + ') — ' + (item.uploader || 'Member');
-            metaDiv.appendChild(titleEl); metaDiv.appendChild(sub); card.appendChild(metaDiv);
-            var btnGroup = document.createElement('div'); btnGroup.style.cssText = 'display:flex;align-items:center;gap:8px;';
-            var dlBtn = document.createElement('button'); dlBtn.className = 'btn-download-rep'; dlBtn.innerText = 'DOWNLOAD (.REP)';
-            dlBtn.onclick = function() { downloadSavedReplay(item.id); }; btnGroup.appendChild(dlBtn);
-            var isAdmin = typeof isUserAdmin === 'function' && isUserAdmin(user.email);
-            if (item.uploaderUid === user.uid || isAdmin || user.email.toLowerCase() === WEBMASTER_EMAIL.toLowerCase()) {
-              var delBtn = document.createElement('button'); delBtn.className = 'admin-del-btn'; delBtn.innerText = '🗑️ REMOVE';
-              delBtn.onclick = function() { adminDeleteReplay(item.id); }; btnGroup.appendChild(delBtn);
-            }
-            card.appendChild(btnGroup); container.appendChild(card);
+            var card = document.createElement('div');
+            card.className = 'replay-card';
+            card.style.borderLeft = '4px solid var(--cyan)';
+            
+            var metaDiv = document.createElement('div');
+            metaDiv.className = 'replay-meta';
+            metaDiv.innerHTML = '<span class="replay-title">' + item.title + ' <span style="font-size:0.7rem; color:var(--cyan); border:1px solid var(--cyan); padding:1px 6px; border-radius:3px; margin-left:6px; font-family:monospace;">VAULT ARCHIVE</span></span>' +
+                                '<span class="replay-sub">' + item.players + ' | Map: ' + item.map + ' (' + item.fileSize + ' • ' + item.date + ')</span>';
+            card.appendChild(metaDiv);
+
+            var btnGroup = document.createElement('div');
+            btnGroup.style.display = 'flex';
+            btnGroup.style.alignItems = 'center';
+            btnGroup.style.gap = '8px';
+
+            var dlBtn = document.createElement('button');
+            dlBtn.className = 'btn-download-rep';
+            dlBtn.innerText = 'DOWNLOAD (.REP)';
+            dlBtn.onclick = function() { downloadSavedReplay(item.id); };
+            btnGroup.appendChild(dlBtn);
+
+            var adminBtn = document.createElement('button');
+            adminBtn.className = 'admin-del-btn';
+            adminBtn.innerText = '🗑️ REMOVE';
+            (function(repId) {
+              adminBtn.onclick = function() { adminDeleteReplay(repId); };
+            })(item.id);
+            btnGroup.appendChild(adminBtn);
+
+            card.appendChild(btnGroup);
+            container.appendChild(card);
           });
-        }, function(err) {
-          console.error('Replay cloud listener failed:', err);
-          if (emptyMsg) { emptyMsg.style.display = 'block'; emptyMsg.textContent = 'Unable to load cloud replays. Check Firebase permissions.'; }
-        });
+        };
+      } catch(err) {
+        console.warn('Error rendering replays from IndexedDB:', err);
+      }
     }
 
     async function clearUserReplays() {
-      var user = firebase.auth().currentUser;
-      if (!ensureVerifiedAccess('delete your uploaded replays') || !user) return;
-      if (!confirm('Delete all replays uploaded by your account from the cloud? This cannot be undone.')) return;
-      try {
-        var snapshot = await firebase.firestore().collection('clan_vault').where('uploaderUid', '==', user.uid).get();
-        var batch = firebase.firestore().batch();
-        var deletes = [];
-        snapshot.forEach(function(doc) {
-          var item = doc.data();
-          if (item.type === 'replay') {
-            if (item.storagePath) deletes.push(firebase.storage().ref().child(item.storagePath).delete().catch(function(e) { console.warn('Storage delete:', e); }));
-            batch.delete(doc.ref);
-          }
-        });
-        await Promise.all(deletes); await batch.commit();
-      } catch (e) { alert('Could not clear replays: ' + (e.message || e)); }
+      if (confirm('Are you sure you want to clear your uploaded replays from this browser?')) {
+        try {
+          const db = await getVaultDB();
+          const tx = db.transaction('replays', 'readwrite');
+          tx.objectStore('replays').clear();
+          tx.oncomplete = () => renderUserReplays();
+        } catch(e) {}
+      }
     }
 
     // ========================================================
@@ -5228,12 +5270,8 @@ async function renderUserMaps() {
         firebase.auth().onAuthStateChanged(function(user) {
           if (user) {
             applyLoggedInState(user);
-            if (user.emailVerified) renderUserReplays();
-            else if (replayCloudUnsubscribe) { replayCloudUnsubscribe(); replayCloudUnsubscribe = null; }
           } else {
-            if (replayCloudUnsubscribe) { replayCloudUnsubscribe(); replayCloudUnsubscribe = null; }
             applyLoggedOutState();
-            renderUserReplays();
           }
         });
       } else {
@@ -5249,24 +5287,13 @@ async function renderUserMaps() {
 
     // Webmaster Direct Delete Handlers
     async function adminDeleteReplay(repId) {
-      var user = firebase.auth().currentUser;
-      if (!ensureVerifiedAccess('delete replays') || !user) return;
-      if (!confirm('Are you sure you want to delete this cloud replay?')) return;
+      if (!confirm("WEBMASTER COMMAND: Are you sure you want to delete this replay from Clan Vault?")) return;
       try {
-        var ref = firebase.firestore().collection('clan_vault').doc(repId);
-        var doc = await ref.get();
-        if (!doc.exists || doc.data().type !== 'replay') { alert('Replay not found.'); return; }
-        var item = doc.data();
-        var isAdmin = typeof isUserAdmin === 'function' && isUserAdmin(user.email);
-        if (item.uploaderUid !== user.uid && !isAdmin && user.email.toLowerCase() !== WEBMASTER_EMAIL.toLowerCase()) {
-          alert('You can only delete your own replays.'); return;
-        }
-        if (item.storagePath) {
-          try { await firebase.storage().ref().child(item.storagePath).delete(); }
-          catch (storageErr) { console.warn('Storage object could not be deleted:', storageErr); }
-        }
-        await ref.delete();
-      } catch (e) { alert('Replay deletion failed: ' + (e.message || e)); }
+        const db = await getVaultDB();
+        const tx = db.transaction('replays', 'readwrite');
+        tx.objectStore('replays').delete(repId);
+        tx.oncomplete = () => renderUserReplays();
+      } catch(e) {}
     }
 
     async function adminDeleteDownload(dlId) {
