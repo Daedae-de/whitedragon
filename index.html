@@ -4484,12 +4484,12 @@
             <textarea id="edit-bio-text" rows="2" placeholder="Commander notes, favorite matchups, hotkeys..." style="width:100%; background:#070a12; border:1px solid var(--border-color); color:#fff; padding:8px 10px; border-radius:4px; font-size:0.85rem; resize:vertical;"></textarea>
           </div>
 
-          <!-- ADMIN-ONLY HIERARCHY FIELDS -->
+          <!-- ADMIN-ONLY HIERARCHY & STATUS FIELDS -->
           <div id="admin-hierarchy-fields" style="display:none; background:rgba(245,158,11,0.08); border:1px dashed #fbbf24; border-radius:6px; padding:10px; margin-bottom:12px;">
             <div style="font-size:0.72rem; color:#fbbf24; font-weight:800; font-family:'Orbitron',sans-serif; margin-bottom:6px;">
-              ⚡ HIGH COMMAND OVERRIDE // HIERARCHY & RANK
+              ⚡ HIGH COMMAND OVERRIDE // HIERARCHY, ROLE & STATUS
             </div>
-            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+            <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:10px;">
               <div>
                 <label style="display:block; font-size:0.68rem; color:var(--text-muted); margin-bottom:2px;">CLAN RANK</label>
                 <select id="edit-rank-select" style="width:100%; background:#070a12; border:1px solid var(--border-color); color:#fff; padding:5px 8px; border-radius:4px; font-size:0.8rem;">
@@ -4511,22 +4511,15 @@
                   <option value="Squadleader">Squadleader</option>
                 </select>
               </div>
+              <div>
+                <label style="display:block; font-size:0.68rem; color:var(--text-muted); margin-bottom:2px;">STATUS</label>
+                <select id="edit-status-select" style="width:100%; background:#070a12; border:1px solid var(--border-color); color:#10b981; font-weight:bold; padding:5px 8px; border-radius:4px; font-size:0.8rem;">
+                  <option value="Active" style="color:#10b981;">● Active</option>
+                  <option value="Inactive" style="color:#ef4444;">○ Inactive</option>
+                </select>
+              </div>
             </div>
           </div>
-
-          <div style="display:flex; justify-content:flex-end; gap:8px;">
-            <button onclick="saveDossierChanges()" class="btn-download-rep" style="background:var(--win); color:#070a12; font-weight:800; cursor:pointer;">
-              💾 SAVE CHANGES
-            </button>
-            <button onclick="cancelDossierEdit()" class="btn-download-rep" style="background:transparent; border-color:var(--text-dim); color:var(--text-muted); cursor:pointer;">
-              CANCEL
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
   
 
 
@@ -7255,6 +7248,7 @@ async function renderUserMaps() {
           if (c.role !== undefined && c.role !== '') member.role = c.role;
           if (c.country !== undefined && c.country !== '') member.country = c.country;
           if (c.flagKey !== undefined && c.flagKey !== '') member.flagKey = c.flagKey;
+	  if (c.status !== undefined && c.status !== '') member.status = c.status;
         }
       });
       try {
@@ -7466,17 +7460,20 @@ async function renderUserMaps() {
           uploadBtn.style.display = canEditPersonal ? 'flex' : 'none';
         }
 
-        var canEditHierarchy = isAdminUser || isWebmaster;
+	var canEditHierarchy = isAdminUser || isWebmaster;
         var adminFields = document.getElementById('admin-hierarchy-fields');
         if (adminFields) {
           adminFields.style.display = canEditHierarchy ? 'block' : 'none';
           if (canEditHierarchy) {
             document.getElementById('edit-rank-select').value = p.rank || 'Privates';
             document.getElementById('edit-role-select').value = p.role || 'Player';
+            var statSel = document.getElementById('edit-status-select');
+            if (statSel) {
+              statSel.value = (p.status === 'Inactive') ? 'Inactive' : 'Active';
+              statSel.style.color = (p.status === 'Inactive') ? 'var(--loss)' : 'var(--win)';
+            }
           }
         }
-      }
-    }
 
     function cancelDossierEdit() {
       var form = document.getElementById('dossier-edit-form');
@@ -7521,11 +7518,13 @@ async function renderUserMaps() {
       };
       updates.flagKey = updates.country.toLowerCase().replace(/[^a-z]/g, '');
 
-      if (isAdminUser || isWebmaster) {
+	if (isAdminUser || isWebmaster) {
         var rSel = document.getElementById('edit-rank-select');
         var roleSel = document.getElementById('edit-role-select');
+        var statSel = document.getElementById('edit-status-select');
         if (rSel) updates.rank = rSel.value;
         if (roleSel) updates.role = roleSel.value;
+        if (statSel) updates.status = statSel.value;
       }
 
       // Sofort in Cloud Firestore speichern
