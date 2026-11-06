@@ -5349,7 +5349,8 @@ window.addEventListener('DOMContentLoaded', function() {
   initNewsRealtimeListener();
   initClanMembersRealtimeListener();
   initClanRosterRealtimeListener();
-  initMatchesRealtimeListener(); // <-- WICHTIG: Muss hier stehen!
+  initMatchesRealtimeListener();
+  initReplaysRealtimeListener()
   initVaultRealtimeListener();       
   fetchBWCLStandings();
   
@@ -5358,6 +5359,23 @@ window.addEventListener('DOMContentLoaded', function() {
     switchTab(hash, false);
   }
 });
+
+function initReplaysRealtimeListener() {
+  if (typeof firebase !== 'undefined' && firebase.firestore) {
+    firebase.firestore().collection('clan_replays').orderBy('createdAt', 'desc')
+      .onSnapshot(function(snapshot) {
+        var list = [];
+        snapshot.forEach(function(doc) {
+          var item = doc.data();
+          item.id = doc.id;
+          list.push(item);
+        });
+        renderFirestoreReplays(list);
+      }, function(err) {
+        console.warn("Replay sync offline:", err);
+      });
+  }
+}
 
     function openDossier(memberId) {
       applyProfileCustomizationsToRoster();
@@ -5669,12 +5687,41 @@ window.addEventListener('DOMContentLoaded', function() {
       document.getElementById('upload-form').style.display = 'none';
     }
 
-    async function saveReplay() {
-      if (!ensureVerifiedAccess("save files to Clan Vault")) return;
-      if (!currentSelectedFile) {
-        alert('Please choose a .rep or .zip file first.');
-        return;
-      }
+function saveReplay() {
+  if (!ensureVerifiedAccess("Replays speichern")) return;
+  if (!currentSelectedFile) {
+    alert('Please choose a .rep or .zip file first.');
+    return;
+  }
+
+  var file = currentSelectedFile;
+  var title = document.getElementById('rep-title-input').value.trim() || file.name;
+  var players = document.getElementById('rep-players-input').value.trim() || 'White Dragon Match';
+  var map = document.getElementById('rep-map-input').value.trim() || 'StarCraft Map';
+  var user = firebase.auth().currentUser;
+
+  var replayRecord = {
+    title: title,
+    players: players,
+    map: map,
+    fileName: file.name,
+    fileSize: (file.size / 1024).toFixed(1) + ' KB',
+    date: new Date().toLocaleDateString(),
+    createdAt: Date.now(),
+    uploader: user ? user.email : 'Unbekannt'
+  };
+
+  if (typeof firebase !== 'undefined' && firebase.firestore) {
+    firebase.firestore().collection('clan_replays').add(replayRecord)
+      .then(function() {
+        cancelUpload();
+        alert('Replay synchronized successfully');
+      })
+      .catch(function(err) {
+        alert('Error saving: ' + err.message);
+      });
+  }
+}
 
       var file = currentSelectedFile;
       var title = document.getElementById('rep-title-input').value.trim() || file.name;
