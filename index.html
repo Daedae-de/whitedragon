@@ -5360,9 +5360,27 @@ window.addEventListener('DOMContentLoaded', function() {
   }
 });
 
+var cloudReplayCache = [];
+
+function replaySortTime(item) {
+  var value = item && item.createdAt;
+  if (value && typeof value.toMillis === 'function') return value.toMillis();
+  if (value && typeof value.seconds === 'number') return value.seconds * 1000;
+  var numeric = Number(value);
+  return Number.isFinite(numeric) ? numeric : 0;
+}
+
+function escapeReplayText(value) {
+  return String(value == null ? '' : value)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
 function initReplaysRealtimeListener() {
   if (typeof firebase !== 'undefined' && firebase.firestore) {
-    firebase.firestore().collection('clan_replays').orderBy('createdAt', 'desc')
+    firebase.firestore().collection('clan_replays')
       .onSnapshot(function(snapshot) {
         var list = [];
         snapshot.forEach(function(doc) {
@@ -5370,11 +5388,98 @@ function initReplaysRealtimeListener() {
           item.id = doc.id;
           list.push(item);
         });
+        list.sort(function(a, b) {
+          return replaySortTime(b) - replaySortTime(a);
+        });
+        cloudReplayCache = list;
         renderFirestoreReplays(list);
       }, function(err) {
         console.warn("Replay sync offline:", err);
+        var emptyMsg = document.getElementById('no-replays-msg');
+        if (emptyMsg) {
+          emptyMsg.style.display = 'block';
+          emptyMsg.innerText = 'Replay sync failed: ' + (err && err.message ? err.message : err);
+        }
       });
   }
+}
+
+function renderFirestoreReplays(cloudReplays) {
+  var container = document.getElementById('user-replays-list');
+  var emptyMsg = document.getElementById('no-replays-msg');
+  var countEl = document.getElementById('rep-count');
+  if (!container) return;
+
+  var replays = cloudReplays || [];
+  container.innerHTML = '';
+  if (countEl) countEl.innerText = replays.length;
+  if (emptyMsg) {
+    emptyMsg.style.display = replays.length === 0 ? 'block' : 'none';
+    if (replays.length === 0) {
+      emptyMsg.innerHTML = '<div style="font-size: 1.8rem; margin-bottom: 6px; color: var(--cyan);">💾</div>No clan replays uploaded yet.';
+    }
+  }
+
+  var user = (typeof firebase !== 'undefined' && firebase.auth && firebase.auth().currentUser)
+    ? firebase.auth().currentUser
+    : currentUser;
+  var email = user && user.email ? user.email.toLowerCase() : '';
+  var canModerate = user && (isUserAdmin(user.email) || email === WEBMASTER_EMAIL.toLowerCase());
+
+  replays.forEach(function(item) {
+    var card = document.createElement('div');
+    card.className = 'replay-card';
+    card.style.borderLeft = '4px solid var(--cyan)';
+
+    var metaDiv = document.createElement('div');
+    metaDiv.className = 'replay-meta';
+    metaDiv.innerHTML = '<span class="replay-title">' + escapeReplayText(item.title) +
+      ' <span style="font-size:0.7rem; color:var(--cyan); border:1px solid var(--cyan); padding:1px 6px; border-radius:3px; margin-left:6px; font-family:monospace;">CLOUD ARCHIVE</span></span>' +
+      '<span class="replay-sub">' + escapeReplayText(item.players) + ' | Map: ' + escapeReplayText(item.map) +
+      ' (' + escapeReplayText(item.fileSize) + ' • ' + escapeReplayText(item.date) + ')</span>';
+    card.appendChild(metaDiv);
+
+    var btnGroup = document.createElement('div');
+    btnGroup.style.display = 'flex';
+    btnGroup.style.alignItems = 'center';
+    btnGroup.style.gap = '8px';
+
+    var dlBtn = document.createElement('button');
+    dlBtn.className = 'btn-download-rep';
+    dlBtn.innerText = 'DOWNLOAD (.REP)';
+    dlBtn.onclick = function() {
+      if (!item.fileData) {
+        alert('Keine Dateidaten hinterlegt.');
+        return;
+      }
+      var a = document.createElement('a');
+      a.href = item.fileData;
+      a.download = item.fileName || 'Replay.rep';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+    };
+    btnGroup.appendChild(dlBtn);
+
+    var isOwner = email && item.uploader && item.uploader.toLowerCase() === email;
+    if (canModerate || isOwner) {
+      var adminBtn = document.createElement('button');
+      adminBtn.className = 'admin-del-btn';
+      adminBtn.style.display = 'inline-block';
+      adminBtn.innerText = '🗑️ REMOVE';
+      adminBtn.onclick = function() {
+        if (!confirm('Replay unwiderruflich aus Firestore löschen?')) return;
+        firebase.firestore().collection('clan_replays').doc(item.id).delete()
+          .catch(function(err) {
+            alert('Löschen fehlgeschlagen: ' + (err && err.message ? err.message : err));
+          });
+      };
+      btnGroup.appendChild(adminBtn);
+    }
+
+    card.appendChild(btnGroup);
+    container.appendChild(card);
+  });
 }
 
     function openDossier(memberId) {
@@ -5800,6 +5905,7 @@ function saveReplay() {
     }
 
     async function renderUserReplays() {
+      if (typeof firebase !== 'undefined' && firebase.firestore) return;
       var container = document.getElementById('user-replays-list');
       var emptyMsg = document.getElementById('no-replays-msg');
       if (!container) return;
@@ -7030,6 +7136,9 @@ async function renderUserMaps() {
     // State Management
     function applyLoggedInState(user) {
       currentUser = user;
+      if (cloudReplayCache.length && typeof renderFirestoreReplays === 'function') {
+        renderFirestoreReplays(cloudReplayCache);
+      }
       var isWebmaster = (user.email && user.email.toLowerCase() === WEBMASTER_EMAIL.toLowerCase());
       var isAdmin = isUserAdmin(user.email);
 
@@ -7094,6 +7203,9 @@ async function renderUserMaps() {
 
     function applyLoggedOutState() {
       currentUser = null;
+      if (cloudReplayCache.length && typeof renderFirestoreReplays === 'function') {
+        renderFirestoreReplays(cloudReplayCache);
+      }
       var authBtn = document.getElementById('floatingAuthBtn');
       var authLabel = document.getElementById('authLabel');
       var authIcon = document.getElementById('authIcon');
