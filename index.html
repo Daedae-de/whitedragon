@@ -3649,11 +3649,55 @@
     #wd-cal-event-form input, #wd-cal-event-form select, #wd-cal-event-form textarea { width: 100%; margin-bottom: 8px; background: #070a12; border: 1px solid rgba(56, 189, 248, 0.28); color: #fff; border-radius: 8px; padding: 8px 10px; font-family: 'Rajdhani', sans-serif; font-size: 1rem; }
     #wd-cal-event-form input:focus, #wd-cal-event-form select:focus, #wd-cal-event-form textarea:focus { outline: none; border-color: var(--cyan); }
     #wd-event-save { width: 100%; margin-top: 2px; }
+    .wd-pager {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: center;
+      gap: 6px;
+      margin: 16px 0 4px;
+    }
+    .wd-page-btn {
+      min-width: 42px;
+      height: 42px;
+      padding: 0 10px;
+      border-radius: 8px;
+      border: 1px solid rgba(0, 229, 255, 0.4);
+      background: rgba(7, 12, 22, 0.9);
+      color: #dbe7f5;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 0.75rem;
+      cursor: pointer;
+    }
+    .wd-page-btn.is-current { background: var(--cyan); color: #071018; border-color: var(--cyan); }
+    .wd-page-btn:disabled { opacity: 0.35; cursor: default; }
+    .wd-page-gap { color: var(--text-muted); padding: 0 2px; }
+    .wd-filter-row {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 16px;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+    }
+    .wd-filter-row::-webkit-scrollbar { display: none; }
+    .wd-filter-row .nav-tab-btn { flex-shrink: 0; }
     @media (max-width: 800px) {
       .wd-cal-board { padding: 12px; }
       .wd-cal-day { min-height: 48px; padding: 4px; border-radius: 8px; }
       .wd-cal-shapes { margin-top: 4px; gap: 3px; }
       .wd-cal-form-row { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 700px) {
+      .section-wrap { padding: 0 10px; margin-top: 8px; }
+      .replay-card { flex-direction: column; align-items: stretch; gap: 10px; }
+      .replay-title { font-size: 0.84rem; line-height: 1.35; }
+      .replay-card .btn-download-rep, .replay-card .admin-del-btn { width: 100%; text-align: center; }
+      .match-header { flex-wrap: wrap; align-items: flex-start; gap: 8px; }
+      .set-row { flex-wrap: wrap; gap: 4px; font-size: 0.84rem; }
+      #dynamic-matches-grid .card > div:last-child { flex-wrap: wrap; }
+      .news-card { padding: 12px; }
+      .cms-form-grid { grid-template-columns: 1fr !important; }
     }
   </style>
 </head>
@@ -4106,7 +4150,7 @@
     </div>
 
     <!-- CATEGORY FILTER BUTTONS -->
-    <div style="display:flex; gap:8px; margin-bottom:16px; flex-wrap:wrap;">
+    <div class="wd-filter-row">
       <button onclick="filterMatchCategory('All')" id="btn-mcat-All" class="nav-tab-btn active">ALL</button>
       <button onclick="filterMatchCategory('Clan League')" id="btn-mcat-ClanLeague" class="nav-tab-btn">🏆 CLAN LEAGUE</button>
       <button onclick="filterMatchCategory('WD Star League')" id="btn-mcat-WDStarLeague" class="nav-tab-btn">⚔️ WD STAR LEAGUE</button>
@@ -4272,7 +4316,7 @@
 
     <!-- FILTER BUTTONS & HEADING -->
     <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 14px;">
-      <div style="display: flex; gap: 6px; flex-wrap: wrap;" id="dl-filter-buttons">
+      <div class="wd-filter-row" id="dl-filter-buttons" style="margin-bottom:0;">
         <button onclick="filterDownloads('All')" class="nav-tab-btn active" id="filter-dl-All" style="padding: 5px 12px; font-size: 0.78rem;">ALL (<span id="count-all">0</span>)</button>
         <button onclick="filterDownloads('Map Pack')" class="nav-tab-btn" id="filter-dl-MapPack" style="padding: 5px 12px; font-size: 0.78rem;">📦 MAP PACKS (<span id="count-mappack">0</span>)</button>
         <button onclick="filterDownloads('Map')" class="nav-tab-btn" id="filter-dl-Map" style="padding: 5px 12px; font-size: 0.78rem;">🗺️ MAPS (<span id="count-map">0</span>)</button>
@@ -4308,7 +4352,7 @@
     </div>
 
     <!-- SUB-CATEGORY FILTER BAR -->
-    <div style="display:flex; gap:8px; margin-bottom:16px; flex-wrap:wrap;">
+    <div class="wd-filter-row">
       <button onclick="filterCommunityCategory('All')" id="btn-ccat-All" class="nav-tab-btn active" style="font-size:0.78rem; padding:6px 14px;">ALL</button>
       <button onclick="filterCommunityCategory('News')" id="btn-ccat-News" class="nav-tab-btn" style="font-size:0.78rem; padding:6px 14px;">📰 NEWS</button>
       <button onclick="filterCommunityCategory('League')" id="btn-ccat-League" class="nav-tab-btn" style="font-size:0.78rem; padding:6px 14px;">🏆 LEAGUE</button>
@@ -4327,7 +4371,7 @@
       </div>
       <input type="hidden" id="cms-edit-article-id" value="">
 
-      <div style="display:grid; grid-template-columns: 2fr 1fr 1fr; gap:12px; margin-bottom:12px;">
+      <div class="cms-form-grid" style="display:grid; grid-template-columns: 2fr 1fr 1fr; gap:12px; margin-bottom:12px;">
         <div>
           <label style="display:block; font-family:'Orbitron',sans-serif; font-size:0.72rem; color:var(--text-muted); margin-bottom:4px; text-transform:uppercase;">Headline / Title</label>
           <input type="text" id="cms-news-title" placeholder="e.g. Victorious BWCL Week #5 Debrief" style="width:100%; background:#070a12; border:1px solid var(--border-color); color:#fff; padding:8px 12px; border-radius:6px; font-family:'Rajdhani',sans-serif; font-size:0.95rem;">
@@ -5783,6 +5827,76 @@ function initReplaysRealtimeListener() {
   }
 }
 
+    var wdListPage = { matches: 1, replays: 1, downloads: 1, community: 1 };
+    var wdReplayCache = [];
+
+    function wdPageSize() {
+      return window.matchMedia('(max-width: 700px)').matches ? 4 : 6;
+    }
+
+    function wdPageWindow(items, key) {
+      var size = wdPageSize();
+      var total = items ? items.length : 0;
+      var pages = Math.max(1, Math.ceil(total / size));
+      var page = wdListPage[key] || 1;
+      if (page > pages) page = pages;
+      if (page < 1) page = 1;
+      wdListPage[key] = page;
+      var start = (page - 1) * size;
+      return { items: (items || []).slice(start, start + size), page: page, pages: pages, total: total };
+    }
+
+    function wdMountPager(anchor, key, page, pages) {
+      var existing = document.getElementById('wd-pager-' + key);
+      if (existing) existing.remove();
+      if (!anchor || pages <= 1) return;
+      var nav = document.createElement('nav');
+      nav.id = 'wd-pager-' + key;
+      nav.className = 'wd-pager';
+      nav.setAttribute('aria-label', 'Pages');
+      function addBtn(label, target, current, disabled) {
+        var button = document.createElement('button');
+        button.type = 'button';
+        button.className = 'wd-page-btn' + (current ? ' is-current' : '');
+        button.textContent = label;
+        button.disabled = !!disabled;
+        if (!disabled) button.onclick = function() { wdGoPage(key, target); };
+        nav.appendChild(button);
+      }
+      addBtn('‹', page - 1, false, page <= 1);
+      var windowStart = Math.max(1, page - 2);
+      var windowEnd = Math.min(pages, windowStart + 4);
+      windowStart = Math.max(1, windowEnd - 4);
+      if (windowStart > 1) addBtn('1', 1, page === 1, false);
+      if (windowStart > 2) {
+        var lead = document.createElement('span');
+        lead.className = 'wd-page-gap';
+        lead.textContent = '…';
+        nav.appendChild(lead);
+      }
+      for (var i = windowStart; i <= windowEnd; i++) addBtn(String(i), i, i === page, false);
+      if (windowEnd < pages - 1) {
+        var tail = document.createElement('span');
+        tail.className = 'wd-page-gap';
+        tail.textContent = '…';
+        nav.appendChild(tail);
+      }
+      if (windowEnd < pages) addBtn(String(pages), pages, page === pages, false);
+      addBtn('›', page + 1, false, page >= pages);
+      anchor.insertAdjacentElement('afterend', nav);
+    }
+
+    function wdGoPage(key, page) {
+      wdListPage[key] = page;
+      if (key === 'matches') renderMatches();
+      else if (key === 'replays') renderFirestoreReplays(wdReplayCache);
+      else if (key === 'downloads') renderUserMaps();
+      else if (key === 'community') renderClanNews(wdNewsCache || getLocalNewsArticles());
+      var anchorId = key === 'matches' ? 'dynamic-matches-grid' : (key === 'replays' ? 'user-replays-list' : (key === 'downloads' ? 'user-maps-list' : 'clan-news-grid'));
+      var anchor = document.getElementById(anchorId);
+      if (anchor) anchor.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
 function renderFirestoreReplays(cloudReplays) {
   var container = document.getElementById('user-replays-list');
   var emptyMsg = document.getElementById('no-replays-msg');
@@ -5790,6 +5904,8 @@ function renderFirestoreReplays(cloudReplays) {
   if (!container) return;
 
   var replays = cloudReplays || [];
+  wdReplayCache = replays;
+  var replayPage = wdPageWindow(replays, 'replays');
   container.innerHTML = '';
   if (countEl) countEl.innerText = replays.length;
   if (emptyMsg) {
@@ -5805,7 +5921,7 @@ function renderFirestoreReplays(cloudReplays) {
   var email = user && user.email ? user.email.toLowerCase() : '';
   var canModerate = user && (isUserAdmin(user.email) || email === WEBMASTER_EMAIL.toLowerCase());
 
-  replays.forEach(function(item) {
+  replayPage.items.forEach(function(item) {
     var card = document.createElement('div');
     card.className = 'replay-card';
     card.style.borderLeft = '4px solid var(--cyan)';
@@ -5859,6 +5975,7 @@ function renderFirestoreReplays(cloudReplays) {
     card.appendChild(btnGroup);
     container.appendChild(card);
   });
+  wdMountPager(container, 'replays', replayPage.page, replayPage.pages);
 }
 
     function memberSquadKey(memberId) {
@@ -6654,6 +6771,7 @@ function handleMatchReplayFile(event) {
 
     function filterDownloads(cat) {
       currentDownloadFilter = cat;
+      wdListPage.downloads = 1;
       var buttons = document.querySelectorAll('#dl-filter-buttons .nav-tab-btn');
       for (var i = 0; i < buttons.length; i++) {
         buttons[i].classList.remove('active');
@@ -6758,6 +6876,7 @@ async function renderUserMaps() {
           filtered.push(allFiles[m]);
         }
       }
+      var downloadPage = wdPageWindow(filtered, 'downloads');
 
       container.innerHTML = '';
       if (emptyMsg) {
@@ -6776,8 +6895,8 @@ async function renderUserMaps() {
         : currentUser;
       var canModerate = user && (isUserAdmin(user.email) || user.email.toLowerCase() === WEBMASTER_EMAIL.toLowerCase());
 
-      for (var n = 0; n < filtered.length; n++) {
-        var item = filtered[n];
+      for (var n = 0; n < downloadPage.items.length; n++) {
+        var item = downloadPage.items[n];
         var badgeInfo = catBadges[item.category] || catBadges['Other'];
 
         var card = document.createElement('div');
@@ -6830,6 +6949,7 @@ async function renderUserMaps() {
         card.appendChild(btnGroup);
         container.appendChild(card);
       }
+      wdMountPager(container, 'downloads', downloadPage.page, downloadPage.pages);
     }
 
     async function clearUserMaps() {
@@ -7052,6 +7172,7 @@ async function renderUserMaps() {
 
     function filterCommunityCategory(cat) {
       currentCommunityCategoryFilter = cat;
+      wdListPage.community = 1;
       ['All', 'News', 'League', 'Info', 'FreeBoard'].forEach(function(c) {
         var btn = document.getElementById('btn-ccat-' + c);
         if (btn) {
@@ -7082,8 +7203,9 @@ async function renderUserMaps() {
         var itemCat = item.category || (item.tag ? item.tag.replace('//', '').trim() : 'News');
         return itemCat.toLowerCase() === currentCommunityCategoryFilter.toLowerCase();
       });
+      var communityPage = wdPageWindow(filtered, 'community');
 
-      filtered.forEach(function(item) {
+      communityPage.items.forEach(function(item) {
         var card = document.createElement('div');
         card.className = 'news-card';
         card.style.cursor = 'pointer';
@@ -7117,6 +7239,7 @@ async function renderUserMaps() {
 
         grid.appendChild(card);
       });
+      wdMountPager(grid, 'community', communityPage.page, communityPage.pages);
     }
 
     function initNewsRealtimeListener() {
@@ -9035,6 +9158,8 @@ async function renderUserMaps() {
         var right = parseClanDate(b.week);
         return (right ? right.getTime() : 0) - (left ? left.getTime() : 0);
       });
+      var matchPage = wdPageWindow(filtered, 'matches');
+      filtered = matchPage.items;
 
       grid.innerHTML = '';
       filtered.forEach(function(m) {
@@ -9123,6 +9248,7 @@ async function renderUserMaps() {
 
         grid.appendChild(card);
       });
+      wdMountPager(grid, 'matches', matchPage.page, matchPage.pages);
       renderClanCalendar();
     }
 
@@ -9437,6 +9563,7 @@ async function renderUserMaps() {
 
     function filterMatchCategory(cat) {
       currentMatchCategoryFilter = cat;
+      wdListPage.matches = 1;
       var catKeys = ['All', 'ClanLeague', 'WDStarLeague', 'ClanMatch'];
       catKeys.forEach(function(c) {
         var b = document.getElementById('btn-mcat-' + c);
