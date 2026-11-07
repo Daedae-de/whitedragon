@@ -3499,66 +3499,121 @@
         justify-content: center;
       }
     }
-    .wd-calendar { margin-bottom: 20px; }
+    .wd-calendar { margin-bottom: 22px; }
     .wd-cal-board {
-      background: rgba(8, 14, 26, 0.92);
-      border: 1px solid rgba(0, 229, 255, 0.28);
-      border-radius: 12px;
-      padding: 12px;
+      background:
+        radial-gradient(1200px 180px at 50% -40px, rgba(0, 229, 255, 0.08), transparent 60%),
+        linear-gradient(180deg, rgba(12, 20, 36, 0.96), rgba(7, 12, 22, 0.96));
+      border: 1px solid rgba(0, 229, 255, 0.32);
+      border-radius: 14px;
+      padding: 16px 16px 14px;
+      box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.4), 0 18px 40px rgba(0, 0, 0, 0.28);
     }
-    .wd-cal-nav, .wd-cal-legend {
-      display: flex;
+    .wd-cal-nav {
+      display: grid;
+      grid-template-columns: 36px 1fr 36px;
       align-items: center;
-      justify-content: space-between;
-      gap: 8px;
-      margin-bottom: 10px;
+      gap: 10px;
+      margin-bottom: 14px;
     }
-    .wd-cal-legend { justify-content: flex-start; flex-wrap: wrap; margin: 10px 0 0; }
-    .wd-cal-legend span { display: inline-flex; align-items: center; gap: 5px; color: var(--text-muted); font-size: 0.72rem; }
-    .wd-cal-nav strong { font-family: 'Orbitron', sans-serif; font-size: 0.92rem; letter-spacing: 0.6px; color: #fff; }
-    .wd-cal-nav button, #wd-cal-event-form button, .wd-cal-modal button.wd-cal-textbtn {
-      background: transparent;
-      border: 1px solid var(--cyan);
+    .wd-cal-nav strong {
+      display: block;
+      text-align: center;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 1.05rem;
+      letter-spacing: 1.4px;
+      color: #fff;
+    }
+    .wd-cal-nav strong small {
+      display: block;
+      margin-bottom: 3px;
+      font-size: 0.58rem;
+      letter-spacing: 2.4px;
       color: var(--cyan);
-      border-radius: 6px;
-      padding: 4px 10px;
+    }
+    .wd-cal-nav button, #wd-cal-event-form button, .wd-cal-modal button.wd-cal-textbtn {
+      background: rgba(0, 229, 255, 0.06);
+      border: 1px solid rgba(0, 229, 255, 0.55);
+      color: var(--cyan);
+      border-radius: 8px;
+      padding: 6px 12px;
       cursor: pointer;
       font-family: 'Orbitron', sans-serif;
-      font-size: 0.85rem;
+      font-size: 0.82rem;
+      transition: background 0.15s ease, box-shadow 0.15s ease;
     }
-    .wd-cal-weekdays, .wd-cal-grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 4px; }
-    .wd-cal-weekdays span { text-align: center; color: var(--text-dim); font-size: 0.68rem; font-family: 'Orbitron', sans-serif; }
+    .wd-cal-nav button { width: 36px; height: 36px; padding: 0; font-size: 1.15rem; line-height: 1; }
+    .wd-cal-nav button:hover, #wd-cal-event-form button:hover, .wd-cal-modal button.wd-cal-textbtn:hover {
+      background: rgba(0, 229, 255, 0.16);
+      box-shadow: 0 0 12px rgba(0, 229, 255, 0.25);
+    }
+    .wd-cal-weekdays, .wd-cal-grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 6px; }
+    .wd-cal-weekdays { margin-bottom: 6px; }
+    .wd-cal-weekdays span {
+      text-align: center;
+      color: #8ea0b8;
+      font-size: 0.66rem;
+      letter-spacing: 1px;
+      font-family: 'Orbitron', sans-serif;
+    }
     .wd-cal-day {
-      min-height: 58px;
-      border: 1px solid rgba(56, 189, 248, 0.16);
-      border-radius: 8px;
-      background: rgba(7, 12, 22, 0.8);
-      color: #fff;
-      padding: 4px;
+      min-height: 72px;
+      border: 1px solid rgba(56, 189, 248, 0.14);
+      border-radius: 10px;
+      background: rgba(5, 10, 18, 0.72);
+      color: #dbe7f5;
+      padding: 7px 7px 6px;
       cursor: pointer;
+      transition: border-color 0.15s ease, background 0.15s ease, transform 0.15s ease;
     }
-    .wd-cal-day.is-out { opacity: 0.35; }
-    .wd-cal-day.is-today { border-color: var(--cyan); }
-    .wd-cal-day.is-selected { background: rgba(0, 229, 255, 0.12); }
-    .wd-cal-day b { display: block; font-size: 0.75rem; text-align: left; }
-    .wd-cal-shapes { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px; min-height: 10px; }
+    .wd-cal-day:hover { border-color: rgba(0, 229, 255, 0.55); background: rgba(0, 229, 255, 0.06); }
+    .wd-cal-day.is-out { opacity: 0.28; }
+    .wd-cal-day.is-today { border-color: var(--cyan); box-shadow: inset 0 0 0 1px rgba(0, 229, 255, 0.35); }
+    .wd-cal-day.is-selected { background: rgba(0, 229, 255, 0.12); border-color: var(--cyan); }
+    .wd-cal-day.has-mark { background: rgba(14, 24, 40, 0.95); }
+    .wd-cal-day b { display: block; font-size: 0.78rem; font-weight: 700; text-align: left; font-family: 'Rajdhani', sans-serif; }
+    .wd-cal-shapes { display: flex; flex-wrap: wrap; align-items: center; gap: 5px; margin-top: 10px; min-height: 14px; }
     .wd-shape { width: 10px; height: 10px; display: inline-block; flex-shrink: 0; }
-    .wd-shape.star {
+    .wd-shape.league {
       width: 12px;
       height: 12px;
-      background: #ef4444;
-      clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
-      filter: drop-shadow(0 0 4px rgba(239, 68, 68, 0.75));
+      background: #f5c451;
+      clip-path: polygon(50% 0%, 93% 25%, 93% 75%, 50% 100%, 7% 75%, 7% 25%);
     }
-    .wd-shape.diamond { width: 8px; height: 8px; background: #3b82f6; transform: rotate(45deg); box-shadow: 0 0 6px rgba(59, 130, 246, 0.75); }
-    .wd-shape.circle { width: 10px; height: 10px; border-radius: 50%; background: #34d399; box-shadow: 0 0 6px rgba(52, 211, 153, 0.7); }
-    .wd-shape.pending {
-      width: 7px;
-      height: 7px;
-      border-radius: 50%;
+    .wd-shape.practice {
+      width: 0;
+      height: 0;
       background: transparent;
-      border: 1.5px solid #00e5ff;
-      box-shadow: 0 0 0 2px rgba(7, 12, 22, 0.95), 0 0 0 3.5px #00e5ff;
+      border-left: 6px solid transparent;
+      border-right: 6px solid transparent;
+      border-bottom: 11px solid #c084fc;
+    }
+    .wd-shape.event {
+      width: 10px;
+      height: 10px;
+      border-radius: 3px;
+      background: #2dd4bf;
+    }
+    .wd-shape.pending {
+      width: 11px;
+      height: 11px;
+      border-radius: 50%;
+      background:
+        radial-gradient(circle at 50% 50%, transparent 2px, #38bdf8 2.5px, #38bdf8 3.5px, transparent 4px);
+      box-shadow: inset 0 0 0 1.5px #38bdf8;
+    }
+    .wd-cal-legend { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+    .wd-cal-legend span {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      color: #c5d2e4;
+      font-size: 0.75rem;
+      letter-spacing: 0.4px;
+      padding: 5px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(56, 189, 248, 0.18);
+      background: rgba(5, 10, 18, 0.65);
     }
     .wd-cal-entry { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
     .wd-cal-entry .wd-cal-row { flex: 1; margin-bottom: 0; }
@@ -3570,25 +3625,36 @@
       align-items: center;
       justify-content: center;
       padding: 18px;
-      background: rgba(4, 7, 13, 0.82);
+      background: rgba(4, 7, 13, 0.78);
+      backdrop-filter: blur(4px);
     }
     .wd-cal-dialog {
-      width: min(520px, 100%);
+      width: min(480px, 100%);
       max-height: 88vh;
       overflow: auto;
-      background: #0b1220;
-      border: 1px solid var(--cyan);
-      border-radius: 12px;
-      padding: 16px;
-      box-shadow: 0 0 28px rgba(0, 229, 255, 0.25);
+      background: linear-gradient(180deg, #10192c, #0b1220);
+      border: 1px solid rgba(0, 229, 255, 0.55);
+      border-radius: 14px;
+      padding: 18px;
+      box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.45), 0 24px 60px rgba(0, 0, 0, 0.45), 0 0 28px rgba(0, 229, 255, 0.16);
     }
-    .wd-cal-dialog h3 { font-family: 'Orbitron', sans-serif; color: #fff; font-size: 1rem; }
-    .wd-cal-row { display: flex; align-items: center; gap: 8px; width: 100%; text-align: left; margin-bottom: 8px; padding: 8px; border-radius: 8px; border: 1px solid rgba(56, 189, 248, 0.25); background: rgba(7, 12, 22, 0.75); color: #fff; cursor: pointer; }
+    .wd-cal-dialog h3 { margin: 0; font-family: 'Orbitron', sans-serif; color: #fff; font-size: 1rem; letter-spacing: 0.6px; }
+    .wd-cal-kicker { font-family: 'Orbitron', sans-serif; font-size: 0.62rem; letter-spacing: 1.8px; color: var(--cyan); margin: 14px 0 8px; }
+    .wd-cal-row { display: flex; align-items: center; gap: 10px; width: 100%; text-align: left; margin-bottom: 8px; padding: 10px; border-radius: 10px; border: 1px solid rgba(56, 189, 248, 0.22); background: rgba(7, 12, 22, 0.8); color: #fff; cursor: pointer; }
+    .wd-cal-row:hover { border-color: rgba(0, 229, 255, 0.55); }
     .wd-cal-row small { display: block; color: var(--text-muted); }
-    .wd-cal-staff { display: none; margin-top: 12px; }
+    .wd-cal-staff { display: none; margin-top: 4px; padding-top: 4px; border-top: 1px solid rgba(56, 189, 248, 0.16); }
     body.is-webmaster .wd-cal-staff { display: block; }
-    #wd-cal-event-form input, #wd-cal-event-form select, #wd-cal-event-form textarea { width: 100%; margin-bottom: 6px; background: #070a12; border: 1px solid var(--border-color); color: #fff; border-radius: 6px; padding: 7px; font-family: 'Rajdhani', sans-serif; }
-    @media (max-width: 800px) { .wd-cal-day { min-height: 44px; } }
+    .wd-cal-form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    #wd-cal-event-form input, #wd-cal-event-form select, #wd-cal-event-form textarea { width: 100%; margin-bottom: 8px; background: #070a12; border: 1px solid rgba(56, 189, 248, 0.28); color: #fff; border-radius: 8px; padding: 8px 10px; font-family: 'Rajdhani', sans-serif; font-size: 1rem; }
+    #wd-cal-event-form input:focus, #wd-cal-event-form select:focus, #wd-cal-event-form textarea:focus { outline: none; border-color: var(--cyan); }
+    #wd-event-save { width: 100%; margin-top: 2px; }
+    @media (max-width: 800px) {
+      .wd-cal-board { padding: 12px; }
+      .wd-cal-day { min-height: 48px; padding: 4px; border-radius: 8px; }
+      .wd-cal-shapes { margin-top: 4px; gap: 3px; }
+      .wd-cal-form-row { grid-template-columns: 1fr; }
+    }
   </style>
 </head>
 <body>
@@ -3685,15 +3751,15 @@
       <div class="wd-cal-board">
         <div class="wd-cal-nav">
           <button type="button" onclick="shiftClanCalendar(-1)" aria-label="Previous month">‹</button>
-          <strong id="wd-cal-title">Calendar</strong>
+          <strong id="wd-cal-title"><small>CALENDAR</small>Month</strong>
           <button type="button" onclick="shiftClanCalendar(1)" aria-label="Next month">›</button>
         </div>
         <div class="wd-cal-weekdays"><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span></div>
         <div class="wd-cal-grid" id="wd-cal-grid"></div>
         <div class="wd-cal-legend">
-          <span><i class="wd-shape star"></i> League</span>
-          <span><i class="wd-shape diamond"></i> Practice</span>
-          <span><i class="wd-shape circle"></i> Event</span>
+          <span><i class="wd-shape league"></i> League</span>
+          <span><i class="wd-shape practice"></i> Practice</span>
+          <span><i class="wd-shape event"></i> Event</span>
           <span><i class="wd-shape pending"></i> Pending</span>
         </div>
       </div>
@@ -5068,9 +5134,12 @@
       <div id="wd-cal-modal-list"></div>
       <div class="wd-cal-staff">
         <form id="wd-cal-event-form" onsubmit="saveClanEvent(event)">
+          <div class="wd-cal-kicker">ADD OR EDIT</div>
           <input id="wd-event-title" required placeholder="Event title">
-          <input id="wd-event-date" type="date" required aria-label="Event date">
-          <input id="wd-event-time" type="time" aria-label="Event time">
+          <div class="wd-cal-form-row">
+            <input id="wd-event-date" type="date" required aria-label="Event date">
+            <input id="wd-event-time" type="time" aria-label="Event time">
+          </div>
           <select id="wd-event-kind" aria-label="Event type">
             <option value="League">League</option>
             <option value="Practice">Practice</option>
@@ -8961,6 +9030,11 @@ async function renderUserMaps() {
         if (currentMatchCategoryFilter === 'WD Star League' && (m.category === 'WD Match' || m.category === 'WD Star League')) return true;
         return m.category === currentMatchCategoryFilter;
       });
+      filtered.sort(function(a, b) {
+        var left = parseClanDate(a.week);
+        var right = parseClanDate(b.week);
+        return (right ? right.getTime() : 0) - (left ? left.getTime() : 0);
+      });
 
       grid.innerHTML = '';
       filtered.forEach(function(m) {
@@ -9112,9 +9186,9 @@ async function renderUserMaps() {
     }
 
     function calendarShapeClass(item) {
-      if (item.eventKind === 'Practice') return 'diamond';
-      if (item.league || item.eventKind === 'League') return 'star';
-      if (item.eventKind === 'Event') return 'circle';
+      if (item.eventKind === 'Practice') return 'practice';
+      if (item.league || item.eventKind === 'League') return 'league';
+      if (item.eventKind === 'Event') return 'event';
       if (item.kind === 'match' && item.result === 'UPCOMING') return 'pending';
       return '';
     }
@@ -9189,7 +9263,7 @@ async function renderUserMaps() {
       if (!selectedCalendarKey) selectedCalendarKey = calendarDateKey(new Date());
       var year = clanCalendarCursor.getFullYear();
       var month = clanCalendarCursor.getMonth();
-      title.textContent = clanCalendarCursor.toLocaleString('en-US', { month: 'long', year: 'numeric' });
+      title.innerHTML = '<small>CALENDAR</small>' + clanCalendarCursor.toLocaleString('en-US', { month: 'long', year: 'numeric' });
       var items = calendarItems();
       var firstWeekday = new Date(year, month, 1).getDay();
       var lead = (firstWeekday + 6) % 7;
@@ -9206,6 +9280,7 @@ async function renderUserMaps() {
         if (key === calendarDateKey(new Date())) button.classList.add('is-today');
         if (key === selectedCalendarKey) button.classList.add('is-selected');
         var marks = items.filter(function(item) { return item.key === key && calendarShapeClass(item); }).slice(0, 6);
+        if (marks.length) button.classList.add('has-mark');
         button.innerHTML = '<b>' + cellDate.getDate() + '</b><span class="wd-cal-shapes">' + marks.map(function(item) {
           return '<i class="wd-shape ' + calendarShapeClass(item) + '"></i>';
         }).join('') + '</span>';
