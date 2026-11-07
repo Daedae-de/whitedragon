@@ -3499,6 +3499,112 @@
         justify-content: center;
       }
     }
+    .wd-calendar {
+      display: grid;
+      grid-template-columns: minmax(0, 1.4fr) minmax(240px, 0.8fr);
+      gap: 14px;
+      margin-bottom: 18px;
+    }
+    .wd-cal-board, .wd-cal-side {
+      background: rgba(8, 14, 26, 0.92);
+      border: 1px solid rgba(0, 229, 255, 0.28);
+      border-radius: 12px;
+      padding: 12px;
+    }
+    .wd-cal-nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+    .wd-cal-nav strong {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 0.92rem;
+      letter-spacing: 0.6px;
+      color: #fff;
+    }
+    .wd-cal-nav button, #wd-cal-event-form button {
+      background: transparent;
+      border: 1px solid var(--cyan);
+      color: var(--cyan);
+      border-radius: 6px;
+      padding: 4px 10px;
+      cursor: pointer;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 0.85rem;
+    }
+    .wd-cal-weekdays, .wd-cal-grid {
+      display: grid;
+      grid-template-columns: repeat(7, minmax(0, 1fr));
+      gap: 4px;
+    }
+    .wd-cal-weekdays span {
+      text-align: center;
+      color: var(--text-dim);
+      font-size: 0.68rem;
+      font-family: 'Orbitron', sans-serif;
+    }
+    .wd-cal-day {
+      min-height: 64px;
+      border: 1px solid rgba(56, 189, 248, 0.16);
+      border-radius: 8px;
+      background: rgba(7, 12, 22, 0.8);
+      color: #fff;
+      text-align: left;
+      padding: 4px;
+      cursor: pointer;
+    }
+    .wd-cal-day.is-out { opacity: 0.35; }
+    .wd-cal-day.is-today { border-color: var(--cyan); }
+    .wd-cal-day.is-selected { background: rgba(0, 229, 255, 0.12); }
+    .wd-cal-day b { display: block; font-size: 0.75rem; }
+    .wd-cal-mark {
+      display: block;
+      margin-top: 3px;
+      font-size: 0.58rem;
+      line-height: 1.2;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .wd-cal-mark.league { color: var(--cyan); }
+    .wd-cal-mark.event { color: #fbbf24; }
+    .wd-cal-kicker {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 0.68rem;
+      letter-spacing: 1px;
+      color: var(--cyan);
+      margin: 8px 0 6px;
+    }
+    .wd-cal-item {
+      display: block;
+      width: 100%;
+      text-align: left;
+      margin-bottom: 6px;
+      padding: 7px 8px;
+      border-radius: 8px;
+      border: 1px solid rgba(56, 189, 248, 0.25);
+      background: rgba(7, 12, 22, 0.75);
+      color: #fff;
+      cursor: pointer;
+    }
+    .wd-cal-item small { display: block; color: var(--text-muted); }
+    #wd-cal-event-form input, #wd-cal-event-form select, #wd-cal-event-form textarea {
+      width: 100%;
+      margin-bottom: 6px;
+      background: #070a12;
+      border: 1px solid var(--border-color);
+      color: #fff;
+      border-radius: 6px;
+      padding: 7px;
+      font-family: 'Rajdhani', sans-serif;
+    }
+    @media (max-width: 800px) {
+      .wd-calendar { grid-template-columns: 1fr; }
+      .wd-cal-day { min-height: 46px; padding: 3px; }
+      .wd-cal-mark { display: none; }
+    }
   </style>
 </head>
 <body>
@@ -3810,6 +3916,37 @@
       <button id="btn-toggle-match-cms" onclick="toggleMatchCMS()" class="btn-download-rep" style="display:none; font-size:0.75rem; padding:6px 14px; background:var(--cyan); color:#070a12; font-weight:800;">
         + TRANSMIT NEW MATCH
       </button>
+    </div>
+
+    <div class="wd-calendar" id="wd-calendar">
+      <div class="wd-cal-board">
+        <div class="wd-cal-nav">
+          <button type="button" onclick="shiftClanCalendar(-1)" aria-label="Previous month">‹</button>
+          <strong id="wd-cal-title">Calendar</strong>
+          <button type="button" onclick="shiftClanCalendar(1)" aria-label="Next month">›</button>
+        </div>
+        <div class="wd-cal-weekdays"><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span></div>
+        <div class="wd-cal-grid" id="wd-cal-grid"></div>
+      </div>
+      <aside class="wd-cal-side">
+        <div class="wd-cal-kicker">Selected day</div>
+        <div id="wd-cal-day"></div>
+        <div class="wd-cal-kicker">League</div>
+        <div id="wd-cal-league"></div>
+        <form id="wd-cal-event-form" style="display:none;" onsubmit="saveClanEvent(event)">
+          <div class="wd-cal-kicker">Add event</div>
+          <input id="wd-event-title" required placeholder="Event title">
+          <input id="wd-event-date" type="date" required aria-label="Event date">
+          <input id="wd-event-time" type="time" aria-label="Event time">
+          <select id="wd-event-kind" aria-label="Event type">
+            <option value="League">League</option>
+            <option value="Practice">Practice</option>
+            <option value="Event">Event</option>
+          </select>
+          <textarea id="wd-event-note" rows="2" placeholder="Note"></textarea>
+          <button type="submit">ADD EVENT</button>
+        </form>
+      </aside>
     </div>
 
 <!-- ADMIN & WEBMASTER MATCH ENTRY TERMINAL (VERBESSERT) -->
@@ -5526,6 +5663,7 @@ window.addEventListener('DOMContentLoaded', function() {
   initClanMembersRealtimeListener();
   initClanRosterRealtimeListener();
   initMatchesRealtimeListener();
+  initClanEventsListener();
   initReplaysRealtimeListener()
   initVaultRealtimeListener();       
   fetchBWCLStandings();
@@ -7466,6 +7604,8 @@ async function renderUserMaps() {
       if (cmsBadge) cmsBadge.style.display = staff ? 'inline-block' : 'none';
       var btnMatchCms = document.getElementById('btn-toggle-match-cms');
       if (btnMatchCms) btnMatchCms.style.display = staff ? 'inline-block' : 'none';
+      var eventForm = document.getElementById('wd-cal-event-form');
+      if (eventForm) eventForm.style.display = staff ? 'block' : 'none';
       var rosterCtrlPanel = document.getElementById('admin-roster-control-panel');
       if (rosterCtrlPanel) rosterCtrlPanel.style.display = staff ? 'block' : 'none';
       var memAddPanel = document.getElementById('admin-members-add-panel');
@@ -8832,6 +8972,7 @@ async function renderUserMaps() {
       filtered.forEach(function(m) {
         var card = document.createElement('div');
         card.className = 'card';
+        card.id = 'match-card-' + m.id;
         card.style.borderLeft = m.resultType === 'WIN' ? '4px solid var(--win)' : (m.resultType === 'LOSS' ? '4px solid var(--loss)' : '4px solid var(--cyan)');
 
         var resClass = m.resultType === 'WIN' ? 'score-win' : (m.resultType === 'LOSS' ? 'score-loss' : 'week');
@@ -8913,6 +9054,208 @@ async function renderUserMaps() {
         }
 
         grid.appendChild(card);
+      });
+      renderClanCalendar();
+    }
+
+    var clanEvents = [];
+    var clanCalendarCursor = new Date();
+    var selectedCalendarKey = '';
+
+    function calendarDateKey(date) {
+      return date.getFullYear() + '-' + String(date.getMonth() + 1).padStart(2, '0') + '-' + String(date.getDate()).padStart(2, '0');
+    }
+
+    function parseClanDate(value) {
+      var text = String(value || '').trim();
+      if (/^\d{4}-\d{2}-\d{2}$/.test(text)) {
+        var parts = text.split('-');
+        return new Date(Number(parts[0]), Number(parts[1]) - 1, Number(parts[2]));
+      }
+      var months = { jan: 0, feb: 1, mar: 2, apr: 3, may: 4, jun: 5, jul: 6, aug: 7, sep: 8, oct: 9, nov: 10, dec: 11 };
+      var found = text.match(/(\d{1,2})(?:st|nd|rd|th)?\s+([A-Za-z]{3,})[.,]?\s+(\d{4})/i);
+      if (!found || months[found[2].slice(0, 3).toLowerCase()] === undefined) return null;
+      return new Date(Number(found[3]), months[found[2].slice(0, 3).toLowerCase()], Number(found[1]));
+    }
+
+    function calendarItems() {
+      var items = [];
+      getMatchesList().forEach(function(match) {
+        var date = parseClanDate(match.week);
+        if (!date) return;
+        items.push({
+          key: calendarDateKey(date),
+          time: date.getTime(),
+          kind: 'match',
+          league: match.category === 'Clan League',
+          title: match.title || 'Match',
+          detail: (match.category || 'Match') + ' · ' + (match.score || match.resultType || ''),
+          matchId: match.id
+        });
+      });
+      clanEvents.forEach(function(eventItem) {
+        var date = parseClanDate(eventItem.date);
+        if (!date) return;
+        items.push({
+          key: calendarDateKey(date),
+          time: date.getTime(),
+          kind: 'event',
+          league: eventItem.kind === 'League',
+          title: eventItem.title || 'Event',
+          detail: (eventItem.kind || 'Event') + (eventItem.time ? ' · ' + eventItem.time : '') + (eventItem.note ? ' · ' + eventItem.note : ''),
+          eventId: eventItem.id
+        });
+      });
+      return items;
+    }
+
+    function shiftClanCalendar(step) {
+      clanCalendarCursor = new Date(clanCalendarCursor.getFullYear(), clanCalendarCursor.getMonth() + step, 1);
+      renderClanCalendar();
+    }
+
+    function selectClanCalendarDay(key) {
+      selectedCalendarKey = key;
+      var dateInput = document.getElementById('wd-event-date');
+      if (dateInput) dateInput.value = key;
+      renderClanCalendar();
+    }
+
+    function openCalendarMatch(matchId) {
+      var card = document.getElementById('match-card-' + matchId);
+      if (card) card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+
+    function renderClanCalendar() {
+      var grid = document.getElementById('wd-cal-grid');
+      var title = document.getElementById('wd-cal-title');
+      if (!grid || !title || typeof getMatchesList !== 'function') return;
+      if (!selectedCalendarKey) selectedCalendarKey = calendarDateKey(new Date());
+      var year = clanCalendarCursor.getFullYear();
+      var month = clanCalendarCursor.getMonth();
+      title.textContent = clanCalendarCursor.toLocaleString('en-US', { month: 'long', year: 'numeric' });
+      var items = calendarItems();
+      var firstWeekday = new Date(year, month, 1).getDay();
+      var lead = (firstWeekday + 6) % 7;
+      var daysInMonth = new Date(year, month + 1, 0).getDate();
+      grid.innerHTML = '';
+      for (var cell = 0; cell < 42; cell++) {
+        var dayNumber = cell - lead + 1;
+        var cellDate = new Date(year, month, dayNumber);
+        var key = calendarDateKey(cellDate);
+        var button = document.createElement('button');
+        button.type = 'button';
+        button.className = 'wd-cal-day';
+        if (dayNumber < 1 || dayNumber > daysInMonth) button.classList.add('is-out');
+        if (key === calendarDateKey(new Date())) button.classList.add('is-today');
+        if (key === selectedCalendarKey) button.classList.add('is-selected');
+        var marks = items.filter(function(item) { return item.key === key; }).slice(0, 2);
+        button.innerHTML = '<b>' + cellDate.getDate() + '</b>' + marks.map(function(item) {
+          return '<span class="wd-cal-mark ' + (item.league ? 'league' : 'event') + '">' + escapeMatchHtml(item.title) + '</span>';
+        }).join('');
+        button.onclick = (function(dateKey) { return function() { selectClanCalendarDay(dateKey); }; })(key);
+        grid.appendChild(button);
+      }
+
+      var dayBox = document.getElementById('wd-cal-day');
+      var dayItems = items.filter(function(item) { return item.key === selectedCalendarKey; });
+      dayBox.innerHTML = dayItems.length ? '' : '<p style="color:var(--text-muted); font-size:0.85rem;">Nothing scheduled.</p>';
+      var viewer = (typeof firebase !== 'undefined' && firebase.auth && firebase.auth().currentUser) || currentUser;
+      dayItems.forEach(function(item) {
+        var row = document.createElement('button');
+        row.type = 'button';
+        row.className = 'wd-cal-item';
+        row.innerHTML = '<strong>' + escapeMatchHtml(item.title) + '</strong><small>' + escapeMatchHtml(item.detail) + '</small>';
+        if (item.matchId) row.onclick = function() { openCalendarMatch(item.matchId); };
+        dayBox.appendChild(row);
+        if (item.eventId && isStaffUser(viewer)) {
+          var remove = document.createElement('button');
+          remove.type = 'button';
+          remove.className = 'admin-del-btn';
+          remove.style.display = 'inline-block';
+          remove.textContent = 'Remove event';
+          remove.onclick = function() { deleteClanEvent(item.eventId); };
+          dayBox.appendChild(remove);
+        }
+      });
+
+      var todayKey = calendarDateKey(new Date());
+      var league = items.filter(function(item) { return item.league; }).sort(function(a, b) { return a.time - b.time; });
+      var current = league.filter(function(item) { return item.key <= todayKey; }).slice(-1);
+      var upcoming = league.filter(function(item) { return item.key >= todayKey; }).slice(0, 4);
+      var leagueBox = document.getElementById('wd-cal-league');
+      var seen = {};
+      var leagueRows = [];
+      current.concat(upcoming).forEach(function(item) {
+        var stamp = item.kind + ':' + (item.matchId || item.eventId);
+        if (seen[stamp]) return;
+        seen[stamp] = true;
+        leagueRows.push(item);
+      });
+      leagueBox.innerHTML = leagueRows.length ? '' : '<p style="color:var(--text-muted); font-size:0.85rem;">No dated league matches yet.</p>';
+      leagueRows.forEach(function(item) {
+        var row = document.createElement('button');
+        row.type = 'button';
+        row.className = 'wd-cal-item';
+        var label = item.key < todayKey ? 'Current' : 'Upcoming';
+        row.innerHTML = '<strong>' + label + '</strong><small>' + escapeMatchHtml(item.title + ' · ' + item.detail) + '</small>';
+        if (item.matchId) row.onclick = function() { openCalendarMatch(item.matchId); };
+        leagueBox.appendChild(row);
+      });
+    }
+
+    function initClanEventsListener() {
+      if (typeof firebase === 'undefined' || !firebase.firestore) return;
+      firebase.firestore().collection('clan_events').onSnapshot(function(snapshot) {
+        clanEvents = [];
+        snapshot.forEach(function(doc) {
+          var item = doc.data() || {};
+          item.id = doc.id;
+          clanEvents.push(item);
+        });
+        if (typeof renderClanCalendar === 'function') renderClanCalendar();
+      }, function(err) {
+        console.warn('Events listener unavailable:', err);
+      });
+    }
+
+    function saveClanEvent(submitEvent) {
+      if (submitEvent) submitEvent.preventDefault();
+      var user = (typeof firebase !== 'undefined' && firebase.auth && firebase.auth().currentUser) || currentUser;
+      if (!isStaffUser(user)) {
+        alert('Only the Webmaster or an Admin can add events.');
+        return;
+      }
+      var title = document.getElementById('wd-event-title').value.trim();
+      var date = document.getElementById('wd-event-date').value;
+      var time = document.getElementById('wd-event-time').value;
+      var kind = document.getElementById('wd-event-kind').value;
+      var note = document.getElementById('wd-event-note').value.trim();
+      if (!title || !date) {
+        alert('Enter a title and a date.');
+        return;
+      }
+      firebase.firestore().collection('clan_events').add({
+        title: title,
+        date: date,
+        time: time,
+        kind: kind,
+        note: note,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+        createdBy: user.email || ''
+      }).then(function() {
+        document.getElementById('wd-cal-event-form').reset();
+        selectClanCalendarDay(date);
+      }).catch(function(err) {
+        alert('Event save failed. Add the clan_events rule in Firestore, then try again. ' + (err && err.message ? err.message : ''));
+      });
+    }
+
+    function deleteClanEvent(eventId) {
+      var user = (typeof firebase !== 'undefined' && firebase.auth && firebase.auth().currentUser) || currentUser;
+      if (!isStaffUser(user)) return;
+      firebase.firestore().collection('clan_events').doc(eventId).delete().catch(function(err) {
+        alert('Event could not be removed. ' + (err && err.message ? err.message : ''));
       });
     }
 
