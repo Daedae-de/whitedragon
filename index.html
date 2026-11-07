@@ -7242,19 +7242,23 @@ async function renderUserMaps() {
       });
     }
 
+    function applyRegisteredProfiles(snapshot) {
+      registeredProfiles = [];
+      snapshot.forEach(function(doc) {
+        var item = doc.data() || {};
+        item.uid = doc.id;
+        registeredProfiles.push(item);
+      });
+      registeredProfiles.sort(function(a, b) {
+        return String(a.email || '').localeCompare(String(b.email || ''));
+      });
+      renderRegisteredUsers();
+    }
+
     function watchRegisteredProfiles() {
       if (profilesUnsubscribe || !firebase.firestore) return;
       profilesUnsubscribe = firebase.firestore().collection('user_profiles').onSnapshot(function(snapshot) {
-        registeredProfiles = [];
-        snapshot.forEach(function(doc) {
-          var item = doc.data();
-          item.uid = doc.id;
-          registeredProfiles.push(item);
-        });
-        registeredProfiles.sort(function(a, b) {
-          return String(a.email || '').localeCompare(String(b.email || ''));
-        });
-        renderRegisteredUsers();
+        applyRegisteredProfiles(snapshot);
       }, function(err) {
         var tbody = document.getElementById('registered-users-tbody');
         if (tbody) {
@@ -7266,9 +7270,14 @@ async function renderUserMaps() {
 
     function loadRegisteredUsers() {
       var user = (firebase.auth && firebase.auth().currentUser) || currentUser;
-      if (!isStaffUser(user)) return;
+      if (!isStaffUser(user) || !firebase.firestore) return;
       if (!profilesUnsubscribe) watchRegisteredProfiles();
-      else renderRegisteredUsers();
+      firebase.firestore().collection('user_profiles').get({ source: 'server' })
+        .then(applyRegisteredProfiles)
+        .catch(function(err) {
+          console.warn(err);
+          renderRegisteredUsers();
+        });
     }
 
     function renderRegisteredUsers() {
