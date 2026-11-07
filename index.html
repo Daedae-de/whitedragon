@@ -3405,7 +3405,7 @@
     }
     .league-partner-row {
       display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
       gap: 12px;
     }
     .league-partner {
@@ -3777,12 +3777,12 @@
       <div class="card" style="border-left: 4px solid var(--cyan);">
         <div style="font-family:'Orbitron', sans-serif; font-size:0.78rem; color:var(--text-muted); margin-bottom:4px; font-weight:800;">BWCL S65 POSITION</div>
         <div style="font-family:'Orbitron', sans-serif; font-size:1.7rem; font-weight:900; color:#fff;">3RD <span style="font-size:1rem; color:var(--cyan);">(20 PTS)</span></div>
-        <div style="color:var(--text-muted); font-size:0.85rem; margin-top:2px;">Clan Wars: 4W - 1L | Sets: 16-12</div>
+        <div style="color:var(--text-muted); font-size:0.85rem; margin-top:2px;">Clan Wars: 4W - 1L | Sets: 18-12</div>
       </div>
       <div class="card" style="border-left: 4px solid var(--win);">
         <div style="font-family:'Orbitron', sans-serif; font-size:0.78rem; color:var(--text-muted); margin-bottom:4px; font-weight:800;">LAST RESULT</div>
         <div style="font-family:'Orbitron', sans-serif; font-size:1.7rem; font-weight:900; color:var(--win);">4 - 2 WIN</div>
-        <div style="color:var(--text-muted); font-size:0.85rem; margin-top:2px;">Week #5 Clean vs dB)-3</div>
+        <div style="color:var(--text-muted); font-size:0.85rem; margin-top:2px;">Week #5 vs dB)-3</div>
       </div>
       <div class="card" style="border-left: 4px solid #d97706;">
         <div style="font-family:'Orbitron', sans-serif; font-size:0.78rem; color:var(--text-muted); margin-bottom:4px; font-weight:800;">NEXT CLAN WAR</div>
@@ -3823,10 +3823,10 @@
           </p>
           <div style="display: flex; flex-wrap: wrap; gap: 10px; align-items: center;">
             <a href="https://discord.com/users/613283502103986206" target="_blank" rel="noopener noreferrer" class="btn-download-rep" style="background: rgba(245, 158, 11, 0.15); border-color: rgba(245, 158, 11, 0.6); color: #fbbf24; padding: 6px 14px; font-size: 0.78rem; text-decoration: none;" title="Open DeathOrb Discord Profile">
-              💬 Discord: <strong>Death~Orb</strong> ↗
+              💬 Discord: <strong>DeathOrb[WD]</strong> ↗
             </a>
             <a href="https://discord.com/users/1136800479461003304" target="_blank" rel="noopener noreferrer" class="btn-download-rep" style="background: rgba(245, 158, 11, 0.15); border-color: rgba(245, 158, 11, 0.6); color: #fbbf24; padding: 6px 14px; font-size: 0.78rem; text-decoration: none;" title="Open RobFATKraft Discord Profile">
-              💬 Discord: <strong>RobFATKraft</strong> ↗
+              💬 Discord: <strong>RobFATKraft[WD]</strong> ↗
             </a>
             <a href="https://discord.com/users/839360695992844298" target="_blank" rel="noopener noreferrer" class="btn-download-rep" style="background: rgba(245, 158, 11, 0.15); border-color: rgba(245, 158, 11, 0.6); color: #fbbf24; padding: 6px 14px; font-size: 0.78rem; text-decoration: none;" title="Open Lunarpop Discord Profile">
               💬 Discord: <strong>Lunarpop[WD]</strong> ↗
@@ -5199,7 +5199,7 @@
 
   <footer>
     <div class="league-partners">
-      <p class="league-partners-label">Leagues</p>
+      <p class="league-partners-label">Community</p>
       <div class="league-partner-row">
         <a class="league-partner" href="https://bombasticstarleague.com/seasons/100bc3e7-adee-4917-b438-db5eb540c055" target="_blank" rel="noopener noreferrer">
           <img src="league-bsl.png" alt="Bombastic Star League" onerror="this.onerror=null;this.src='https://bombasticstarleague.com/android-chrome-192x192.png'">
@@ -5222,10 +5222,24 @@
             <span>Platinum Esports</span>
           </div>
         </a>
+        <a class="league-partner" href="https://sagi.gg" target="_blank" rel="noopener noreferrer">
+          <img src="https://sagi.gg/favicon.ico" alt="Sagi.gg" onerror="this.onerror=null;this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 100 100\' fill=\'%2300e5ff\'><text x=\'50\' y=\'65\' font-family=\'sans-serif\' font-size=\'45\' font-weight=\'bold\' text-anchor=\'middle\'>S</text></svg>'">
+          <div>
+            <strong>Sagi.gg</strong>
+            <span>Replay Analysis & Ladder Stats</span>
+          </div>
+        </a>
+        <a class="league-partner" href="https://cwal.gg" target="_blank" rel="noopener noreferrer">
+          <img src="https://cwal.gg/favicon.ico" alt="cwal.gg" onerror="this.onerror=null;this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 100 100\' fill=\'%23fbbf24\'><text x=\'50\' y=\'65\' font-family=\'sans-serif\' font-size=\'35\' font-weight=\'bold\' text-anchor=\'middle\'>CWAL</text></svg>'">
+          <div>
+            <strong>cwal.gg</strong>
+            <span>StarCraft: Brood War ladder</span>
+          </div>
+        </a>
       </div>
     </div>
     <p>© 2021–2026 White Dragon [WD] Clan. StarCraft® and StarCraft: Remastered are registered trademarks of Blizzard Entertainment.</p>
-    <p style="margin-top:4px; color:var(--text-dim);">Competitive Brood War eSports | Channel: Op White-Dragon (US West)</p>
+    <p style="margin-top:4px; color:var(--text-dim);">Competitive Brood War eSports-Team | Channel: Op White-Dragon (US West)</p>
   </footer>
 
   <script>
