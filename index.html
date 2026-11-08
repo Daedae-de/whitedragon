@@ -5659,7 +5659,16 @@
       }
 
       if (data && data.error) {
-        console.error("BWCL Live Sync: " + data.error + ". Fallback bleibt aktiv.");
+        console.error("BWCL Live Sync: " + data.error + ". Fallback bleibt aktiv. Apps-Script-Version:", data.version || "ALT/UNBEKANNT");
+        return;
+      }
+      if (!data || data.version !== "BWCL_SYNC_V4_20261108" || data.sheetName !== "Rankings") {
+        console.error(
+          "BWCL Live Sync: ALTE APPS-SCRIPT-BEREITSTELLUNG ERKANNT. " +
+          "Die Website benötigt BWCL_SYNC_V4_20261108 mit sheetName=Rankings. " +
+          "Bitte Apps Script speichern UND Bereitstellungen verwalten > Stift > Neue Version > Bereitstellen. " +
+          "Gelieferte Version:", data && data.version || "keine", "Blatt:", data && data.sheetName || "nicht angegeben"
+        );
         return;
       }
 
@@ -5800,7 +5809,7 @@
           fragment.appendChild(tr);
         });
         tbody.replaceChildren(fragment);
-        console.info("BWCL Live Sync erfolgreich: Division D mit 6 Teams geladen.", Object.keys(liveStats).length ? "CW-Statistiken aus Div-D übernommen." : "CW-Statistiken wurden vom Apps Script nicht geliefert.");
+        console.info("BWCL Live Sync erfolgreich (BWCL_SYNC_V4_20261108): Division D mit 6 Teams geladen.", Object.keys(liveStats).length ? "CW-Statistiken aus Div-D übernommen." : "CW-Statistiken wurden vom Apps Script nicht geliefert.");
       } else {
         console.warn("BWCL Live Sync: Division D nicht vollständig erkannt. Apps-Script-Blatt:", data.sheetName || "nicht angegeben", "Header-Zeile:", divisionHeader, "Gefundene Teams:", teams);
         console.warn("BWCL Live Sync Diagnose (erste 32 Zeilen):", rows.slice(0, 32));
