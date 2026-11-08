@@ -5674,37 +5674,78 @@
       const tbody = document.getElementById("bwcl-standings-tbody");
       if (!tbody) return;
 
-      // Rankings worksheet: col A = #rank, B = clan, C = points.
-      // Identify the Division D header first; do not assume its row stays at 21.
-      const rows = data.table.rows.map(function(row) {
-        return (row && Array.isArray(row.c) ? row.c : []).map(function(cell) {
-          if (!cell) return "";
-          const value = cell.v !== null && cell.v !== undefined ? cell.v : (cell.f || "");
-          return String(value).trim();
-        });
-      });
-      let divisionHeader = -1;
-      for (let i = 0; i < rows.length; i++) {
-        if (rows[i].some(function(cell) { return /^division\s*d$/i.test(cell); })) {
-          divisionHeader = i;
-          break;
+      // Rankings: Division-D header, followed by #1 ... #6 / clan / points.
+      // Sheet/Apps-Script responses may contain leading empty columns, shifted
+      // rows, formatted cells, or a flattened single-cell representation.
+      function readBWCLCell(cell) {
+        if (cell == null) return "";
+        if (typeof cell === "object") {
+          if (cell.v !== null && cell.v !== undefined) cell = cell.v;
+          else if (cell.f !== null && cell.f !== undefined) cell = cell.f;
+          else return "";
         }
+        return String(cell).replace(/\u00a0/g, " ").trim();
       }
 
-      const teams = [];
-      if (divisionHeader !== -1) {
-        for (let i = divisionHeader + 1; i < rows.length && teams.length < 6; i++) {
-          const cells = rows[i];
-          // Do not include a later division/section accidentally.
-          if (cells.some(function(cell) { return /^division\s+[a-z]$/i.test(cell); })) break;
-          const position = (cells[0] || "").match(/^#?\s*([1-6])$/);
-          const name = (cells[1] || "").trim();
-          const pointText = (cells[2] || "").replace(/,/g, ".");
-          if (!position || !name || pointText === "" || !Number.isFinite(Number(pointText))) {
-            if (teams.length) break;
-            continue;
+      const rows = data.table.rows.map(function(row) {
+        const cells = row && Array.isArray(row.c) ? row.c
+                    : Array.isArray(row) ? row
+                    : row && Array.isArray(row.values) ? row.values : [];
+        return cells.map(readBWCLCell);
+      });
+      const isDivisionHeading = function(text) {
+        return /\bdivision\s*[-:]?\s*d\b/i.test(text);
+      };
+      let divisionHeader = rows.findIndex(function(cells) {
+        return cells.some(isDivisionHeading);
+      });
+
+      function extractBWCLTeam(cells) {
+        // Identify rank regardless of its absolute column index.
+        for (let k = 0; k < cells.length; k++) {
+          const rankMatch = String(cells[k]).match(/^#?\s*([1-6])\s*[.)]?$/);
+          if (!rankMatch) continue;
+          const pos = Number(rankMatch[1]);
+          let clanIndex = k + 1;
+          while (clanIndex < cells.length && !cells[clanIndex]) clanIndex++;
+          const name = cells[clanIndex] || "";
+          if (!name || /^points?$/i.test(name) || /^division\s/i.test(name)) continue;
+          // Read points from the first numeric cell following the clan name.
+          for (let n = clanIndex + 1; n < Math.min(cells.length, clanIndex + 5); n++) {
+            const pts = cells[n].replace(/\s/g, "").replace(/,/g, ".");
+            if (/^-?\d+(?:\.\d+)?$/.test(pts)) {
+              return { pos: pos, name: name, pts: cells[n] };
+            }
           }
-          teams.push({ pos: Number(position[1]), name: name, pts: cells[2] });
+        }
+        return null;
+      }
+
+      function collectBWCLTeams(start) {
+        const found = new Map();
+        for (let i = start; i < rows.length; i++) {
+          const cells = rows[i];
+          if (i > start && cells.some(function(cell) {
+            return /\bdivision\s*[-:]?\s*[a-ce-z]\b/i.test(cell);
+          })) break;
+          const team = extractBWCLTeam(cells);
+          if (team && !found.has(team.pos)) found.set(team.pos, team);
+          if (found.size === 6) break;
+          if (i > start + 14) break;
+        }
+        return Array.from(found.values()).sort(function(a, b) { return a.pos - b.pos; });
+      }
+
+      let teams = divisionHeader >= 0 ? collectBWCLTeams(divisionHeader + 1) : [];
+      // Fallback for an Apps Script that returns only the 6 standings rows,
+      // without the Division-D heading. Require the White Dragon team to avoid
+      // accidentally showing another division from the same workbook.
+      if (teams.length !== 6 && divisionHeader < 0) {
+        for (let i = 0; i < rows.length; i++) {
+          if (rows[i].some(function(cell) { return /white\s*dragon|\[wd\]/i.test(cell); })) {
+            teams = collectBWCLTeams(Math.max(0, i - 5));
+            if (teams.length === 6) break;
+          }
         }
       }
 
@@ -5733,7 +5774,9 @@
         tbody.replaceChildren(fragment);
         console.info("BWCL Live Sync erfolgreich: Division D mit 6 Teams geladen. CW-Statistiken sind in Rankings nicht enthalten.");
       } else {
-        console.warn("BWCL Live Sync: Division D nicht vollständig im erwarteten Rankings-Format (Platz, Clan, Punkte) gefunden. Fallback bleibt sichtbar.");
+        console.warn("BWCL Live Sync: Division D nicht vollständig erkannt. Header-Zeile:", divisionHeader, "Gefundene Teams:", teams);
+        console.warn("BWCL Live Sync Diagnose (erste 32 Zeilen):", rows.slice(0, 32));
+        console.warn("Fallback bleibt sichtbar. Bitte diese zwei Warnungen aus der Browser-Konsole kopieren.");
       }
     };
 
