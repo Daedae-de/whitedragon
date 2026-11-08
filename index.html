@@ -3906,9 +3906,9 @@
       <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
         <select id="roster-add-member-select" style="background:#070a12; border:1px solid var(--border-color); color:#fff; padding:7px 10px; border-radius:5px; font-size:0.85rem; min-width:180px;"></select>
         <select id="roster-add-squad-select" style="background:#070a12; border:1px solid var(--border-color); color:var(--cyan); padding:7px 10px; border-radius:5px; font-weight:bold; font-size:0.85rem;">
-          <option value="WD-A">Squad: WD-A (Main Competitive)</option>
+          <option value="WD-A">Squad: WD-A (Whitedragons)</option>
           <option value="WD-B">Squad: WD-B (Babydragons)</option>
-          <option value="WD-C">Squad: WD-C (Academy / In-House)</option>
+          <option value="WD-C">Squad: WD-C (Egg)</option>
         </select>
         <select id="roster-add-role-select" style="background:#070a12; border:1px solid var(--border-color); color:#fbbf24; padding:7px 10px; border-radius:5px; font-weight:bold; font-size:0.85rem;">
           <option value="Player">Player</option>
@@ -4641,7 +4641,7 @@
         <!-- BWCL S65 League Performance -->
         <div class="league-stats-panel">
           <div class="league-stats-title">
-            <span>BWCL S65 DIV-D RECORD</span>
+            <span>RECORD</span>
             <span style="font-size:0.75rem; color:var(--cyan-bright); font-weight:800;" id="m-status-tag">ACTIVE TOURNAMENT ROSTER</span>
           </div>
           <div class="stat-counters">
@@ -9797,15 +9797,15 @@ async function renderUserMaps() {
 
       if (squadKey === 'WD-A') {
         if (titleEl) titleEl.innerText = 'WD-A';
-        if (pillEl) pillEl.innerText = 'BWCL S65 DIVISION D';
+        if (pillEl) pillEl.innerText = 'Whitedragons';
         if (descEl) descEl.innerText = '[Main Competitive Squad]';
       } else if (squadKey === 'WD-B') {
         if (titleEl) titleEl.innerText = 'WD-B';
-        if (pillEl) pillEl.innerText = 'DEVELOPMENT DIVISION';
+        if (pillEl) pillEl.innerText = 'Babydragons';
         if (descEl) descEl.innerText = '[Secondary Competitive Lineup]';
       } else if (squadKey === 'WD-C') {
         if (titleEl) titleEl.innerText = 'WD-C';
-        if (pillEl) pillEl.innerText = 'ACADEMY & IN-HOUSE';
+        if (pillEl) pillEl.innerText = 'EGG';
         if (descEl) descEl.innerText = '[Practice & Casual Roster]';
       } else {
         if (titleEl) titleEl.innerText = 'ALL TEAMS';
