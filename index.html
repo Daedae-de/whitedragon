@@ -3063,6 +3063,26 @@
     .wd-match-record-result { flex: 0 0 auto; margin-left: auto; white-space: nowrap; }
     .wd-match-record-empty { font-style: italic; padding: 4px 0; }
 
+    /* Recent records in dossier and paginated separate archive */
+    .wd-match-recent .wd-match-record-date { margin-top: 9px; }
+    .wd-match-row { display: flex; flex-wrap: wrap; align-items: start; gap: 6px 14px; border-bottom: 1px solid rgba(148,163,184,.12); padding: 8px 6px; }
+    .wd-match-archive-open { width: 100%; margin-top: 12px; padding: 11px; border: 1px solid var(--border-color); background: rgba(34,211,238,.065); border-radius: 6px; color: var(--cyan); cursor: pointer; text-align: center; font-weight: 800; letter-spacing: .5px; }
+    .wd-match-archive-open:hover { border-color: var(--cyan); background: rgba(34,211,238,.13); }
+    .wd-match-archive-overlay { position: fixed; inset: 0; z-index: 2600; display: none; align-items: center; justify-content: center; padding: 15px; background: rgba(3,8,18,.93); backdrop-filter: blur(7px); }
+    .wd-match-archive-overlay.active { display: flex; }
+    .wd-match-archive-card { width: min(760px, 100%); max-height: min(85vh, 790px); display: flex; flex-direction: column; overflow: hidden; background: #0d1627; border: 1px solid var(--cyan); border-radius: 11px; box-shadow: 0 0 35px rgba(0,229,255,.18); }
+    .wd-match-archive-header { display: flex; justify-content: space-between; align-items: center; padding: 16px 18px; border-bottom: 1px solid var(--border-color); }
+    .wd-match-archive-header .wd-match-record-title { margin: 0 0 6px; }
+    .wd-match-archive-status { font-size: .73rem; color: var(--text-muted); }
+    .wd-match-archive-close { border: 1px solid var(--border-color); color: white; background: transparent; border-radius: 5px; cursor: pointer; font-size: 25px; width: 36px; height: 36px; }
+    .wd-match-archive-scroll { overflow-y: auto; overscroll-behavior: contain; padding: 12px 17px; flex: 1; min-height: 0; }
+    .wd-match-archive-scroll .wd-match-record-date { margin-top: 9px; }
+    .wd-match-archive-pagination { display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 7px; padding: 13px 12px; border-top: 1px solid var(--border-color); }
+    .wd-match-page { min-width: 36px; padding: 7px 10px; border: 1px solid var(--border-color); background: #101c33; color: #dbeafe; cursor: pointer; border-radius: 5px; font-weight: 700; }
+    .wd-match-page.active { background: var(--cyan); color: #07111c; border-color: var(--cyan); }
+    .wd-match-page:disabled { opacity: .32; cursor: not-allowed; }
+    .wd-match-page:focus-visible, .wd-match-archive-close:focus-visible, .wd-match-archive-open:focus-visible { outline: 2px solid var(--cyan); outline-offset: 2px; }
+
     footer {
       border-top: 1px solid var(--border-color);
       background: rgba(6, 10, 18, 0.95);
@@ -3632,6 +3652,35 @@
     .wd-cal-day.has-mark { background: rgba(14, 24, 40, 0.95); }
     .wd-cal-day b { display: block; font-size: 0.78rem; font-weight: 700; text-align: left; font-family: 'Rajdhani', sans-serif; }
     .wd-cal-shapes { display: flex; flex-wrap: wrap; align-items: center; gap: 5px; margin-top: 10px; min-height: 14px; }
+    /* Modern event chips: color + icon + concise title; times remain in day details. */
+    .wd-cal-day { min-height: 108px; padding: 8px; text-align: left; display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+    .wd-cal-day b { font-size: .93rem; line-height: 1; }
+    .wd-cal-day.has-mark { background: linear-gradient(155deg, rgba(15,31,51,.96), rgba(8,15,28,.95)); }
+    .wd-cal-day.is-out { opacity: .36; }
+    .wd-cal-day:focus-visible { outline: 2px solid var(--cyan); outline-offset: 2px; }
+    .wd-cal-entries { display: flex; flex-direction: column; gap: 5px; width: 100%; min-width: 0; }
+    .wd-cal-chip { display:flex; align-items: center; gap: 6px; min-width:0; max-width:100%; padding: 5px 6px; border-radius: 5px; font-family: 'Rajdhani',sans-serif; font-size: .81rem; font-weight: 700; line-height: 1.05; border-left: 2px solid currentColor; }
+    .wd-cal-chip .wd-shape { flex-shrink:0; transform:scale(.82); }
+    .wd-cal-chip-label { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; min-width: 0; }
+    .wd-cal-chip.league { color:#f5c451; background:rgba(245,196,81,.1); }
+    .wd-cal-chip.practice { color:#c084fc; background:rgba(192,132,252,.1); }
+    .wd-cal-chip.event { color:#2dd4bf; background:rgba(45,212,191,.1); }
+    .wd-cal-chip.pending { color:#38bdf8; background:rgba(56,189,248,.1); }
+    .wd-cal-chip.other { color:#aab8ce; background:rgba(148,163,184,.1); }
+    .wd-cal-overflow { font-size:.69rem; font-weight:700; color:#9aacbf; padding-left:4px; letter-spacing:.2px; }
+    @media (max-width: 800px) {
+      .wd-cal-day { min-height: 76px; padding: 5px; gap: 5px; }
+      .wd-cal-chip { font-size: .68rem; padding: 4px 3px; gap: 3px; }
+      .wd-cal-chip .wd-shape { transform:scale(.65); margin-left:-1px; margin-right:-1px; }
+      .wd-cal-overflow { font-size: .61rem; }
+    }
+    @media (max-width: 520px) {
+      .wd-cal-weekdays, .wd-cal-grid { gap:3px; }
+      .wd-cal-day { min-height: 71px; padding: 4px 3px; border-radius:6px; }
+      .wd-cal-day b { font-size:.77rem; }
+      .wd-cal-chip { font-size:.62rem; padding:3px 2px; border-left-width:2px; }
+      .wd-cal-chip .wd-shape { display:none; }
+    }
     .wd-shape { width: 10px; height: 10px; display: inline-block; flex-shrink: 0; }
     .wd-shape.league {
       width: 12px;
@@ -5168,6 +5217,18 @@
     </div>
   </div>
 
+  <!-- MATCH RECORD ARCHIVE: separate paginated popup -->
+  <div class="wd-match-archive-overlay" id="wdMatchArchiveModal" role="dialog" aria-modal="true" aria-hidden="true" aria-label="All Match Records" onclick="if(event.target === this) closeWdMatchArchive()">
+    <div class="wd-match-archive-card">
+      <div class="wd-match-archive-header">
+        <div><div class="wd-match-record-title">MATCH RECORD // ARCHIVE</div><div id="wdMatchArchiveStatus" class="wd-match-archive-status"></div></div>
+        <button type="button" class="wd-match-archive-close" onclick="closeWdMatchArchive()" aria-label="Close match record archive">×</button>
+      </div>
+      <div class="wd-match-archive-scroll" id="wdMatchArchiveScroll"><div id="wdMatchArchiveList"></div></div>
+      <div class="wd-match-archive-pagination" id="wdMatchArchivePager" aria-label="Match record pages"></div>
+    </div>
+  </div>
+
   <!-- PROFILE PICTURE LIGHTBOX MODAL -->
   <div id="avatarLightbox" onclick="closeAvatarLightbox()" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(4,7,13,0.92); backdrop-filter:blur(12px); z-index:9999; display:none; align-items:center; justify-content:center; padding:20px; cursor:pointer;">
     <div style="position:relative; max-width:90vw; max-height:90vh;" onclick="event.stopPropagation()">
@@ -6284,89 +6345,136 @@ function renderFirestoreReplays(cloudReplays) {
       modal.classList.add('active');
     }
 
-    // Compact expandable match history, grouped by match date.
-    // Shared by initial dossier rendering and live roster refreshes.
+    // Latest results in the dossier; full paginated archive in a separate overlay.
+    var wdMatchArchive = [];
+    var wdMatchPage = 1;
+    var WD_MATCH_PAGE_SIZE = 5;
+
+    function wdGetSortedMatches(history) {
+      var records = [];
+      (Array.isArray(history) ? history : []).forEach(function(entry, index) {
+        if (!entry) return;
+        var rawWeek = String(entry.week || '');
+        var found = rawWeek.match(/\b(\d{4}-\d{2}-\d{2})\b/);
+        var date = found ? found[1] : (rawWeek.trim() || 'Date unknown');
+        records.push({entry: entry, date: date, index: index});
+      });
+      records.sort(function(a, b) {
+        var da = /^\d{4}-\d{2}-\d{2}$/.test(a.date);
+        var db = /^\d{4}-\d{2}-\d{2}$/.test(b.date);
+        if (da && db && a.date !== b.date) return b.date.localeCompare(a.date);
+        if (da !== db) return da ? -1 : 1;
+        return a.index - b.index;
+      });
+      return records;
+    }
+
+    function wdBuildMatchList(items, parent) {
+      var lastDate = null;
+      items.forEach(function(item) {
+        if (lastDate !== item.date) {
+          var dateHeader = document.createElement('div');
+          dateHeader.className = 'wd-match-record-date';
+          dateHeader.textContent = item.date;
+          parent.appendChild(dateHeader);
+          lastDate = item.date;
+        }
+        var row = document.createElement('div');
+        row.className = 'match-log-entry wd-match-row';
+        var description = document.createElement('span');
+        description.className = 'wd-match-record-description';
+        description.textContent = item.entry.set || 'Match';
+        var result = document.createElement('span');
+        result.className = 'wd-match-record-result ' + (item.entry.win ? 'res-win' : 'res-loss');
+        result.textContent = (item.entry.res || (item.entry.win ? 'WIN' : 'LOSS')) + (item.entry.score ? ' (' + item.entry.score + ')' : '');
+        row.appendChild(description);
+        row.appendChild(result);
+        parent.appendChild(row);
+      });
+    }
+
     function renderDossierMatchRecords(history) {
       var container = document.getElementById('m-history-log');
       if (!container) return;
-
-      // Maintain the user's expanded/collapsed choice during live updates.
-      var oldDetails = container.querySelector('.wd-match-record-details');
-      var wasOpen = oldDetails ? oldDetails.open : false;
+      wdMatchArchive = wdGetSortedMatches(history);
       container.replaceChildren();
-
       var heading = document.createElement('div');
       heading.className = 'wd-match-record-title';
       heading.textContent = 'MATCH RECORD';
       container.appendChild(heading);
-
-      if (!Array.isArray(history) || history.length === 0) {
+      if (!wdMatchArchive.length) {
         var empty = document.createElement('div');
         empty.className = 'wd-match-record-empty';
         empty.textContent = 'No official BWCL matches recorded yet.';
         container.appendChild(empty);
+        closeWdMatchArchive();
         return;
       }
+      var recent = document.createElement('div');
+      recent.className = 'wd-match-recent';
+      wdBuildMatchList(wdMatchArchive.slice(0, 2), recent);
+      container.appendChild(recent);
+      if (wdMatchArchive.length > 2) {
+        var open = document.createElement('button');
+        open.type = 'button';
+        open.className = 'wd-match-archive-open';
+        open.textContent = 'VIEW ALL MATCH RECORDS (' + wdMatchArchive.length + ')  →';
+        open.onclick = function() { openWdMatchArchive(); };
+        container.appendChild(open);
+      }
+      var overlay = document.getElementById('wdMatchArchiveModal');
+      if (overlay && overlay.classList.contains('active')) renderWdMatchArchivePage();
+    }
 
-      var grouped = new Map();
-      history.forEach(function(entry, index) {
-        if (!entry) return;
-        var rawWeek = String(entry.week || '');
-        var match = rawWeek.match(/\b(\d{4}-\d{2}-\d{2})\b/);
-        var date = match ? match[1] : (rawWeek.trim() || 'Date unknown');
-        if (!grouped.has(date)) grouped.set(date, []);
-        grouped.get(date).push({entry: entry, index: index});
-      });
-      var dates = Array.from(grouped.keys()).sort(function(a, b) {
-        var validA = /^\d{4}-\d{2}-\d{2}$/.test(a);
-        var validB = /^\d{4}-\d{2}-\d{2}$/.test(b);
-        if (validA && validB) return b.localeCompare(a);
-        if (validA) return -1;
-        if (validB) return 1;
-        return a.localeCompare(b);
-      });
+    function openWdMatchArchive() {
+      var overlay = document.getElementById('wdMatchArchiveModal');
+      if (!overlay) return;
+      wdMatchPage = 1;
+      overlay.classList.add('active');
+      overlay.setAttribute('aria-hidden', 'false');
+      renderWdMatchArchivePage();
+      var closeButton = overlay.querySelector('.wd-match-archive-close');
+      if (closeButton) closeButton.focus();
+    }
 
-      var details = document.createElement('details');
-      details.className = 'wd-match-record-details';
-      details.open = wasOpen;
-      var summary = document.createElement('summary');
-      summary.className = 'wd-match-record-toggle';
-      var summaryText = document.createElement('span');
-      summaryText.textContent = 'VIEW ALL MATCH RECORDS';
-      var summaryCount = document.createElement('span');
-      summaryCount.className = 'wd-match-record-count';
-      summaryCount.textContent = history.length + ' SET' + (history.length === 1 ? '' : 'S') + ' · ' + dates.length + ' DATE' + (dates.length === 1 ? '' : 'S');
-      summary.appendChild(summaryText);
-      summary.appendChild(summaryCount);
-      details.appendChild(summary);
+    function closeWdMatchArchive() {
+      var overlay = document.getElementById('wdMatchArchiveModal');
+      if (overlay) {
+        overlay.classList.remove('active');
+        overlay.setAttribute('aria-hidden', 'true');
+      }
+    }
 
-      var body = document.createElement('div');
-      body.className = 'wd-match-record-body';
-      dates.forEach(function(date) {
-        var section = document.createElement('section');
-        section.className = 'wd-match-record-date-group';
-        var dateHeading = document.createElement('div');
-        dateHeading.className = 'wd-match-record-date';
-        dateHeading.textContent = date + '  ·  ' + grouped.get(date).length + ' SET' + (grouped.get(date).length === 1 ? '' : 'S');
-        section.appendChild(dateHeading);
-        grouped.get(date).forEach(function(item) {
-          var entry = item.entry;
-          var row = document.createElement('div');
-          row.className = 'match-log-entry';
-          var description = document.createElement('span');
-          description.className = 'wd-match-record-description';
-          description.textContent = entry.set || 'Match';
-          var result = document.createElement('span');
-          result.className = 'wd-match-record-result ' + (entry.win ? 'res-win' : 'res-loss');
-          result.textContent = (entry.res || (entry.win ? 'WIN' : 'LOSS')) + (entry.score ? ' (' + entry.score + ')' : '');
-          row.appendChild(description);
-          row.appendChild(result);
-          section.appendChild(row);
-        });
-        body.appendChild(section);
-      });
-      details.appendChild(body);
-      container.appendChild(details);
+    function renderWdMatchArchivePage() {
+      var body = document.getElementById('wdMatchArchiveList');
+      var pager = document.getElementById('wdMatchArchivePager');
+      var status = document.getElementById('wdMatchArchiveStatus');
+      if (!body || !pager || !status) return;
+      var pages = Math.max(1, Math.ceil(wdMatchArchive.length / WD_MATCH_PAGE_SIZE));
+      wdMatchPage = Math.min(Math.max(1, wdMatchPage), pages);
+      var from = (wdMatchPage - 1) * WD_MATCH_PAGE_SIZE;
+      body.replaceChildren();
+      pager.replaceChildren();
+      wdBuildMatchList(wdMatchArchive.slice(from, from + WD_MATCH_PAGE_SIZE), body);
+      status.textContent = wdMatchArchive.length + ' SETS  ·  PAGE ' + wdMatchPage + ' / ' + pages;
+      function addPage(label, target, active, disabled) {
+        var button = document.createElement('button');
+        button.type = 'button';
+        button.className = 'wd-match-page' + (active ? ' active' : '');
+        button.textContent = label;
+        button.disabled = !!disabled;
+        if (active) button.setAttribute('aria-current', 'page');
+        button.onclick = function() {
+          wdMatchPage = target;
+          renderWdMatchArchivePage();
+          var scroller = document.getElementById('wdMatchArchiveScroll');
+          if (scroller) scroller.scrollTop = 0;
+        };
+        pager.appendChild(button);
+      }
+      addPage('‹', wdMatchPage - 1, false, wdMatchPage === 1);
+      for (var page = 1; page <= pages; page++) addPage(String(page), page, page === wdMatchPage, false);
+      addPage('›', wdMatchPage + 1, false, wdMatchPage === pages);
     }
 
     function refreshOpenDossierStats() {
@@ -6387,6 +6495,7 @@ function renderFirestoreReplays(cloudReplays) {
     }
 
     function closeModal() {
+      closeWdMatchArchive();
       const modal = document.getElementById('dossierModal');
       modal.classList.remove('active');
     }
@@ -9717,11 +9826,25 @@ async function renderUserMaps() {
         if (dayNumber < 1 || dayNumber > daysInMonth) button.classList.add('is-out');
         if (key === calendarDateKey(new Date())) button.classList.add('is-today');
         if (key === selectedCalendarKey) button.classList.add('is-selected');
-        var marks = items.filter(function(item) { return item.key === key && calendarShapeClass(item); }).slice(0, 6);
-        if (marks.length) button.classList.add('has-mark');
-        button.innerHTML = '<b>' + cellDate.getDate() + '</b><span class="wd-cal-shapes">' + marks.map(function(item) {
-          return '<i class="wd-shape ' + calendarShapeClass(item) + '"></i>';
-        }).join('') + '</span>';
+        var dayEntries = items.filter(function(item) { return item.key === key; });
+        if (dayEntries.length) button.classList.add('has-mark');
+        var visibleEntries = dayEntries.slice(0, 2);
+        var chipsHtml = visibleEntries.map(function(item) {
+          var type = calendarShapeClass(item) || 'other';
+          // User-provided event titles are escaped before placing them in HTML.
+          // Calendar tiles use concise category headings; full titles remain in the day detail popup.
+          var label = type === 'league' ? 'Clan League' :
+                      type === 'practice' ? 'CW' :
+                      type === 'event' ? 'Event' :
+                      type === 'pending' ? 'Pending' :
+                      String(item.title || 'Event').trim();
+          return '<span class="wd-cal-chip ' + type + '">' +
+            (type === 'other' ? '' : '<i class="wd-shape ' + type + '" aria-hidden="true"></i>') +
+            '<span class="wd-cal-chip-label">' + escapeMatchHtml(label) + '</span></span>';
+        }).join('');
+        var more = dayEntries.length > 2 ? '<span class="wd-cal-overflow">+' + (dayEntries.length - 2) + ' more</span>' : '';
+        button.innerHTML = '<b>' + cellDate.getDate() + '</b><span class="wd-cal-entries">' + chipsHtml + more + '</span>';
+        if (dayEntries.length) button.setAttribute('aria-label', key + ': ' + dayEntries.length + ' scheduled items');
         button.onclick = (function(dateKey) { return function() { selectClanCalendarDay(dateKey); }; })(key);
         grid.appendChild(button);
       }
