@@ -8729,18 +8729,18 @@ async function renderUserMaps() {
         textPart = s.substring(0, mOutcome.index).trim();
         var out = mOutcome[1].toUpperCase();
         if (out === 'W' || out === 'WIN') {
-          resBadge = '<span style="color:var(--win); font-weight:bold; font-family:'Share Tech Mono',monospace;">WIN</span>';
+          resBadge = '<span style="color:var(--win); font-weight:bold; font-family:\'Share Tech Mono\',monospace;">WIN</span>';
         } else if (out === 'L' || out === 'LOSS') {
-          resBadge = '<span style="color:var(--loss); font-weight:bold; font-family:'Share Tech Mono',monospace;">LOSS</span>';
+          resBadge = '<span style="color:var(--loss); font-weight:bold; font-family:\'Share Tech Mono\',monospace;">LOSS</span>';
         } else if (out === 'POSTPONED') {
-          resBadge = '<span style="color:#fbbf24; font-weight:bold; font-family:'Share Tech Mono',monospace; background:rgba(251,191,36,0.12); padding:1px 6px; border-radius:3px; border:1px solid rgba(251,191,36,0.35);">POSTPONED</span>';
+          resBadge = '<span style="color:#fbbf24; font-weight:bold; font-family:\'Share Tech Mono\',monospace; background:rgba(251,191,36,0.12); padding:1px 6px; border-radius:3px; border:1px solid rgba(251,191,36,0.35);">POSTPONED</span>';
         }
       } else if (s.slice(-2).toUpperCase() === ' W') {
         textPart = s.slice(0, -2).trim();
-        resBadge = '<span style="color:var(--win); font-weight:bold; font-family:'Share Tech Mono',monospace;">WIN</span>';
+        resBadge = '<span style="color:var(--win); font-weight:bold; font-family:\'Share Tech Mono\',monospace;">WIN</span>';
       } else if (s.slice(-2).toUpperCase() === ' L') {
         textPart = s.slice(0, -2).trim();
-        resBadge = '<span style="color:var(--loss); font-weight:bold; font-family:'Share Tech Mono',monospace;">LOSS</span>';
+        resBadge = '<span style="color:var(--loss); font-weight:bold; font-family:\'Share Tech Mono\',monospace;">LOSS</span>';
       }
 
       textPart = textPart
