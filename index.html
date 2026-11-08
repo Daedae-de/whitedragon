@@ -3966,54 +3966,12 @@
         </thead>
         
 <tbody id="bwcl-standings-tbody">
-          <tr>
-            <td>1</td>
-            <td><strong>SAS</strong></td>
-            <td>5</td>
-            <td>4 - 1</td>
-            <td>20 - 10</td>
-            <td><strong style="color:var(--cyan);">24</strong></td>
-          </tr>
-          <tr>
-            <td>2</td>
-            <td><strong>dB)-3</strong></td>
-            <td>5</td>
-            <td>4 - 1</td>
-            <td>19 - 11</td>
-            <td><strong style="color:var(--cyan);">21</strong></td>
-          </tr>
-          <tr style="background:rgba(0, 229, 255, 0.08); border-left: 4px solid var(--cyan);">
-            <td><strong>3</strong></td>
-            <td><strong style="color:#fff;">White Dragon [WD]</strong></td>
-            <td>5</td>
-            <td>4 - 1</td>
-            <td>18 - 12</td>
-            <td><strong style="color:var(--cyan);">20</strong></td>
-          </tr>
-          <tr>
-            <td>4</td>
-            <td><strong>RED-3</strong></td>
-            <td>5</td>
-            <td>1 - 4</td>
-            <td>10 - 20</td>
-            <td>10</td>
-          </tr>
-          <tr>
-            <td>5</td>
-            <td><strong>Cwt)-3</strong></td>
-            <td>5</td>
-            <td>1 - 4</td>
-            <td>9 - 21</td>
-            <td>8</td>
-          </tr>
-          <tr>
-            <td>6</td>
-            <td><strong>Shadow-2</strong></td>
-            <td>5</td>
-            <td>0 - 5</td>
-            <td>4 - 26</td>
-            <td>2</td>
-          </tr>
+          <tr><td>1</td><td><strong>SAS</strong></td><td>–</td><td>–</td><td>–</td><td><strong style="color:var(--cyan);">28</strong></td></tr>
+          <tr style="background:rgba(0, 229, 255, 0.08); border-left:4px solid var(--cyan);"><td>2</td><td><strong style="color:#fff;">White Dragon [WD]</strong></td><td>–</td><td>–</td><td>–</td><td><strong style="color:var(--cyan);">25</strong></td></tr>
+          <tr><td>3</td><td><strong>dB)-3</strong></td><td>–</td><td>–</td><td>–</td><td><strong style="color:var(--cyan);">22</strong></td></tr>
+          <tr><td>4</td><td><strong>Cwt)-3</strong></td><td>–</td><td>–</td><td>–</td><td><strong style="color:var(--cyan);">15</strong></td></tr>
+          <tr><td>5</td><td><strong>RED-3</strong></td><td>–</td><td>–</td><td>–</td><td><strong style="color:var(--cyan);">10</strong></td></tr>
+          <tr><td>6</td><td><strong>Shadow-2</strong></td><td>–</td><td>–</td><td>–</td><td><strong style="color:var(--cyan);">0</strong></td></tr>
         </tbody>
       </table>
     </div>
@@ -5716,97 +5674,66 @@
       const tbody = document.getElementById("bwcl-standings-tbody");
       if (!tbody) return;
 
-      const clanDetails = {
-        "SAS":          { played: 5, score: "4 - 1", sets: "20 - 10" },
-        "dB)-3":        { played: 5, score: "4 - 1", sets: "19 - 11" },
-        "White Dragon": { played: 5, score: "4 - 1", sets: "18 - 12" },
-        "RED-3":        { played: 5, score: "1 - 4", sets: "10 - 20" },
-        "Cwt)-3":       { played: 5, score: "1 - 4", sets: "9 - 21" },
-        "Shadow-2":     { played: 5, score: "0 - 5", sets: "4 - 26" }
-      };
-
-      let divisionDFound = false;
-      let teams = [];
-
-      data.table.rows.forEach(row => {
-        if (!row.c) return;
-        const cells = row.c.map(c =>
-          (c && c.v !== null && c.v !== undefined) ? c.v.toString().trim() : ""
-        );
-        const line = cells.join(" ");
-
-        if (line.toLowerCase().includes("division d")) {
-          divisionDFound = true;
-          return;
-        }
-        if (divisionDFound && line.toLowerCase().includes("division e")) {
-          divisionDFound = false;
-        }
-
-        if (divisionDFound) {
-          for (let i = 0; i < cells.length; i++) {
-            const match = cells[i].match(/^#?([1-6])\s+(.+)$/);
-            if (match) {
-              const pos = match[1];
-              const name = match[2].trim();
-              let pts = 0;
-
-              for (let j = i + 1; j < cells.length; j++) {
-                if (cells[j] && !isNaN(cells[j])) {
-                  pts = cells[j];
-                  break;
-                }
-              }
-
-              teams.push({ pos, name, pts });
-              break;
-            }
-          }
-        }
+      // Rankings worksheet: col A = #rank, B = clan, C = points.
+      // Identify the Division D header first; do not assume its row stays at 21.
+      const rows = data.table.rows.map(function(row) {
+        return (row && Array.isArray(row.c) ? row.c : []).map(function(cell) {
+          if (!cell) return "";
+          const value = cell.v !== null && cell.v !== undefined ? cell.v : (cell.f || "");
+          return String(value).trim();
+        });
       });
+      let divisionHeader = -1;
+      for (let i = 0; i < rows.length; i++) {
+        if (rows[i].some(function(cell) { return /^division\s*d$/i.test(cell); })) {
+          divisionHeader = i;
+          break;
+        }
+      }
 
-      if (teams.length > 0) {
-        tbody.innerHTML = "";
-
-        teams.forEach(t => {
-          const isWD =
-            t.name.toLowerCase().includes("white dragon") ||
-            t.name.toLowerCase().includes("[wd]");
-
-          let extra = { played: "-", score: "-", sets: "-" };
-          for (const k in clanDetails) {
-            if (t.name.toLowerCase().includes(k.toLowerCase())) {
-              extra = clanDetails[k];
-              break;
-            }
+      const teams = [];
+      if (divisionHeader !== -1) {
+        for (let i = divisionHeader + 1; i < rows.length && teams.length < 6; i++) {
+          const cells = rows[i];
+          // Do not include a later division/section accidentally.
+          if (cells.some(function(cell) { return /^division\s+[a-z]$/i.test(cell); })) break;
+          const position = (cells[0] || "").match(/^#?\s*([1-6])$/);
+          const name = (cells[1] || "").trim();
+          const pointText = (cells[2] || "").replace(/,/g, ".");
+          if (!position || !name || pointText === "" || !Number.isFinite(Number(pointText))) {
+            if (teams.length) break;
+            continue;
           }
+          teams.push({ pos: Number(position[1]), name: name, pts: cells[2] });
+        }
+      }
 
+      // Only replace the fallback when we have all six valid, distinct ranks.
+      if (teams.length === 6 && new Set(teams.map(function(t) { return t.pos; })).size === 6) {
+        const fragment = document.createDocumentFragment();
+        teams.forEach(function(t) {
+          const isWD = /white\s*dragon|\[wd\]/i.test(t.name);
           const tr = document.createElement("tr");
           if (isWD) {
             tr.style.background = "rgba(0, 229, 255, 0.08)";
             tr.style.borderLeft = "4px solid var(--cyan)";
           }
-
-          tr.innerHTML = `
-            <td>${isWD ? `<strong>${t.pos}</strong>` : t.pos}</td>
-            <td><strong style="${isWD ? 'color:#fff;' : ''}">${isWD ? 'White Dragon [WD]' : t.name}</strong></td>
-            <td>${extra.played}</td>
-            <td>${extra.score}</td>
-            <td>${extra.sets}</td>
-            <td><strong style="color:var(--cyan);">${t.pts}</strong></td>
-          `;
-          tbody.appendChild(tr);
+          const values = [t.pos, isWD ? "White Dragon [WD]" : t.name, "–", "–", "–", t.pts];
+          values.forEach(function(value, index) {
+            const td = document.createElement("td");
+            const element = document.createElement(index === 1 || index === 5 || (index === 0 && isWD) ? "strong" : "span");
+            element.textContent = String(value);
+            if (index === 1 && isWD) element.style.color = "#fff";
+            if (index === 5) element.style.color = "var(--cyan)";
+            td.appendChild(element);
+            tr.appendChild(td);
+          });
+          fragment.appendChild(tr);
         });
-
-        console.info(
-          "BWCL Live Sync erfolgreich: " + teams.length +
-          " Teams aus Google Sheets geladen."
-        );
+        tbody.replaceChildren(fragment);
+        console.info("BWCL Live Sync erfolgreich: Division D mit 6 Teams geladen. CW-Statistiken sind in Rankings nicht enthalten.");
       } else {
-        console.warn(
-          "BWCL Live Sync: Verbindung erfolgreich, aber keine Division-D-Teams " +
-          "im erwarteten Tabellenformat gefunden. Fallback bleibt sichtbar."
-        );
+        console.warn("BWCL Live Sync: Division D nicht vollständig im erwarteten Rankings-Format (Platz, Clan, Punkte) gefunden. Fallback bleibt sichtbar.");
       }
     };
 
