@@ -2457,6 +2457,7 @@
     .match-header span.week { color: var(--cyan); font-weight: 800; }
     .match-header span.score-win { color: var(--win); font-weight: 900; }
     .match-header span.score-loss { color: var(--loss); font-weight: 900; }
+    .match-header span.score-postponed { color: #fbbf24; font-weight: 900; }
     .set-row {
       display: flex;
       justify-content: space-between;
@@ -4068,6 +4069,7 @@
             <option value="WIN">WIN</option>
             <option value="LOSS">LOSS</option>
             <option value="UPCOMING">UPCOMING</option>
+            <option value="POSTPONED">POSTPONED</option>
           </select>
         </div>
         <div>
@@ -4119,7 +4121,7 @@
                   <input type="text" id="b-opp2" placeholder="Opp 2..." style="width:90px; background:#0d1627; border:1px solid var(--border-color); color:#fff; padding:4px;"> <select id="b-oppr2" style="width:45px; background:#0d1627; border:1px solid var(--border-color); color:#fbbf24; padding:4px;"><option value="Z">Z</option><option value="P">P</option><option value="T">T</option></select>
                 </div>
               </td>
-              <td style="padding:4px; text-align:center;"><select id="b-result" style="background:#0d1627; border:1px solid var(--border-color); color:var(--win); padding:4px; font-weight:bold;"><option value="WIN">WIN</option><option value="LOSS" style="color:var(--loss);">LOSS</option></select></td>
+              <td style="padding:4px; text-align:center;"><select id="b-result" onchange="this.style.color = (this.value === 'WIN') ? 'var(--win)' : ((this.value === 'LOSS') ? 'var(--loss)' : '#fbbf24')" style="background:#0d1627; border:1px solid var(--border-color); color:var(--win); padding:4px; font-weight:bold;"><option value="WIN">WIN</option><option value="LOSS" style="color:var(--loss);">LOSS</option><option value="POSTPONED" style="color:#fbbf24;">POSTPONED</option></select></td>
               <td style="padding:4px; text-align:right;"><button type="button" onclick="addSetFromTableBuilder()" class="btn-download-rep" style="background:var(--cyan); color:#070a12; font-weight:800; font-size:0.7rem; padding:4px 8px;">+ ADD</button></td>
             </tr>
           </tbody>
@@ -8722,21 +8724,23 @@ async function renderUserMaps() {
       var resBadge = '';
       var textPart = s;
 
-      var mOutcome = s.match(/\|\s*(WIN|LOSS|W|L)\s*$/i);
+      var mOutcome = s.match(/\|\s*(WIN|LOSS|W|L|POSTPONED)\s*$/i);
       if (mOutcome) {
         textPart = s.substring(0, mOutcome.index).trim();
         var out = mOutcome[1].toUpperCase();
         if (out === 'W' || out === 'WIN') {
-          resBadge = '<span style="color:var(--win); font-weight:bold; font-family:\'Share Tech Mono\',monospace;">WIN</span>';
-        } else {
-          resBadge = '<span style="color:var(--loss); font-weight:bold; font-family:\'Share Tech Mono\',monospace;">LOSS</span>';
+          resBadge = '<span style="color:var(--win); font-weight:bold; font-family:'Share Tech Mono',monospace;">WIN</span>';
+        } else if (out === 'L' || out === 'LOSS') {
+          resBadge = '<span style="color:var(--loss); font-weight:bold; font-family:'Share Tech Mono',monospace;">LOSS</span>';
+        } else if (out === 'POSTPONED') {
+          resBadge = '<span style="color:#fbbf24; font-weight:bold; font-family:'Share Tech Mono',monospace; background:rgba(251,191,36,0.12); padding:1px 6px; border-radius:3px; border:1px solid rgba(251,191,36,0.35);">POSTPONED</span>';
         }
       } else if (s.slice(-2).toUpperCase() === ' W') {
         textPart = s.slice(0, -2).trim();
-        resBadge = '<span style="color:var(--win); font-weight:bold; font-family:\'Share Tech Mono\',monospace;">WIN</span>';
+        resBadge = '<span style="color:var(--win); font-weight:bold; font-family:'Share Tech Mono',monospace;">WIN</span>';
       } else if (s.slice(-2).toUpperCase() === ' L') {
         textPart = s.slice(0, -2).trim();
-        resBadge = '<span style="color:var(--loss); font-weight:bold; font-family:\'Share Tech Mono\',monospace;">LOSS</span>';
+        resBadge = '<span style="color:var(--loss); font-weight:bold; font-family:'Share Tech Mono',monospace;">LOSS</span>';
       }
 
       textPart = textPart
@@ -8987,12 +8991,16 @@ async function renderUserMaps() {
           var cleanText = line;
           var isWin = null;
 
-          // Preferred format: "... | W", "... | L", "... | WIN", "... | LOSS".
-          var outcomeMatch = line.match(/(?:\|\s*|\s+)(WIN|LOSS|W|L)\s*$/i);
+          // Preferred format: "... | W", "... | L", "... | WIN", "... | LOSS", "... | POSTPONED".
+          var outcomeMatch = line.match(/(?:\|\s*|\s+)(WIN|LOSS|W|L|POSTPONED)\s*$/i);
           if (outcomeMatch) {
             cleanText = line.substring(0, outcomeMatch.index).trim();
             var outcome = outcomeMatch[1].toUpperCase();
-            isWin = (outcome === 'W' || outcome === 'WIN');
+            if (outcome === 'POSTPONED') {
+              isWin = null;
+            } else {
+              isWin = (outcome === 'W' || outcome === 'WIN');
+            }
           }
 
           // Read the score from the WD player's perspective when no explicit
@@ -9192,9 +9200,9 @@ async function renderUserMaps() {
         var card = document.createElement('div');
         card.className = 'card';
         card.id = 'match-card-' + m.id;
-        card.style.borderLeft = m.resultType === 'WIN' ? '4px solid var(--win)' : (m.resultType === 'LOSS' ? '4px solid var(--loss)' : '4px solid var(--cyan)');
+        card.style.borderLeft = m.resultType === 'WIN' ? '4px solid var(--win)' : (m.resultType === 'LOSS' ? '4px solid var(--loss)' : (m.resultType === 'POSTPONED' ? '4px solid #fbbf24' : '4px solid var(--cyan)'));
 
-        var resClass = m.resultType === 'WIN' ? 'score-win' : (m.resultType === 'LOSS' ? 'score-loss' : 'week');
+        var resClass = m.resultType === 'WIN' ? 'score-win' : (m.resultType === 'LOSS' ? 'score-loss' : (m.resultType === 'POSTPONED' ? 'score-postponed' : 'week'));
         var displayTitle = String(m.title || '').trim() || 'Untitled Match';
         var displayDate = String(m.week || '').trim();
         if (!displayDate || displayDate.toUpperCase() === 'MATCH FIXTURE') {
