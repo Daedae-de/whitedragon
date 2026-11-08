@@ -3668,6 +3668,12 @@
     .wd-cal-chip.pending { color:#38bdf8; background:rgba(56,189,248,.1); }
     .wd-cal-chip.other { color:#aab8ce; background:rgba(148,163,184,.1); }
     .wd-cal-overflow { font-size:.69rem; font-weight:700; color:#9aacbf; padding-left:4px; letter-spacing:.2px; }
+    /* Category and opponent share ONE calendar tile; exact times live in the detail dialog. */
+    .wd-cal-chip { display:flex; flex-direction:column; align-items:stretch; gap:4px; padding:6px 7px; }
+    .wd-cal-chip-head { display:flex; align-items:center; gap:5px; font-family:'Orbitron',sans-serif; font-size:.59rem; font-weight:800; letter-spacing:.45px; white-space:nowrap; overflow:hidden; }
+    .wd-cal-chip-label { display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; white-space:normal; overflow:hidden; overflow-wrap:anywhere; color:#e8f1ff; font-size:.79rem; line-height:1.15; font-weight:700; }
+    .wd-cal-modal-category { display:block; font-family:'Orbitron',sans-serif; font-size:.62rem; font-weight:800; font-style:normal; color:var(--cyan); margin-bottom:4px; letter-spacing:.7px; }
+
     @media (max-width: 800px) {
       .wd-cal-day { min-height: 76px; padding: 5px; gap: 5px; }
       .wd-cal-chip { font-size: .68rem; padding: 4px 3px; gap: 3px; }
@@ -3680,6 +3686,15 @@
       .wd-cal-day b { font-size:.77rem; }
       .wd-cal-chip { font-size:.62rem; padding:3px 2px; border-left-width:2px; }
       .wd-cal-chip .wd-shape { display:none; }
+    }
+    @media (max-width: 800px) {
+      .wd-cal-chip { padding:4px 3px; gap:3px; }
+      .wd-cal-chip-head { font-family:'Rajdhani',sans-serif; font-size:.66rem; letter-spacing:0; }
+      .wd-cal-chip-label { font-size:.67rem; }
+    }
+    @media (max-width: 520px) {
+      .wd-cal-chip-head { font-size:.58rem; }
+      .wd-cal-chip-label { font-size:.60rem; -webkit-line-clamp:2; }
     }
     .wd-shape { width: 10px; height: 10px; display: inline-block; flex-shrink: 0; }
     .wd-shape.league {
@@ -3909,8 +3924,8 @@
         <div class="wd-cal-weekdays"><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span></div>
         <div class="wd-cal-grid" id="wd-cal-grid"></div>
         <div class="wd-cal-legend">
-          <span><i class="wd-shape league"></i> League</span>
-          <span><i class="wd-shape practice"></i> Practice</span>
+          <span><i class="wd-shape league"></i> Clan League</span>
+          <span><i class="wd-shape practice"></i> CW</span>
           <span><i class="wd-shape event"></i> Event</span>
           <span><i class="wd-shape pending"></i> Pending</span>
         </div>
@@ -5274,7 +5289,7 @@
           </div>
           <select id="wd-event-kind" aria-label="Event type">
             <option value="League">League</option>
-            <option value="Practice">Practice</option>
+            <option value="Practice">CW / Team Practice</option>
             <option value="Event">Event</option>
           </select>
           <textarea id="wd-event-note" rows="2" placeholder="Note"></textarea>
@@ -9616,18 +9631,63 @@ async function renderUserMaps() {
       return new Date(Number(found[3]), months[found[2].slice(0, 3).toLowerCase()], Number(found[1]));
     }
 
+    // Display-only category mapping: existing Firestore documents remain unchanged.
+    function calendarMatchType(category) {
+      var cat = String(category || '').toLowerCase().trim();
+      if (cat === 'clan league' || cat.indexOf('bwcl') !== -1) return 'league';
+      if (cat === 'clan match' || cat === 'cw' || cat.indexOf('friendly cw') !== -1) return 'practice';
+      return 'other';
+    }
+
+    function calendarMatchTitle(rawTitle, type) {
+      var text = String(rawTitle || '').trim();
+      if (type !== 'league' && type !== 'practice') return text || 'Match';
+      // Standardize matches without destroying the opponent name.
+      var m = text.match(/^(.+?)\s+(?:vs\.?|versus|v\.)\s+(.+)$/i);
+      if (!m) return text || 'WD vs Opponent TBA';
+      var left = m[1].trim(), right = m[2].trim();
+      var isWD = function(name) { return /^(?:white\s*dragon(?:\s*\[WD\])?|WD(?:\s*\[WD\])?)$/i.test(name); };
+      if (isWD(left)) return 'WD vs ' + right;
+      if (isWD(right)) return 'WD vs ' + left;
+      return text;
+    }
+
+    function calendarEntryType(item) {
+      if (item.eventKind) {
+        var ek = String(item.eventKind).toLowerCase();
+        if (ek === 'practice' || ek === 'cw' || ek === 'clan match') return 'practice';
+        if (ek === 'league' || ek === 'clan league') return 'league';
+        if (ek === 'pending') return 'pending';
+        return 'event';
+      }
+      if (item.kind === 'match') {
+        var matchType = calendarMatchType(item.matchCategory);
+        if (matchType !== 'other') return matchType;
+        return item.result === 'UPCOMING' ? 'pending' : 'event';
+      }
+      return 'other';
+    }
+
+    function calendarCategoryLabel(item) {
+      var type = calendarEntryType(item);
+      return type === 'league' ? 'CLAN LEAGUE' : type === 'practice' ? 'CW' :
+             type === 'pending' ? 'PENDING' : type === 'event' ? 'EVENT' : 'MATCH';
+    }
+
     function calendarItems() {
       var items = [];
       getMatchesList().forEach(function(match) {
         var date = parseClanDate(match.week);
         if (!date) return;
+        var matchType = calendarMatchType(match.category);
         items.push({
           key: calendarDateKey(date),
           time: date.getTime(),
           kind: 'match',
-          league: match.category === 'Clan League',
+          matchCategory: match.category || '',
+          league: matchType === 'league',
           result: match.resultType || 'UPCOMING',
-          title: match.title || 'Match',
+          title: calendarMatchTitle(match.title, matchType),
           detail: (match.category || 'Match') + ' · ' + (match.score || match.resultType || ''),
           matchId: match.id
         });
@@ -9640,13 +9700,28 @@ async function renderUserMaps() {
           var dual = getDualTimeStrings(eventItem.date, eventItem.time, eventItem.tz || 'CET');
           timeDisplay = dual ? ' · ' + dual.combined : ' · ' + eventItem.time;
         }
+        var title = String(eventItem.title || 'Event').trim();
+        var eventType = calendarMatchType(eventItem.kind);
+        if (String(eventItem.kind).toLowerCase() === 'league') eventType = 'league';
+        if (String(eventItem.kind).toLowerCase() === 'practice') eventType = 'practice';
+        // A generic "CW" calendar event on a date with exactly one CW match is
+        // its schedule metadata, not an extra match. Keep its edit ID and time.
+        var sameDayMatches = items.filter(function(item) {
+          return item.kind === 'match' && item.key === calendarDateKey(date) &&
+            calendarEntryType(item) === eventType;
+        });
+        if (/^(?:CW|Clan Match)$/i.test(title) && eventType === 'practice' && sameDayMatches.length === 1) {
+          sameDayMatches[0].eventId = eventItem.id;
+          sameDayMatches[0].detail += timeDisplay + (eventItem.note ? ' · ' + eventItem.note : '');
+          return;
+        }
         items.push({
           key: calendarDateKey(date),
           time: date.getTime(),
           kind: 'event',
           eventKind: eventItem.kind || 'Event',
-          league: eventItem.kind === 'League',
-          title: eventItem.title || 'Event',
+          league: eventType === 'league',
+          title: calendarMatchTitle(title, eventType),
           detail: (eventItem.kind || 'Event') + timeDisplay + (eventItem.note ? ' · ' + eventItem.note : ''),
           eventId: eventItem.id
         });
@@ -9660,11 +9735,7 @@ async function renderUserMaps() {
     }
 
     function calendarShapeClass(item) {
-      if (item.eventKind === 'Practice') return 'practice';
-      if (item.league || item.eventKind === 'League') return 'league';
-      if (item.eventKind === 'Event') return 'event';
-      if (item.kind === 'match' && item.result === 'UPCOMING') return 'pending';
-      return '';
+      return calendarEntryType(item);
     }
 
     function getDualTimeStrings(dateStr, timeStr, tzPref) {
@@ -9768,7 +9839,7 @@ async function renderUserMaps() {
         var row = document.createElement('button');
         row.type = 'button';
         row.className = 'wd-cal-row';
-        row.innerHTML = (shape ? '<i class="wd-shape ' + shape + '"></i>' : '') + '<span><strong>' + escapeMatchHtml(item.title) + '</strong><small>' + escapeMatchHtml(item.detail) + '</small></span>';
+        row.innerHTML = (shape ? '<i class="wd-shape ' + shape + '"></i>' : '') + '<span><em class="wd-cal-modal-category">' + escapeMatchHtml(calendarCategoryLabel(item)) + '</em><strong>' + escapeMatchHtml(item.title) + '</strong><small>' + escapeMatchHtml(item.detail) + '</small></span>';
         if (item.matchId) {
           row.onclick = function() { openCalendarMatch(item.matchId); };
         } else if (item.eventId && isStaffUser(viewer)) {
@@ -9831,16 +9902,11 @@ async function renderUserMaps() {
         var visibleEntries = dayEntries.slice(0, 2);
         var chipsHtml = visibleEntries.map(function(item) {
           var type = calendarShapeClass(item) || 'other';
-          // User-provided event titles are escaped before placing them in HTML.
-          // Calendar tiles use concise category headings; full titles remain in the day detail popup.
-          var label = type === 'league' ? 'Clan League' :
-                      type === 'practice' ? 'CW' :
-                      type === 'event' ? 'Event' :
-                      type === 'pending' ? 'Pending' :
-                      String(item.title || 'Event').trim();
           return '<span class="wd-cal-chip ' + type + '">' +
+            '<span class="wd-cal-chip-head">' +
             (type === 'other' ? '' : '<i class="wd-shape ' + type + '" aria-hidden="true"></i>') +
-            '<span class="wd-cal-chip-label">' + escapeMatchHtml(label) + '</span></span>';
+            '<span>' + escapeMatchHtml(calendarCategoryLabel(item)) + '</span></span>' +
+            '<span class="wd-cal-chip-label">' + escapeMatchHtml(item.title) + '</span></span>';
         }).join('');
         var more = dayEntries.length > 2 ? '<span class="wd-cal-overflow">+' + (dayEntries.length - 2) + ' more</span>' : '';
         button.innerHTML = '<b>' + cellDate.getDate() + '</b><span class="wd-cal-entries">' + chipsHtml + more + '</span>';
