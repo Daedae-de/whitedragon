@@ -5749,6 +5749,29 @@
         }
       }
 
+      // Additional compatibility: official Rankings uses A=#rank, B=clan, C=points.
+      // If the source returned full sheet arrays, these positions remain stable.
+      // Values are updated only when the source actually contains Division D.
+      if (teams.length !== 6 && divisionHeader >= 0) {
+        const direct = [];
+        for (let i = divisionHeader + 1; i < Math.min(rows.length, divisionHeader + 10); i++) {
+          const t = extractBWCLTeam(rows[i]);
+          if (t) direct.push(t);
+          if (direct.length === 6) break;
+        }
+        if (direct.length === 6) teams = direct;
+      }
+      // Fixture scores are supplied separately from the 'Div-D' tab by Apps Script.
+      // Rank/points still come from the official 'Rankings' tab.
+      const liveStats = data.stats && typeof data.stats === "object" ? data.stats : {};
+      const findStats = function(name) {
+        const normalized = String(name || "").trim().toLowerCase().replace(/\s+/g, " ");
+        return liveStats[normalized] || (normalized.indexOf("white dragon") !== -1 ? liveStats["white dragon"] : null);
+      };
+      const scoreValue = function(value) {
+        return typeof value === "number" && Number.isFinite(value) && value >= 0 ? String(value) : "–";
+      };
+
       // Only replace the fallback when we have all six valid, distinct ranks.
       if (teams.length === 6 && new Set(teams.map(function(t) { return t.pos; })).size === 6) {
         const fragment = document.createDocumentFragment();
@@ -5759,7 +5782,12 @@
             tr.style.background = "rgba(0, 229, 255, 0.08)";
             tr.style.borderLeft = "4px solid var(--cyan)";
           }
-          const values = [t.pos, isWD ? "White Dragon [WD]" : t.name, "–", "–", "–", t.pts];
+          const st = findStats(t.name);
+          const values = [t.pos, isWD ? "White Dragon [WD]" : t.name,
+            st ? scoreValue(st.played) : "–",
+            st ? scoreValue(st.wins) + " - " + scoreValue(st.losses) : "–",
+            st ? scoreValue(st.setWins) + " - " + scoreValue(st.setLosses) : "–",
+            t.pts];
           values.forEach(function(value, index) {
             const td = document.createElement("td");
             const element = document.createElement(index === 1 || index === 5 || (index === 0 && isWD) ? "strong" : "span");
@@ -5772,11 +5800,11 @@
           fragment.appendChild(tr);
         });
         tbody.replaceChildren(fragment);
-        console.info("BWCL Live Sync erfolgreich: Division D mit 6 Teams geladen. CW-Statistiken sind in Rankings nicht enthalten.");
+        console.info("BWCL Live Sync erfolgreich: Division D mit 6 Teams geladen.", Object.keys(liveStats).length ? "CW-Statistiken aus Div-D übernommen." : "CW-Statistiken wurden vom Apps Script nicht geliefert.");
       } else {
-        console.warn("BWCL Live Sync: Division D nicht vollständig erkannt. Header-Zeile:", divisionHeader, "Gefundene Teams:", teams);
+        console.warn("BWCL Live Sync: Division D nicht vollständig erkannt. Apps-Script-Blatt:", data.sheetName || "nicht angegeben", "Header-Zeile:", divisionHeader, "Gefundene Teams:", teams);
         console.warn("BWCL Live Sync Diagnose (erste 32 Zeilen):", rows.slice(0, 32));
-        console.warn("Fallback bleibt sichtbar. Bitte diese zwei Warnungen aus der Browser-Konsole kopieren.");
+        console.warn("Fallback bleibt sichtbar. Das Apps Script muss das Blatt Rankings lesen (nicht Div-D per gid). Bitte auch die Apps-Script-Datei aktualisieren.");
       }
     };
 
