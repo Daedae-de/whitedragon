@@ -5621,7 +5621,7 @@
     // Private Google Sheet is read through a small Apps Script
     // endpoint. Do NOT put Google credentials in this HTML file.
     // ========================================================
-    const BWCL_APPS_SCRIPT_URL = "PASTE_YOUR_APPS_SCRIPT_WEB_APP_URL_HERE";
+    const BWCL_APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxigC6t2Z7AXIijv1ptifUXL8QpXAy1_OHZwh7-q1MemLaGrrKUNvbjOBDyPaF14o3d/exec";
 
     let bwclSyncTimeout = null;
     let bwclCallbackReceived = false;
@@ -5629,7 +5629,7 @@
 
     function fetchBWCLStandings() {
       if (!BWCL_APPS_SCRIPT_URL ||
-          BWCL_APPS_SCRIPT_URL.includes("https://docs.google.com/spreadsheets/d/19C8-zPecIi6k6K0zKG1y5fNBjVzsZW4DsdjQRErJybI/edit?gid=1327695811#gid=1327695811")) {
+          BWCL_APPS_SCRIPT_URL.includes("PASTE_YOUR_APPS_SCRIPT")) {
         console.warn(
           "BWCL Live Sync: Apps Script URL fehlt. " +
           "Das Google Sheet ist eingeschränkt freigegeben; " +
