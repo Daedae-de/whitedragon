@@ -5616,27 +5616,103 @@
       }
     });
 
- // Paste your Sheet ID and exact Tab Name here
-    const BWCL_SHEET_ID = "19C8-zPecli6k6K0zKG1y5fNBjVzsZW4DsdjQRErJybI";
-    const BWCL_TAB_GID  = "1763234843"; // Tab: Rankings
+    // ========================================================
+    // BWCL LIVE SYNC
+    // Private Google Sheet is read through a small Apps Script
+    // endpoint. Do NOT put Google credentials in this HTML file.
+    // ========================================================
+    const BWCL_APPS_SCRIPT_URL = "PASTE_YOUR_APPS_SCRIPT_WEB_APP_URL_HERE";
 
-    // Startet die Abfrage ohne CORS-Blockade via Script-Injection
+    let bwclSyncTimeout = null;
+    let bwclCallbackReceived = false;
+    let bwclSyncInterval = null;
+
     function fetchBWCLStandings() {
+      if (!BWCL_APPS_SCRIPT_URL ||
+          BWCL_APPS_SCRIPT_URL.includes("PASTE_YOUR_APPS_SCRIPT")) {
+        console.warn(
+          "BWCL Live Sync: Apps Script URL fehlt. " +
+          "Das Google Sheet ist eingeschränkt freigegeben; " +
+          "die öffentliche Google-Sheets-gviz-Abfrage kann es nicht lesen. " +
+          "Fallback bleibt aktiv."
+        );
+        return;
+      }
+
       const oldScript = document.getElementById("bwcl-jsonp-script");
       if (oldScript) oldScript.remove();
 
+      if (bwclSyncTimeout) {
+        clearTimeout(bwclSyncTimeout);
+        bwclSyncTimeout = null;
+      }
+
+      bwclCallbackReceived = false;
+
       const script = document.createElement("script");
       script.id = "bwcl-jsonp-script";
-      script.src = `https://docs.google.com/spreadsheets/d/${BWCL_SHEET_ID}/gviz/tq?tqx=responseHandler:handleBWCLData&gid=${BWCL_TAB_GID}`;
+      script.async = true;
+      script.src =
+        BWCL_APPS_SCRIPT_URL +
+        (BWCL_APPS_SCRIPT_URL.includes("?") ? "&" : "?") +
+        "callback=handleBWCLData&ts=" + Date.now();
+
       script.onerror = function() {
-        console.warn("BWCL Live Sync konnte nicht geladen werden, Fallback bleibt aktiv.");
+        if (bwclSyncTimeout) clearTimeout(bwclSyncTimeout);
+        console.error(
+          "BWCL Live Sync fehlgeschlagen: Apps-Script-Endpunkt nicht erreichbar. " +
+          "Prüfe Web-App-Bereitstellung und Zugriffsberechtigung. Fallback bleibt aktiv."
+        );
       };
+
+      script.onload = function() {
+        if (!bwclCallbackReceived) {
+          console.error(
+            "BWCL Live Sync: Endpunkt wurde geladen, hat aber keine gültige " +
+            "handleBWCLData-Antwort geliefert. Fallback bleibt aktiv."
+          );
+        }
+      };
+
       document.body.appendChild(script);
+
+      // Verhindert endloses Warten, falls der Endpunkt keine Antwort liefert.
+      bwclSyncTimeout = setTimeout(function() {
+        if (!bwclCallbackReceived) {
+          console.error(
+            "BWCL Live Sync: Zeitüberschreitung nach 15 Sekunden. " +
+            "Fallback bleibt aktiv."
+          );
+        }
+      }, 15000);
+
+      // Automatische Aktualisierung alle 60 Sekunden.
+      if (!bwclSyncInterval) {
+        bwclSyncInterval = setInterval(fetchBWCLStandings, 60000);
+      }
     }
 
-    // Verarbeitet die Antwort direkt aus dem Google Sheet
+    // JSONP callback vom Apps-Script-Endpunkt.
     window.handleBWCLData = function(data) {
-      if (!data || !data.table || !data.table.rows) return;
+      bwclCallbackReceived = true;
+      if (bwclSyncTimeout) {
+        clearTimeout(bwclSyncTimeout);
+        bwclSyncTimeout = null;
+      }
+
+      if (data && data.error) {
+        console.error("BWCL Live Sync: " + data.error + ". Fallback bleibt aktiv.");
+        return;
+      }
+
+      if (!data || !data.table || !Array.isArray(data.table.rows)) {
+        console.error(
+          "BWCL Live Sync: Ungültiges Datenformat vom Apps-Script-Endpunkt. " +
+          "Fallback bleibt aktiv."
+        );
+        return;
+      }
+
       const tbody = document.getElementById("bwcl-standings-tbody");
       if (!tbody) return;
 
@@ -5654,7 +5730,9 @@
 
       data.table.rows.forEach(row => {
         if (!row.c) return;
-        const cells = row.c.map(c => (c && c.v !== null && c.v !== undefined) ? c.v.toString().trim() : "");
+        const cells = row.c.map(c =>
+          (c && c.v !== null && c.v !== undefined) ? c.v.toString().trim() : ""
+        );
         const line = cells.join(" ");
 
         if (line.toLowerCase().includes("division d")) {
@@ -5672,12 +5750,14 @@
               const pos = match[1];
               const name = match[2].trim();
               let pts = 0;
+
               for (let j = i + 1; j < cells.length; j++) {
                 if (cells[j] && !isNaN(cells[j])) {
                   pts = cells[j];
                   break;
                 }
               }
+
               teams.push({ pos, name, pts });
               break;
             }
@@ -5687,8 +5767,12 @@
 
       if (teams.length > 0) {
         tbody.innerHTML = "";
+
         teams.forEach(t => {
-          const isWD = t.name.toLowerCase().includes("white dragon") || t.name.toLowerCase().includes("[wd]");
+          const isWD =
+            t.name.toLowerCase().includes("white dragon") ||
+            t.name.toLowerCase().includes("[wd]");
+
           let extra = { played: "-", score: "-", sets: "-" };
           for (const k in clanDetails) {
             if (t.name.toLowerCase().includes(k.toLowerCase())) {
@@ -5713,6 +5797,16 @@
           `;
           tbody.appendChild(tr);
         });
+
+        console.info(
+          "BWCL Live Sync erfolgreich: " + teams.length +
+          " Teams aus Google Sheets geladen."
+        );
+      } else {
+        console.warn(
+          "BWCL Live Sync: Verbindung erfolgreich, aber keine Division-D-Teams " +
+          "im erwarteten Tabellenformat gefunden. Fallback bleibt sichtbar."
+        );
       }
     };
 
