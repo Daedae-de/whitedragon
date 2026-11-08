@@ -5178,11 +5178,20 @@
       <div id="wd-cal-modal-list"></div>
       <div class="wd-cal-staff">
         <form id="wd-cal-event-form" onsubmit="saveClanEvent(event)">
-          <div class="wd-cal-kicker">ADD OR EDIT</div>
+          <div class="wd-cal-kicker" id="wd-event-kicker">ADD OR EDIT EVENT</div>
           <input id="wd-event-title" required placeholder="Event title">
           <div class="wd-cal-form-row">
-            <input id="wd-event-date" type="date" required aria-label="Event date">
-            <input id="wd-event-time" type="time" aria-label="Event time">
+            <input id="wd-event-date" type="date" required aria-label="Event date" onchange="updateDualTimePreview()">
+            <div style="display:flex; gap:4px; align-items:center;">
+              <input id="wd-event-time" type="time" aria-label="Event time" oninput="updateDualTimePreview()" style="flex:1;">
+              <select id="wd-event-tz" aria-label="Timezone" onchange="updateDualTimePreview()" style="width:75px; padding:6px 4px; font-size:0.75rem;">
+                <option value="CET">CET</option>
+                <option value="EST">EST</option>
+              </select>
+            </div>
+          </div>
+          <div id="wd-time-preview" style="display:none; font-family:'Share Tech Mono', monospace; font-size:0.75rem; color:var(--cyan); margin:-2px 0 8px 2px;">
+            ⇄ Konvertiert: <span id="wd-time-preview-text" style="color:#fff;"></span>
           </div>
           <select id="wd-event-kind" aria-label="Event type">
             <option value="League">League</option>
@@ -5190,8 +5199,11 @@
             <option value="Event">Event</option>
           </select>
           <textarea id="wd-event-note" rows="2" placeholder="Note"></textarea>
-          <button type="submit" id="wd-event-save">ADD EVENT</button>
-          <button type="button" id="wd-event-delete" class="wd-cal-textbtn" style="display:none; margin-left:6px;" onclick="deleteClanEvent(editingEventId)">REMOVE</button>
+          <div style="display:flex; gap:6px; flex-wrap:wrap;">
+            <button type="submit" id="wd-event-save" style="flex:1;">ADD EVENT</button>
+            <button type="button" id="wd-event-cancel" class="wd-cal-textbtn" style="display:none;" onclick="resetClanEventForm()">CANCEL</button>
+            <button type="button" id="wd-event-delete" class="wd-cal-textbtn" style="display:none; color:var(--loss); border-color:var(--loss);" onclick="deleteClanEvent(editingEventId)">REMOVE</button>
+          </div>
         </form>
       </div>
     </div>
@@ -9306,6 +9318,11 @@ async function renderUserMaps() {
       clanEvents.forEach(function(eventItem) {
         var date = parseClanDate(eventItem.date);
         if (!date) return;
+        var timeDisplay = '';
+        if (eventItem.time) {
+          var dual = getDualTimeStrings(eventItem.date, eventItem.time, eventItem.tz || 'CET');
+          timeDisplay = dual ? ' · ' + dual.combined : ' · ' + eventItem.time;
+        }
         items.push({
           key: calendarDateKey(date),
           time: date.getTime(),
@@ -9313,7 +9330,7 @@ async function renderUserMaps() {
           eventKind: eventItem.kind || 'Event',
           league: eventItem.kind === 'League',
           title: eventItem.title || 'Event',
-          detail: (eventItem.kind || 'Event') + (eventItem.time ? ' · ' + eventItem.time : '') + (eventItem.note ? ' · ' + eventItem.note : ''),
+          detail: (eventItem.kind || 'Event') + timeDisplay + (eventItem.note ? ' · ' + eventItem.note : ''),
           eventId: eventItem.id
         });
       });
@@ -9333,15 +9350,67 @@ async function renderUserMaps() {
       return '';
     }
 
+    function getDualTimeStrings(dateStr, timeStr, tzPref) {
+      if (!timeStr) return null;
+      var parts = timeStr.split(':');
+      var h = parseInt(parts[0], 10);
+      var m = parseInt(parts[1], 10);
+      if (isNaN(h) || isNaN(m)) return null;
+
+      var dParts = (dateStr && dateStr.split('-').length === 3) ? dateStr.split('-') : ['2026', '11', '08'];
+      var y = parseInt(dParts[0], 10);
+      var mo = parseInt(dParts[1], 10) - 1;
+      var d = parseInt(dParts[2], 10);
+
+      var sourceTz = (tzPref === 'EST' || tzPref === 'ET') ? 'America/New_York' : 'Europe/Berlin';
+      var targetTz = (tzPref === 'EST' || tzPref === 'ET') ? 'Europe/Berlin' : 'America/New_York';
+      var sourceLabel = (tzPref === 'EST' || tzPref === 'ET') ? 'EST' : 'CET';
+      var targetLabel = (tzPref === 'EST' || tzPref === 'ET') ? 'CET' : 'EST';
+
+      var guess = Date.UTC(y, mo, d, h, m, 0);
+      for (var i = 0; i < 3; i++) {
+        var invDate = new Date(guess);
+        var sHour = parseInt(new Intl.DateTimeFormat('en-US', { hour: 'numeric', hour12: false, timeZone: sourceTz }).format(invDate), 10);
+        var sMin = parseInt(new Intl.DateTimeFormat('en-US', { minute: 'numeric', timeZone: sourceTz }).format(invDate), 10);
+        if (sHour === 24) sHour = 0;
+        var diff = (h * 60 + m) - (sHour * 60 + sMin);
+        if (diff > 720) diff -= 1440;
+        if (diff < -720) diff += 1440;
+        if (diff === 0) break;
+        guess += diff * 60000;
+      }
+
+      var targetFormatted = new Intl.DateTimeFormat('en-GB', { hour: '2-digit', minute: '2-digit', hour12: false, timeZone: targetTz }).format(new Date(guess));
+      var sourceFormatted = (h < 10 ? '0' : '') + h + ':' + (m < 10 ? '0' : '') + m;
+
+      return {
+        source: sourceFormatted + ' ' + sourceLabel,
+        target: targetFormatted + ' ' + targetLabel,
+        combined: sourceFormatted + ' ' + sourceLabel + ' / ' + targetFormatted + ' ' + targetLabel
+      };
+    }
+
+    function updateDualTimePreview() {
+      var dateStr = document.getElementById('wd-event-date').value;
+      var timeStr = document.getElementById('wd-event-time').value;
+      var tzPref = document.getElementById('wd-event-tz') ? document.getElementById('wd-event-tz').value : 'CET';
+      var previewBox = document.getElementById('wd-time-preview');
+      var previewText = document.getElementById('wd-time-preview-text');
+
+      if (!timeStr) {
+        if (previewBox) previewBox.style.display = 'none';
+        return;
+      }
+      var res = getDualTimeStrings(dateStr, timeStr, tzPref);
+      if (res && previewBox && previewText) {
+        previewText.textContent = res.target + ' (' + res.source + ' ausgewählt)';
+        previewBox.style.display = 'block';
+      }
+    }
+
     function selectClanCalendarDay(key) {
       selectedCalendarKey = key;
-      editingEventId = '';
-      var saveButton = document.getElementById('wd-event-save');
-      if (saveButton) saveButton.textContent = 'ADD EVENT';
-      var removeButton = document.getElementById('wd-event-delete');
-      if (removeButton) removeButton.style.display = 'none';
-      var form = document.getElementById('wd-cal-event-form');
-      if (form) form.reset();
+      resetClanEventForm();
       var dateInput = document.getElementById('wd-event-date');
       if (dateInput) dateInput.value = key;
       var modal = document.getElementById('wd-cal-modal');
@@ -9374,6 +9443,7 @@ async function renderUserMaps() {
       var dayItems = calendarItems().filter(function(item) { return item.key === selectedCalendarKey; });
       list.innerHTML = dayItems.length ? '' : '<p style="color:var(--text-muted); font-size:0.85rem;">Nothing scheduled.</p>';
       var viewer = (typeof firebase !== 'undefined' && firebase.auth && firebase.auth().currentUser) || currentUser;
+
       dayItems.forEach(function(item) {
         var shape = calendarShapeClass(item);
         var wrap = document.createElement('div');
@@ -9382,15 +9452,35 @@ async function renderUserMaps() {
         row.type = 'button';
         row.className = 'wd-cal-row';
         row.innerHTML = (shape ? '<i class="wd-shape ' + shape + '"></i>' : '') + '<span><strong>' + escapeMatchHtml(item.title) + '</strong><small>' + escapeMatchHtml(item.detail) + '</small></span>';
-        if (item.matchId) row.onclick = function() { openCalendarMatch(item.matchId); };
+        if (item.matchId) {
+          row.onclick = function() { openCalendarMatch(item.matchId); };
+        } else if (item.eventId && isStaffUser(viewer)) {
+          row.onclick = function() { fillClanEventForm(item.eventId); };
+        }
         wrap.appendChild(row);
+
         if (item.eventId && isStaffUser(viewer)) {
+          var btnGroup = document.createElement('div');
+          btnGroup.style.display = 'flex';
+          btnGroup.style.gap = '4px';
+
+          var editBtn = document.createElement('button');
+          editBtn.type = 'button';
+          editBtn.className = 'wd-cal-textbtn';
+          editBtn.textContent = 'EDIT';
+          editBtn.onclick = function() { fillClanEventForm(item.eventId); };
+          btnGroup.appendChild(editBtn);
+
           var remove = document.createElement('button');
           remove.type = 'button';
           remove.className = 'wd-cal-textbtn';
+          remove.style.color = 'var(--loss)';
+          remove.style.borderColor = 'var(--loss)';
           remove.textContent = 'DELETE';
           remove.onclick = function() { deleteClanEvent(item.eventId); };
-          wrap.appendChild(remove);
+          btnGroup.appendChild(remove);
+
+          wrap.appendChild(btnGroup);
         }
         list.appendChild(wrap);
       });
@@ -9454,24 +9544,55 @@ async function renderUserMaps() {
       document.getElementById('wd-event-title').value = item.title || '';
       document.getElementById('wd-event-date').value = item.date || selectedCalendarKey;
       document.getElementById('wd-event-time').value = item.time || '';
+      if (document.getElementById('wd-event-tz')) {
+        document.getElementById('wd-event-tz').value = item.tz || 'CET';
+      }
       document.getElementById('wd-event-kind').value = item.kind || 'Event';
       document.getElementById('wd-event-note').value = item.note || '';
+
+      var kicker = document.getElementById('wd-event-kicker');
+      if (kicker) kicker.textContent = 'EDIT EVENT';
       var saveButton = document.getElementById('wd-event-save');
-      if (saveButton) saveButton.textContent = 'SAVE EVENT';
+      if (saveButton) saveButton.textContent = 'SAVE CHANGES';
+      var cancelButton = document.getElementById('wd-event-cancel');
+      if (cancelButton) cancelButton.style.display = 'inline-block';
       var removeButton = document.getElementById('wd-event-delete');
       if (removeButton) removeButton.style.display = 'inline-block';
+
+      updateDualTimePreview();
+      var form = document.getElementById('wd-cal-event-form');
+      if (form) form.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    function resetClanEventForm() {
+      editingEventId = '';
+      var form = document.getElementById('wd-cal-event-form');
+      if (form) form.reset();
+      var dateInput = document.getElementById('wd-event-date');
+      if (dateInput && selectedCalendarKey) dateInput.value = selectedCalendarKey;
+      var kicker = document.getElementById('wd-event-kicker');
+      if (kicker) kicker.textContent = 'ADD OR EDIT EVENT';
+      var saveButton = document.getElementById('wd-event-save');
+      if (saveButton) saveButton.textContent = 'ADD EVENT';
+      var cancelButton = document.getElementById('wd-event-cancel');
+      if (cancelButton) cancelButton.style.display = 'none';
+      var removeButton = document.getElementById('wd-event-delete');
+      if (removeButton) removeButton.style.display = 'none';
+      var previewBox = document.getElementById('wd-time-preview');
+      if (previewBox) previewBox.style.display = 'none';
     }
 
     function saveClanEvent(submitEvent) {
       if (submitEvent) submitEvent.preventDefault();
       var user = (typeof firebase !== 'undefined' && firebase.auth && firebase.auth().currentUser) || currentUser;
       if (!isStaffUser(user)) {
-        alert('Only the Webmaster or an Admin can add events.');
+        alert('Only the Webmaster or an Admin can add or edit events.');
         return;
       }
       var title = document.getElementById('wd-event-title').value.trim();
       var date = document.getElementById('wd-event-date').value;
       var time = document.getElementById('wd-event-time').value;
+      var tz = document.getElementById('wd-event-tz') ? document.getElementById('wd-event-tz').value : 'CET';
       var kind = document.getElementById('wd-event-kind').value;
       var note = document.getElementById('wd-event-note').value.trim();
       if (!title || !date) {
@@ -9482,18 +9603,15 @@ async function renderUserMaps() {
         title: title,
         date: date,
         time: time,
+        tz: tz,
         kind: kind,
         note: note,
-        createdBy: user.email || ''
+        updatedBy: user.email || ''
       };
       var collection = firebase.firestore().collection('clan_events');
       var write = editingEventId ? collection.doc(editingEventId).set(payload, { merge: true }) : collection.add(payload);
       write.then(function() {
-        editingEventId = '';
-        document.getElementById('wd-cal-event-form').reset();
-        document.getElementById('wd-event-save').textContent = 'ADD EVENT';
-        var removeButton = document.getElementById('wd-event-delete');
-        if (removeButton) removeButton.style.display = 'none';
+        resetClanEventForm();
         selectClanCalendarDay(date);
       }).catch(function(err) {
         alert('Event save failed. Add the clan_events rule in Firestore, then try again. ' + (err && err.message ? err.message : ''));
@@ -9504,7 +9622,7 @@ async function renderUserMaps() {
       var user = (typeof firebase !== 'undefined' && firebase.auth && firebase.auth().currentUser) || currentUser;
       if (!isStaffUser(user)) return;
       firebase.firestore().collection('clan_events').doc(eventId).delete().then(function() {
-        if (editingEventId === eventId) editingEventId = '';
+        if (editingEventId === eventId) resetClanEventForm();
         renderCalendarModal();
       }).catch(function(err) {
         alert('Event could not be removed. ' + (err && err.message ? err.message : ''));
