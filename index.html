@@ -3512,6 +3512,20 @@
       background: #05070d;
       border-radius: 8px;
     }
+    .shieldbattery-emblem {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 72px;
+      height: 72px;
+      flex-shrink: 0;
+      border-radius: 8px;
+      background: linear-gradient(135deg, #0c1b30, #102c37);
+      border: 1px solid rgba(75, 230, 237, 0.35);
+    }
+    .shieldbattery-banner:hover .shieldbattery-emblem {
+      border-color: #4be6ed;
+    }
     .league-partner strong {
       display: block;
       font-family: 'Orbitron', sans-serif;
@@ -5333,6 +5347,18 @@
           <div>
             <strong>Sagi.gg</strong>
             <span>Replay Analysis & Ladder Stats</span>
+          </div>
+        </a>
+        <a class="league-partner shieldbattery-banner" href="https://shieldbattery.net/" target="_blank" rel="noopener noreferrer" aria-label="ShieldBattery Website öffnen">
+          <span class="shieldbattery-emblem" aria-hidden="true">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 72 72" width="55" height="55" role="presentation">
+              <path d="M36 5 59 15v18c0 16-10 27-23 34C23 60 13 49 13 33V15L36 5Z" fill="#17283d" stroke="#4be6ed" stroke-width="3"/>
+              <path d="M41 16 26 37h10l-5 19 17-25H38l3-15Z" fill="#4be6ed"/>
+            </svg>
+          </span>
+          <div>
+            <strong>ShieldBattery</strong>
+            <span>StarCraft: Brood War community platform</span>
           </div>
         </a>
         <a class="league-partner" href="https://cwal.gg" target="_blank" rel="noopener noreferrer">
