@@ -3563,21 +3563,21 @@
       <p class="league-partners-label">Community</p>
       <div class="league-partner-row">
         <a class="league-partner" href="https://bombasticstarleague.com/seasons/100bc3e7-adee-4917-b438-db5eb540c055" target="_blank" rel="noopener noreferrer">
-          <img loading="lazy" decoding="async" src="league-bsl.png" alt="Bombastic Star League" onerror="this.onerror=null;this.src='https://bombasticstarleague.com/android-chrome-192x192.png'">
+          <img loading="lazy" decoding="async" src="https://bombasticstarleague.com/android-chrome-192x192.png" alt="Bombastic Star League" onerror="this.onerror=null;this.src='https://bombasticstarleague.com/android-chrome-192x192.png'">
           <div>
             <strong>Bombastic Star League</strong>
             <span>Current season</span>
           </div>
         </a>
         <a class="league-partner" href="https://cplbw.com/cpl/" target="_blank" rel="noopener noreferrer">
-          <img loading="lazy" decoding="async" src="league-cpl.png" alt="Coach Pupil League" onerror="this.onerror=null;this.src='https://cplbw.com/static/images/logo/cpl_13.f6301e9c1218.png'">
+          <img loading="lazy" decoding="async" src="https://cplbw.com/static/images/logo/cpl_13.f6301e9c1218.png" alt="Coach Pupil League" onerror="this.onerror=null;this.src='https://cplbw.com/static/images/logo/cpl_13.f6301e9c1218.png'">
           <div>
             <strong>CPL</strong>
             <span>Coach Pupil League</span>
           </div>
         </a>
         <a class="league-partner" href="https://www.platinumesport.com/ipsl" target="_blank" rel="noopener noreferrer">
-          <img loading="lazy" decoding="async" src="league-ipsl.png" alt="Platinum Esports IPSL" onerror="this.onerror=null;this.src='https://images.squarespace-cdn.com/content/v1/6884da600280e65f46ec171c/ef32bfc7-4d6c-4bc7-8cd2-72ad5dd4f7dd/Platinum_Esports_2-01_better.png?format=500w'">
+          <img loading="lazy" decoding="async" src="https://images.squarespace-cdn.com/content/v1/6884da600280e65f46ec171c/ef32bfc7-4d6c-4bc7-8cd2-72ad5dd4f7dd/Platinum_Esports_2-01_better.png?format=500w" alt="Platinum Esports IPSL" onerror="this.onerror=null;this.src='https://images.squarespace-cdn.com/content/v1/6884da600280e65f46ec171c/ef32bfc7-4d6c-4bc7-8cd2-72ad5dd4f7dd/Platinum_Esports_2-01_better.png?format=500w'">
           <div>
             <strong>IPSL</strong>
             <span>Platinum Esports</span>
@@ -3616,6 +3616,32 @@
     <p style="margin-top:4px; color:var(--text-dim);">Brood War eSports-Team | Channel: Op White-Dragon (US West)</p>
   </footer>
 
+  <!-- Initialize the DEFAULT Firebase app before any feature listeners are registered. -->
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyAUmGnYoJcfjBp5nFsHRk7fE-I8rsksEtg",
+      authDomain: "whitedragon-clan.firebaseapp.com",
+      projectId: "whitedragon-clan",
+      storageBucket: "whitedragon-clan.firebasestorage.app",
+      messagingSenderId: "877941206720",
+      appId: "1:877941206720:web:19808489844952d0ba0725",
+      measurementId: "G-36978ZLJ1Q"
+    };
+    var firebaseInitialized = false;
+    try {
+      if (typeof firebase === 'undefined' || typeof firebase.initializeApp !== 'function') {
+        throw new Error('Firebase SDK could not be loaded.');
+      }
+      if (firebaseConfig.apiKey && firebaseConfig.apiKey !== 'YOUR_API_KEY') {
+        // Reuse an existing default app when the page is injected or reloaded.
+        var defaultApp = firebase.apps.find(function(app) { return app.name === '[DEFAULT]'; });
+        if (!defaultApp) firebase.initializeApp(firebaseConfig);
+        firebaseInitialized = true;
+      }
+    } catch (error) {
+      console.error('Firebase initialization failed:', error);
+    }
+  </script>
   <script>
     // Flag SVGs
     
@@ -3637,11 +3663,14 @@
 
 // Helper function to return official vector flag SVG from CDN
     function getFlagImg(code) {
-      return `<img src="https://cdn.jsdelivr.net/gh/lipis/flag-icons@main/flags/4x3/${code}.svg" 
-                   alt="${code}" 
-                   class="flag-icon" 
-                   style="display:inline-block; vertical-align:middle; width:22px; height:15px; border-radius:2px; object-fit:cover; box-shadow:0 0 4px rgba(0,0,0,0.5); margin-right:8px;" 
-                   onerror="this.style.display='none';">`;
+      // Unicode flags avoid external tracking/storage requests for each roster row.
+      var cc = String(code || '').toUpperCase();
+      if (!/^[A-Z]{2}$/.test(cc)) return '';
+      var flag = cc === 'XK' ? '🏳️' :
+        String.fromCodePoint(127397 + cc.charCodeAt(0), 127397 + cc.charCodeAt(1));
+      return '<span class="flag-icon" role="img" aria-label="' + cc + ' flag" '
+        + 'style="display:inline-block;vertical-align:middle;font-size:20px;line-height:1;'
+        + 'margin-right:8px;min-width:22px;">' + flag + '</span>';
     }
 
     const flags = {
@@ -5655,18 +5684,8 @@ async function renderUserMaps() {
 // ========================================================
     // FIREBASE AUTHENTICATION & WEBMASTER CONTROL SYSTEM
     // ========================================================
-    const firebaseConfig = {
-      apiKey: "AIzaSyAUmGnYoJcfjBp5nFsHRk7fE-I8rsksEtg",
-      authDomain: "whitedragon-clan.firebaseapp.com",
-      projectId: "whitedragon-clan",
-      storageBucket: "whitedragon-clan.firebasestorage.app",
-      messagingSenderId: "877941206720",
-      appId: "1:877941206720:web:19808489844952d0ba0725",
-      measurementId: "G-36978ZLJ1Q"
-    };
 
     const WEBMASTER_EMAIL = "daehyeon0206@gmail.com";
-    var firebaseInitialized = false;
     var currentUser = null;
     var currentUserProfile = null;
     var userProfileUnsubscribe = null;
@@ -6613,14 +6632,6 @@ async function renderUserMaps() {
       });
     }
 
-    try {
-      if (typeof firebase !== 'undefined' && firebaseConfig.apiKey && firebaseConfig.apiKey !== "YOUR_API_KEY") {
-        firebase.initializeApp(firebaseConfig);
-        firebaseInitialized = true;
-      }
-    } catch(err) {
-      console.warn("Firebase config not loaded yet, using simulated auth.", err);
-    }
 
     function isFirebaseReady() {
       return firebaseInitialized && typeof firebase !== 'undefined' && firebase.auth;
