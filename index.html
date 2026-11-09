@@ -2442,7 +2442,7 @@
                   <select id="b-wdr2" style="width:45px; background:#0d1627; border:1px solid var(--border-color); color:var(--cyan); padding:4px;"><option value="T">T</option><option value="P">P</option><option value="Z">Z</option></select>
                 </div>
               </td>
-              <!-- Freies Eingabefeld statt Dropdown für Score -->
+              <!-- Free input field instead of a score dropdown -->
               <td style="padding:4px; text-align:center;"><input type="text" id="b-score" value="2 - 0" style="width:60px; background:#0d1627; border:1px solid var(--border-color); color:#fff; padding:4px; text-align:center; font-weight:bold;"></td>
               <td style="padding:4px;">
                 <input type="text" id="b-opp1" placeholder="Opp 1..." style="width:90px; background:#0d1627; border:1px solid var(--border-color); color:#fff; padding:4px;"> <select id="b-oppr1" style="width:45px; background:#0d1627; border:1px solid var(--border-color); color:#fbbf24; padding:4px;"><option value="Z">Z</option><option value="P">P</option><option value="T">T</option><option value="R">R</option></select><br>
@@ -2457,7 +2457,7 @@
         </table>
       </div>
 
-      <!-- Sets Textarea (Speichert die formatierte Tabelle für die Datenbank) -->
+      <!-- Sets textarea (stores the formatted table for the database) -->
       <div style="margin-bottom:12px;">
         <label style="display:block; font-size:0.68rem; color:var(--text-muted); font-family:'Orbitron',sans-serif; margin-bottom:4px;">
           GENERATED MATCH DATA (Filled automatically from the table above)
@@ -3590,7 +3590,7 @@
             <span>Replay Analysis & Ladder Stats</span>
           </div>
         </a>
-        <a class="league-partner shieldbattery-banner" href="https://shieldbattery.net/" target="_blank" rel="noopener noreferrer" aria-label="ShieldBattery Website öffnen">
+        <a class="league-partner shieldbattery-banner" href="https://shieldbattery.net/" target="_blank" rel="noopener noreferrer" aria-label="Open ShieldBattery website">
           <span class="shieldbattery-emblem" aria-hidden="true">
             <img src="shieldbattery-logo.png" alt="" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='block';">
             <svg style="display:none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 72 72" width="55" height="55" role="presentation">
@@ -4007,10 +4007,10 @@
       if (!BWCL_APPS_SCRIPT_URL ||
           BWCL_APPS_SCRIPT_URL.includes("PASTE_YOUR_APPS_SCRIPT")) {
         console.warn(
-          "BWCL Live Sync: Apps Script URL fehlt. " +
-          "Das Google Sheet ist eingeschränkt freigegeben; " +
-          "die öffentliche Google-Sheets-gviz-Abfrage kann es nicht lesen. " +
-          "Fallback bleibt aktiv."
+          "BWCL Live Sync: Apps Script URL is missing. " +
+          "The Google Sheet has restricted access; " +
+          "the public Google Sheets gviz request cannot read it. " +
+          "Fallback remains active."
         );
         return;
       }
@@ -4036,33 +4036,33 @@
       script.onerror = function() {
         if (bwclSyncTimeout) clearTimeout(bwclSyncTimeout);
         console.error(
-          "BWCL Live Sync fehlgeschlagen: Apps-Script-Endpunkt nicht erreichbar. " +
-          "Prüfe Web-App-Bereitstellung und Zugriffsberechtigung. Fallback bleibt aktiv."
+          "BWCL Live Sync failed: Apps Script endpoint is unreachable. " +
+          "Check the web app deployment and access permissions. Fallback remains active."
         );
       };
 
       script.onload = function() {
         if (!bwclCallbackReceived) {
           console.error(
-            "BWCL Live Sync: Endpunkt wurde geladen, hat aber keine gültige " +
-            "handleBWCLData-Antwort geliefert. Fallback bleibt aktiv."
+            "BWCL Live Sync: Endpoint loaded but did not return a valid " +
+            "handleBWCLData response. Fallback remains active."
           );
         }
       };
 
       document.body.appendChild(script);
 
-      // Verhindert endloses Warten, falls der Endpunkt keine Antwort liefert.
+      // Prevents indefinite waiting when the endpoint does not respond.
       bwclSyncTimeout = setTimeout(function() {
         if (!bwclCallbackReceived) {
           console.error(
-            "BWCL Live Sync: Zeitüberschreitung nach 15 Sekunden. " +
-            "Fallback bleibt aktiv."
+            "BWCL Live Sync: Request timed out after 15 seconds. " +
+            "Fallback remains active."
           );
         }
       }, 15000);
 
-      // Automatische Aktualisierung alle 60 Sekunden.
+      // Automatic refresh every 60 seconds.
       if (!bwclSyncInterval) {
         bwclSyncInterval = setInterval(fetchBWCLStandings, 60000);
       }
@@ -4073,7 +4073,7 @@
       if (document.visibilityState === 'visible' && bwclSyncInterval) fetchBWCLStandings();
     });
 
-    // JSONP callback vom Apps-Script-Endpunkt.
+    // JSONP callback from the Apps Script endpoint.
     window.handleBWCLData = function(data) {
       bwclCallbackReceived = true;
       if (bwclSyncTimeout) {
@@ -4082,23 +4082,23 @@
       }
 
       if (data && data.error) {
-        console.error("BWCL Live Sync: " + data.error + ". Fallback bleibt aktiv. Apps-Script-Version:", data.version || "ALT/UNBEKANNT");
+        console.error("BWCL Live Sync: " + data.error + ". Fallback remains active. Apps Script version:", data.version || "OLD/UNKNOWN");
         return;
       }
       if (!data || data.version !== "BWCL_SYNC_V4_20261108" || data.sheetName !== "Rankings") {
         console.error(
-          "BWCL Live Sync: ALTE APPS-SCRIPT-BEREITSTELLUNG ERKANNT. " +
-          "Die Website benötigt BWCL_SYNC_V4_20261108 mit sheetName=Rankings. " +
-          "Bitte Apps Script speichern UND Bereitstellungen verwalten > Stift > Neue Version > Bereitstellen. " +
-          "Gelieferte Version:", data && data.version || "keine", "Blatt:", data && data.sheetName || "nicht angegeben"
+          "BWCL Live Sync: OUTDATED APPS SCRIPT DEPLOYMENT DETECTED. " +
+          "This website requires BWCL_SYNC_V4_20261108 with sheetName=Rankings. " +
+          "Save the Apps Script AND select Manage deployments > Edit > New version > Deploy. " +
+          "Received version:", data && data.version || "none", "Sheet:", data && data.sheetName || "not specified"
         );
         return;
       }
 
       if (!data || !data.table || !Array.isArray(data.table.rows)) {
         console.error(
-          "BWCL Live Sync: Ungültiges Datenformat vom Apps-Script-Endpunkt. " +
-          "Fallback bleibt aktiv."
+          "BWCL Live Sync: Invalid data format received from the Apps Script endpoint. " +
+          "Fallback remains active."
         );
         return;
       }
@@ -4232,11 +4232,11 @@
           fragment.appendChild(tr);
         });
         tbody.replaceChildren(fragment);
-        console.info("BWCL Live Sync erfolgreich (BWCL_SYNC_V4_20261108): Division D mit 6 Teams geladen.", Object.keys(liveStats).length ? "CW-Statistiken aus Div-D übernommen." : "CW-Statistiken wurden vom Apps Script nicht geliefert.");
+        console.info("BWCL Live Sync successful (BWCL_SYNC_V4_20261108): Loaded Division D with 6 teams.", Object.keys(liveStats).length ? "CW statistics loaded from Div-D." : "CW statistics were not provided by the Apps Script.");
       } else {
-        console.warn("BWCL Live Sync: Division D nicht vollständig erkannt. Apps-Script-Blatt:", data.sheetName || "nicht angegeben", "Header-Zeile:", divisionHeader, "Gefundene Teams:", teams);
-        console.warn("BWCL Live Sync Diagnose (erste 32 Zeilen):", rows.slice(0, 32));
-        console.warn("Fallback bleibt sichtbar. Das Apps Script muss das Blatt Rankings lesen (nicht Div-D per gid). Bitte auch die Apps-Script-Datei aktualisieren.");
+        console.warn("BWCL Live Sync: Division D could not be fully identified. Apps Script sheet:", data.sheetName || "not specified", "Header row:", divisionHeader, "Teams found:", teams);
+        console.warn("BWCL Live Sync diagnostics (first 32 rows):", rows.slice(0, 32));
+        console.warn("Fallback remains visible. The Apps Script must read the Rankings sheet (not Div-D by gid). Also update the Apps Script file.");
       }
     };
 
@@ -4328,7 +4328,7 @@ window.addEventListener('DOMContentLoaded', function() {
   renderMatches();
   renderRosterTableAndTiers();
   
-  // Realtime Cloud-Sync für alle Geräte (Firebase Firestore)
+  // Real-time cloud sync across devices (Firebase Firestore)
   var communityDateInput = document.getElementById('cms-news-publish-date');
   if (communityDateInput && !communityDateInput.value) communityDateInput.value = wdCommunityTodayISO();
   initNewsRealtimeListener();
@@ -5368,7 +5368,7 @@ function handleMatchReplayFile(event) {
     }
 
     function saveMapDownload() {
-      if (!ensureClanWriter("Dateien im Clan-Vault speichern")) return;
+      if (!ensureClanWriter("save files to the Clan Vault")) return;
       var file = currentSelectedMapFile;
       if (!file) {
         alert('Please select a file first.');
@@ -5494,7 +5494,7 @@ async function renderUserMaps() {
         } catch(e) {}
       }
 
-      // Zähler berechnen
+      // Calculate counters
       var countAll = allFiles.length;
       var countMapPack = 0, countMap = 0, countSoftware = 0, countOther = 0;
       
@@ -5586,7 +5586,7 @@ async function renderUserMaps() {
         })(item);
         btnGroup.appendChild(dlBtn);
 
-        // Remove-Button für Admins/Webmaster hinzufügen
+        // Add remove button for admins/webmasters
         if (canModerate) {
           var adminBtn = document.createElement('button');
           adminBtn.className = 'admin-del-btn';
@@ -5909,7 +5909,7 @@ async function renderUserMaps() {
         card.className = 'news-card';
         card.style.cursor = 'pointer';
         
-        // Klick auf den Beitrag öffnet das detaillierte Modal-Fenster
+        // Clicking the post opens the detailed modal
         (function(artItem) {
           card.onclick = function() { openArticleModal(artItem); };
         })(item);
@@ -6280,7 +6280,7 @@ async function renderUserMaps() {
         }
         refreshOperatorConsole(user);
       }, function(err) {
-        console.warn('Profil-Sync fehlgeschlagen:', err);
+        console.warn('Profile sync failed:', err);
       });
     }
 
@@ -7050,12 +7050,12 @@ async function renderUserMaps() {
     async function adminDeleteDownload(dlId) {
       if (!confirm("WEBMASTER COMMAND: Are you sure you want to remove this download from Clan Vault?")) return;
       
-      // 1. Versuche aus Firebase zu löschen
+      // 1. Attempt to delete from Firebase
       if (typeof firebase !== 'undefined' && firebase.firestore) {
         firebase.firestore().collection('clan_vault').doc(dlId).delete().catch(function() {});
       }
 
-      // 2. Aus IndexedDB löschen
+      // 2. Delete from IndexedDB
       try {
         const db = await getVaultDB();
         const tx = db.transaction('downloads', 'readwrite');
@@ -7141,28 +7141,28 @@ async function renderUserMaps() {
         return;
       }
 
-      // 1. Aus beiden Cloud-Collections löschen. Die jeweiligen onSnapshot-
-      // Listener aktualisieren Mitgliederliste und Squad-Roster auf allen Geräten.
+      // 1. Delete from both cloud collections. The respective onSnapshot
+      // listeners update the member list and squad roster on all devices.
       if (typeof firebase !== 'undefined' && firebase.firestore) {
         var db = firebase.firestore();
         db.collection('clan_members').doc(memberId).delete()
           .then(function() {
-            console.log("Operator aus clan_members gelöscht:", memberId);
+            console.log("Operator deleted from clan_members:", memberId);
           })
           .catch(function(err) {
-            console.error("Firestore Mitglieder-Löschfehler:", err);
+            console.error("Firestore member deletion failed:", err);
           });
         db.collection('clan_roster').doc(memberId).delete()
           .then(function() {
-            console.log("Squad-Zuordnung aus clan_roster gelöscht:", memberId);
+            console.log("Squad assignment deleted from clan_roster:", memberId);
           })
           .catch(function(err) {
-            console.error("Firestore Squad-Löschfehler:", err);
+            console.error("Firestore squad deletion failed:", err);
           });
       }
 
-      // 2. Lokale Mitglieder-Fallbackliste aktualisieren. Das Squad-Roster
-      // wird ausschließlich durch den clan_roster onSnapshot-Listener gepflegt.
+      // 2. Update the local member fallback list. The squad roster
+      // is maintained exclusively by the clan_roster onSnapshot listener.
       var idx = membersData.findIndex(function(m) { return m.id === memberId; });
       if (idx !== -1) membersData.splice(idx, 1);
 
@@ -7373,7 +7373,7 @@ async function renderUserMaps() {
         if (statSel) updates.status = statSel.value;
       }
 
-      // Sofort in Cloud Firestore speichern
+      // Save to Cloud Firestore immediately
       if (typeof firebase !== 'undefined' && firebase.firestore) {
         firebase.firestore().collection('clan_members').doc(p.id).set(updates, { merge: true })
           .then(function() {
@@ -7478,7 +7478,7 @@ async function renderUserMaps() {
         var ref = db.collection('clan_matches').doc(m.id);
         batch.set(ref, m);
       });
-      batch.commit().catch(function(e) { console.error("Fehler beim Seeden der Matches:", e); });
+      batch.commit().catch(function(e) { console.error("Error seeding matches:", e); });
     }
 
     function getDefaultMatchesArchive() {
@@ -8181,7 +8181,7 @@ async function renderUserMaps() {
       }
       var res = getDualTimeStrings(dateStr, timeStr, tzPref);
       if (res && previewBox && previewText) {
-        previewText.textContent = res.target + ' (' + res.source + ' ausgewählt)';
+        previewText.textContent = res.target + ' (' + res.source + ' selected)';
         previewBox.style.display = 'block';
       }
     }
@@ -8959,7 +8959,7 @@ async function renderUserMaps() {
     // ========================================================
     var firestoreMembers = [];
 
-    // Hört live auf Änderungen in Firestore und aktualisiert alle Geräte sofort
+    // Listens to Firestore changes and immediately updates all devices
     function initClanMembersRealtimeListener() {
       if (typeof firebase !== 'undefined' && firebase.firestore) {
         var db = firebase.firestore();
@@ -8983,7 +8983,7 @@ async function renderUserMaps() {
             }
           }
         }, function(err) {
-          console.warn("Firestore Mitglieder-Sync offline, nutze lokalen Cache:", err);
+          console.warn("Firestore member sync offline; using local cache:", err);
           renderRosterTableAndTiers();
         });
       }
@@ -8997,7 +8997,7 @@ async function renderUserMaps() {
         var ref = db.collection('clan_members').doc(m.id);
         batch.set(ref, m);
       });
-      batch.commit().catch(function(e) { console.error("Fehler beim Seeden:", e); });
+      batch.commit().catch(function(e) { console.error("Error seeding data:", e); });
     }
 
     function getFullClanMembersList() {
@@ -9192,7 +9192,7 @@ async function renderUserMaps() {
       setVisitorCounterValue('visitors-today-live', null);
       setVisitorCounterValue('visitors-total-live', null);
 
-      // Zahlen kommen nur aus Firestore. Anonymous Authentication muss dafür aktiv sein.
+      // Counts come only from Firestore. Anonymous Authentication must be enabled.
       if (!firebaseInitialized || typeof firebase === 'undefined' || !firebase.firestore || !firebase.auth) {
         return;
       }
