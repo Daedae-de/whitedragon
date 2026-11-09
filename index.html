@@ -4503,6 +4503,12 @@
         </div>
       </div>
 
+      <div style="margin-bottom:12px; max-width:310px;">
+        <label for="cms-news-publish-date" style="display:block; font-family:'Orbitron',sans-serif; font-size:0.72rem; color:var(--text-muted); margin-bottom:4px; text-transform:uppercase;">Publication Date</label>
+        <input type="date" id="cms-news-publish-date" aria-label="Select publication date" style="width:100%; color-scheme:dark; background:#070a12; border:1px solid var(--border-color); color:#fff; padding:8px 12px; border-radius:6px; font-family:'Rajdhani',sans-serif; font-size:0.95rem;">
+        <div style="margin-top:4px; color:var(--text-muted); font-size:0.73rem;">Select a date from the calendar. Editing a post does not reset its publication date.</div>
+      </div>
+
       <div style="margin-bottom:14px;">
         <label style="display:block; font-family:'Orbitron',sans-serif; font-size:0.72rem; color:var(--text-muted); margin-bottom:4px; text-transform:uppercase;">Content / Message</label>
         <textarea id="cms-news-body" rows="3" onpaste="handleCmsPaste(event)" placeholder="Enter post or transmission text..." style="width:100%; background:#070a12; border:1px solid var(--border-color); color:#fff; padding:10px 12px; border-radius:6px; font-family:'Rajdhani',sans-serif; font-size:0.95rem; line-height:1.5; resize:vertical;"></textarea>
@@ -6074,6 +6080,8 @@ window.addEventListener('DOMContentLoaded', function() {
   renderRosterTableAndTiers();
   
   // Realtime Cloud-Sync für alle Geräte (Firebase Firestore)
+  var communityDateInput = document.getElementById('cms-news-publish-date');
+  if (communityDateInput && !communityDateInput.value) communityDateInput.value = wdCommunityTodayISO();
   initNewsRealtimeListener();
   initClanMembersRealtimeListener();
   initClanRosterRealtimeListener();
@@ -7488,6 +7496,49 @@ async function renderUserMaps() {
     var wdNewsCache = null;
     var newsRealtimeUnsubscribe = null;
 
+    // Keep publication date (visible to visitors) distinct from createdAt (original audit/sort timestamp).
+    function wdCommunityTodayISO() {
+      var d = new Date();
+      return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+    }
+    function wdCommunityDateToISO(article) {
+      if (!article) return '';
+      var iso = String(article.publishedDate || '').trim();
+      if (/^\d{4}-\d{2}-\d{2}$/.test(iso)) return iso;
+      var plain = String(article.date || '').trim();
+      // Support historical formatted date strings without resetting them to today.
+      var parsed = Date.parse(plain);
+      if (Number.isFinite(parsed)) {
+        var d = new Date(parsed);
+        return d.getUTCFullYear() + '-' + String(d.getUTCMonth() + 1).padStart(2, '0') + '-' + String(d.getUTCDate()).padStart(2, '0');
+      }
+      var t = getNewsSortTimestamp(article);
+      if (t > 0) {
+        var original = new Date(t);
+        return original.getFullYear() + '-' + String(original.getMonth() + 1).padStart(2, '0') + '-' + String(original.getDate()).padStart(2, '0');
+      }
+      return '';
+    }
+    function wdCommunityFormatDate(iso) {
+      var parts = String(iso || '').split('-');
+      if (parts.length !== 3) return '';
+      var d = new Date(Date.UTC(Number(parts[0]), Number(parts[1]) - 1, Number(parts[2])));
+      if (Number.isNaN(d.getTime()) || d.toISOString().slice(0, 10) !== iso) return '';
+      return d.toLocaleDateString('en-US', {timeZone:'UTC', month:'long', day:'numeric', year:'numeric'}).toUpperCase();
+    }
+    function wdCommunityArticleSortTime(article) {
+      var iso = article && article.publishedDate;
+      if (iso && /^\d{4}-\d{2}-\d{2}$/.test(String(iso))) {
+        var dateOnly = Date.parse(iso + 'T00:00:00Z');
+        if (Number.isFinite(dateOnly)) return dateOnly;
+      }
+      if (article && article.date) {
+        var existing = Date.parse(article.date);
+        if (Number.isFinite(existing)) return existing;
+      }
+      return getNewsSortTimestamp(article);
+    }
+
     function getNewsSortTimestamp(article) {
       if (!article) return 0;
       var value = article.createdAt;
@@ -7505,7 +7556,7 @@ async function renderUserMaps() {
 
       var latestTwo = (Array.isArray(articles) ? articles.slice() : [])
         .sort(function(a, b) {
-          return getNewsSortTimestamp(b) - getNewsSortTimestamp(a);
+          return wdCommunityArticleSortTime(b) - wdCommunityArticleSortTime(a);
         })
         .slice(0, 2);
 
@@ -7580,6 +7631,10 @@ async function renderUserMaps() {
 
     function renderClanNews(articles) {
       wdNewsCache = Array.isArray(articles) ? articles.slice() : [];
+      wdNewsCache.sort(function(a, b) {
+        return wdCommunityArticleSortTime(b) - wdCommunityArticleSortTime(a) || getNewsSortTimestamp(b) - getNewsSortTimestamp(a);
+      });
+      articles = wdNewsCache;
       renderLatestTransmission(wdNewsCache);
       var grid = document.getElementById('clan-news-grid');
       if (!grid) return;
@@ -7680,6 +7735,14 @@ async function renderUserMaps() {
       var catInp = document.getElementById('cms-news-cat');
       var authorInp = document.getElementById('cms-news-author');
       var bodyInp = document.getElementById('cms-news-body');
+      var publishDateInp = document.getElementById('cms-news-publish-date');
+      var selectedPublicationDate = publishDateInp ? publishDateInp.value : '';
+      var formattedPublicationDate = wdCommunityFormatDate(selectedPublicationDate);
+      if (!formattedPublicationDate) {
+        alert('Please select a valid publication date.');
+        if (publishDateInp) publishDateInp.focus();
+        return;
+      }
 
       var title = titleInp ? titleInp.value.trim() : '';
       var category = catInp ? catInp.value : 'News';
@@ -7710,9 +7773,14 @@ async function renderUserMaps() {
         images: allImages,
         imageUrl: imageUrl,
         userEmail: userEmail,
-        date: new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }).toUpperCase(),
-        createdAt: Date.now()
+        date: formattedPublicationDate,
+        publishedDate: selectedPublicationDate
       };
+      if (editId) {
+        articleData.updatedAt = Date.now();
+      } else {
+        articleData.createdAt = Date.now();
+      }
 
       if (typeof firebase !== 'undefined' && firebase.firestore) {
         var db = firebase.firestore();
@@ -7742,7 +7810,7 @@ async function renderUserMaps() {
         var idx = news.findIndex(function(n) { return n.id === editId; });
         if (idx !== -1) {
           article.id = editId;
-          news[idx] = article;
+          news[idx] = Object.assign({}, news[idx], article);
         }
       } else {
         article.id = "news_" + Date.now();
@@ -7804,7 +7872,9 @@ async function renderUserMaps() {
       var bodyInput = document.getElementById('cms-news-body');
       var authorInput = document.getElementById('cms-news-author');
       var catSelect = document.getElementById('cms-news-cat');
+      var publishDateInput = document.getElementById('cms-news-publish-date');
 
+      if (publishDateInput) publishDateInput.value = wdCommunityDateToISO(article) || wdCommunityTodayISO();
       if (editIdInput) editIdInput.value = article.id;
       if (titleInput) titleInput.value = article.title || '';
       if (bodyInput) bodyInput.value = article.body || '';
@@ -7856,6 +7926,8 @@ async function renderUserMaps() {
       if (titleInput) titleInput.value = '';
       if (bodyInput) bodyInput.value = '';
       if (authorInput) authorInput.value = '';
+      var publicationInput = document.getElementById('cms-news-publish-date');
+      if (publicationInput) publicationInput.value = wdCommunityTodayISO();
       var imgUrlInput = document.getElementById('cms-news-image-url');
       var imgFileInp = document.getElementById('cms-news-image-file');
       var imgPreview = document.getElementById('cms-news-image-preview');
