@@ -2063,6 +2063,10 @@
       .ambient-bg, .grid-overlay { animation:none !important; }
     }
 
+
+    /* Consistent flag rendering for Windows, Edge and mobile browsers. */
+    img.flag-icon { display: inline-block; width: 28px; height: 21px; object-fit: cover; vertical-align: middle; margin-right: 8px; border-radius: 2px; border: 1px solid rgba(255,255,255,.16); background: transparent; }
+    .flag-emoji { display: inline-block; min-width: 28px; margin-right: 8px; vertical-align: middle; font-size: 22px; line-height: 1; }
   </style>
 </head>
 <body>
@@ -3179,7 +3183,152 @@
                   <option value="Vietnam">Vietnam</option>
                   <option value="Yemen">Yemen</option>
                 </optgroup>
-              </select>
+              
+                <optgroup label="Additional countries &amp; territories">
+                  <option value="Algeria">Algeria (DZ)</option>
+                  <option value="American Samoa">American Samoa (AS)</option>
+                  <option value="Angola">Angola (AO)</option>
+                  <option value="Anguilla">Anguilla (AI)</option>
+                  <option value="Antarctica">Antarctica (AQ)</option>
+                  <option value="Antigua and Barbuda">Antigua and Barbuda (AG)</option>
+                  <option value="Aruba">Aruba (AW)</option>
+                  <option value="Australia">Australia (AU)</option>
+                  <option value="Bahamas">Bahamas (BS)</option>
+                  <option value="Barbados">Barbados (BB)</option>
+                  <option value="Belize">Belize (BZ)</option>
+                  <option value="Benin">Benin (BJ)</option>
+                  <option value="Bermuda">Bermuda (BM)</option>
+                  <option value="Bonaire, Sint Eustatius and Saba">Bonaire, Sint Eustatius and Saba (BQ)</option>
+                  <option value="Bosnia and Herzegovina">Bosnia and Herzegovina (BA)</option>
+                  <option value="Botswana">Botswana (BW)</option>
+                  <option value="Bouvet Island">Bouvet Island (BV)</option>
+                  <option value="British Indian Ocean Territory">British Indian Ocean Territory (IO)</option>
+                  <option value="Brunei Darussalam">Brunei Darussalam (BN)</option>
+                  <option value="Burkina Faso">Burkina Faso (BF)</option>
+                  <option value="Burundi">Burundi (BI)</option>
+                  <option value="Cameroon">Cameroon (CM)</option>
+                  <option value="Cayman Islands">Cayman Islands (KY)</option>
+                  <option value="Central African Republic">Central African Republic (CF)</option>
+                  <option value="Chad">Chad (TD)</option>
+                  <option value="Christmas Island">Christmas Island (CX)</option>
+                  <option value="Cocos (Keeling) Islands">Cocos (Keeling) Islands (CC)</option>
+                  <option value="Comoros">Comoros (KM)</option>
+                  <option value="Cook Islands">Cook Islands (CK)</option>
+                  <option value="Costa Rica">Costa Rica (CR)</option>
+                  <option value="Cuba">Cuba (CU)</option>
+                  <option value="Curaçao">Curaçao (CW)</option>
+                  <option value="Djibouti">Djibouti (DJ)</option>
+                  <option value="Dominica">Dominica (DM)</option>
+                  <option value="Dominican Republic">Dominican Republic (DO)</option>
+                  <option value="Egypt">Egypt (EG)</option>
+                  <option value="El Salvador">El Salvador (SV)</option>
+                  <option value="Equatorial Guinea">Equatorial Guinea (GQ)</option>
+                  <option value="Eritrea">Eritrea (ER)</option>
+                  <option value="Ethiopia">Ethiopia (ET)</option>
+                  <option value="Falkland Islands (Malvinas)">Falkland Islands (Malvinas) (FK)</option>
+                  <option value="Faroe Islands">Faroe Islands (FO)</option>
+                  <option value="Fiji">Fiji (FJ)</option>
+                  <option value="French Guiana">French Guiana (GF)</option>
+                  <option value="French Polynesia">French Polynesia (PF)</option>
+                  <option value="French Southern Territories">French Southern Territories (TF)</option>
+                  <option value="Gabon">Gabon (GA)</option>
+                  <option value="Gambia">Gambia (GM)</option>
+                  <option value="Ghana">Ghana (GH)</option>
+                  <option value="Gibraltar">Gibraltar (GI)</option>
+                  <option value="Greenland">Greenland (GL)</option>
+                  <option value="Grenada">Grenada (GD)</option>
+                  <option value="Guadeloupe">Guadeloupe (GP)</option>
+                  <option value="Guam">Guam (GU)</option>
+                  <option value="Guatemala">Guatemala (GT)</option>
+                  <option value="Guernsey">Guernsey (GG)</option>
+                  <option value="Guinea">Guinea (GN)</option>
+                  <option value="Guinea-Bissau">Guinea-Bissau (GW)</option>
+                  <option value="Haiti">Haiti (HT)</option>
+                  <option value="Heard Island and McDonald Islands">Heard Island and McDonald Islands (HM)</option>
+                  <option value="Honduras">Honduras (HN)</option>
+                  <option value="Hong Kong">Hong Kong (HK)</option>
+                  <option value="Iran, Islamic Republic of">Iran, Islamic Republic of (IR)</option>
+                  <option value="Isle of Man">Isle of Man (IM)</option>
+                  <option value="Jamaica">Jamaica (JM)</option>
+                  <option value="Jersey">Jersey (JE)</option>
+                  <option value="Kenya">Kenya (KE)</option>
+                  <option value="Kiribati">Kiribati (KI)</option>
+                  <option value="Lao People&#x27;s Democratic Republic">Lao People&#x27;s Democratic Republic (LA)</option>
+                  <option value="Lesotho">Lesotho (LS)</option>
+                  <option value="Liberia">Liberia (LR)</option>
+                  <option value="Libya">Libya (LY)</option>
+                  <option value="Macao">Macao (MO)</option>
+                  <option value="Madagascar">Madagascar (MG)</option>
+                  <option value="Malawi">Malawi (MW)</option>
+                  <option value="Mali">Mali (ML)</option>
+                  <option value="Marshall Islands">Marshall Islands (MH)</option>
+                  <option value="Martinique">Martinique (MQ)</option>
+                  <option value="Mauritania">Mauritania (MR)</option>
+                  <option value="Mauritius">Mauritius (MU)</option>
+                  <option value="Mayotte">Mayotte (YT)</option>
+                  <option value="Micronesia, Federated States of">Micronesia, Federated States of (FM)</option>
+                  <option value="Moldova, Republic of">Moldova, Republic of (MD)</option>
+                  <option value="Montserrat">Montserrat (MS)</option>
+                  <option value="Morocco">Morocco (MA)</option>
+                  <option value="Mozambique">Mozambique (MZ)</option>
+                  <option value="Namibia">Namibia (NA)</option>
+                  <option value="Nauru">Nauru (NR)</option>
+                  <option value="New Caledonia">New Caledonia (NC)</option>
+                  <option value="New Zealand">New Zealand (NZ)</option>
+                  <option value="Nicaragua">Nicaragua (NI)</option>
+                  <option value="Niger">Niger (NE)</option>
+                  <option value="Nigeria">Nigeria (NG)</option>
+                  <option value="Niue">Niue (NU)</option>
+                  <option value="Norfolk Island">Norfolk Island (NF)</option>
+                  <option value="Northern Mariana Islands">Northern Mariana Islands (MP)</option>
+                  <option value="Palau">Palau (PW)</option>
+                  <option value="Panama">Panama (PA)</option>
+                  <option value="Papua New Guinea">Papua New Guinea (PG)</option>
+                  <option value="Pitcairn">Pitcairn (PN)</option>
+                  <option value="Puerto Rico">Puerto Rico (PR)</option>
+                  <option value="Rwanda">Rwanda (RW)</option>
+                  <option value="Réunion">Réunion (RE)</option>
+                  <option value="Saint Barthélemy">Saint Barthélemy (BL)</option>
+                  <option value="Saint Helena, Ascension and Tristan da Cunha">Saint Helena, Ascension and Tristan da Cunha (SH)</option>
+                  <option value="Saint Kitts and Nevis">Saint Kitts and Nevis (KN)</option>
+                  <option value="Saint Lucia">Saint Lucia (LC)</option>
+                  <option value="Saint Martin (French part)">Saint Martin (French part) (MF)</option>
+                  <option value="Saint Pierre and Miquelon">Saint Pierre and Miquelon (PM)</option>
+                  <option value="Saint Vincent and the Grenadines">Saint Vincent and the Grenadines (VC)</option>
+                  <option value="Samoa">Samoa (WS)</option>
+                  <option value="Sao Tome and Principe">Sao Tome and Principe (ST)</option>
+                  <option value="Senegal">Senegal (SN)</option>
+                  <option value="Seychelles">Seychelles (SC)</option>
+                  <option value="Sierra Leone">Sierra Leone (SL)</option>
+                  <option value="Sint Maarten (Dutch part)">Sint Maarten (Dutch part) (SX)</option>
+                  <option value="Solomon Islands">Solomon Islands (SB)</option>
+                  <option value="Somalia">Somalia (SO)</option>
+                  <option value="South Africa">South Africa (ZA)</option>
+                  <option value="South Georgia and the South Sandwich Islands">South Georgia and the South Sandwich Islands (GS)</option>
+                  <option value="South Sudan">South Sudan (SS)</option>
+                  <option value="Sudan">Sudan (SD)</option>
+                  <option value="Svalbard and Jan Mayen">Svalbard and Jan Mayen (SJ)</option>
+                  <option value="Syrian Arab Republic">Syrian Arab Republic (SY)</option>
+                  <option value="Togo">Togo (TG)</option>
+                  <option value="Tokelau">Tokelau (TK)</option>
+                  <option value="Tonga">Tonga (TO)</option>
+                  <option value="Trinidad and Tobago">Trinidad and Tobago (TT)</option>
+                  <option value="Tunisia">Tunisia (TN)</option>
+                  <option value="Turks and Caicos Islands">Turks and Caicos Islands (TC)</option>
+                  <option value="Tuvalu">Tuvalu (TV)</option>
+                  <option value="Uganda">Uganda (UG)</option>
+                  <option value="United Arab Emirates">United Arab Emirates (AE)</option>
+                  <option value="United States Minor Outlying Islands">United States Minor Outlying Islands (UM)</option>
+                  <option value="Vanuatu">Vanuatu (VU)</option>
+                  <option value="Virgin Islands, British">Virgin Islands, British (VG)</option>
+                  <option value="Virgin Islands, U.S.">Virgin Islands, U.S. (VI)</option>
+                  <option value="Wallis and Futuna">Wallis and Futuna (WF)</option>
+                  <option value="Western Sahara">Western Sahara (EH)</option>
+                  <option value="Zambia">Zambia (ZM)</option>
+                  <option value="Zimbabwe">Zimbabwe (ZW)</option>
+                  <option value="Åland Islands">Åland Islands (AX)</option>
+                </optgroup>
+</select>
             </div>
           </div>
 
@@ -3643,34 +3792,37 @@
     }
   </script>
   <script>
-    // Flag SVGs
-    
-  function getRaceBadgeHtml(race) {
-      if (!race) race = 'Terran';
-      var r = race.toLowerCase();
-      if (r.startsWith('t')) {
-        return '<span class="race-badge race-terran" title="Terran">Terran</span>';
-      } else if (r.startsWith('p')) {
-        return '<span class="race-badge race-protoss" title="Protoss">Protoss</span>';
-      } else if (r.startsWith('z')) {
-        return '<span class="race-badge race-zerg" title="Zerg">Zerg</span>';
-      } else if (r === 'ums') {
-        return '<span class="race-badge race-ums" title="UMS" style="background:rgba(16,185,129,0.2);color:#10b981;border:1px solid rgba(16,185,129,0.5);">UMS</span>';
-      } else {
-        return '<span class="race-badge race-random" title="Random" style="background:rgba(239,68,68,0.2);color:#ef4444;border:1px solid rgba(239,68,68,0.5);">Random</span>';
-      }
-    }
-
-// Helper function to return official vector flag SVG from CDN
+    // All country flags load from local assets/flags SVG files.
+    // Core countries retain embedded fallback artwork if local assets are missing.
+    const wdFlagArtwork = {
+      ca: `<rect width="64" height="48" fill="#fff"/><rect width="16" height="48" fill="#e5222e"/><rect x="48" width="16" height="48" fill="#e5222e"/><path fill="#e5222e" d="M32 7l3 8 5-3-1 6 6-1-5 6 3 2-8 2 1 11h-4l1-11-8-2 3-2-5-6 6 1-1-6 5 3z"/>`,
+      us: `<rect width="64" height="48" fill="#fff"/>${Array.from({length:7},(_,i)=>`<rect x="0" y="${i*48/13*2}" width="64" height="${48/13}" fill="#b31942"/>`).join('')}<rect width="27" height="${48*7/13}" fill="#0a3161"/>${Array.from({length:5},(_,r)=>Array.from({length:6},(_,c)=>`<circle cx="${2.6+c*4.2+(r%2?1.8:0)}" cy="${2+r*3.5}" r=".85" fill="#fff"/>`).join('')).join('')}`,
+      mx: `<rect width="64" height="48" fill="#fff"/><rect width="21.34" height="48" fill="#006847"/><rect x="42.66" width="21.34" height="48" fill="#ce1126"/><ellipse cx="32" cy="27" rx="5.8" ry="8" fill="none" stroke="#7c9b59" stroke-width="1.4"/><path d="M32 18c-5 1-4 8-1 10l4-2-2-3 2-3z" fill="#8b633d"/><path d="M28 31q4 3 8 0" fill="none" stroke="#8b633d" stroke-width="1.5"/>`,
+      de: `<rect width="64" height="16" fill="#111"/><rect y="16" width="64" height="16" fill="#dd0000"/><rect y="32" width="64" height="16" fill="#ffce00"/>`,
+      ph: `<rect width="64" height="24" fill="#0038a8"/><rect y="24" width="64" height="24" fill="#ce1126"/><path d="M0 0L34 24 0 48z" fill="#fff"/><circle cx="13" cy="24" r="5.2" fill="#fcd116"/>${Array.from({length:8},(_,i)=>`<path transform="rotate(${45*i} 13 24)" d="M12 15l1-5 1 5" fill="#fcd116"/>`).join('')}<circle cx="4" cy="6" r="1.8" fill="#fcd116"/><circle cx="4" cy="42" r="1.8" fill="#fcd116"/><circle cx="29" cy="24" r="1.8" fill="#fcd116"/>`,
+      kr: `<rect width="64" height="48" fill="#fff"/><path d="M32 12a12 12 0 0 1 0 24 6 6 0 0 0 0-12 6 6 0 0 1 0-12" fill="#cd2e3a"/><path d="M32 36a12 12 0 0 1 0-24 6 6 0 0 0 0 12 6 6 0 0 1 0 12" fill="#0047a0"/>${[0,1,2].map(i=>`<rect x="8" y="${8+i*3.5}" width="13" height="2.4" fill="#111" transform="rotate(-31 14 12)"/>`).join('')}${[0,1,2].map(i=>`<rect x="44" y="${34+i*3.5}" width="13" height="2.4" fill="#111" transform="rotate(-31 50 38)"/>`).join('')}${[0,1,2].map(i=>`<rect x="8" y="${35+i*3.5}" width="13" height="2.4" fill="#111" transform="rotate(31 14 39)"/>`).join('')}${[0,1,2].map(i=>`<rect x="44" y="${7+i*3.5}" width="13" height="2.4" fill="#111" transform="rotate(31 50 11)"/>`).join('')}`,
+      jp: `<rect width="64" height="48" fill="#fff"/><circle cx="32" cy="24" r="13" fill="#bc002d"/>`,
+      fr: `<rect width="64" height="48" fill="#fff"/><rect width="21.34" height="48" fill="#0055a4"/><rect x="42.66" width="21.34" height="48" fill="#ef4135"/>`,
+      it: `<rect width="64" height="48" fill="#fff"/><rect width="21.34" height="48" fill="#009246"/><rect x="42.66" width="21.34" height="48" fill="#ce2b37"/>`,
+      pl: `<rect width="64" height="24" fill="#fff"/><rect y="24" width="64" height="24" fill="#dc143c"/>`,
+      ua: `<rect width="64" height="24" fill="#0057b7"/><rect y="24" width="64" height="24" fill="#ffd700"/>`,
+      id: `<rect width="64" height="24" fill="#ce1126"/><rect y="24" width="64" height="24" fill="#fff"/>`
+    };
+    // Country flags are served locally from assets/flags/ (flag-icons, 4x3 SVGs).
+    // No third-party CDN or platform-specific flag emoji is required.
+    const WD_FLAG_BASE_PATH = 'assets/flags/';
     function getFlagImg(code) {
-      // Unicode flags avoid external tracking/storage requests for each roster row.
-      var cc = String(code || '').toUpperCase();
-      if (!/^[A-Z]{2}$/.test(cc)) return '';
-      var flag = cc === 'XK' ? '🏳️' :
-        String.fromCodePoint(127397 + cc.charCodeAt(0), 127397 + cc.charCodeAt(1));
-      return '<span class="flag-icon" role="img" aria-label="' + cc + ' flag" '
-        + 'style="display:inline-block;vertical-align:middle;font-size:20px;line-height:1;'
-        + 'margin-right:8px;min-width:22px;">' + flag + '</span>';
+      var cc = String(code || '').trim().toLowerCase();
+      if (!/^[a-z]{2}$/.test(cc)) return '';
+      // Preserve embedded artwork as an offline fallback for core countries.
+      var body = wdFlagArtwork[cc];
+      var fallbackSvg = body
+        ? '<svg xmlns="http://www.w3.org/2000/svg" width="64" height="48" viewBox="0 0 64 48">' + body + '</svg>'
+        : '<svg xmlns="http://www.w3.org/2000/svg" width="64" height="48" viewBox="0 0 64 48"><rect width="64" height="48" rx="4" fill="#15263a"/><circle cx="32" cy="24" r="15" fill="none" stroke="#62cde0" stroke-width="3"/><path d="M17 24h30M32 9c-11 10-11 20 0 30M32 9c11 10 11 20 0 30" fill="none" stroke="#62cde0" stroke-width="2"/></svg>';
+      var fallbackUri = 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(fallbackSvg);
+      // Both URLs are internally generated from a strict two-letter country code.
+      var localPath = WD_FLAG_BASE_PATH + cc + '.svg';
+      return `<img class="flag-icon" src="${localPath}" alt="${cc.toUpperCase()} flag" width="28" height="21" loading="lazy" decoding="async" onerror="this.onerror=null;this.src='${fallbackUri}';">`;
     }
 
     const flags = {
@@ -3795,6 +3947,463 @@
       // --- GLOBAL FALLBACK ---
       global:         `<span style="display:inline-block; width:22px; height:15px; text-align:center; vertical-align:middle; font-size:12px; margin-right:8px;">🌐</span>`
     };
+    // Add every supported ISO 3166-1 country/territory to the existing name lookup.
+    // Existing keys such as "usa", "korea" and "uk" are preserved.
+    const wdExtraCountryCodes = {
+      aruba: 'aw',
+      afghanistan: 'af',
+      islamicrepublicofafghanistan: 'af',
+      angola: 'ao',
+      republicofangola: 'ao',
+      anguilla: 'ai',
+      landislands: 'ax',
+      albania: 'al',
+      republicofalbania: 'al',
+      andorra: 'ad',
+      principalityofandorra: 'ad',
+      unitedarabemirates: 'ae',
+      argentina: 'ar',
+      argentinerepublic: 'ar',
+      armenia: 'am',
+      republicofarmenia: 'am',
+      americansamoa: 'as',
+      antarctica: 'aq',
+      frenchsouthernterritories: 'tf',
+      antiguaandbarbuda: 'ag',
+      australia: 'au',
+      austria: 'at',
+      republicofaustria: 'at',
+      azerbaijan: 'az',
+      republicofazerbaijan: 'az',
+      burundi: 'bi',
+      republicofburundi: 'bi',
+      belgium: 'be',
+      kingdomofbelgium: 'be',
+      benin: 'bj',
+      republicofbenin: 'bj',
+      bonairesinteustatiusandsaba: 'bq',
+      burkinafaso: 'bf',
+      bangladesh: 'bd',
+      peoplesrepublicofbangladesh: 'bd',
+      bulgaria: 'bg',
+      republicofbulgaria: 'bg',
+      bahrain: 'bh',
+      kingdomofbahrain: 'bh',
+      bahamas: 'bs',
+      commonwealthofthebahamas: 'bs',
+      bosniaandherzegovina: 'ba',
+      republicofbosniaandherzegovina: 'ba',
+      saintbarthlemy: 'bl',
+      belarus: 'by',
+      republicofbelarus: 'by',
+      belize: 'bz',
+      bermuda: 'bm',
+      boliviaplurinationalstateof: 'bo',
+      bolivia: 'bo',
+      plurinationalstateofbolivia: 'bo',
+      brazil: 'br',
+      federativerepublicofbrazil: 'br',
+      barbados: 'bb',
+      bruneidarussalam: 'bn',
+      bhutan: 'bt',
+      kingdomofbhutan: 'bt',
+      bouvetisland: 'bv',
+      botswana: 'bw',
+      republicofbotswana: 'bw',
+      centralafricanrepublic: 'cf',
+      canada: 'ca',
+      cocoskeelingislands: 'cc',
+      switzerland: 'ch',
+      swissconfederation: 'ch',
+      chile: 'cl',
+      republicofchile: 'cl',
+      china: 'cn',
+      peoplesrepublicofchina: 'cn',
+      ctedivoire: 'ci',
+      republicofctedivoire: 'ci',
+      cameroon: 'cm',
+      republicofcameroon: 'cm',
+      congothedemocraticrepublicofthe: 'cd',
+      congo: 'cg',
+      republicofthecongo: 'cg',
+      cookislands: 'ck',
+      colombia: 'co',
+      republicofcolombia: 'co',
+      comoros: 'km',
+      unionofthecomoros: 'km',
+      caboverde: 'cv',
+      republicofcaboverde: 'cv',
+      costarica: 'cr',
+      republicofcostarica: 'cr',
+      cuba: 'cu',
+      republicofcuba: 'cu',
+      curaao: 'cw',
+      christmasisland: 'cx',
+      caymanislands: 'ky',
+      cyprus: 'cy',
+      republicofcyprus: 'cy',
+      czechia: 'cz',
+      czechrepublic: 'cz',
+      germany: 'de',
+      federalrepublicofgermany: 'de',
+      djibouti: 'dj',
+      republicofdjibouti: 'dj',
+      dominica: 'dm',
+      commonwealthofdominica: 'dm',
+      denmark: 'dk',
+      kingdomofdenmark: 'dk',
+      dominicanrepublic: 'do',
+      algeria: 'dz',
+      peoplesdemocraticrepublicofalgeria: 'dz',
+      ecuador: 'ec',
+      republicofecuador: 'ec',
+      egypt: 'eg',
+      arabrepublicofegypt: 'eg',
+      eritrea: 'er',
+      thestateoferitrea: 'er',
+      westernsahara: 'eh',
+      spain: 'es',
+      kingdomofspain: 'es',
+      estonia: 'ee',
+      republicofestonia: 'ee',
+      ethiopia: 'et',
+      federaldemocraticrepublicofethiopia: 'et',
+      finland: 'fi',
+      republicoffinland: 'fi',
+      fiji: 'fj',
+      republicoffiji: 'fj',
+      falklandislandsmalvinas: 'fk',
+      france: 'fr',
+      frenchrepublic: 'fr',
+      faroeislands: 'fo',
+      micronesiafederatedstatesof: 'fm',
+      federatedstatesofmicronesia: 'fm',
+      gabon: 'ga',
+      gaboneserepublic: 'ga',
+      unitedkingdom: 'gb',
+      unitedkingdomofgreatbritainandnorthernireland: 'gb',
+      georgia: 'ge',
+      guernsey: 'gg',
+      ghana: 'gh',
+      republicofghana: 'gh',
+      gibraltar: 'gi',
+      guinea: 'gn',
+      republicofguinea: 'gn',
+      guadeloupe: 'gp',
+      gambia: 'gm',
+      republicofthegambia: 'gm',
+      guineabissau: 'gw',
+      republicofguineabissau: 'gw',
+      equatorialguinea: 'gq',
+      republicofequatorialguinea: 'gq',
+      greece: 'gr',
+      hellenicrepublic: 'gr',
+      grenada: 'gd',
+      greenland: 'gl',
+      guatemala: 'gt',
+      republicofguatemala: 'gt',
+      frenchguiana: 'gf',
+      guam: 'gu',
+      guyana: 'gy',
+      republicofguyana: 'gy',
+      hongkong: 'hk',
+      hongkongspecialadministrativeregionofchina: 'hk',
+      heardislandandmcdonaldislands: 'hm',
+      honduras: 'hn',
+      republicofhonduras: 'hn',
+      croatia: 'hr',
+      republicofcroatia: 'hr',
+      haiti: 'ht',
+      republicofhaiti: 'ht',
+      hungary: 'hu',
+      indonesia: 'id',
+      republicofindonesia: 'id',
+      isleofman: 'im',
+      india: 'in',
+      republicofindia: 'in',
+      britishindianoceanterritory: 'io',
+      ireland: 'ie',
+      iranislamicrepublicof: 'ir',
+      iran: 'ir',
+      islamicrepublicofiran: 'ir',
+      iraq: 'iq',
+      republicofiraq: 'iq',
+      iceland: 'is',
+      republicoficeland: 'is',
+      israel: 'il',
+      stateofisrael: 'il',
+      italy: 'it',
+      italianrepublic: 'it',
+      jamaica: 'jm',
+      jersey: 'je',
+      jordan: 'jo',
+      hashemitekingdomofjordan: 'jo',
+      japan: 'jp',
+      kazakhstan: 'kz',
+      republicofkazakhstan: 'kz',
+      kenya: 'ke',
+      republicofkenya: 'ke',
+      kyrgyzstan: 'kg',
+      kyrgyzrepublic: 'kg',
+      cambodia: 'kh',
+      kingdomofcambodia: 'kh',
+      kiribati: 'ki',
+      republicofkiribati: 'ki',
+      saintkittsandnevis: 'kn',
+      korearepublicof: 'kr',
+      southkorea: 'kr',
+      kuwait: 'kw',
+      stateofkuwait: 'kw',
+      laopeoplesdemocraticrepublic: 'la',
+      laos: 'la',
+      lebanon: 'lb',
+      lebaneserepublic: 'lb',
+      liberia: 'lr',
+      republicofliberia: 'lr',
+      libya: 'ly',
+      saintlucia: 'lc',
+      liechtenstein: 'li',
+      principalityofliechtenstein: 'li',
+      srilanka: 'lk',
+      democraticsocialistrepublicofsrilanka: 'lk',
+      lesotho: 'ls',
+      kingdomoflesotho: 'ls',
+      lithuania: 'lt',
+      republicoflithuania: 'lt',
+      luxembourg: 'lu',
+      grandduchyofluxembourg: 'lu',
+      latvia: 'lv',
+      republicoflatvia: 'lv',
+      macao: 'mo',
+      macaospecialadministrativeregionofchina: 'mo',
+      saintmartinfrenchpart: 'mf',
+      morocco: 'ma',
+      kingdomofmorocco: 'ma',
+      monaco: 'mc',
+      principalityofmonaco: 'mc',
+      moldovarepublicof: 'md',
+      moldova: 'md',
+      republicofmoldova: 'md',
+      madagascar: 'mg',
+      republicofmadagascar: 'mg',
+      maldives: 'mv',
+      republicofmaldives: 'mv',
+      mexico: 'mx',
+      unitedmexicanstates: 'mx',
+      marshallislands: 'mh',
+      republicofthemarshallislands: 'mh',
+      northmacedonia: 'mk',
+      republicofnorthmacedonia: 'mk',
+      mali: 'ml',
+      republicofmali: 'ml',
+      malta: 'mt',
+      republicofmalta: 'mt',
+      myanmar: 'mm',
+      republicofmyanmar: 'mm',
+      montenegro: 'me',
+      mongolia: 'mn',
+      northernmarianaislands: 'mp',
+      commonwealthofthenorthernmarianaislands: 'mp',
+      mozambique: 'mz',
+      republicofmozambique: 'mz',
+      mauritania: 'mr',
+      islamicrepublicofmauritania: 'mr',
+      montserrat: 'ms',
+      martinique: 'mq',
+      mauritius: 'mu',
+      republicofmauritius: 'mu',
+      malawi: 'mw',
+      republicofmalawi: 'mw',
+      malaysia: 'my',
+      mayotte: 'yt',
+      namibia: 'na',
+      republicofnamibia: 'na',
+      newcaledonia: 'nc',
+      niger: 'ne',
+      republicoftheniger: 'ne',
+      norfolkisland: 'nf',
+      nigeria: 'ng',
+      federalrepublicofnigeria: 'ng',
+      nicaragua: 'ni',
+      republicofnicaragua: 'ni',
+      niue: 'nu',
+      netherlands: 'nl',
+      kingdomofthenetherlands: 'nl',
+      norway: 'no',
+      kingdomofnorway: 'no',
+      nepal: 'np',
+      federaldemocraticrepublicofnepal: 'np',
+      nauru: 'nr',
+      republicofnauru: 'nr',
+      newzealand: 'nz',
+      oman: 'om',
+      sultanateofoman: 'om',
+      pakistan: 'pk',
+      islamicrepublicofpakistan: 'pk',
+      panama: 'pa',
+      republicofpanama: 'pa',
+      pitcairn: 'pn',
+      peru: 'pe',
+      republicofperu: 'pe',
+      philippines: 'ph',
+      republicofthephilippines: 'ph',
+      palau: 'pw',
+      republicofpalau: 'pw',
+      papuanewguinea: 'pg',
+      independentstateofpapuanewguinea: 'pg',
+      poland: 'pl',
+      republicofpoland: 'pl',
+      puertorico: 'pr',
+      koreademocraticpeoplesrepublicof: 'kp',
+      northkorea: 'kp',
+      democraticpeoplesrepublicofkorea: 'kp',
+      portugal: 'pt',
+      portugueserepublic: 'pt',
+      paraguay: 'py',
+      republicofparaguay: 'py',
+      palestinestateof: 'ps',
+      thestateofpalestine: 'ps',
+      frenchpolynesia: 'pf',
+      qatar: 'qa',
+      stateofqatar: 'qa',
+      runion: 're',
+      romania: 'ro',
+      russianfederation: 'ru',
+      rwanda: 'rw',
+      rwandeserepublic: 'rw',
+      saudiarabia: 'sa',
+      kingdomofsaudiarabia: 'sa',
+      sudan: 'sd',
+      republicofthesudan: 'sd',
+      senegal: 'sn',
+      republicofsenegal: 'sn',
+      singapore: 'sg',
+      republicofsingapore: 'sg',
+      southgeorgiaandthesouthsandwichislands: 'gs',
+      sainthelenaascensionandtristandacunha: 'sh',
+      svalbardandjanmayen: 'sj',
+      solomonislands: 'sb',
+      sierraleone: 'sl',
+      republicofsierraleone: 'sl',
+      elsalvador: 'sv',
+      republicofelsalvador: 'sv',
+      sanmarino: 'sm',
+      republicofsanmarino: 'sm',
+      somalia: 'so',
+      federalrepublicofsomalia: 'so',
+      saintpierreandmiquelon: 'pm',
+      serbia: 'rs',
+      republicofserbia: 'rs',
+      southsudan: 'ss',
+      republicofsouthsudan: 'ss',
+      saotomeandprincipe: 'st',
+      democraticrepublicofsaotomeandprincipe: 'st',
+      suriname: 'sr',
+      republicofsuriname: 'sr',
+      slovakia: 'sk',
+      slovakrepublic: 'sk',
+      slovenia: 'si',
+      republicofslovenia: 'si',
+      sweden: 'se',
+      kingdomofsweden: 'se',
+      eswatini: 'sz',
+      kingdomofeswatini: 'sz',
+      sintmaartendutchpart: 'sx',
+      seychelles: 'sc',
+      republicofseychelles: 'sc',
+      syrianarabrepublic: 'sy',
+      syria: 'sy',
+      turksandcaicosislands: 'tc',
+      chad: 'td',
+      republicofchad: 'td',
+      togo: 'tg',
+      togoleserepublic: 'tg',
+      thailand: 'th',
+      kingdomofthailand: 'th',
+      tajikistan: 'tj',
+      republicoftajikistan: 'tj',
+      tokelau: 'tk',
+      turkmenistan: 'tm',
+      timorleste: 'tl',
+      democraticrepublicoftimorleste: 'tl',
+      tonga: 'to',
+      kingdomoftonga: 'to',
+      trinidadandtobago: 'tt',
+      republicoftrinidadandtobago: 'tt',
+      tunisia: 'tn',
+      republicoftunisia: 'tn',
+      trkiye: 'tr',
+      republicoftrkiye: 'tr',
+      tuvalu: 'tv',
+      taiwanprovinceofchina: 'tw',
+      taiwan: 'tw',
+      tanzaniaunitedrepublicof: 'tz',
+      tanzania: 'tz',
+      unitedrepublicoftanzania: 'tz',
+      uganda: 'ug',
+      republicofuganda: 'ug',
+      ukraine: 'ua',
+      unitedstatesminoroutlyingislands: 'um',
+      uruguay: 'uy',
+      easternrepublicofuruguay: 'uy',
+      unitedstates: 'us',
+      unitedstatesofamerica: 'us',
+      uzbekistan: 'uz',
+      republicofuzbekistan: 'uz',
+      holyseevaticancitystate: 'va',
+      saintvincentandthegrenadines: 'vc',
+      venezuelabolivarianrepublicof: 've',
+      venezuela: 've',
+      bolivarianrepublicofvenezuela: 've',
+      virginislandsbritish: 'vg',
+      britishvirginislands: 'vg',
+      virginislandsus: 'vi',
+      virginislandsoftheunitedstates: 'vi',
+      vietnam: 'vn',
+      socialistrepublicofvietnam: 'vn',
+      vanuatu: 'vu',
+      republicofvanuatu: 'vu',
+      wallisandfutuna: 'wf',
+      samoa: 'ws',
+      independentstateofsamoa: 'ws',
+      yemen: 'ye',
+      republicofyemen: 'ye',
+      southafrica: 'za',
+      republicofsouthafrica: 'za',
+      zambia: 'zm',
+      republicofzambia: 'zm',
+      zimbabwe: 'zw',
+      republicofzimbabwe: 'zw',
+      greatbritain: 'gb',
+      ivorycoast: 'ci',
+      vaticancity: 'va',
+      drcongo: 'cd',
+      democraticrepublicofthecongo: 'cd',
+      easttimor: 'tl',
+      turkiye: 'tr',
+      capeverde: 'cv',
+      swaziland: 'sz',
+      palestine: 'ps',
+      kosovo: 'xk'
+    };
+    Object.keys(wdExtraCountryCodes).forEach(function(key) {
+      if (!Object.prototype.hasOwnProperty.call(flags, key)) {
+        flags[key] = getFlagImg(wdExtraCountryCodes[key]);
+      }
+    });
+    // ISO codes also work as flagKey (e.g. "nz", "za", "br").
+    const wdAllCountryCodes = ['aw','af','ao','ai','ax','al','ad','ae','ar','am','as','aq','tf','ag','au','at','az','bi','be','bj','bq','bf','bd','bg','bh','bs','ba','bl','by','bz','bm','bo','br','bb','bn','bt','bv','bw','cf','ca','cc','ch','cl','cn','ci','cm','cd','cg','ck','co','km','cv','cr','cu','cw','cx','ky','cy','cz','de','dj','dm','dk','do','dz','ec','eg','er','eh','es','ee','et','fi','fj','fk','fr','fo','fm','ga','gb','ge','gg','gh','gi','gn','gp','gm','gw','gq','gr','gd','gl','gt','gf','gu','gy','hk','hm','hn','hr','ht','hu','id','im','in','io','ie','ir','iq','is','il','it','jm','je','jo','jp','kz','ke','kg','kh','ki','kn','kr','kw','la','lb','lr','ly','lc','li','lk','ls','lt','lu','lv','mo','mf','ma','mc','md','mg','mv','mx','mh','mk','ml','mt','mm','me','mn','mp','mz','mr','ms','mq','mu','mw','my','yt','na','nc','ne','nf','ng','ni','nu','nl','no','np','nr','nz','om','pk','pa','pn','pe','ph','pw','pg','pl','pr','kp','pt','py','ps','pf','qa','re','ro','ru','rw','sa','sd','sn','sg','gs','sh','sj','sb','sl','sv','sm','so','pm','rs','ss','st','sr','sk','si','se','sz','sx','sc','sy','tc','td','tg','th','tj','tk','tm','tl','to','tt','tn','tr','tv','tw','tz','ug','ua','um','uy','us','uz','va','vc','ve','vg','vi','vn','vu','wf','ws','ye','za','zm','zw','xk','eu'];
+    wdAllCountryCodes.forEach(function(cc) {
+      if (!Object.prototype.hasOwnProperty.call(flags, cc)) flags[cc] = getFlagImg(cc);
+    });
+
+
+    function getMemberFlag(member) {
+      var key = String(member && (member.flagKey || member.country) || '').toLowerCase().replace(/[^a-z]/g, '');
+      if (key === 'global' || !key) return flags.global;
+      if (Object.prototype.hasOwnProperty.call(flags, key)) return flags[key];
+      return flags.global;
+    }
 
     const membersData = [
       { id: 'RobFATKraft', name: 'RobFATKraft[WD]', role: 'Captain', rank: 'Founders', insignia: '🏰⋆༺𓆩♱𓆪༻⋆👑⋆༺𓆩♱𓆪༻⋆🏰', team: 'WD-A', status: 'Active', race: 'Protoss', avatar: '', country: 'USA', flagKey: 'usa', w1: '0-0', w2: '0-0', pts: 0, history: [] },
@@ -3890,7 +4499,7 @@
       tr.onclick = () => openDossier(p.id);
       
       const raceClass = p.race === 'Terran' ? 'race-terran' : (p.race === 'Protoss' ? 'race-protoss' : 'race-zerg');
-      const flagSvg = flags[p.flagKey] || flags.global;
+      const flagSvg = getMemberFlag(p);
 
       let roleBadge = '';
       if (p.role === 'Squadleader') {
@@ -4607,7 +5216,7 @@ function renderFirestoreReplays(cloudReplays) {
       document.getElementById('m-team').innerHTML = squadCrestHtml(squadKey) + '<span>' + (squadKey || 'Unassigned') + '</span>';
       document.getElementById('m-race-text').innerText = p.race;
       document.getElementById('m-country-name').innerText = p.country;
-      document.getElementById('m-flag').innerHTML = flags[p.flagKey] || flags.global;
+      document.getElementById('m-flag').innerHTML = getMemberFlag(p);
 
       const isActive = p.status === 'Active';
       const statusDot = document.getElementById('m-status-dot');
@@ -9310,7 +9919,7 @@ async function renderUserMaps() {
           tr.className = 'clickable-row';
           tr.onclick = function() { openDossier(p.id); };
           
-          var flagSvg = flags[p.flagKey] || flags.global;
+          var flagSvg = getMemberFlag(p);
 
           var displayRole = entry.role || p.role || 'Player';
           var roleBadge = '';
