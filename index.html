@@ -4398,6 +4398,16 @@
     });
 
 
+    function getRaceBadgeHtml(race) {
+      var value = String(race || 'Random');
+      var key = value.toLowerCase().replace(/[^a-z]/g, '');
+      var allowed = ['terran', 'protoss', 'zerg', 'random', 'ums'];
+      if (allowed.indexOf(key) < 0) key = 'random';
+      return '<span class="race-badge race-' + key + '">' +
+        value.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;') +
+        '</span>';
+    }
+
     function getMemberFlag(member) {
       var key = String(member && (member.flagKey || member.country) || '').toLowerCase().replace(/[^a-z]/g, '');
       if (key === 'global' || !key) return flags.global;
@@ -4912,29 +4922,64 @@
       if (e.target.id === 'articleDetailModal') closeArticleModal();
     }
 
-window.addEventListener('DOMContentLoaded', function() {
-  updateClocks();
-  initVisitorCounter();
-  recalculateAllMemberScores();
-  renderMatches();
-  renderRosterTableAndTiers();
-  
-  // Real-time cloud sync across devices (Firebase Firestore)
-  var communityDateInput = document.getElementById('cms-news-publish-date');
-  if (communityDateInput && !communityDateInput.value) communityDateInput.value = wdCommunityTodayISO();
-  initNewsRealtimeListener();
-  initClanMembersRealtimeListener();
-  initClanRosterRealtimeListener();
-  initMatchesRealtimeListener();
-  initClanEventsListener();
-  initReplaysRealtimeListener()
-  initVaultRealtimeListener();       
-  fetchBWCLStandings();
-  
-  var hash = window.location.hash.replace('#', '');
-  if (hash && document.getElementById('tab-' + hash)) {
-    switchTab(hash, false);
+// Bootstrap features independently: a rendering/storage error must never block Firestore.
+function wdStartFeature(label, callback) {
+  try {
+    return callback();
+  } catch (error) {
+    console.error('[WD initialization] ' + label + ' failed:', error);
+    return null;
   }
+}
+
+function wdShowCloudWarning(message) {
+  var container = document.getElementById('latest-transmission-card');
+  if (!container) return;
+  var notice = document.getElementById('wd-firebase-connection-notice');
+  if (!notice) {
+    notice = document.createElement('div');
+    notice.id = 'wd-firebase-connection-notice';
+    notice.setAttribute('role', 'status');
+    notice.style.cssText = 'border:1px solid #d97706;border-radius:6px;padding:10px 12px;color:#fcd34d;background:rgba(120,53,15,.2);font-size:.85rem;margin:8px 0';
+    container.parentNode.insertBefore(notice, container);
+  }
+  notice.textContent = message;
+}
+
+window.addEventListener('DOMContentLoaded', function() {
+  // Local UI must render even if Firebase SDK is unavailable.
+  wdStartFeature('clocks', updateClocks);
+  wdStartFeature('calendar', renderClanCalendar);
+  wdStartFeature('publication date', function() {
+    var input = document.getElementById('cms-news-publish-date');
+    if (input && !input.value) input.value = wdCommunityTodayISO();
+  });
+
+  // Start cloud listeners BEFORE costly member calculations and before visitor auth.
+  if (typeof firebase !== 'undefined' && typeof firebase.firestore === 'function' &&
+      typeof firebase.apps !== 'undefined' && firebase.apps.length > 0) {
+    wdStartFeature('community news listener', initNewsRealtimeListener);
+    wdStartFeature('members listener', initClanMembersRealtimeListener);
+    wdStartFeature('roster listener', initClanRosterRealtimeListener);
+    wdStartFeature('matches listener', initMatchesRealtimeListener);
+    wdStartFeature('events listener', initClanEventsListener);
+    wdStartFeature('replays listener', initReplaysRealtimeListener);
+    wdStartFeature('vault listener', initVaultRealtimeListener);
+  } else {
+    wdShowCloudWarning('Firebase could not start. Community posts and live clan data cannot be loaded. Check browser console for Firebase initialization or network errors.');
+    console.error('[WD Firebase] Missing initialized Firebase app or Firestore SDK. Cloud data was not modified.');
+  }
+
+  wdStartFeature('matches view', renderMatches);
+  wdStartFeature('roster view', renderRosterTableAndTiers);
+  wdStartFeature('member scores', recalculateAllMemberScores);
+  wdStartFeature('visitor counter', initVisitorCounter);
+  wdStartFeature('BWCL standings', fetchBWCLStandings);
+
+  wdStartFeature('URL tab', function() {
+    var hash = window.location.hash.replace('#', '');
+    if (hash && document.getElementById('tab-' + hash)) switchTab(hash, false);
+  });
 });
 
 var cloudReplayCache = [];
@@ -6523,39 +6568,51 @@ async function renderUserMaps() {
     }
 
     function initNewsRealtimeListener() {
-      if (typeof firebase !== 'undefined' && firebase.firestore) {
-        try {
-          var db = firebase.firestore();
-          if (newsRealtimeUnsubscribe) {
-            newsRealtimeUnsubscribe();
-            newsRealtimeUnsubscribe = null;
-          }
-          newsRealtimeUnsubscribe = db.collection('clan_news').orderBy('createdAt', 'desc').onSnapshot(function(snapshot) {
-            if (!snapshot.empty) {
-              var liveArticles = [];
-              snapshot.forEach(function(doc) {
-                var d = doc.data();
-                d.id = doc.id;
-                liveArticles.push(d);
-              });
-              renderClanNews(liveArticles);
-              return;
-            } else {
-              // Firestore is the source of truth while connected. An empty cloud
-              // collection means the Overview must show no transmission, not
-              // revive deleted/stale local default articles.
-              renderClanNews([]);
-            }
-          }, function(err) {
-            console.warn("Firestore sync offline:", err);
-            renderClanNews(getLocalNewsArticles());
-          });
-          return;
-        } catch(e) {
-          console.warn("Firestore onSnapshot error:", e);
-        }
+      if (typeof firebase === 'undefined' || !firebase.apps || !firebase.apps.length || !firebase.firestore) {
+        wdShowCloudWarning('Community sync could not start: Firebase is not initialized. Check the browser console.');
+        console.error('[WD Community] No Firebase app available; Firestore posts were not modified.');
+        return;
       }
-      renderClanNews(getLocalNewsArticles());
+      try {
+        var db = firebase.firestore();
+        if (newsRealtimeUnsubscribe) {
+          newsRealtimeUnsubscribe();
+          newsRealtimeUnsubscribe = null;
+        }
+        // DO NOT orderBy('createdAt') here: Firestore excludes documents
+        // without that field, so historic posts might disappear from the UI.
+        newsRealtimeUnsubscribe = db.collection('clan_news').onSnapshot(function(snapshot) {
+          var liveArticles = [];
+          snapshot.forEach(function(doc) {
+            var d = doc.data() || {};
+            d.id = doc.id;
+            liveArticles.push(d);
+          });
+          console.info('[WD Community] clan_news documents received:', liveArticles.length,
+            'from cache:', snapshot.metadata.fromCache);
+          try {
+            renderClanNews(liveArticles);
+            var notice = document.getElementById('wd-firebase-connection-notice');
+            if (notice) notice.remove();
+            if (snapshot.metadata.fromCache) {
+              wdShowCloudWarning('Community is displaying cached Firestore results; waiting for server synchronization.');
+            }
+          } catch(renderError) {
+            console.error('[WD Community] Rendering clan_news failed:', renderError);
+            wdShowCloudWarning('Firestore returned ' + liveArticles.length +
+              ' community post(s), but rendering failed: ' + String(renderError.message || renderError));
+          }
+        }, function(err) {
+          console.error('[WD Community] Firestore listener failed:', err);
+          wdShowCloudWarning('Unable to read clan_news: ' +
+            (err && err.code ? err.code : 'unknown error') + ' — ' +
+            (err && err.message ? err.message : 'Check Firebase settings and Firestore rules.') +
+            '. Your posts remain in Firestore.');
+        });
+      } catch(e) {
+        console.error('[WD Community] Failed to set up listener:', e);
+        wdShowCloudWarning('Community sync initialization failed: ' + String(e.message || e));
+      }
     }
 
     function publishClanNews() {
