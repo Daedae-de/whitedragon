@@ -2067,9 +2067,93 @@
     /* Consistent flag rendering for Windows, Edge and mobile browsers. */
     img.flag-icon { display: inline-block; width: 28px; height: 21px; object-fit: cover; vertical-align: middle; margin-right: 8px; border-radius: 2px; border: 1px solid rgba(255,255,255,.16); background: transparent; }
     .flag-emoji { display: inline-block; min-width: 28px; margin-right: 8px; vertical-align: middle; font-size: 22px; line-height: 1; }
+  
+
+    /* Premium White Dragon compact heraldic insignia (no emoji / CDN). */
+    .tier-header .insignia { min-width:46px; }
+    .wd-rank-mark {
+      --rank-color:#94a3b8; --rank-border:rgba(148,163,184,.48);
+      position:relative; isolation:isolate; width:43px; height:39px;
+      display:inline-flex; align-items:center; justify-content:center; flex:none;
+      color:var(--rank-color); border:0; border-radius:0;
+      clip-path:polygon(25% 2%,75% 2%,98% 50%,75% 98%,25% 98%,2% 50%);
+      background:linear-gradient(155deg,var(--rank-border),rgba(255,255,255,.04) 40%,var(--rank-border));
+      filter:drop-shadow(0 2px 3px rgba(0,0,0,.4));
+      text-shadow:none; font-size:initial;
+    }
+    .wd-rank-mark::before {
+      content:''; position:absolute; inset:1.5px;
+      background:linear-gradient(155deg,rgba(29,43,65,.97),rgba(7,13,26,.98) 58%,rgba(22,33,51,.95));
+      clip-path:inherit; z-index:-1;
+    }
+    .wd-rank-mark::after {
+      content:''; position:absolute; inset:4px; opacity:.26;
+      border-top:1px solid currentColor; pointer-events:none;
+    }
+    .wd-rank-mark svg { width:23px; height:23px; display:block; filter:drop-shadow(0 0 4px currentColor); }
+    .wd-rank-founders { --rank-color:#ffe39c; --rank-border:#c79534; }
+    .wd-rank-high-council { --rank-color:#dab8ff; --rank-border:#865ac4; }
+    .wd-rank-generals { --rank-color:#a9d4ff; --rank-border:#417dc4; }
+    .wd-rank-colonel { --rank-color:#8be8f5; --rank-border:#328c9d; }
+    .wd-rank-captains { --rank-color:#ffd38b; --rank-border:#ad7830; }
+    .wd-rank-officers { --rank-color:#e0e6f0; --rank-border:#77869d; }
+    .wd-rank-corporals { --rank-color:#88ecd9; --rank-border:#388f80; }
+    .wd-rank-privates { --rank-color:#a9b6cd; --rank-border:#56657c; }
+    .player-rank-badge .wd-rank-mark { width:30px; height:28px; margin-left:7px; vertical-align:middle; }
+    .player-rank-badge .wd-rank-mark svg { width:17px; height:17px; }
+    @media (max-width:600px) {
+      .tier-header .insignia { min-width:36px; }
+      .wd-rank-mark { width:34px; height:32px; }
+      .wd-rank-mark svg { width:19px; height:19px; }
+    }
+
+
+    /* Auto-synchronized badges next to member names and in dossiers. */
+    .member-pill { gap: 7px; }
+    .member-pill > .wd-rank-mark { width:26px; height:25px; flex-shrink:0; }
+    .member-pill > .wd-rank-mark svg { width:15px; height:15px; }
+    .member-pill .tag { min-width:0; overflow-wrap:anywhere; }
+    .player-rank-badge { display:flex; align-items:center; gap:8px; }
+    .player-rank-badge .wd-rank-mark { margin-left:0; }
+    .wd-rank-label { color:#f1f5f9; }
+    @media (max-width:600px) {
+      .member-pill { padding:6px 9px; gap:6px; }
+      .member-pill > .wd-rank-mark { width:23px; height:22px; }
+      .member-pill > .wd-rank-mark svg { width:14px; height:14px; }
+    }
+
+    /* Full member points ranking popup */
+    .wd-full-ranking-link { background:none; border:0; padding:6px 0; color:var(--cyan); font-size:0.8rem; text-align:right; font-family:'Share Tech Mono',monospace; font-weight:bold; cursor:pointer; }
+    .wd-full-ranking-link:hover, .wd-full-ranking-link:focus-visible { text-decoration:underline; }
+    .wd-full-ranking-overlay { position:fixed; inset:0; z-index:2700; display:none; align-items:center; justify-content:center; padding:16px; background:rgba(3,8,18,.93); backdrop-filter:blur(8px); }
+    .wd-full-ranking-overlay.active { display:flex; }
+    .wd-full-ranking-panel { width:min(790px,100%); max-height:min(90vh,900px); display:flex; flex-direction:column; min-height:0; overflow:hidden; border:1px solid var(--cyan); border-radius:12px; background:#0d1627; box-shadow:0 0 45px rgba(0,229,255,.19); }
+    .wd-full-ranking-head { padding:17px 20px; display:flex; gap:12px; justify-content:space-between; align-items:flex-start; border-bottom:1px solid var(--border-color); }
+    .wd-full-ranking-head h3 { margin:0 0 7px; font-family:'Orbitron',sans-serif; font-size:1.05rem; color:#fff; }
+    .wd-full-ranking-head p { margin:0; font-size:.82rem; color:var(--text-muted); }
+    .wd-full-ranking-close { background:transparent; border:1px solid var(--border-color); color:#fff; border-radius:6px; cursor:pointer; width:36px; height:36px; font-size:24px; flex-shrink:0; }
+    .wd-full-ranking-close:hover { border-color:var(--cyan); color:var(--cyan); }
+    .wd-full-ranking-scroll { padding:14px 18px 20px; overflow-y:auto; min-height:0; overscroll-behavior:contain; }
+    #wd-full-ranking-list { display:flex; flex-direction:column; gap:8px; }
+    @media(max-width:600px){ .wd-full-ranking-head{padding:14px;} .wd-full-ranking-scroll{padding:10px;} .wd-full-ranking-head h3{font-size:.88rem;} .wd-full-ranking-link{font-size:.72rem;} }
+
   </style>
 </head>
 <body>
+  <!-- White Dragon rank insignia: self-contained SVG symbols, no extra assets. -->
+  <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" width="0" height="0" style="position:absolute;overflow:hidden">
+    <defs>
+      <symbol id="wd-crest-founders" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.55" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 9 7.3 12 12 4 16.7 12 20.5 9 19 18H5Z"/><path d="M6 20h12M9 15h6"/><circle cx="12" cy="4" r="1"/></g></symbol>
+      <symbol id="wd-crest-high-council" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.55" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.5 15 8.5l6.5 1-4.7 4.7 1.1 6.6-5.9-3.1-5.9 3.1 1.1-6.6-4.7-4.7 6.5-1Z"/><path d="M12 7.5v7M8.5 11h7"/></g></symbol>
+      <symbol id="wd-crest-generals" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.55" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.8 19.5 6v6c0 4.8-3.4 7.7-7.5 9.4C7.9 19.7 4.5 16.8 4.5 12V6Z"/><path d="m8 10 4-3 4 3-4 3Z M8 15h8"/></g></symbol>
+      <symbol id="wd-crest-colonel" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.55" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 14.5 9.5 21 12l-6.5 2.5L12 21l-2.5-6.5L3 12l6.5-2.5Z"/><path d="M12 8v8M8 12h8"/></g></symbol>
+      <symbol id="wd-crest-captains" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.55" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3 7.5 12H4.5Z"/><path d="M7 18h10M9.5 21h5"/><path d="M12 8v6"/></g></symbol>
+      <symbol id="wd-crest-officers" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.55" stroke-linecap="round" stroke-linejoin="round"><path d="m5 4 15 15M19 4 4 19"/><path d="m4 4 4 1-3 3ZM20 4l-4 1 3 3ZM4 20l4-1-3-3ZM20 20l-4-1 3-3Z"/><circle cx="12" cy="12" r="2"/></g></symbol>
+      <symbol id="wd-crest-corporals" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.55" stroke-linecap="round" stroke-linejoin="round"><path d="m4 7 8 6 8-6M4 13l8 6 8-6"/><path d="M4 4h16"/></g></symbol>
+      <symbol id="wd-crest-privates" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.55" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 19.6 7.5v9L12 21l-7.6-4.5v-9Z"/><circle cx="12" cy="12" r="3"/></g></symbol>
+    </defs>
+  </svg>
+
   <div class="ambient-bg"></div>
   <div class="grid-overlay"></div>
 
@@ -2228,7 +2312,7 @@
       <div class="card">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; border-bottom:1px solid var(--border-color); padding-bottom:8px;">
           <span style="font-family:'Orbitron', sans-serif; font-weight:800; color:#fff; font-size:0.95rem;">MEMBER POINTS RANKING</span>
-          <a href="javascript:switchTab('roster')" style="color:var(--cyan); font-size:0.8rem; text-decoration:none; font-family:'Share Tech Mono', monospace; font-weight:bold;">VIEW FULL ROSTER &rarr;</a>
+          <button type="button" onclick="openWdFullRanking()" class="wd-full-ranking-link">VIEW FULL RANKING &rarr;</button>
         </div>
         <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom:12px;">TOP 5 COMMANDERS // ALL ACTIVE SQUADS • CLAN LEAGUE ONLY • WIN 2 PTS / LOSS 1 PT:</p>
         <div id="overview-points-ranking-list" style="display:flex; flex-direction:column; gap:8px;">
@@ -2847,47 +2931,47 @@
 
     <!-- Founders -->
     <div class="tier-group">
-      <div class="tier-header"><div class="title">FOUNDERS</div><div class="insignia">🏰⋆༺𓆩♱𓆪༻⋆👑⋆༺𓆩♱𓆪༻⋆🏰</div></div>
+      <div class="tier-header"><div class="title">FOUNDERS</div><div class="insignia"><span class="wd-rank-mark wd-rank-founders" title="Founders" aria-label="Founders"><svg aria-hidden="true"><use href="#wd-crest-founders"></use></svg></span></div></div>
       <div class="tier-content" id="tier-founders"></div>
     </div>
     <!-- High Council -->
     <div class="tier-group">
-      <div class="tier-header"><div class="title">HIGH COUNCIL</div><div class="insignia">⋆༺𓆩♛👑🧙‍♂️👑♛𓆪༻⋆ </div></div>
+      <div class="tier-header"><div class="title">HIGH COUNCIL</div><div class="insignia"><span class="wd-rank-mark wd-rank-high-council" title="High Council" aria-label="High Council"><svg aria-hidden="true"><use href="#wd-crest-high-council"></use></svg></span></div></div>
       <div class="tier-content" id="tier-high-council"></div>
     </div>
     <!-- Generals -->
     <div class="tier-group">
       <div class="tier-header">
         <div class="title">GENERALS</div>
-        <div class="insignia">⚔️✖️🛡️✖️⚔️</div>
+        <div class="insignia"><span class="wd-rank-mark wd-rank-generals" title="Generals" aria-label="Generals"><svg aria-hidden="true"><use href="#wd-crest-generals"></use></svg></span></div>
       </div>
       <div class="tier-content" id="tier-generals"></div>
     </div>
     <!-- Colonel -->
     <div class="tier-group">
-      <div class="tier-header"><div class="title">COLONEL</div><div class="insignia">🗡️⛊✠‍💂‍✠‍⛊🗡️</div></div>
+      <div class="tier-header"><div class="title">COLONEL</div><div class="insignia"><span class="wd-rank-mark wd-rank-colonel" title="Colonel" aria-label="Colonel"><svg aria-hidden="true"><use href="#wd-crest-colonel"></use></svg></span></div></div>
       <div class="tier-content" id="tier-colonel"></div>
     </div>
     <!-- Captains -->
     <div class="tier-group">
-      <div class="tier-header"><div class="title">CAPTAINS</div><div class="insignia">⛨༺♰༻⛵༺♰༻⛨ </div></div>
+      <div class="tier-header"><div class="title">CAPTAINS</div><div class="insignia"><span class="wd-rank-mark wd-rank-captains" title="Captains" aria-label="Captains"><svg aria-hidden="true"><use href="#wd-crest-captains"></use></svg></span></div></div>
       <div class="tier-content" id="tier-captains"></div>
     </div>
     <!-- Officers -->
     <div class="tier-group">
-      <div class="tier-header"><div class="title">OFFICERS</div><div class="insignia">⛨🗡️⚔︎🗡️⛨</div></div>
+      <div class="tier-header"><div class="title">OFFICERS</div><div class="insignia"><span class="wd-rank-mark wd-rank-officers" title="Officers" aria-label="Officers"><svg aria-hidden="true"><use href="#wd-crest-officers"></use></svg></span></div></div>
       <div class="tier-content" id="tier-officers"></div>
     </div>
     <!-- Corporals -->
     <div class="tier-group">
-      <div class="tier-header"><div class="title">CORPORALS</div><div class="insignia">📯⚔︎🏹⚔︎📯</div></div>
+      <div class="tier-header"><div class="title">CORPORALS</div><div class="insignia"><span class="wd-rank-mark wd-rank-corporals" title="Corporals" aria-label="Corporals"><svg aria-hidden="true"><use href="#wd-crest-corporals"></use></svg></span></div></div>
       <div class="tier-content" id="tier-corporals"></div>
     </div>
     <!-- Privates -->
     <div class="tier-group">
       <div class="tier-header">
         <div class="title">PRIVATES</div>
-        <div class="insignia">🤺🪖♟️🪖🤺</div>
+        <div class="insignia"><span class="wd-rank-mark wd-rank-privates" title="Privates" aria-label="Privates"><svg aria-hidden="true"><use href="#wd-crest-privates"></use></svg></span></div>
       </div>
       <div class="tier-content" id="tier-privates"></div>
     </div>
@@ -3636,6 +3720,22 @@
           <div id="art-modal-admin-actions" style="display:flex; gap:8px; align-items:center; margin-left:auto;"></div>
         </div>
       </div>
+    </div>
+  </div>
+
+  
+  <!-- MEMBER POINTS RANKING: all active members, read-only popup -->
+  <div id="wdFullRankingModal" class="wd-full-ranking-overlay" role="dialog" aria-modal="true" aria-hidden="true" aria-label="Full Member Points Ranking" onclick="if(event.target===this) closeWdFullRanking()">
+    <div class="wd-full-ranking-panel">
+      <div class="wd-full-ranking-head">
+        <div>
+          <h3>MEMBER POINTS RANKING</h3>
+          <p>ALL ACTIVE SQUADS · CLAN LEAGUE ONLY · WIN 2 PTS / LOSS 1 PT</p>
+          <p id="wd-full-ranking-count" style="margin-top:6px; color:var(--cyan);">Loading ranking...</p>
+        </div>
+        <button type="button" class="wd-full-ranking-close" onclick="closeWdFullRanking()" aria-label="Close full member ranking">&times;</button>
+      </div>
+      <div class="wd-full-ranking-scroll"><div id="wd-full-ranking-list" aria-live="polite"></div></div>
     </div>
   </div>
 
@@ -4505,6 +4605,30 @@
     // which is not present in this version and aborted the whole startup script.
     // The Firestore-aware renderRosterTableAndTiers() below renders the roster.
 
+    // Single source of truth: every visible rank insignia is derived from
+    // the member's current rank (Firestore), never an obsolete insignia string.
+    const WD_RANK_LOOKUP = Object.freeze({
+      'founders': ['Founders', 'founders'],
+      'high council': ['High Council', 'high-council'],
+      'generals': ['Generals', 'generals'],
+      'colonel': ['Colonel', 'colonel'],
+      'captains': ['Captains', 'captains'],
+      'officers': ['Officers', 'officers'],
+      'corporals': ['Corporals', 'corporals'],
+      'privates': ['Privates', 'privates']
+    });
+    function getWDRankInfo(rank) {
+      var key = String(rank || '').trim().replace(/\s+/g, ' ').toLowerCase();
+      return WD_RANK_LOOKUP[key] || WD_RANK_LOOKUP['privates'];
+    }
+    function getWDRankMarkHtml(rank) {
+      var info = getWDRankInfo(rank);
+      return '<span class="wd-rank-mark wd-rank-' + info[1] +
+        '" title="' + info[0] + '" aria-label="' + info[0] +
+        '"><svg aria-hidden="true"><use href="#wd-crest-' + info[1] +
+        '"></use></svg></span>';
+    }
+
     const tiers = {
       'Founders': 'tier-founders',
       'High Council': 'tier-high-council',
@@ -5212,7 +5336,10 @@ function renderFirestoreReplays(cloudReplays) {
         };
       }
       document.getElementById('m-name').innerText = p.name;
-      document.getElementById('m-rank').innerText = `${p.rank} ${p.insignia ? p.insignia : ''}`;
+      var rankElement = document.getElementById('m-rank');
+      var wdCurrentRank = getWDRankInfo(p.rank);
+      rankElement.innerHTML = getWDRankMarkHtml(p.rank) +
+        '<span class="wd-rank-label">' + wdCurrentRank[0] + '</span>';
       var squadKey = memberSquadKey(p.id);
       document.getElementById('m-team').innerHTML = squadCrestHtml(squadKey) + '<span>' + (squadKey || 'Unassigned') + '</span>';
       document.getElementById('m-race-text').innerText = p.race;
@@ -7722,7 +7849,7 @@ async function renderUserMaps() {
           if (c.avatar !== undefined && c.avatar !== '') member.avatar = c.avatar;
           if (c.race !== undefined && c.race !== '') member.race = c.race;
           if (c.bio !== undefined) member.bio = c.bio;
-          if (c.rank !== undefined && c.rank !== '') member.rank = c.rank;
+          // Ignore stale local rank overrides; Firestore owns rank.
           if (c.role !== undefined && c.role !== '') member.role = c.role;
           if (c.country !== undefined && c.country !== '') member.country = c.country;
           if (c.flagKey !== undefined && c.flagKey !== '') member.flagKey = c.flagKey;
@@ -7738,7 +7865,7 @@ async function renderUserMaps() {
               if (c.avatar !== undefined && c.avatar !== '') member.avatar = c.avatar;
               if (c.race !== undefined && c.race !== '') member.race = c.race;
               if (c.bio !== undefined) member.bio = c.bio;
-              if (c.rank !== undefined && c.rank !== '') member.rank = c.rank;
+              // Ignore stale local rank overrides; Firestore owns rank.
               if (c.role !== undefined && c.role !== '') member.role = c.role;
               if (c.country !== undefined && c.country !== '') member.country = c.country;
               if (c.flagKey !== undefined && c.flagKey !== '') member.flagKey = c.flagKey;
@@ -9413,11 +9540,34 @@ async function renderUserMaps() {
       });
     }
 
-    function renderOverviewPointsRanking() {
+    function openWdFullRanking() {
+      var modal = document.getElementById('wdFullRankingModal');
+      if (!modal) return;
+      renderOverviewPointsRanking('wd-full-ranking-list', true);
+      modal.classList.add('active');
+      modal.setAttribute('aria-hidden', 'false');
+      var closeButton = modal.querySelector('.wd-full-ranking-close');
+      if (closeButton) closeButton.focus();
+    }
+
+    function closeWdFullRanking() {
+      var modal = document.getElementById('wdFullRankingModal');
+      if (!modal) return;
+      modal.classList.remove('active');
+      modal.setAttribute('aria-hidden', 'true');
+    }
+
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape' && document.getElementById('wdFullRankingModal')?.classList.contains('active')) {
+        closeWdFullRanking();
+      }
+    });
+
+    function renderOverviewPointsRanking(targetId, showAll) {
       // The overview leaderboard uses the same points calculated from the
       // Clan League match archive. It includes all active clan members,
       // regardless of WD-A / WD-B / WD-C squad assignment.
-      var container = document.getElementById('overview-points-ranking-list');
+      var container = document.getElementById(targetId || 'overview-points-ranking-list');
       if (!container) return;
 
       var members = recalculateAllMemberScores();
@@ -9441,8 +9591,14 @@ async function renderUserMaps() {
           if (a.losses1v1 !== b.losses1v1) return a.losses1v1 - b.losses1v1;
           if (b.wins2v2 !== a.wins2v2) return b.wins2v2 - a.wins2v2;
           return String(a.member.name || a.member.id || '').localeCompare(String(b.member.name || b.member.id || ''));
-        })
-        .slice(0, 5);
+        });
+
+      if (showAll) {
+        var countLabel = document.getElementById('wd-full-ranking-count');
+        if (countLabel) countLabel.textContent = ranking.length + ' ACTIVE MEMBERS';
+      } else {
+        ranking = ranking.slice(0, 5);
+      }
 
       container.innerHTML = '';
       if (!ranking.length) {
@@ -9501,6 +9657,9 @@ async function renderUserMaps() {
         row.appendChild(score);
         container.appendChild(row);
       });
+      if (!showAll && document.getElementById('wdFullRankingModal')?.classList.contains('active')) {
+        renderOverviewPointsRanking('wd-full-ranking-list', true);
+      }
     }
 
     function addMemberToRosterUI() {
@@ -9986,7 +10145,7 @@ async function renderUserMaps() {
       });
 
       allMembers.forEach(function(p) {
-        var targetId = tiers[p.rank] || 'tier-privates';
+        var targetId = tiers[getWDRankInfo(p.rank)[0]];
         var container = document.getElementById(targetId);
         if (!container) return;
 
@@ -10017,7 +10176,8 @@ async function renderUserMaps() {
         var delBtnHtml = canModerate ?
           '<button type="button" class="wd-pill-remove" title="Expel member" style="margin-left:6px; color:var(--loss); font-weight:bold; cursor:pointer; padding:0 3px; background:none; border:0;">✕</button>' : '';
 
-        pill.innerHTML = 
+        pill.innerHTML =
+          getWDRankMarkHtml(p.rank) +
           '<span class="tag">' + pillAvatar + escapeMatchHtml(p.name) + '</span>' +
           '<span class="pill-race" style="color:' + raceColor + '">' + raceTag + '</span>' +
           delBtnHtml;
