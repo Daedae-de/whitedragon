@@ -4488,40 +4488,9 @@
       { id: 'ZioN', name: 'ZioN[WD]', rank: 'Privates', insignia: '🤺🪖♟️🪖🤺', team: 'WD Squad', status: 'Active', race: 'Zerg', avatar: '', country: 'Global', flagKey: 'global', w1: '0-0', w2: '0-0', pts: 0, history: [] }
     ];
 
-    const rosterIds = ['CheesyCake', 'Battousai', 'Miwaco', 'KaRDiNaL', 'JaxM', 'zDAwgZ', 'Kimchi', 'DeathOrb', 'LunarPop', 'RobFATKraft', 'aMeba'];
-    const rosterTbody = document.getElementById('roster-tbody');
-
-    rosterIds.forEach(id => {
-      const p = membersData.find(m => m.id === id);
-      if (!p) return;
-      const tr = document.createElement('tr');
-      tr.className = 'clickable-row';
-      tr.onclick = () => openDossier(p.id);
-      
-      const raceClass = p.race === 'Terran' ? 'race-terran' : (p.race === 'Protoss' ? 'race-protoss' : 'race-zerg');
-      const flagSvg = getMemberFlag(p);
-
-      let roleBadge = '';
-      if (p.role === 'Squadleader') {
-        roleBadge = '<span class="role-badge role-squadleader">★ Squadleader</span>';
-      } else if (p.role === 'Captain') {
-        roleBadge = '<span class="role-badge role-captain">⛨ Captain</span>';
-      } else {
-        roleBadge = '<span class="role-badge role-starter">Player</span>';
-      }
-
-      const miniAvatar = p.avatar ? 
-        `<img src="${p.avatar}" class="table-avatar" onerror="this.style.display=\'none\'">` : '';
-      tr.innerHTML = `
-        <td><span class="player-tag">${miniAvatar}${p.name} <span class="click-hint">INTEL</span></span></td>
-        <td>${roleBadge}</td>
-        <td><strong style="color:var(--cyan);">WD-A</strong></td>
-        <td>${flagSvg} ${p.country}</td>
-        <td>${getRaceBadgeHtml(p.race)}</td>
-        <td style="text-align:right;"><span style="color:var(--win); font-family:'Share Tech Mono',monospace; font-size:0.8rem; font-weight:bold;">● ACTIVE</span></td>
-      `;
-      rosterTbody.appendChild(tr);
-    });
+    // Removed obsolete eager roster renderer. It referenced getRaceBadgeHtml(),
+    // which is not present in this version and aborted the whole startup script.
+    // The Firestore-aware renderRosterTableAndTiers() below renders the roster.
 
     const tiers = {
       'Founders': 'tier-founders',
@@ -4534,24 +4503,8 @@
       'Privates': 'tier-privates'
     };
 
-    membersData.forEach(p => {
-      const targetId = tiers[p.rank] || 'tier-privates';
-      const container = document.getElementById(targetId);
-      if (!container) return;
-
-      const pill = document.createElement('div');
-      pill.className = 'member-pill';
-      pill.onclick = () => openDossier(p.id);
-
-      const raceColor = p.race === 'Terran' ? '#60a5fa' : (p.race === 'Protoss' ? '#fbbf24' : '#c084fc');
-      const pillAvatar = p.avatar ? 
-        `<img src="${p.avatar}" class="pill-avatar" onerror="this.style.display=\'none\'">` : '';
-      pill.innerHTML = `
-        <span class="tag">${pillAvatar}${p.name}</span>
-        <span class="pill-race" style="color:${raceColor}">[${p.race[0]}]</span>
-      `;
-      container.appendChild(pill);
-    });
+    // Member tier cards are rendered after DOMContentLoaded by
+    // renderRosterTableAndTiers(), and refreshed from Firestore snapshots.
 
     function toggleWDNavigation(forceOpen) {
       var nav = document.getElementById('wd-main-navigation');
