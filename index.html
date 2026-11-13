@@ -2158,9 +2158,22 @@
 
 
     /* Race markers in match set lines: consistent single and 2v2 letter badges. */
-    .wd-match-race-pair { display: inline-flex; align-items: center; gap: 3px; vertical-align: middle; white-space: nowrap; }
-    .wd-match-race-letter { width: 26px; height: 25px; padding: 1px; display: inline-flex; align-items: center; justify-content: center; font-family: 'Orbitron', sans-serif; font-size: 0.76rem; font-weight: 800; line-height: 1; letter-spacing: 0; border-radius: 5px; }
-    @media (max-width: 600px) { .wd-match-race-letter { width: 23px; height: 23px; font-size: 0.7rem; } }
+    .wd-match-race-pair { display: inline-flex; flex-wrap: nowrap; align-items: center; gap: 2px; vertical-align: middle; white-space: nowrap; }
+    .wd-match-race-letter {
+      width: 18px;
+      height: 18px;
+      flex: 0 0 18px;
+      padding: 0;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 0.625rem;
+      font-weight: 800;
+      line-height: 1;
+      letter-spacing: 0;
+      border-radius: 4px;
+    }
   </style>
 </head>
 <body>
