@@ -2137,6 +2137,30 @@
     #wd-full-ranking-list { display:flex; flex-direction:column; gap:8px; }
     @media(max-width:600px){ .wd-full-ranking-head{padding:14px;} .wd-full-ranking-scroll{padding:10px;} .wd-full-ranking-head h3{font-size:.88rem;} .wd-full-ranking-link{font-size:.72rem;} }
 
+  
+    /* 1v1 / 2v2 graphical race insignia (no external assets required). */
+    .wd-match-race-icon {
+      width: 25px;
+      height: 25px;
+      padding: 3px;
+      margin: 0 2px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      vertical-align: middle;
+      line-height: 1;
+      flex-shrink: 0;
+    }
+    .wd-match-race-icon svg { display: block; width: 16px; height: 16px; }
+    @media (max-width: 600px) {
+      .wd-match-race-icon { width: 23px; height: 23px; padding: 2px; margin: 0 1px; }
+    }
+
+
+    /* Race markers in match set lines: consistent single and 2v2 letter badges. */
+    .wd-match-race-pair { display: inline-flex; align-items: center; gap: 3px; vertical-align: middle; white-space: nowrap; }
+    .wd-match-race-letter { width: 26px; height: 25px; padding: 1px; display: inline-flex; align-items: center; justify-content: center; font-family: 'Orbitron', sans-serif; font-size: 0.76rem; font-weight: 800; line-height: 1; letter-spacing: 0; border-radius: 5px; }
+    @media (max-width: 600px) { .wd-match-race-letter { width: 23px; height: 23px; font-size: 0.7rem; } }
   </style>
 </head>
 <body>
@@ -8199,18 +8223,23 @@ async function renderUserMaps() {
         resBadge = '<span style="color:var(--loss); font-weight:bold; font-family:\'Share Tech Mono\',monospace;">LOSS</span>';
       }
 
-      textPart = textPart
-        .replace(/\[T\]|\(T\)/gi, '<span class="race-badge race-terran" style="font-size:0.62rem; padding:1px 5px; margin:0 3px;">T</span>')
-        .replace(/\[P\]|\(P\)/gi, '<span class="race-badge race-protoss" style="font-size:0.62rem; padding:1px 5px; margin:0 3px;">P</span>')
-        .replace(/\[Z\]|\(Z\)/gi, '<span class="race-badge race-zerg" style="font-size:0.62rem; padding:1px 5px; margin:0 3px;">Z</span>')
-        .replace(/\[R\]|\(R\)/gi, '<span class="race-badge race-random" style="font-size:0.62rem; padding:1px 5px; margin:0 3px;">R</span>')
-        .replace(/\[P\/T\]|\(P\/T\)/gi, '<span class="race-badge race-protoss" style="font-size:0.62rem; padding:1px 4px; margin:0 1px;">P</span><span class="race-badge race-terran" style="font-size:0.62rem; padding:1px 4px; margin:0 1px;">T</span>')
-        .replace(/\[T\/P\]|\(T\/P\)/gi, '<span class="race-badge race-terran" style="font-size:0.62rem; padding:1px 4px; margin:0 1px;">T</span><span class="race-badge race-protoss" style="font-size:0.62rem; padding:1px 4px; margin:0 1px;">P</span>')
-        .replace(/\[Z\/T\]|\(Z\/T\)/gi, '<span class="race-badge race-zerg" style="font-size:0.62rem; padding:1px 4px; margin:0 1px;">Z</span><span class="race-badge race-terran" style="font-size:0.62rem; padding:1px 4px; margin:0 1px;">T</span>')
-        .replace(/\[T\/Z\]|\(T\/Z\)/gi, '<span class="race-badge race-terran" style="font-size:0.62rem; padding:1px 4px; margin:0 1px;">T</span><span class="race-badge race-zerg" style="font-size:0.62rem; padding:1px 4px; margin:0 1px;">Z</span>')
-        .replace(/\[Z\/P\]|\(Z\/P\)/gi, '<span class="race-badge race-zerg" style="font-size:0.62rem; padding:1px 4px; margin:0 1px;">Z</span><span class="race-badge race-protoss" style="font-size:0.62rem; padding:1px 4px; margin:0 1px;">P</span>')
-        .replace(/\[T\/T\]|\(T\/T\)/gi, '<span class="race-badge race-terran" style="font-size:0.62rem; padding:1px 4px; margin:0 1px;">T</span><span class="race-badge race-terran" style="font-size:0.62rem; padding:1px 4px; margin:0 1px;">T</span>');
-
+      // Render all race markers using the same compact letter badges.
+      // Example: [P] => P badge, [P/P] => two P badges,
+      // [T/Z], [TT], [ZZ], (P/P) and legacy entity-encoded markers work too.
+      var wdRaceLabels = { P: 'Protoss', T: 'Terran', Z: 'Zerg', R: 'Random' };
+      var wdRaceClasses = { P: 'race-protoss', T: 'race-terran', Z: 'race-zerg', R: 'race-random' };
+      function wdMatchRaceBadge(letter) {
+        var raceName = wdRaceLabels[letter];
+        if (!raceName) return letter;
+        return '<span class="race-badge wd-match-race-letter ' + wdRaceClasses[letter] +
+          '" title="' + raceName + '" aria-label="' + raceName + '">' + letter + '</span>';
+      }
+      // Firestore historical set strings may contain regular brackets or HTML-encoded brackets.
+      textPart = textPart.replace(/(?:\[|&#0*91;|&#x0*5b;|&lbrack;)(\s*[PTZR](?:\s*\/\s*[PTZR]|\s*[PTZR])?\s*)(?:\]|&#0*93;|&#x0*5d;|&rbrack;)|\((\s*[PTZR](?:\s*\/\s*[PTZR]|\s*[PTZR])?\s*)\)/gi,
+        function(full, brackets, parens) {
+          var letters = String(brackets || parens || '').toUpperCase().replace(/[\s\/]/g, '');
+          return '<span class="wd-match-race-pair">' + letters.split('').map(wdMatchRaceBadge).join('') + '</span>';
+        });
       textPart = wdNormalizePlayerName(textPart);
       return '<div class="set-row"><span>' + textPart + '</span>' + resBadge + '</div>';
     }
