@@ -2158,22 +2158,9 @@
 
 
     /* Race markers in match set lines: consistent single and 2v2 letter badges. */
-    .wd-match-race-pair { display: inline-flex; flex-wrap: nowrap; align-items: center; gap: 2px; vertical-align: middle; white-space: nowrap; }
-    .wd-match-race-letter {
-      width: 18px;
-      height: 18px;
-      flex: 0 0 18px;
-      padding: 0;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      font-family: 'Orbitron', sans-serif;
-      font-size: 0.625rem;
-      font-weight: 800;
-      line-height: 1;
-      letter-spacing: 0;
-      border-radius: 4px;
-    }
+    .wd-match-race-pair { display: inline-flex; align-items: center; gap: 3px; vertical-align: middle; white-space: nowrap; }
+    .wd-match-race-letter { width: 26px; height: 25px; padding: 1px; display: inline-flex; align-items: center; justify-content: center; font-family: 'Orbitron', sans-serif; font-size: 0.76rem; font-weight: 800; line-height: 1; letter-spacing: 0; border-radius: 5px; }
+    @media (max-width: 600px) { .wd-match-race-letter { width: 23px; height: 23px; font-size: 0.7rem; } }
   </style>
 </head>
 <body>
@@ -2319,6 +2306,12 @@
             If you want to join us, visit Battle.net gateway <strong style="color: var(--cyan);">US West</strong> and join channel <strong style="color: #fff; background: rgba(0, 229, 255, 0.12); padding: 2px 8px; border-radius: 4px; border: 1px solid rgba(0, 229, 255, 0.35); cursor: pointer;" onclick="copySingleText('Op White-Dragon', 'Channel Name')" title="Click to copy channel">Op White-Dragon 📋</strong>, or message clan admins on Discord for tryouts:
           </p>
           <div style="display: flex; flex-wrap: wrap; gap: 10px; align-items: center;">
+            <a href="https://discord.com/users/613283502103986206" target="_blank" rel="noopener noreferrer" class="btn-download-rep" style="background: rgba(245, 158, 11, 0.15); border-color: rgba(245, 158, 11, 0.6); color: #fbbf24; padding: 6px 14px; font-size: 0.78rem; text-decoration: none;" title="Open DeathOrb Discord Profile">
+              💬 Discord: <strong>DeathOrb[WD]</strong> ↗
+            </a>
+            <a href="https://discord.com/users/1136800479461003304" target="_blank" rel="noopener noreferrer" class="btn-download-rep" style="background: rgba(245, 158, 11, 0.15); border-color: rgba(245, 158, 11, 0.6); color: #fbbf24; padding: 6px 14px; font-size: 0.78rem; text-decoration: none;" title="Open RobFATKraft Discord Profile">
+              💬 Discord: <strong>RobFATKraft[WD]</strong> ↗
+            </a>
             <a href="https://discord.com/users/839360695992844298" target="_blank" rel="noopener noreferrer" class="btn-download-rep" style="background: rgba(245, 158, 11, 0.15); border-color: rgba(245, 158, 11, 0.6); color: #fbbf24; padding: 6px 14px; font-size: 0.78rem; text-decoration: none;" title="Open Lunarpop Discord Profile">
               💬 Discord: <strong>Lunarpop[WD]</strong> ↗
             </a>
@@ -4783,6 +4776,7 @@
       }
 
       bwclCallbackReceived = false;
+      wdHealthSet('BWCL', 'loading', 'Request started');
 
       const script = document.createElement("script");
       script.id = "bwcl-jsonp-script";
@@ -4793,6 +4787,7 @@
         "callback=handleBWCLData&ts=" + Date.now();
 
       script.onerror = function() {
+        wdHealthSet('BWCL', 'error', 'Apps Script request failed');
         if (bwclSyncTimeout) clearTimeout(bwclSyncTimeout);
         console.error(
           "BWCL Live Sync failed: Apps Script endpoint is unreachable. " +
@@ -4801,7 +4796,9 @@
       };
 
       script.onload = function() {
+        if (!bwclCallbackReceived) wdHealthSet('BWCL', 'error', 'Invalid or missing JSONP response');
         if (!bwclCallbackReceived) {
+          wdHealthSet('BWCL', 'error', 'Request timed out');
           console.error(
             "BWCL Live Sync: Endpoint loaded but did not return a valid " +
             "handleBWCLData response. Fallback remains active."
@@ -4841,10 +4838,12 @@
       }
 
       if (data && data.error) {
+        wdHealthSet('BWCL','error', String(data.error));
         console.error("BWCL Live Sync: " + data.error + ". Fallback remains active. Apps Script version:", data.version || "OLD/UNKNOWN");
         return;
       }
       if (!data || data.version !== "BWCL_SYNC_V4_20261108" || data.sheetName !== "Rankings") {
+        wdHealthSet('BWCL','error','Apps Script version mismatch');
         console.error(
           "BWCL Live Sync: OUTDATED APPS SCRIPT DEPLOYMENT DETECTED. " +
           "This website requires BWCL_SYNC_V4_20261108 with sheetName=Rankings. " +
@@ -4855,6 +4854,7 @@
       }
 
       if (!data || !data.table || !Array.isArray(data.table.rows)) {
+        wdHealthSet('BWCL','error','Invalid response format');
         console.error(
           "BWCL Live Sync: Invalid data format received from the Apps Script endpoint. " +
           "Fallback remains active."
@@ -4991,8 +4991,10 @@
           fragment.appendChild(tr);
         });
         tbody.replaceChildren(fragment);
+        wdHealthSet('BWCL','ok','6 Division D teams');
         console.info("BWCL Live Sync successful (BWCL_SYNC_V4_20261108): Loaded Division D with 6 teams.", Object.keys(liveStats).length ? "CW statistics loaded from Div-D." : "CW statistics were not provided by the Apps Script.");
       } else {
+        wdHealthSet('BWCL','error','Division D was not identified');
         console.warn("BWCL Live Sync: Division D could not be fully identified. Apps Script sheet:", data.sheetName || "not specified", "Header row:", divisionHeader, "Teams found:", teams);
         console.warn("BWCL Live Sync diagnostics (first 32 rows):", rows.slice(0, 32));
         console.warn("Fallback remains visible. The Apps Script must read the Rankings sheet (not Div-D by gid). Also update the Apps Script file.");
@@ -5085,6 +5087,7 @@ function wdStartFeature(label, callback) {
   try {
     return callback();
   } catch (error) {
+    wdHealthSet('App','error', label + ': ' + (error && error.message || error));
     console.error('[WD initialization] ' + label + ' failed:', error);
     return null;
   }
@@ -5116,6 +5119,7 @@ window.addEventListener('DOMContentLoaded', function() {
   // Start cloud listeners BEFORE costly member calculations and before visitor auth.
   if (typeof firebase !== 'undefined' && typeof firebase.firestore === 'function' &&
       typeof firebase.apps !== 'undefined' && firebase.apps.length > 0) {
+    wdHealthSet('Firebase','ok','Default app initialized');
     wdStartFeature('community news listener', initNewsRealtimeListener);
     wdStartFeature('members listener', initClanMembersRealtimeListener);
     wdStartFeature('roster listener', initClanRosterRealtimeListener);
@@ -5124,6 +5128,7 @@ window.addEventListener('DOMContentLoaded', function() {
     wdStartFeature('replays listener', initReplaysRealtimeListener);
     wdStartFeature('vault listener', initVaultRealtimeListener);
   } else {
+    wdHealthSet('Firebase','error','Firebase SDK or default app unavailable');
     wdShowCloudWarning('Firebase could not start. Community posts and live clan data cannot be loaded. Check browser console for Firebase initialization or network errors.');
     console.error('[WD Firebase] Missing initialized Firebase app or Firestore SDK. Cloud data was not modified.');
   }
@@ -5162,6 +5167,7 @@ function initReplaysRealtimeListener() {
   if (typeof firebase !== 'undefined' && firebase.firestore) {
     firebase.firestore().collection('clan_replays')
       .onSnapshot(function(snapshot) {
+        wdHealthSet('Replays', snapshot.metadata.fromCache ? 'cached' : 'ok', snapshot.size + ' documents');
         var list = [];
         snapshot.forEach(function(doc) {
           var item = doc.data();
@@ -5177,6 +5183,7 @@ function initReplaysRealtimeListener() {
         cloudReplayCache = list;
         renderFirestoreReplays(list);
       }, function(err) {
+        wdHealthSet('Replays', 'error', err && (err.code || err.message) || 'Listener failed');
         console.warn("Replay sync offline:", err);
         var emptyMsg = document.getElementById('no-replays-msg');
         if (emptyMsg) {
@@ -6128,6 +6135,7 @@ function handleMatchReplayFile(event) {
     function initVaultRealtimeListener() {
       if (typeof firebase !== 'undefined' && firebase.firestore) {
         firebase.firestore().collection('clan_vault').onSnapshot(function(snapshot) {
+        wdHealthSet('Vault', snapshot.metadata.fromCache ? 'cached' : 'ok', snapshot.size + ' documents');
           var files = [];
           snapshot.forEach(function(doc) {
             var item = doc.data();
@@ -6140,6 +6148,7 @@ function handleMatchReplayFile(event) {
           cloudVaultCache = files;
           renderUserMaps();
         }, function(err) {
+        wdHealthSet('Vault', 'error', err && (err.code || err.message) || 'Listener failed');
           console.warn("Vault Sync offline:", err);
         });
       }
@@ -6752,6 +6761,7 @@ async function renderUserMaps() {
         // DO NOT orderBy('createdAt') here: Firestore excludes documents
         // without that field, so historic posts might disappear from the UI.
         newsRealtimeUnsubscribe = db.collection('clan_news').onSnapshot(function(snapshot) {
+        wdHealthSet('Community', snapshot.metadata.fromCache ? 'cached' : 'ok', snapshot.size + ' documents');
           var liveArticles = [];
           snapshot.forEach(function(doc) {
             var d = doc.data() || {};
@@ -6776,6 +6786,7 @@ async function renderUserMaps() {
               ' community post(s), but rendering failed: ' + String(renderError.message || renderError));
           }
         }, function(err) {
+        wdHealthSet('Community', 'error', err && (err.code || err.message) || 'Listener failed');
           console.error('[WD Community] Firestore listener failed:', err);
           wdShowCloudWarning('Unable to read clan_news: ' +
             (err && err.code ? err.code : 'unknown error') + ' — ' +
@@ -8254,6 +8265,7 @@ async function renderUserMaps() {
     function initMatchesRealtimeListener() {
       if (typeof firebase !== 'undefined' && firebase.firestore) {
         firebase.firestore().collection('clan_matches').onSnapshot(function(snapshot) {
+        wdHealthSet('Matches', snapshot.metadata.fromCache ? 'cached' : 'ok', snapshot.size + ' documents');
           if (!snapshot.empty) {
             var liveMatches = [];
             snapshot.forEach(function(doc) {
@@ -8273,6 +8285,7 @@ async function renderUserMaps() {
             }
           }
         }, function(err) {
+        wdHealthSet('Matches', 'error', err && (err.code || err.message) || 'Listener failed');
           console.warn("Matches Cloud-Sync offline:", err);
           renderMatches();
         });
@@ -9156,6 +9169,7 @@ async function renderUserMaps() {
     function initClanEventsListener() {
       if (wdClanEventsUnsubscribe || typeof firebase === 'undefined' || !firebase.firestore) return;
       wdClanEventsUnsubscribe = firebase.firestore().collection('clan_events').onSnapshot(function(snapshot) {
+        wdHealthSet('Events', snapshot.metadata.fromCache ? 'cached' : 'ok', snapshot.size + ' documents');
         clanEvents = [];
         snapshot.forEach(function(doc) {
           var item = doc.data() || {};
@@ -9164,6 +9178,7 @@ async function renderUserMaps() {
         });
         if (typeof renderClanCalendar === 'function') renderClanCalendar();
       }, function(err) {
+        wdHealthSet('Events', 'error', err && (err.code || err.message) || 'Listener failed');
         console.warn('Events listener unavailable:', err);
       });
     }
@@ -9554,6 +9569,7 @@ async function renderUserMaps() {
 
       var db = firebase.firestore();
       firestoreRosterUnsubscribe = db.collection('clan_roster').onSnapshot(function(snapshot) {
+        wdHealthSet('Roster', snapshot.metadata.fromCache ? 'cached' : 'ok', snapshot.size + ' documents');
         firestoreRosterSnapshotReceived = true;
         firestoreRosterIsEmpty = snapshot.empty;
 
@@ -9582,6 +9598,7 @@ async function renderUserMaps() {
         localStorage.setItem('wd_competitive_roster', JSON.stringify(liveRoster));
         renderRosterTableAndTiers();
       }, function(error) {
+        wdHealthSet('Roster', 'error', error && (error.code || error.message) || 'Listener failed');
         console.error('Firestore squad roster sync failed; using local fallback:', error);
         firestoreRosterLoaded = false;
         renderRosterTableAndTiers();
@@ -9805,6 +9822,7 @@ async function renderUserMaps() {
       if (typeof firebase !== 'undefined' && firebase.firestore) {
         var db = firebase.firestore();
         db.collection('clan_members').onSnapshot(function(snapshot) {
+        wdHealthSet('Members', snapshot.metadata.fromCache ? 'cached' : 'ok', snapshot.size + ' documents');
           if (!snapshot.empty) {
             var liveList = [];
             snapshot.forEach(function(doc) {
@@ -9824,6 +9842,7 @@ async function renderUserMaps() {
             }
           }
         }, function(err) {
+        wdHealthSet('Members', 'error', err && (err.code || err.message) || 'Listener failed');
           console.warn("Firestore member sync offline; using local cache:", err);
           renderRosterTableAndTiers();
         });
@@ -10549,5 +10568,58 @@ async function renderUserMaps() {
     }
 
   </script>
+
+<style>
+#wd-health-trigger{position:fixed;right:14px;bottom:16px;z-index:1500;background:#0b1a2d;color:#d6efff;border:1px solid #2d6e8b;border-radius:25px;padding:9px 15px;font:700 12px 'Share Tech Mono',monospace;cursor:pointer;box-shadow:0 5px 18px #0008}
+#wd-health-trigger[data-state=error]{border-color:#f87171;color:#fecaca}#wd-health-trigger[data-state=loading]{border-color:#fbbf24;color:#fde68a}
+#wd-health-modal[hidden]{display:none!important}#wd-health-modal{position:fixed;inset:0;background:#020712e8;z-index:3100;display:flex;align-items:center;justify-content:center;padding:16px}
+.wd-health-panel{width:min(680px,100%);max-height:88vh;overflow:auto;background:#0b1729;border:1px solid #22627f;border-radius:12px;padding:20px;color:#e2e8f0;font-family:'Rajdhani',sans-serif}
+.wd-health-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:8px}.wd-health-head h2{font:800 17px 'Orbitron',sans-serif;color:#00e5ff}.wd-health-head button{background:transparent;border:1px solid #4b7187;border-radius:5px;color:white;padding:5px 10px;cursor:pointer}
+.wd-health-row{display:grid;grid-template-columns:130px 90px 1fr;gap:9px;border-top:1px solid #24364d;padding:10px 0;align-items:center;font-size:14px}
+.wd-health-status{font-weight:bold}.wd-health-status.ok{color:#34d399}.wd-health-status.cached{color:#fbbf24}.wd-health-status.error{color:#fb7185}.wd-health-status.loading{color:#9ca3af}.wd-health-meta{font:11px 'Share Tech Mono',monospace;color:#94a3b8;overflow-wrap:anywhere}
+@media(max-width:500px){.wd-health-row{grid-template-columns:90px 1fr}.wd-health-meta{grid-column:1/-1}.wd-health-panel{padding:13px}}
+</style>
+<button id="wd-health-trigger" type="button" data-state="loading" aria-haspopup="dialog" aria-controls="wd-health-modal">● SYNC STATUS</button>
+<div id="wd-health-modal" hidden role="dialog" aria-modal="true" aria-labelledby="wd-health-title">
+ <section class="wd-health-panel">
+  <div class="wd-health-head"><h2 id="wd-health-title">WHITE DRAGON · SYNC HEALTH</h2><button id="wd-health-close" type="button">✕ CLOSE</button></div>
+  <p style="font-size:13px;color:#94a3b8;margin:0 0 14px">Read-only diagnostics. The monitor does not write to Firestore or test Storage uploads. A cached snapshot does not confirm a server connection.</p>
+  <div id="wd-health-rows"></div>
+  <p style="font-size:12px;color:#94a3b8;margin-top:14px">Timestamps are local to your device. Status represents the current browser session only.</p>
+ </section>
+</div>
+<script>
+(function(){
+ 'use strict';
+ var services=['Firebase','Community','Members','Roster','Matches','Events','Replays','Vault','BWCL'];
+ var states={};
+ services.forEach(function(s){states[s]={state:'loading',detail:'Waiting for first response',time:null};});
+ function render(){
+  var rows=document.getElementById('wd-health-rows'),button=document.getElementById('wd-health-trigger');
+  if(!rows||!button)return;
+  rows.replaceChildren();
+  services.forEach(function(s){
+   var e=states[s],r=document.createElement('div');r.className='wd-health-row';
+   var title=document.createElement('strong');title.textContent=s;
+   var status=document.createElement('span');status.className='wd-health-status '+e.state;status.textContent=({ok:'CONNECTED',cached:'CACHED',error:'ERROR',loading:'WAITING'})[e.state]||e.state;
+   var meta=document.createElement('span');meta.className='wd-health-meta';meta.textContent=e.detail+(e.time?' · '+new Date(e.time).toLocaleTimeString():'');
+   r.append(title,status,meta);rows.appendChild(r);
+  });
+  var problems=services.some(function(s){return states[s].state==='error'});
+  var pending=services.some(function(s){return states[s].state==='loading'||states[s].state==='cached'});
+  button.dataset.state=problems?'error':pending?'loading':'ok';
+  button.textContent=(problems?'● SYNC ERROR':pending?'● SYNC CHECK':'● SYNC OK');
+ }
+ window.wdHealthSet=function(service,state,detail){
+  if(!states[service])return;
+  states[service]={state:state,detail:String(detail||'').slice(0,180),time:Date.now()};render();
+ };
+ document.getElementById('wd-health-trigger').addEventListener('click',function(){document.getElementById('wd-health-modal').hidden=false;render();});
+ document.getElementById('wd-health-close').addEventListener('click',function(){document.getElementById('wd-health-modal').hidden=true;});
+ document.getElementById('wd-health-modal').addEventListener('click',function(e){if(e.target===this)this.hidden=true;});
+ document.addEventListener('keydown',function(e){if(e.key==='Escape')document.getElementById('wd-health-modal').hidden=true;});
+ render();
+})();
+</script>
 </body>
 </html>
