@@ -1911,6 +1911,40 @@
       background: rgba(5, 10, 18, 0.65);
     }
     .wd-cal-entry { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+    .wd-replay-filters { display:flex; flex-wrap:wrap; gap:10px; margin:0 0 14px; }
+    .wd-replay-filters label { flex:1 1 130px; color:var(--text-muted); }
+    .wd-replay-filters input, .wd-replay-filters select, #rep-mode-input { display:block; width:100%; padding:8px; color:#fff; background:#070a12; border:1px solid var(--border-color); border-radius:5px; }
+    #wd-achievements { margin:10px 0; }
+    #wd-achievements h3 { font-size:.8rem; color:var(--cyan); margin-bottom:5px; }
+    #wd-achievements span { display:inline-block; padding:3px 7px; margin:2px; border:1px solid var(--border-color); border-radius:5px; }
+    #authModal.wd-staff-console > .dossier-card { max-width: 880px !important; }
+    .wd-league-nav { margin-bottom: 16px; }
+    .wd-wdsl-layout { display:grid; gap:22px; }
+    .wd-wdsl-demo { width:100%; height:clamp(520px, 80vh, 820px); display:block; border:1px solid var(--border-color); border-radius:8px; background:#07101e; }
+    .wd-wdsl-results-title { margin:0 0 12px; }
+    #wd-webmaster-console { margin-bottom: 16px; }
+    #wd-webmaster-console [hidden], #wd-webmaster-console[hidden] { display:none !important; }
+    .wd-console-nav { display:flex; flex-wrap:wrap; gap:6px; margin-bottom:10px; }
+    .wd-console-nav button, .wd-console-tools button { padding:8px 12px; background:#0b1627; color:#cbd5e1; border:1px solid var(--border-color); border-radius:6px; cursor:pointer; font:inherit; }
+    .wd-console-nav button[aria-pressed=true] { color:var(--cyan); border-color:var(--cyan); background:#102635; }
+    .wd-console-panel { background:#0b1627; border:1px solid var(--border-color); border-radius:8px; padding:12px; }
+    .wd-console-tools, .wd-account-filters { display:flex; flex-wrap:wrap; gap:8px; }
+    .wd-account-filters label { flex:1 1 140px; font-size:.85rem; color:#cbd5e1; }
+    .wd-account-filters input, .wd-account-filters select { display:block; box-sizing:border-box; width:100%; padding:7px; background:#070a12; color:#fff; border:1px solid var(--border-color); border-radius:5px; }
+    #wd-account-count { color:var(--text-muted); font-size:.8rem; margin:8px 0; }
+    .wd-account-table { overflow-x:auto; }
+    .wd-account-table td:first-child { overflow-wrap:anywhere; }
+    #wd-console-sync #wd-health-trigger { margin:0; }
+    #wd-console-activity #wd-admin-activity { margin:0; }
+    @media (max-width:600px) {
+      .wd-account-table thead { display:none; }
+      .wd-account-table tr[data-account-role] { display:grid; grid-template-columns: minmax(0,1fr) minmax(0,1fr); padding:7px 0; }
+      .wd-account-table tr[data-account-role] td:first-child { grid-column:1/-1; }
+      .wd-account-table td[data-label]::before { content:attr(data-label); display:block; color:var(--text-muted); margin-bottom:3px; }
+      .wd-account-table tr[data-account-role] td:last-child { align-self:end; }
+    }
+    #wd-admin-activity { margin:0 0 16px; overflow-wrap:anywhere; }
+    #wd-activity-entries { padding-left:20px; margin-top:8px; }
     .wd-calendar-attendance-entry { margin-bottom: 10px; }
     .wd-rsvp { padding: 8px 10px; margin: -3px 0 10px; border-left: 2px solid var(--border-color); color: #b8c9dd; font-size: .85rem; }
     .wd-rsvp p { margin: 0 0 5px; }
@@ -2439,6 +2473,10 @@
 
   <!-- ==================== 3. BWCL STANDINGS TAB ==================== -->
   <section id="tab-bwcl" class="section-wrap">
+    <nav class="wd-console-nav wd-league-nav" aria-label="Clan League sections">
+      <button type="button" aria-pressed="true" onclick="switchTab('bwcl')">BWCL</button>
+      <button type="button" aria-pressed="false" onclick="switchTab('wdsl')">WD Star League</button>
+    </nav>
     <div class="section-head">
       <div>
         <h2>BWCL SEASON 65 // <span>DIVISION D</span> STANDINGS</h2>
@@ -2468,6 +2506,228 @@
           <tr><td>6</td><td><strong>Shadow-2</strong></td><td>–</td><td>–</td><td>–</td><td><strong style="color:var(--cyan);">0</strong></td></tr>
         </tbody>
       </table>
+    </div>
+  </section>
+
+  <section id="tab-wdsl" class="section-wrap">
+    <nav class="wd-console-nav wd-league-nav" aria-label="Clan League sections">
+      <button type="button" aria-pressed="false" onclick="switchTab('bwcl')">BWCL</button>
+      <button type="button" aria-pressed="true" onclick="switchTab('wdsl')">WD Star League</button>
+    </nav>
+    <div class="section-head"><div><h2>WD STAR LEAGUE</h2><div class="section-subtitle">White Dragon's internal competition</div></div></div>
+    <div class="wd-wdsl-layout">
+      <iframe class="wd-wdsl-demo" title="WD Star League tournament demo" sandbox="allow-scripts allow-forms" srcdoc="&lt;!doctype html&gt;
+&lt;html lang=&quot;en&quot;&gt;
+&lt;meta charset=&quot;utf-8&quot;&gt;&lt;meta http-equiv=&quot;Content-Security-Policy&quot; content=&quot;form-action 'none'&quot;&gt;
+&lt;meta name=&quot;viewport&quot; content=&quot;width=device-width,initial-scale=1&quot;&gt;
+&lt;title&gt;WD Star League · Tournament Demo&lt;/title&gt;
+&lt;style&gt;
+  :root{color-scheme:dark;font-family:system-ui,sans-serif;background:#07101e;color:#e4eefb}
+  body{margin:0}main{max-width:1080px;margin:auto;padding:clamp(18px,5vw,56px)}
+  h1{margin:0;color:#79e9fa}h2{font-size:1.1rem}p{color:#b1c1d7}
+  form,.round{background:#101d31;border:1px solid #273b55;border-radius:10px;padding:16px}
+  label{display:block;margin-bottom:6px}input,button{font:inherit;color:inherit;background:#0a1425;border:1px solid #45627d;border-radius:6px;padding:8px 11px}
+  button{cursor:pointer}button:disabled{cursor:default;opacity:.5}button:focus-visible,input:focus-visible{outline:2px solid #79e9fa}
+  .primary{background:#79e9fa;color:#081321;border-color:#79e9fa;font-weight:700}
+  .actions{display:flex;gap:8px;flex-wrap:wrap}.actions input{flex:1;min-width:120px}
+  #players{display:flex;gap:8px;flex-wrap:wrap;list-style:none;padding:0}
+  #players button{font-size:.85rem}#board{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr));gap:12px;margin-top:20px}
+  .pair{border-top:1px solid #273b55;margin-top:10px;padding-top:8px}.pair p{margin:5px 0}
+  .score-label{display:flex;align-items:center;justify-content:space-between;gap:8px;overflow-wrap:anywhere}
+  .score-label input{width:4.5rem;flex:0 0 auto}
+  .winner{color:#79e9fa}
+&lt;/style&gt;
+&lt;main&gt;
+  &lt;h1&gt;WD Star League&lt;/h1&gt;
+  &lt;p&gt;Tournament demo · 1v1 · Single elimination · 2–8 players. Results are kept in this tab for the current session.&lt;/p&gt;
+  &lt;div style=&quot;margin-bottom:16px&quot;&gt;&lt;label for=&quot;tournament-date&quot;&gt;Tournament date&lt;/label&gt;&lt;input id=&quot;tournament-date&quot; type=&quot;date&quot;&gt;&lt;/div&gt;
+  &lt;form id=&quot;registration&quot;&gt;
+    &lt;label for=&quot;name&quot;&gt;Register a player&lt;/label&gt;
+    &lt;div class=&quot;actions&quot;&gt;&lt;input id=&quot;name&quot; maxlength=&quot;32&quot; required placeholder=&quot;Player name&quot;&gt;&lt;button&gt;Register&lt;/button&gt;&lt;/div&gt;
+    &lt;ul id=&quot;players&quot;&gt;&lt;/ul&gt;
+    &lt;div class=&quot;actions&quot;&gt;
+      &lt;button type=&quot;button&quot; id=&quot;sample&quot;&gt;Load sample players&lt;/button&gt;
+      &lt;button type=&quot;button&quot; id=&quot;start&quot; class=&quot;primary&quot;&gt;Create bracket&lt;/button&gt;
+      &lt;button type=&quot;button&quot; id=&quot;reset&quot;&gt;Reset&lt;/button&gt;
+    &lt;/div&gt;
+  &lt;/form&gt;
+  &lt;p id=&quot;status&quot; role=&quot;status&quot;&gt;Register players or load the sample players.&lt;/p&gt;
+  &lt;h2 id=&quot;bracket-date&quot; hidden&gt;&lt;/h2&gt;
+  &lt;section id=&quot;board&quot; aria-label=&quot;Tournament bracket&quot;&gt;&lt;/section&gt;
+&lt;/main&gt;
+&lt;script&gt;
+  const players = [];
+  let rounds = [];
+  let results = new Map();
+  const byId = id =&gt; document.getElementById(id);
+  const message = text =&gt; { byId('status').textContent = text; };
+  function makeBracket(names) {
+    const size = 2 ** Math.ceil(Math.log2(names.length));
+    let seedOrder = [1, 2];
+    while (seedOrder.length &lt; size) {
+      const next = seedOrder.length * 2 + 1;
+      seedOrder = seedOrder.flatMap(seed =&gt; [seed, next - seed]);
+    }
+    const rows = [];
+    for (let round = 0; round &lt; Math.log2(size); round++) {
+      rows.push(Array.from({ length: size / 2 ** (round + 1) }, (_, match) =&gt; ({
+        id: round + '-' + match,
+        seeds: round === 0 ? seedOrder.slice(match * 2, match * 2 + 2).map(seed =&gt; names[seed - 1] || '') : null
+      })));
+    }
+    return rows;
+  }
+  function evaluate(bracket, choices) {
+    const computed = [];
+    bracket.forEach((round, index) =&gt; {
+      const previous = computed[index - 1];
+      computed.push(round.map((match, position) =&gt; {
+        const pair = match.seeds || previous.slice(position * 2, position * 2 + 2).map(entry =&gt; entry.winner);
+        const ready = pair.every(player =&gt; player !== null);
+        const stored = choices.get(match.id);
+        const valid = stored &amp;&amp; pair[0] === stored.pair[0] &amp;&amp; pair[1] === stored.pair[1];
+        if (stored &amp;&amp; !valid) choices.delete(match.id);
+        return { id: match.id, pair, ready, scores: valid ? stored.scores : null, winner: !ready ? null
+          : pair.every(Boolean) ? (valid ? stored.winner : null) : (pair[0] || pair[1] || '') };
+      }));
+    });
+    return computed;
+  }
+  function scoreResult(pair, inputs) {
+    const scores = inputs.map(input =&gt; /^\d+$/.test(input.value) ? Number(input.value) : NaN);
+    if (!scores.every(score =&gt; Number.isSafeInteger(score) &amp;&amp; score &gt;= 0) || scores[0] === scores[1]) return null;
+    return { pair, scores, winner: pair[scores[0] &gt; scores[1] ? 0 : 1] };
+  }
+  function renderTournamentDate() {
+    const value = byId('tournament-date').value;
+    const heading = byId('bracket-date');
+    heading.hidden = !value || rounds.length === 0;
+    heading.textContent = heading.hidden ? '' : new Intl.DateTimeFormat('en-GB', {
+      dateStyle: 'long', timeZone: 'UTC'
+    }).format(new Date(value + 'T00:00:00Z'));
+  }
+  function render() {
+    renderTournamentDate();
+    const canEdit = rounds.length === 0;
+    byId('players').replaceChildren();
+    players.forEach((name, index) =&gt; {
+      const li = document.createElement('li');
+      const remove = document.createElement('button');
+      remove.type = 'button';
+      remove.textContent = name + (canEdit ? ' ×' : '');
+      remove.setAttribute('aria-label', canEdit ? 'Remove ' + name : name);
+      remove.disabled = !canEdit;
+      remove.onclick = () =&gt; { players.splice(index, 1); render(); };
+      li.append(remove);
+      byId('players').append(li);
+    });
+    byId('name').disabled = !canEdit || players.length &gt;= 8;
+    document.querySelector('button:not([type])').disabled = byId('name').disabled;
+    byId('sample').disabled = !canEdit;
+    byId('start').disabled = !canEdit || players.length &lt; 2;
+    const board = byId('board');
+    board.replaceChildren();
+    const computed = evaluate(rounds, results);
+    computed.forEach((round, index) =&gt; {
+      const section = document.createElement('section');
+      section.className = 'round';
+      const heading = document.createElement('h2');
+      heading.textContent = ['Final', 'Semifinals', 'Quarterfinals'][computed.length - index - 1];
+      section.append(heading);
+      round.forEach(match =&gt; {
+        const card = document.createElement('div');
+        card.className = 'pair';
+        const info = document.createElement('p');
+        const playable = match.ready &amp;&amp; match.pair.every(Boolean);
+        info.textContent = !match.ready ? 'Waiting for the previous round'
+          : !playable ? 'Bye' : match.winner ? 'Winner: ' + match.winner : 'Enter the final score';
+        card.append(info);
+        if (playable) {
+          const form = document.createElement('form');
+          const inputs = match.pair.map((player, index) =&gt; {
+            const label = document.createElement('label');
+            label.className = 'score-label' + (player === match.winner ? ' winner' : '');
+            label.textContent = player;
+            const input = document.createElement('input');
+            input.type = 'number';
+            input.min = '0';
+            input.step = '1';
+            input.required = true;
+            input.value = match.scores ? match.scores[index] : '';
+            input.setAttribute('aria-label', 'Score for ' + player);
+            label.append(input);
+            form.append(label);
+            return input;
+          });
+          const save = document.createElement('button');
+          save.textContent = match.scores ? 'Update score' : 'Save score';
+          form.append(save);
+          form.onsubmit = event =&gt; {
+            event.preventDefault();
+            const result = scoreResult(match.pair, inputs);
+            if (!result) {
+              message('Enter two different non-negative whole numbers.');
+              return;
+            }
+            results.set(match.id, result);
+            render();
+          };
+          card.append(form);
+        } else {
+          match.pair.forEach(player =&gt; {
+            const name = document.createElement('p');
+            name.textContent = player || (player === null ? 'TBD' : 'Bye');
+            card.append(name);
+          });
+        }
+        section.append(card);
+      });
+      board.append(section);
+    });
+    if (!canEdit) {
+      const winner = computed.at(-1)[0].winner;
+      message(winner ? 'Tournament champion: ' + winner : 'Enter a score for each match. Changing the winner updates the next round.');
+    }
+  }
+  byId('registration').onsubmit = event =&gt; {
+    event.preventDefault();
+    if (rounds.length || players.length &gt;= 8) return;
+    const input = byId('name');
+    const name = input.value.trim();
+    if (!name || players.some(player =&gt; player.toLowerCase() === name.toLowerCase())) {
+      message('Enter a unique player name.');
+      return;
+    }
+    players.push(name);
+    input.value = '';
+    message(players.length + ' registered');
+    render();
+    if (!input.disabled) input.focus();
+  };
+  byId('sample').onclick = () =&gt; {
+    players.splice(0, players.length, 'Pilot A', 'Pilot B', 'Pilot C', 'Pilot D', 'Pilot E', 'Pilot F');
+    message('Six sample players loaded.');
+    render();
+  };
+  byId('start').onclick = () =&gt; { rounds = makeBracket(players); render(); };
+  byId('tournament-date').oninput = renderTournamentDate;
+  byId('reset').onclick = () =&gt; {
+    players.length = 0;
+    rounds = [];
+    results = new Map();
+    byId('name').value = '';
+    byId('tournament-date').value = '';
+    message('Register players or load the sample players.');
+    render();
+  };
+  render();
+&lt;/script&gt;
+&lt;/html&gt;
+"></iframe>
+      <section aria-labelledby="wd-wdsl-results-title">
+        <h3 id="wd-wdsl-results-title" class="wd-wdsl-results-title">Match records</h3>
+        <div id="wd-wdsl-matches-grid" class="grid-2"></div>
+      </section>
     </div>
   </section>
 
@@ -2607,7 +2867,6 @@
     <div class="wd-filter-row">
       <button onclick="filterMatchCategory('All')" id="btn-mcat-All" class="nav-tab-btn active">ALL</button>
       <button onclick="filterMatchCategory('Clan League')" id="btn-mcat-ClanLeague" class="nav-tab-btn">🏆 CLAN LEAGUE</button>
-      <button onclick="filterMatchCategory('WD Star League')" id="btn-mcat-WDStarLeague" class="nav-tab-btn">⚔️ WD STAR LEAGUE</button>
       <button onclick="filterMatchCategory('Clan Match')" id="btn-mcat-ClanMatch" class="nav-tab-btn">🛡️ CLAN MATCH</button>
     </div>
 
@@ -2663,6 +2922,9 @@
             <label style="display: block; font-family: 'Orbitron', sans-serif; font-size: 0.72rem; color: var(--text-muted); margin-bottom: 4px; text-transform: uppercase;">Map Name</label>
             <input type="text" id="rep-map-input" placeholder="e.g. Backrooms / Lost Temple" style="width: 100%; background: #070a12; border: 1px solid var(--border-color); color: #fff; padding: 8px 12px; border-radius: 6px; font-family: 'Rajdhani', sans-serif; font-size: 0.95rem;">
           </div>
+          <label>Format
+            <select id="rep-mode-input"><option value="">Unknown</option><option>1v1</option><option>2v2</option></select>
+          </label>
         </div>
 
         <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
@@ -2689,6 +2951,13 @@
       </button>
     </div>
 
+    <div class="wd-replay-filters" aria-label="Replay filters">
+      <label>Player <input id="wd-replay-player" type="search" oninput="wdRefreshReplayFilters()"></label>
+      <label>Map <input id="wd-replay-map" type="search" oninput="wdRefreshReplayFilters()"></label>
+      <label>Format <select id="wd-replay-mode" onchange="wdRefreshReplayFilters()">
+        <option value="">All formats</option><option>1v1</option><option>2v2</option><option value="unknown">Unknown</option>
+      </select></label>
+    </div>
     <!-- DYNAMIC USER UPLOADED REPLAYS -->
     <div id="user-replays-list"></div>
     <div id="no-replays-msg" class="card" style="text-align: center; padding: 28px 20px; color: var(--text-muted);">
@@ -3121,6 +3390,7 @@
             </div>
           </div>
           <p class="wd-stats-note" id="m-stats-note"></p>
+          <div id="wd-achievements" hidden></div>
           <div id="m-history-log"></div>
         </div>
 
@@ -3615,19 +3885,21 @@
             <button onclick="resendVerificationEmail()" class="btn-download-rep" style="padding:6px 14px; font-size:0.75rem;">RESEND VERIFICATION LINK</button>
           </div>
 
-          <button id="wd-health-trigger" type="button" hidden data-state="loading" aria-haspopup="dialog" aria-controls="wd-health-modal">● SYNC STATUS</button>
-
-          <!-- WEBMASTER EXCLUSIVE: ROLE & ADMIN MANAGEMENT PANEL -->
-          
-          <!-- WEBMASTER EXCLUSIVE: REGISTERED ACCOUNTS & ROLE/MEMBER-ID ASSIGNMENT -->
-          <div id="webmaster-users-panel" style="display:none; background:rgba(10,20,36,0.95); border:1.5px solid var(--cyan); border-radius:8px; padding:14px; margin-bottom:16px; box-shadow:0 0 16px rgba(0,229,255,0.2);">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-              <span style="font-family:'Orbitron',sans-serif; font-size:0.8rem; color:var(--cyan); font-weight:800; letter-spacing:1px;">👥 REGISTERED OPERATORS // ROLE & MEMBER ID ASSIGNMENT</span>
-              <button onclick="loadRegisteredUsers()" class="btn-download-rep" style="font-size:0.68rem; padding:3px 8px; cursor:pointer;">🔄 REFRESH</button>
-            </div>
-            <p style="color:#cbd5e1; font-size:0.78rem; line-height:1.4; margin-bottom:10px;">New accounts start as <strong>Guest</strong> and can only read. Webmaster and Admin link the email to a member in the format <strong>Name[WD]</strong>. That account can write after the link is saved.</p>
-            
-            <div style="overflow-x:auto;">
+          <section id="wd-webmaster-console" aria-label="Webmaster console" hidden>
+            <nav class="wd-console-nav" aria-label="Console sections">
+              <button type="button" data-console-section="accounts" aria-controls="wd-console-accounts" aria-pressed="true" onclick="wdShowConsoleSection('accounts')">Accounts</button>
+              <button type="button" data-console-section="activity" aria-controls="wd-console-activity" aria-pressed="false" onclick="wdShowConsoleSection('activity')">Activity log</button>
+              <button type="button" data-console-section="tools" aria-controls="wd-console-tools" aria-pressed="false" onclick="wdShowConsoleSection('tools')">Site tools</button>
+              <button type="button" data-console-section="sync" aria-controls="wd-console-sync" aria-pressed="false" onclick="wdShowConsoleSection('sync')">Sync status</button>
+            </nav>
+            <section class="wd-console-panel" id="wd-console-accounts" data-console-panel="accounts">
+              <div id="webmaster-users-panel" style="display:none">
+                <div class="wd-account-filters">
+                  <label>Search accounts<input id="wd-account-search" type="search" placeholder="Email or player name" oninput="wdFilterConsoleAccounts()"></label>
+                  <label>Role<select id="wd-account-role" onchange="wdFilterConsoleAccounts()"><option value="">All roles</option><option>Guest</option><option>Member</option><option>Admin</option><option>Webmaster</option></select></label>
+                </div>
+                <p id="wd-account-count" aria-live="polite"></p>
+                <div class="wd-account-table">
               <table style="width:100%; border-collapse:collapse; font-size:0.78rem; font-family:'Share Tech Mono',monospace;">
                 <thead>
                   <tr style="border-bottom:1px solid var(--border-color); color:var(--text-muted); text-align:left;">
@@ -3641,8 +3913,26 @@
                   <tr><td colspan="4" style="padding:10px; text-align:center; color:var(--text-muted);">Loading registered operators...</td></tr>
                 </tbody>
               </table>
-            </div>
-          </div>
+                </div>
+              </div>
+            </section>
+            <section class="wd-console-panel" id="wd-console-activity" data-console-panel="activity" hidden>
+          <details id="wd-admin-activity" hidden ontoggle="wdLoadActivity()">
+            <summary>ADMIN ACTIVITY · LAST 25 CHANGES</summary>
+            <button type="button" class="btn-download-rep" onclick="wdLoadActivity()">Refresh</button>
+            <ul id="wd-activity-entries" aria-live="polite"></ul>
+          </details>
+            </section>
+            <section class="wd-console-panel wd-console-tools" id="wd-console-tools" data-console-panel="tools" hidden>
+              <button type="button" onclick="wdOpenConsoleTool('matches')">Manage matches</button>
+              <button type="button" onclick="wdOpenConsoleTool('calendar')">Open clan calendar</button>
+              <button type="button" onclick="wdOpenConsoleTool('roster')">Manage roster</button>
+              <button type="button" onclick="wdOpenConsoleTool('news')">Manage news</button>
+            </section>
+            <section class="wd-console-panel" id="wd-console-sync" data-console-panel="sync" hidden>
+          <button id="wd-health-trigger" type="button" hidden data-state="loading" aria-haspopup="dialog" aria-controls="wd-health-modal">● SYNC STATUS</button>
+            </section>
+          </section>
 
           <div id="webmaster-admin-panel" style="display:none; background:rgba(14,24,42,0.95); border:1.5px solid var(--cyan); border-radius:8px; padding:14px; margin-bottom:16px; box-shadow:0 0 16px rgba(0,229,255,0.2);">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
@@ -4712,10 +5002,11 @@
       var targetSection = document.getElementById('tab-' + tabName);
       if (targetSection) targetSection.classList.add('active-tab');
 
-      var navBtn = document.getElementById('btn-tab-' + tabName);
+      var leagueTab = tabName === 'wdsl' ? 'bwcl' : tabName;
+      var navBtn = document.getElementById('btn-tab-' + leagueTab);
       if (navBtn) navBtn.classList.add('active');
 
-      var dashBtn = document.getElementById('dash-' + tabName);
+      var dashBtn = document.getElementById('dash-' + leagueTab);
       if (dashBtn) dashBtn.classList.add('active');
       document.body.classList.toggle('tab-hero-hidden', tabName !== 'overview');
       toggleWDNavigation(false);
@@ -5205,7 +5496,7 @@ function initReplaysRealtimeListener() {
   }
 }
 
-    var wdListPage = { matches: 1, replays: 1, downloads: 1, community: 1 };
+    var wdListPage = { matches: 1, wdsl: 1, replays: 1, downloads: 1, community: 1 };
     var wdReplayCache = [];
 
     function wdPageSize() {
@@ -5266,11 +5557,11 @@ function initReplaysRealtimeListener() {
 
     function wdGoPage(key, page) {
       wdListPage[key] = page;
-      if (key === 'matches') renderMatches();
+      if (key === 'matches' || key === 'wdsl') renderMatches();
       else if (key === 'replays') renderFirestoreReplays(wdReplayCache);
       else if (key === 'downloads') renderUserMaps();
       else if (key === 'community') renderClanNews(wdNewsCache || getLocalNewsArticles());
-      var anchorId = key === 'matches' ? 'dynamic-matches-grid' : (key === 'replays' ? 'user-replays-list' : (key === 'downloads' ? 'user-maps-list' : 'clan-news-grid'));
+      var anchorId = key === 'wdsl' ? 'wd-wdsl-matches-grid' : key === 'matches' ? 'dynamic-matches-grid' : (key === 'replays' ? 'user-replays-list' : (key === 'downloads' ? 'user-maps-list' : 'clan-news-grid'));
       var anchor = document.getElementById(anchorId);
       if (anchor) anchor.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
@@ -5281,15 +5572,15 @@ function renderFirestoreReplays(cloudReplays) {
   var countEl = document.getElementById('rep-count');
   if (!container) return;
 
-  var replays = cloudReplays || [];
-  wdReplayCache = replays;
+  wdReplayCache = cloudReplays || [];
+  var replays = wdFilterReplays(wdReplayCache);
   var replayPage = wdPageWindow(replays, 'replays');
   container.innerHTML = '';
   if (countEl) countEl.innerText = replays.length;
   if (emptyMsg) {
     emptyMsg.style.display = replays.length === 0 ? 'block' : 'none';
     if (replays.length === 0) {
-      emptyMsg.innerHTML = '<div style="font-size: 1.8rem; margin-bottom: 6px; color: var(--cyan);">💾</div>No clan replays uploaded yet.';
+      emptyMsg.innerHTML = '<div style="font-size: 1.8rem; margin-bottom: 6px; color: var(--cyan);">💾</div>' + (wdReplayCache.length ? 'No replays match your filters.' : 'No clan replays uploaded yet.') + '';
     }
   }
 
@@ -5759,6 +6050,7 @@ function renderFirestoreReplays(cloudReplays) {
       document.getElementById('rep-title-input').value = '';
       document.getElementById('rep-players-input').value = '';
       document.getElementById('rep-map-input').value = '';
+      document.getElementById('rep-mode-input').value = '';
       document.getElementById('upload-form').style.display = 'none';
     }
 
@@ -5795,6 +6087,7 @@ function publishReplayToFirestore(file, meta) {
         players: (meta && meta.players) || 'White Dragon Match',
         map: (meta && meta.map) || 'StarCraft Map',
         matchTitle: (meta && meta.matchTitle) || '',
+        mode: meta && ['1v1', '2v2'].includes(meta.mode) ? meta.mode : '',
         fileName: file.name,
         fileSize: (file.size / 1024).toFixed(1) + ' KB',
         fileData: e.target.result,
@@ -5824,7 +6117,8 @@ function saveReplay() {
   publishReplayToFirestore(file, {
     title: document.getElementById('rep-title-input').value.trim() || file.name,
     players: document.getElementById('rep-players-input').value.trim() || 'White Dragon Match',
-    map: document.getElementById('rep-map-input').value.trim() || 'StarCraft Map'
+    map: document.getElementById('rep-map-input').value.trim() || 'StarCraft Map',
+    mode: document.getElementById('rep-mode-input').value
   }).then(function() {
     cancelUpload();
     alert('Replay saved to Firestore.');
@@ -5967,7 +6261,7 @@ function handleMatchReplayFile(event) {
         const tx = db.transaction('replays', 'readonly');
         const req = tx.objectStore('replays').getAll();
         req.onsuccess = function() {
-          var existing = req.result || [];
+          var existing = wdFilterReplays(req.result || []);
           container.innerHTML = '';
           var countEl = document.getElementById('rep-count');
           if (countEl) countEl.innerText = existing.length;
@@ -7108,7 +7402,7 @@ async function renderUserMaps() {
     function watchRegisteredProfiles() {
       if (profilesUnsubscribe || !firebase.firestore) return;
       profilesUnsubscribe = firebase.firestore().collection('user_profiles').onSnapshot(function(snapshot) {
-        applyRegisteredProfiles(snapshot);
+        if (canViewWdSyncHealth()) applyRegisteredProfiles(snapshot);
       }, function(err) {
         var tbody = document.getElementById('registered-users-tbody');
         if (tbody) {
@@ -7130,6 +7424,7 @@ async function renderUserMaps() {
       var tbody = document.getElementById('registered-users-tbody');
       if (!tbody) return;
       tbody.innerHTML = '';
+      wdFilterConsoleAccounts();
       if (!registeredProfiles.length) {
         tbody.innerHTML = '<tr><td colspan="4" style="padding:10px; text-align:center; color:var(--text-muted);">No registered accounts yet.</td></tr>';
         return;
@@ -7140,6 +7435,8 @@ async function renderUserMaps() {
 
       registeredProfiles.forEach(function(profile) {
         var tr = document.createElement('tr');
+        tr.dataset.accountRole = profile.role || 'Guest';
+        tr.dataset.accountSearch = [profile.email, profile.memberId, profile.uid].join(' ').toLowerCase();
         tr.style.borderBottom = '1px solid rgba(56,189,248,0.15)';
 
         var emailCell = document.createElement('td');
@@ -7150,8 +7447,10 @@ async function renderUserMaps() {
 
         var memberCell = document.createElement('td');
         memberCell.style.padding = '6px 4px';
+        memberCell.dataset.label = 'Member';
         var memberSelect = document.createElement('select');
         memberSelect.id = 'assign-member-' + profile.uid;
+        memberSelect.setAttribute('aria-label', 'Member for ' + (profile.email || profile.uid));
         memberSelect.style.cssText = 'width:100%; background:#070a12; color:#fff; border:1px solid var(--border-color); border-radius:4px; padding:4px;';
         var emptyOption = document.createElement('option');
         emptyOption.value = '';
@@ -7185,12 +7484,12 @@ async function renderUserMaps() {
         (function(profileUid) {
           saveBtn.onclick = function() { saveOperatorAssignment(profileUid); };
         })(profile.uid);
-        memberWrap.appendChild(saveBtn);
         memberCell.appendChild(memberWrap);
         tr.appendChild(memberCell);
 
         var roleCell = document.createElement('td');
         roleCell.style.padding = '6px 4px';
+        roleCell.dataset.label = 'Role';
         var lockedWebmaster = profile.email && profile.email.toLowerCase() === WEBMASTER_EMAIL.toLowerCase();
         if (lockedWebmaster) {
           roleCell.textContent = 'Webmaster';
@@ -7198,6 +7497,7 @@ async function renderUserMaps() {
         } else {
           var roleSelect = document.createElement('select');
           roleSelect.id = 'assign-role-' + profile.uid;
+          roleSelect.setAttribute('aria-label', 'Role for ' + (profile.email || profile.uid));
           roleSelect.style.cssText = 'width:100%; background:#070a12; color:#fff; border:1px solid var(--border-color); border-radius:4px; padding:4px;';
           ['Guest', 'Member'].concat(viewerIsWebmaster ? ['Admin'] : []).forEach(function(roleName) {
             var option = document.createElement('option');
@@ -7222,10 +7522,11 @@ async function renderUserMaps() {
         actionCell.style.padding = '6px 4px';
         actionCell.style.textAlign = 'right';
         actionCell.style.color = 'var(--text-dim)';
-        actionCell.textContent = lockedWebmaster ? 'Role locked' : '';
+        actionCell.appendChild(saveBtn);
         tr.appendChild(actionCell);
         tbody.appendChild(tr);
       });
+      wdFilterConsoleAccounts();
     }
 
     function saveOperatorAssignment(uid) {
@@ -7260,29 +7561,27 @@ async function renderUserMaps() {
       }
 
       var previousHandle = profile.memberId || '';
-      firebase.firestore().collection('user_profiles').doc(uid).set({
-        role: role,
-        memberId: memberId,
-        assignedAt: firebase.firestore.FieldValue.serverTimestamp(),
-        assignedBy: viewer.email || ''
-      }, { merge: true }).then(function() {
-        var writes = [];
-        if (previousHandle && previousHandle !== memberId) {
-          var previousMember = findMemberByHandle(previousHandle);
-          if (previousMember && previousMember.email && profile.email && previousMember.email.toLowerCase() === profile.email.toLowerCase()) {
-            writes.push(firebase.firestore().collection('clan_members').doc(previousMember.id).set({
-              email: firebase.firestore.FieldValue.delete()
-            }, { merge: true }));
-          }
+      if (previousHandle === memberId && profile.role === role) return;
+      var ref = firebase.firestore().collection('user_profiles').doc(uid);
+      var detail = [(profile.role || 'Guest') + ' → ' + role, (previousHandle || 'Unlinked') + ' → ' + (memberId || 'Unlinked')].join(' · ');
+      wdCommitAdminChange(ref, 'update', profile.email || uid, function(batch) {
+        batch.set(ref, {
+          role: role,
+          memberId: memberId,
+          assignedAt: firebase.firestore.FieldValue.serverTimestamp(),
+          assignedBy: viewer.email || ''
+        }, { merge: true });
+        var previousMember = previousHandle !== memberId && findMemberByHandle(previousHandle);
+        if (previousMember && previousMember.email && profile.email && previousMember.email.toLowerCase() === profile.email.toLowerCase()) {
+          batch.set(ref.firestore.collection('clan_members').doc(previousMember.id), {
+            email: firebase.firestore.FieldValue.delete()
+          }, { merge: true });
         }
         var nextMember = findMemberByHandle(memberId);
         if (nextMember) {
-          writes.push(firebase.firestore().collection('clan_members').doc(nextMember.id).set({
-            email: profile.email || ''
-          }, { merge: true }));
+          batch.set(ref.firestore.collection('clan_members').doc(nextMember.id), { email: profile.email || '' }, { merge: true });
         }
-        return Promise.all(writes);
-      }).then(function() {
+      }, detail).then(function() {
         alert('Link saved.');
       }).catch(function(err) {
         alert('Link failed: ' + (err && err.message ? err.message : err));
@@ -7310,15 +7609,87 @@ async function renderUserMaps() {
       if (!allowed) document.getElementById('wd-health-modal').hidden = true;
     }
 
+    function wdRefreshWebmasterConsole() {
+      var allowed = canViewWdSyncHealth();
+      document.getElementById('wd-webmaster-console').hidden = !allowed;
+      document.getElementById('authModal').classList.toggle('wd-staff-console', allowed);
+      if (!allowed) {
+        document.getElementById('wd-account-search').value = '';
+        document.getElementById('wd-account-role').value = '';
+        wdShowConsoleSection('accounts', true);
+      }
+      if (document.getElementById('view-profile').style.display === 'block') {
+        document.getElementById('authModalTitle').textContent = allowed ? 'WEBMASTER CONSOLE' : 'COMMANDER PROFILE';
+      }
+    }
+
+    function wdClearConsoleAccounts() {
+      if (profilesUnsubscribe) profilesUnsubscribe();
+      profilesUnsubscribe = null;
+      registeredProfiles = [];
+      document.getElementById('registered-users-tbody').replaceChildren();
+      document.getElementById('wd-account-count').textContent = '';
+    }
+
+    function wdShowConsoleSection(section, resetting) {
+      if (!resetting && !canViewWdSyncHealth()) return;
+      var consolePanel = document.getElementById('wd-webmaster-console');
+      consolePanel.querySelectorAll('[data-console-section]').forEach(function(button) {
+        button.setAttribute('aria-pressed', String(button.dataset.consoleSection === section));
+      });
+      consolePanel.querySelectorAll('[data-console-panel]').forEach(function(panel) {
+        panel.hidden = panel.dataset.consolePanel !== section;
+      });
+      var activity = document.getElementById('wd-admin-activity');
+      if (section === 'activity' && activity.open) wdLoadActivity();
+      else activity.open = section === 'activity';
+    }
+
+    function wdFilterConsoleAccounts() {
+      var search = document.getElementById('wd-account-search').value.trim().toLowerCase();
+      var role = document.getElementById('wd-account-role').value;
+      var rows = document.querySelectorAll('#registered-users-tbody tr[data-account-role]');
+      var visible = 0;
+      rows.forEach(function(row) {
+        var matches = row.dataset.accountSearch.includes(search) && (!role || row.dataset.accountRole === role);
+        row.hidden = !matches;
+        if (matches) visible++;
+      });
+      document.getElementById('wd-account-count').textContent = rows.length
+        ? visible + ' of ' + rows.length + ' accounts' : '';
+    }
+
+    function wdOpenConsoleTool(tool) {
+      if (!canViewWdSyncHealth()) return;
+      closeAuthModal();
+      if (tool === 'calendar') {
+        switchTab('overview');
+        selectClanCalendarDay(calendarDateKey(new Date()));
+        return;
+      }
+      var destination = {
+        matches: ['matches', 'btn-toggle-match-cms'],
+        roster: ['roster', 'admin-roster-control-panel'],
+        news: ['community', 'admin-news-terminal']
+      }[tool];
+      if (!destination) return;
+      switchTab(destination[0]);
+      var target = document.getElementById(destination[1]);
+      if (target) target.scrollIntoView({ block: 'start' });
+    }
+
     function refreshOperatorConsole(user) {
       refreshWdSyncHealthAccess();
+      wdRefreshActivityAccess();
+      wdRefreshWebmasterConsole();
       wdRsvpRefresh();
       var staff = isStaffUser(user);
       var usersPanel = document.getElementById('webmaster-users-panel');
       if (usersPanel) usersPanel.style.display = staff ? 'block' : 'none';
       var adminPanel = document.getElementById('webmaster-admin-panel');
       if (adminPanel) adminPanel.style.display = 'none';
-      if (staff) loadRegisteredUsers();
+      if (canViewWdSyncHealth()) loadRegisteredUsers();
+      else wdClearConsoleAccounts();
       syncWriteSurfaces(user);
 
       var cmsTerminal = document.getElementById('admin-news-terminal');
@@ -7475,7 +7846,7 @@ async function renderUserMaps() {
 
       if (viewName === 'profile') {
         if (tabs) tabs.style.display = 'none';
-        if (titleEl) titleEl.innerText = 'COMMANDER PROFILE';
+        if (titleEl) titleEl.innerText = canViewWdSyncHealth() ? 'WEBMASTER CONSOLE' : 'COMMANDER PROFILE';
       } else {
         if (tabs) tabs.style.display = (viewName === 'forgot') ? 'none' : 'flex';
         if (titleEl) titleEl.innerText = (viewName === 'register') ? 'NEW OPERATOR RECRUITMENT' : 'ACCESS PORTAL';
@@ -7724,6 +8095,9 @@ async function renderUserMaps() {
       var usersPanel = document.getElementById('webmaster-users-panel');
       if (usersPanel) usersPanel.style.display = 'none';
       stopProfileWatchers();
+      wdClearConsoleAccounts();
+      wdRefreshActivityAccess();
+      wdRefreshWebmasterConsole();
       wdRsvpRefresh();
       document.getElementById('wd-health-trigger').hidden = true;
       document.getElementById('wd-health-modal').hidden = true;
@@ -8339,6 +8713,7 @@ async function renderUserMaps() {
       if (source && !stats.history.length) notes.push('No verified results for this player.');
       if (stats.invalid) notes.push('Some archive sets could not be verified and were excluded.');
       document.getElementById('m-stats-note').textContent = notes.join(' ');
+      wdRenderAchievements(stats.history);
       renderDossierMatchRecords(stats.history);
     }
 
@@ -8811,14 +9186,26 @@ async function renderUserMaps() {
       return '';
     }
 
+    function isWdStarLeagueMatch(match) {
+      return /^(WD Star League|WD Match)$/i.test(String(match.category || '').trim());
+    }
+
+    function wdVisibleMatchRecords(key) {
+      return getMatchesList().filter(function(match) {
+        if (key === 'wdsl') return isWdStarLeagueMatch(match);
+        return !isWdStarLeagueMatch(match) &&
+          (currentMatchCategoryFilter === 'All' || match.category === currentMatchCategoryFilter);
+      }).sort(function(a, b) {
+        var left = parseClanDate(a.week);
+        var right = parseClanDate(b.week);
+        return (right ? right.getTime() : 0) - (left ? left.getTime() : 0);
+      });
+    }
+
     function renderMatches() {
       recalculateAllMemberScores();
       renderOverviewPointsRanking();
       refreshOpenDossierStats();
-
-      var grid = document.getElementById('dynamic-matches-grid');
-      if (!grid) return;
-      var matches = getMatchesList();
 
       var user = (typeof firebase !== 'undefined' && firebase.auth && firebase.auth().currentUser)
         ? firebase.auth().currentUser
@@ -8828,19 +9215,15 @@ async function renderUserMaps() {
       var btnCms = document.getElementById('btn-toggle-match-cms');
       if (btnCms) btnCms.style.display = canModerate ? 'inline-block' : 'none';
 
-      var filtered = matches.filter(function(m) {
-        if (currentMatchCategoryFilter === 'All') return true;
-        if (currentMatchCategoryFilter === 'WD Star League' && (m.category === 'WD Match' || m.category === 'WD Star League')) return true;
-        return m.category === currentMatchCategoryFilter;
-      });
-      filtered.sort(function(a, b) {
-        var left = parseClanDate(a.week);
-        var right = parseClanDate(b.week);
-        return (right ? right.getTime() : 0) - (left ? left.getTime() : 0);
-      });
-      var matchPage = wdPageWindow(filtered, 'matches');
-      filtered = matchPage.items;
+      renderMatchCards(document.getElementById('dynamic-matches-grid'), 'matches', canModerate);
+      renderMatchCards(document.getElementById('wd-wdsl-matches-grid'), 'wdsl', canModerate);
+      renderClanCalendar();
+    }
 
+    function renderMatchCards(grid, key, canModerate) {
+      if (!grid) return;
+      var matchPage = wdPageWindow(wdVisibleMatchRecords(key), key);
+      var filtered = matchPage.items;
       grid.innerHTML = '';
       filtered.forEach(function(m) {
         var card = document.createElement('div');
@@ -8929,8 +9312,12 @@ async function renderUserMaps() {
 
         grid.appendChild(card);
       });
-      wdMountPager(grid, 'matches', matchPage.page, matchPage.pages);
-      renderClanCalendar();
+      if (!filtered.length) {
+        var empty = document.createElement('p');
+        empty.textContent = key === 'wdsl' ? 'No WD Star League matches recorded yet.' : 'No matches in this category.';
+        grid.appendChild(empty);
+      }
+      wdMountPager(grid, key, matchPage.page, matchPage.pages);
     }
 
     var clanEvents = [];
@@ -9158,7 +9545,15 @@ async function renderUserMaps() {
 
     function openCalendarMatch(matchId) {
       closeCalendarModal();
-      if (typeof switchTab === 'function') switchTab('matches');
+      var match = getMatchesList().find(function(record) { return String(record.id) === String(matchId); });
+      var key = match && isWdStarLeagueMatch(match) ? 'wdsl' : 'matches';
+      if (key === 'matches') filterMatchCategory('All');
+      var index = wdVisibleMatchRecords(key).findIndex(function(record) { return String(record.id) === String(matchId); });
+      if (index >= 0) {
+        wdListPage[key] = Math.floor(index / wdPageSize()) + 1;
+        renderMatches();
+      }
+      switchTab(key);
       setTimeout(function() {
         var card = document.getElementById('match-card-' + matchId);
         if (card) card.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -9167,6 +9562,113 @@ async function renderUserMaps() {
 
     var wdRsvpLabels = { going: 'Going', maybe: 'Maybe', declined: 'Decline' };
     var wdRsvpPending = new Set();
+
+    function wdReplayMode(replay) {
+      if (replay.mode === '1v1' || replay.mode === '2v2') return replay.mode;
+      var text = [replay.title, replay.players, replay.matchTitle].join(' ');
+      var solo = /\b1\s*(?:vs?\.?|on)\s*1\b/i.test(text);
+      var duo = /\b2\s*(?:vs?\.?|on)\s*2\b/i.test(text);
+      return solo === duo ? 'unknown' : solo ? '1v1' : '2v2';
+    }
+
+    function wdFilterReplays(items) {
+      var player = wdNormalizePlayerName(document.getElementById('wd-replay-player').value).trim().toLowerCase();
+      var map = document.getElementById('wd-replay-map').value.trim().toLowerCase();
+      var mode = document.getElementById('wd-replay-mode').value;
+      return items.filter(function(item) {
+        return wdNormalizePlayerName(item.players).toLowerCase().includes(player) &&
+          String(item.map || '').toLowerCase().includes(map) &&
+          (!mode || wdReplayMode(item) === mode);
+      });
+    }
+
+    function wdRefreshReplayFilters() {
+      wdListPage.replays = 1;
+      if (typeof firebase !== 'undefined' && firebase.firestore) renderFirestoreReplays(wdReplayCache);
+      else renderUserReplays();
+    }
+
+    function wdRenderAchievements(history) {
+      var list = document.getElementById('wd-achievements');
+      var wins = history.filter(function(entry) { return entry.league && entry.win; });
+      var labels = [];
+      if (wins.length) labels.push('First Clan League Win');
+      if (wins.length >= 5) labels.push('5 Clan League Wins');
+      if (wins.some(function(entry) { return entry.mode === '1v1'; })) labels.push('Clan League 1v1 Winner');
+      if (wins.some(function(entry) { return entry.mode === '2v2'; })) labels.push('Clan League 2v2 Winner');
+      list.replaceChildren();
+      list.hidden = !labels.length;
+      if (!labels.length) return;
+      var heading = document.createElement('h3');
+      heading.textContent = 'ACHIEVEMENTS';
+      list.appendChild(heading);
+      labels.forEach(function(label) {
+        var badge = document.createElement('span');
+        badge.textContent = label;
+        list.appendChild(badge);
+      });
+    }
+
+    function wdCommitAdminChange(ref, action, label, change, detail) {
+      var db = firebase.firestore();
+      var user = firebase.auth().currentUser;
+      if (!user || !canViewWdSyncHealth()) return Promise.reject(new Error('Admin access required.'));
+      var batch = db.batch();
+      change(batch);
+      batch.set(db.collection('admin_activity').doc(), {
+        actorUid: user.uid,
+        actorEmail: user.email,
+        target: ref.parent.id,
+        targetId: ref.id,
+        action: action,
+        label: String(label || ref.id).slice(0, 300),
+        detail: String(detail || '').slice(0, 300),
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+      });
+      return batch.commit();
+    }
+
+    var wdActivityRequest = 0;
+    function wdRefreshActivityAccess() {
+      var allowed = canViewWdSyncHealth();
+      var section = document.getElementById('wd-admin-activity');
+      section.hidden = !allowed;
+      if (!allowed) {
+        wdActivityRequest++;
+        section.open = false;
+        document.getElementById('wd-activity-entries').replaceChildren();
+      }
+    }
+
+    function wdLoadActivity() {
+      var section = document.getElementById('wd-admin-activity');
+      if (!section.open || !canViewWdSyncHealth()) return;
+      var user = firebase.auth().currentUser;
+      var request = ++wdActivityRequest;
+      var entries = document.getElementById('wd-activity-entries');
+      entries.textContent = 'Loading…';
+      function current() {
+        return request === wdActivityRequest && section.open && canViewWdSyncHealth() &&
+          firebase.auth().currentUser.uid === user.uid;
+      }
+      firebase.firestore().collection('admin_activity').orderBy('createdAt', 'desc').limit(25)
+        .get({ source: 'server' }).then(function(snapshot) {
+          if (!current()) return;
+          entries.replaceChildren();
+          if (snapshot.empty) entries.textContent = 'No activity recorded yet.';
+          var targets = { clan_matches: 'Match', clan_events: 'Calendar event', user_profiles: 'Account' };
+          snapshot.forEach(function(doc) {
+            var data = doc.data();
+            var row = document.createElement('li');
+            var timestamp = data.createdAt && data.createdAt.toDate().toLocaleString();
+            row.textContent = [timestamp, data.actorEmail, (targets[data.target] || data.target) + ' · ' + data.action,
+              data.label, data.detail].filter(Boolean).join(' — ');
+            entries.appendChild(row);
+          });
+        }).catch(function() {
+          if (current()) entries.textContent = 'Could not load activity. Check the Firestore rules and retry.';
+        });
+    }
 
     function wdRsvpAccess() {
       var user = isFirebaseReady() && firebase.auth().currentUser;
@@ -9501,7 +10003,10 @@ async function renderUserMaps() {
         updatedBy: user.email || ''
       };
       var collection = firebase.firestore().collection('clan_events');
-      var write = editingEventId ? collection.doc(editingEventId).set(payload, { merge: true }) : collection.add(payload);
+      var ref = editingEventId ? collection.doc(editingEventId) : collection.doc();
+      var write = wdCommitAdminChange(ref, editingEventId ? 'update' : 'create', title, function(batch) {
+        batch.set(ref, payload, { merge: true });
+      });
       write.then(function() {
         resetClanEventForm();
         selectClanCalendarDay(date);
@@ -9513,7 +10018,11 @@ async function renderUserMaps() {
     function deleteClanEvent(eventId) {
       var user = (typeof firebase !== 'undefined' && firebase.auth && firebase.auth().currentUser) || currentUser;
       if (!isStaffUser(user)) return;
-      firebase.firestore().collection('clan_events').doc(eventId).delete().then(function() {
+      var ref = firebase.firestore().collection('clan_events').doc(eventId);
+      var existing = clanEvents.find(function(item) { return item.id === eventId; });
+      wdCommitAdminChange(ref, 'delete', existing && existing.title, function(batch) {
+        batch.delete(ref);
+      }).then(function() {
         if (editingEventId === eventId) resetClanEventForm();
         renderCalendarModal();
       }).catch(function(err) {
@@ -9567,6 +10076,7 @@ async function renderUserMaps() {
       var matches = getMatchesList();
       var m = matches.find(function(match) { return match.id === id; });
       if (!m) return;
+      if (isWdStarLeagueMatch(m)) switchTab('matches');
 
       var terminal = document.getElementById('admin-match-terminal');
       if (terminal) terminal.style.display = 'block';
@@ -9574,7 +10084,7 @@ async function renderUserMaps() {
       initBuilderMemberSelects();
       document.getElementById('match-edit-id').value = m.id;
       document.getElementById('match-cms-heading').innerText = '⚡ EDIT MATCH INTEL // ' + String(m.title || 'UNTITLED MATCH').toUpperCase();
-      document.getElementById('match-inp-cat').value = m.category || 'Clan League';
+      document.getElementById('match-inp-cat').value = isWdStarLeagueMatch(m) ? 'WD Star League' : (m.category || 'Clan League');
       document.getElementById('match-inp-date').value = m.week || '';
       document.getElementById('match-inp-title').value = m.title || '';
       document.getElementById('match-inp-result').value = m.resultType || 'WIN';
@@ -9588,7 +10098,7 @@ async function renderUserMaps() {
     function filterMatchCategory(cat) {
       currentMatchCategoryFilter = cat;
       wdListPage.matches = 1;
-      var catKeys = ['All', 'ClanLeague', 'WDStarLeague', 'ClanMatch'];
+      var catKeys = ['All', 'ClanLeague', 'ClanMatch'];
       catKeys.forEach(function(c) {
         var b = document.getElementById('btn-mcat-' + c);
         if (b) {
@@ -9629,7 +10139,11 @@ async function renderUserMaps() {
       };
 
       if (typeof firebase !== 'undefined' && firebase.firestore) {
-        firebase.firestore().collection('clan_matches').doc(matchId).set(matchRecord, { merge: true })
+        var ref = firebase.firestore().collection('clan_matches').doc(matchId);
+        var existsInArchive = firestoreMatches.some(function(match) { return match.id === matchId; });
+        wdCommitAdminChange(ref, existsInArchive ? 'update' : 'create', title, function(batch) {
+          batch.set(ref, matchRecord, { merge: true });
+        })
           .then(function() {
             cancelMatchCMS();
             alert('Match successfully saved and synchronized in Firebase!');
@@ -9645,8 +10159,11 @@ async function renderUserMaps() {
     function deleteMatchRecord(id) {
       if (!confirm('Are you sure you want to delete this match for all devices?')) return;
       if (typeof firebase !== 'undefined' && firebase.firestore) {
-        firebase.firestore().collection('clan_matches').doc(id).delete()
-          .catch(function(e) { alert('Error deleting: ' + e.message); });
+        var ref = firebase.firestore().collection('clan_matches').doc(id);
+        var existing = getMatchesList().find(function(match) { return match.id === id; });
+        return wdCommitAdminChange(ref, 'delete', existing && existing.title, function(batch) {
+          batch.delete(ref);
+        }).catch(function(e) { alert('Error deleting: ' + e.message); });
       }
       var matches = getMatchesList().filter(function(m) { return m.id !== id; });
       localStorage.setItem('wd_matches_vault', JSON.stringify(matches));
