@@ -1100,6 +1100,9 @@
       align-items: center;
       letter-spacing: 1px;
     }
+    .stat-counters.wd-player-stats { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .wd-stats-note { color: #aabed2; font-size: .8rem; margin: 8px 0; }
+    .wd-stats-note:empty { display: none; }
     .stat-counters {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
@@ -1908,6 +1911,12 @@
       background: rgba(5, 10, 18, 0.65);
     }
     .wd-cal-entry { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+    .wd-calendar-attendance-entry { margin-bottom: 10px; }
+    .wd-rsvp { padding: 8px 10px; margin: -3px 0 10px; border-left: 2px solid var(--border-color); color: #b8c9dd; font-size: .85rem; }
+    .wd-rsvp p { margin: 0 0 5px; }
+    .wd-rsvp-choices { display: flex; flex-wrap: wrap; gap: 6px; }
+    .wd-rsvp-choices button[aria-pressed="true"] { border-color: var(--cyan); color: var(--cyan); background: rgba(0,229,255,.12); }
+    .wd-rsvp-list { margin-top: 6px; overflow-wrap: anywhere; }
     .wd-cal-entry .wd-cal-row { flex: 1; margin-bottom: 0; }
     .wd-cal-modal {
       position: fixed;
@@ -2158,9 +2167,8 @@
 
 
     /* Race markers in match set lines: consistent single and 2v2 letter badges. */
-    .wd-match-race-pair { display: inline-flex; align-items: center; gap: 3px; vertical-align: middle; white-space: nowrap; }
-    .wd-match-race-letter { width: 26px; height: 25px; padding: 1px; display: inline-flex; align-items: center; justify-content: center; font-family: 'Orbitron', sans-serif; font-size: 0.76rem; font-weight: 800; line-height: 1; letter-spacing: 0; border-radius: 5px; }
-    @media (max-width: 600px) { .wd-match-race-letter { width: 23px; height: 23px; font-size: 0.7rem; } }
+    .wd-match-race-pair { display: inline-flex; align-items: center; gap: 2px; vertical-align: middle; white-space: nowrap; }
+    .wd-match-race-letter { width: 17px; height: 17px; padding: 0; flex: 0 0 17px; box-sizing: border-box; display: inline-flex; align-items: center; justify-content: center; font-family: 'Orbitron', sans-serif; font-size: 10px; font-weight: 800; line-height: 1; letter-spacing: 0; border-radius: 4px; }
   </style>
 </head>
 <body>
@@ -3093,26 +3101,27 @@
         <!-- BWCL S65 League Performance -->
         <div class="league-stats-panel">
           <div class="league-stats-title">
-            <span>RECORD</span>
+            <span>PLAYER STATISTICS</span>
             <span style="font-size:0.75rem; color:var(--cyan-bright); font-weight:800;" id="m-status-tag">ACTIVE TOURNAMENT ROSTER</span>
           </div>
-          <div class="stat-counters">
+          <div class="stat-counters wd-player-stats">
             <div class="stat-counter-box">
-              <div class="num" id="m-1v1-stat">0 - 0</div>
-              <div class="lbl">1v1 Record (W-L)</div>
+              <div class="num" id="m-1v1-stat">—</div>
+              <div class="lbl">1v1 (W–L)</div>
+              <div class="lbl">Win rate <span id="m-1v1-rate">—</span></div>
             </div>
             <div class="stat-counter-box">
-              <div class="num" id="m-2v2-stat">0 - 0</div>
-              <div class="lbl">2v2 Record (W-L)</div>
+              <div class="num" id="m-2v2-stat">—</div>
+              <div class="lbl">2v2 (W–L)</div>
+              <div class="lbl">Win rate <span id="m-2v2-rate">—</span></div>
             </div>
             <div class="stat-counter-box">
-              <div class="num win" id="m-pts-stat">0 PTS</div>
-              <div class="lbl">Points Won</div>
+              <div class="num" id="m-pts-stat">—</div>
+              <div class="lbl">Clan League Points</div>
             </div>
           </div>
-          <div class="match-history-log" id="m-history-log">
-            <div style="font-style:italic;">No recorded BWCL S65 Division D matches played yet.</div>
-          </div>
+          <p class="wd-stats-note" id="m-stats-note"></p>
+          <div id="m-history-log"></div>
         </div>
 
         <!-- Commander Intel & Bio -->
@@ -3605,6 +3614,8 @@
             <p style="color:#fbbf24; font-size:0.82rem; margin-bottom:6px;">⚠️ Your email is not verified yet. Check your inbox or click below to resend.</p>
             <button onclick="resendVerificationEmail()" class="btn-download-rep" style="padding:6px 14px; font-size:0.75rem;">RESEND VERIFICATION LINK</button>
           </div>
+
+          <button id="wd-health-trigger" type="button" hidden data-state="loading" aria-haspopup="dialog" aria-controls="wd-health-modal">● SYNC STATUS</button>
 
           <!-- WEBMASTER EXCLUSIVE: ROLE & ADMIN MANAGEMENT PANEL -->
           
@@ -5403,11 +5414,7 @@ function renderFirestoreReplays(cloudReplays) {
       const raceClass = p.race === 'Terran' ? 'race-terran' : (p.race === 'Protoss' ? 'race-protoss' : 'race-zerg');
       document.getElementById('m-race-badge').innerHTML = getRaceBadgeHtml(p.race);
 
-      document.getElementById('m-1v1-stat').innerText = p.w1 || '0 - 0';
-      document.getElementById('m-2v2-stat').innerText = p.w2 || '0 - 0';
-      document.getElementById('m-pts-stat').innerText = (p.pts || 0) + ' PTS';
-
-      renderDossierMatchRecords(p.history);
+      renderPlayerStats(p, allM);
 
       var bioTextEl = document.getElementById('m-bio-text');
       if (bioTextEl) {
@@ -5476,17 +5483,16 @@ function renderFirestoreReplays(cloudReplays) {
       var records = [];
       (Array.isArray(history) ? history : []).forEach(function(entry, index) {
         if (!entry) return;
-        var rawWeek = String(entry.week || '');
-        var found = rawWeek.match(/\b(\d{4}-\d{2}-\d{2})\b/);
-        var date = found ? found[1] : (rawWeek.trim() || 'Date unknown');
-        records.push({entry: entry, date: date, index: index});
+        records.push({
+          entry: entry,
+          date: entry.dateKey || 'Date unknown',
+          dated: Boolean(entry.dateKey),
+          index: index
+        });
       });
       records.sort(function(a, b) {
-        var da = /^\d{4}-\d{2}-\d{2}$/.test(a.date);
-        var db = /^\d{4}-\d{2}-\d{2}$/.test(b.date);
-        if (da && db && a.date !== b.date) return b.date.localeCompare(a.date);
-        if (da !== db) return da ? -1 : 1;
-        return a.index - b.index;
+        if (a.dated !== b.dated) return a.dated ? -1 : 1;
+        return b.date.localeCompare(a.date) || a.index - b.index;
       });
       return records;
     }
@@ -5520,30 +5526,16 @@ function renderFirestoreReplays(cloudReplays) {
       if (!container) return;
       wdMatchArchive = wdGetSortedMatches(history);
       container.replaceChildren();
-      var heading = document.createElement('div');
-      heading.className = 'wd-match-record-title';
-      heading.textContent = 'MATCH RECORD';
-      container.appendChild(heading);
       if (!wdMatchArchive.length) {
-        var empty = document.createElement('div');
-        empty.className = 'wd-match-record-empty';
-        empty.textContent = 'No official BWCL matches recorded yet.';
-        container.appendChild(empty);
         closeWdMatchArchive();
         return;
       }
-      var recent = document.createElement('div');
-      recent.className = 'wd-match-recent';
-      wdBuildMatchList(wdMatchArchive.slice(0, 2), recent);
-      container.appendChild(recent);
-      if (wdMatchArchive.length > 2) {
-        var open = document.createElement('button');
-        open.type = 'button';
-        open.className = 'wd-match-archive-open';
-        open.textContent = 'VIEW ALL MATCH RECORDS (' + wdMatchArchive.length + ')  →';
-        open.onclick = function() { openWdMatchArchive(); };
-        container.appendChild(open);
-      }
+      var open = document.createElement('button');
+      open.type = 'button';
+      open.className = 'wd-match-archive-open';
+      open.textContent = 'VIEW MATCH RECORDS (' + wdMatchArchive.length + ') →';
+      open.onclick = openWdMatchArchive;
+      container.appendChild(open);
       var overlay = document.getElementById('wdMatchArchiveModal');
       if (overlay && overlay.classList.contains('active')) renderWdMatchArchivePage();
     }
@@ -5607,13 +5599,7 @@ function renderFirestoreReplays(cloudReplays) {
       var member = allMembers.find(function(m) { return m.id === currentInspectedMemberId; });
       if (!member) return;
 
-      var oneVOne = document.getElementById('m-1v1-stat');
-      var twoVTwo = document.getElementById('m-2v2-stat');
-      var points = document.getElementById('m-pts-stat');
-      if (oneVOne) oneVOne.textContent = member.w1 || '0 - 0';
-      if (twoVTwo) twoVTwo.textContent = member.w2 || '0 - 0';
-      if (points) points.textContent = (Number(member.pts) || 0) + ' PTS';
-      renderDossierMatchRecords(member.history);
+      renderPlayerStats(member, allMembers);
     }
 
     function closeModal() {
@@ -7311,7 +7297,22 @@ async function renderUserMaps() {
       if (mapCard) mapCard.style.display = writer ? 'block' : 'none';
     }
 
+    function canViewWdSyncHealth() {
+      if (!isFirebaseReady()) return false;
+      var user = firebase.auth().currentUser;
+      return Boolean(user && (isRootOperator(user.email) ||
+        (currentUserProfile && currentUserProfile.uid === user.uid && isStaffUser(user))));
+    }
+
+    function refreshWdSyncHealthAccess() {
+      var allowed = canViewWdSyncHealth();
+      document.getElementById('wd-health-trigger').hidden = !allowed;
+      if (!allowed) document.getElementById('wd-health-modal').hidden = true;
+    }
+
     function refreshOperatorConsole(user) {
+      refreshWdSyncHealthAccess();
+      wdRsvpRefresh();
       var staff = isStaffUser(user);
       var usersPanel = document.getElementById('webmaster-users-panel');
       if (usersPanel) usersPanel.style.display = staff ? 'block' : 'none';
@@ -7723,6 +7724,9 @@ async function renderUserMaps() {
       var usersPanel = document.getElementById('webmaster-users-panel');
       if (usersPanel) usersPanel.style.display = 'none';
       stopProfileWatchers();
+      wdRsvpRefresh();
+      document.getElementById('wd-health-trigger').hidden = true;
+      document.getElementById('wd-health-modal').hidden = true;
       syncWriteSurfaces(null);
 
       document.body.classList.remove('is-webmaster');
@@ -8215,9 +8219,131 @@ async function renderUserMaps() {
     // ========================================================
     var currentMatchCategoryFilter = 'All';
     var firestoreMatches = [];
+    var wdStatsMatchSnapshot = null;
+    var wdStatsMatchFailed = false;
+
+    function wdStatsPlayerKey(value) {
+      return wdNormalizePlayerName(value)
+        .replace(/\s*(?:\[wd\]|\(wd\))\s*$/i, '').trim().toLowerCase();
+    }
+
+    function wdParseStatsSet(rawSet) {
+      if (typeof rawSet !== 'string') return null;
+      var line = rawSet.trim()
+        .replace(/&#0*91;|&#x0*5b;|&lbrack;/gi, '[')
+        .replace(/&#0*93;|&#x0*5d;|&rbrack;/gi, ']')
+        .replace(/&amp;/gi, '&');
+      var type = line.match(/^(?:#\d+\s+)?([12]v[12])(?=\s|\|)/i);
+      if (!type || !/^(1v1|2v2)$/i.test(type[1])) return null;
+      var mode = type[1].toLowerCase();
+      var body = line.slice(type[0].length).trim();
+      var outcome = body.match(/(?:\s*\|\s*|\s+)(WIN|LOSS|W|L|POSTPONED|PENDING|UPCOMING|DRAW|CANCELLED|CANCELED)$/i);
+      if (outcome) {
+        if (!/^(W|L|WIN|LOSS)$/i.test(outcome[1])) return null;
+        body = body.slice(0, outcome.index).trim();
+      }
+      // The builder adds a map field. A pipe inside an opponent's tag is part of the name.
+      if (body.startsWith('|')) {
+        var map = body.match(/^\|\s*[^|]+\|\s*/);
+        if (!map) return null;
+        body = body.slice(map[0].length);
+      }
+      var scores = Array.from(body.matchAll(/\s+(\d+)\s*[-:–]\s*(\d+)\s+/g));
+      if (scores.length !== 1) return null;
+      var score = scores[0];
+      var leftScore = Number(score[1]), rightScore = Number(score[2]);
+      if (!Number.isSafeInteger(leftScore) || !Number.isSafeInteger(rightScore) || leftScore === rightScore) return null;
+      var leftWin = leftScore > rightScore;
+      if (outcome && leftWin !== /^W/i.test(outcome[1])) return null;
+
+      var left = body.slice(0, score.index)
+        .replace(/^(?:\[\s*[PTZR](?:\s*\/?\s*[PTZR])?\s*\]|\(\s*[PTZR](?:\s*\/?\s*[PTZR])?\s*\))\s*/i, '');
+      var right = body.slice(score.index + score[0].length)
+        .replace(/\s*(?:\[\s*[PTZR](?:\s*\/?\s*[PTZR])?\s*\]|\(\s*[PTZR](?:\s*\/?\s*[PTZR])?\s*\))$/i, '');
+      var leftKeys = left.split(/\s+&\s+/).map(wdStatsPlayerKey);
+      var rightKeys = right.split(/\s+&\s+/).map(wdStatsPlayerKey);
+      var teamSize = Number(mode[0]);
+      if (leftKeys.length !== teamSize || rightKeys.length !== teamSize ||
+          leftKeys.concat(rightKeys).some(function(key) { return !key; }) ||
+          new Set(leftKeys.concat(rightKeys)).size !== teamSize * 2) return null;
+      return { mode: mode, left: leftKeys, right: rightKeys, leftWin: leftWin, text: line };
+    }
+
+    function wdCollectPlayerStats(member, roster, matches) {
+      var aliases = new Map();
+      roster.forEach(function(player) {
+        [player.id, player.name].map(wdStatsPlayerKey).filter(Boolean).forEach(function(key) {
+          if (!aliases.has(key)) aliases.set(key, new Set());
+          aliases.get(key).add(player.id);
+        });
+      });
+      var history = [];
+      var invalid = 0;
+      matches.forEach(function(match) {
+        if (!match || /^(UPCOMING|POSTPONED|PENDING|CANCELLED|CANCELED)$/i.test(String(match.resultType || '').trim())) return;
+        var category = String(match.category || '').trim();
+        var internal = /^(WD Star League|WD Match)$/i.test(category);
+        var league = /^(Clan League(?:\s*\(BWCL\))?|BWCL\b.*)$/i.test(category);
+        var week = typeof match.week === 'string' ? match.week.trim() : '';
+        var date = parseClanDate(week);
+        var day = week.match(/^\d{4}-\d{2}-(\d{2})$|\b(\d{1,2})(?:st|nd|rd|th)?\s+[A-Za-z]{3,}[.,]?\s+\d{4}/i);
+        var dateKey = date && day && date.getDate() === Number(day[1] || day[2])
+          ? date.getFullYear() + '-' + String(date.getMonth() + 1).padStart(2, '0') + '-' + String(date.getDate()).padStart(2, '0')
+          : '';
+        if (day && day[1] && dateKey !== week) dateKey = '';
+        if (match.sets == null) return;
+        var sets = typeof match.sets === 'string' ? match.sets.split(/\r?\n/) : match.sets;
+        if (!Array.isArray(sets)) { invalid++; return; }
+        var seen = new Set();
+        sets.forEach(function(raw) {
+          if (typeof raw === 'string' && (!raw.trim() || /(?:\||\s)\s*(POSTPONED|PENDING|UPCOMING|DRAW|CANCELLED|CANCELED)\s*$/i.test(raw))) return;
+          var set = wdParseStatsSet(raw);
+          if (!set) { invalid++; return; }
+          if (seen.has(set.text)) return;
+          seen.add(set.text);
+          function identifiesMember(key) {
+            var owners = aliases.get(key);
+            return owners && owners.size === 1 && owners.has(member.id);
+          }
+          var left = set.left.filter(identifiesMember).length;
+          var right = set.right.filter(identifiesMember).length;
+          if (left + right !== 1 || (!left && !internal)) return;
+          var win = left ? set.leftWin : !set.leftWin;
+          history.push({
+            week: week, dateKey: dateKey, mode: set.mode, league: league,
+            set: [match.title, set.text].filter(Boolean).join(' · '),
+            res: win ? 'WIN' : 'LOSS', win: win
+          });
+        });
+      });
+      return { history: history, invalid: invalid };
+    }
+
+    function renderPlayerStats(member, roster) {
+      var source = wdStatsMatchSnapshot;
+      var stats = source ? wdCollectPlayerStats(member, roster, source.matches) : { history: [], invalid: 0 };
+      ['1v1', '2v2'].forEach(function(mode) {
+        // All verified sets count toward the format's win rate, including Clan Match.
+        var sets = stats.history.filter(function(entry) { return entry.mode === mode; });
+        var wins = sets.filter(function(entry) { return entry.win; }).length;
+        var rate = sets.length ? (100 * wins / sets.length).toFixed(1).replace(/\.0$/, '') + '%' : '—';
+        document.getElementById('m-' + mode + '-stat').textContent = sets.length ? wins + ' – ' + (sets.length - wins) : '—';
+        document.getElementById('m-' + mode + '-rate').textContent = rate;
+      });
+      var leagueSets = stats.history.filter(function(entry) { return entry.league; });
+      document.getElementById('m-pts-stat').textContent = leagueSets.length
+        ? leagueSets.reduce(function(points, entry) { return points + (entry.win ? 2 : 1); }, 0) : '—';
+      var notes = [];
+      if (!source) notes.push(wdStatsMatchFailed ? 'Match data unavailable.' : 'Waiting for Firestore match data.');
+      else if (wdStatsMatchFailed || source.cached) notes.push('Showing the last available Firestore snapshot.');
+      if (source && !stats.history.length) notes.push('No verified results for this player.');
+      if (stats.invalid) notes.push('Some archive sets could not be verified and were excluded.');
+      document.getElementById('m-stats-note').textContent = notes.join(' ');
+      renderDossierMatchRecords(stats.history);
+    }
 
     function formatSetLineHtml(lineStr) {
-      if (!lineStr || !lineStr.trim()) return '';
+      if (typeof lineStr !== 'string' || !lineStr.trim()) return '';
       var s = lineStr.trim();
       var resBadge = '';
       var textPart = s;
@@ -8265,6 +8391,7 @@ async function renderUserMaps() {
     function initMatchesRealtimeListener() {
       if (typeof firebase !== 'undefined' && firebase.firestore) {
         firebase.firestore().collection('clan_matches').onSnapshot(function(snapshot) {
+        wdStatsMatchFailed = false;
         wdHealthSet('Matches', snapshot.metadata.fromCache ? 'cached' : 'ok', snapshot.size + ' documents');
           if (!snapshot.empty) {
             var liveMatches = [];
@@ -8274,10 +8401,13 @@ async function renderUserMaps() {
               liveMatches.push(m);
             });
             firestoreMatches = liveMatches;
+            wdStatsMatchSnapshot = { matches: liveMatches, cached: snapshot.metadata.fromCache };
             localStorage.setItem('wd_matches_vault', JSON.stringify(liveMatches));
             renderMatches();
           } else {
             firestoreMatches = [];
+            wdStatsMatchSnapshot = snapshot.metadata.fromCache ? null : { matches: [], cached: false };
+            refreshOpenDossierStats();
             if (typeof canWriteClanRosterToFirestore === 'function' && canWriteClanRosterToFirestore()) {
               seedDefaultMatchesToFirestore();
             } else {
@@ -8285,6 +8415,7 @@ async function renderUserMaps() {
             }
           }
         }, function(err) {
+        wdStatsMatchFailed = true;
         wdHealthSet('Matches', 'error', err && (err.code || err.message) || 'Listener failed');
           console.warn("Matches Cloud-Sync offline:", err);
           renderMatches();
@@ -8738,9 +8869,10 @@ async function renderUserMaps() {
           : '';
 
         var setsHtml = '';
-        if (m.sets && m.sets.length > 0) {
+        var displaySets = Array.isArray(m.sets) ? m.sets : typeof m.sets === 'string' ? m.sets.split(/\r?\n/) : [];
+        if (displaySets.length > 0) {
           setsHtml = '<div style="margin: 10px 0 12px 0; border-top: 1px dotted rgba(56, 189, 248, 0.2);">';
-          m.sets.forEach(function(setLine) {
+          displaySets.forEach(function(setLine) {
             setsHtml += formatSetLineHtml(setLine);
           });
           setsHtml += '</div>';
@@ -9033,6 +9165,116 @@ async function renderUserMaps() {
       }, 80);
     }
 
+    var wdRsvpLabels = { going: 'Going', maybe: 'Maybe', declined: 'Decline' };
+    var wdRsvpPending = new Set();
+
+    function wdRsvpAccess() {
+      var user = isFirebaseReady() && firebase.auth().currentUser;
+      if (!user) return null;
+      var profile = currentUserProfile && currentUserProfile.uid === user.uid ? currentUserProfile : null;
+      var staff = isRootOperator(user.email) || Boolean(profile && isStaffUser(user));
+      var memberId = profile && typeof profile.memberId === 'string' && profile.memberId.trim();
+      var canRespond = Boolean(memberId && ['Member', 'Admin', 'Webmaster'].includes(profile.role));
+      return staff || canRespond ? { uid: user.uid, memberId: memberId, staff: staff, canRespond: canRespond } : null;
+    }
+
+    function wdRsvpRefresh() {
+      var modal = document.getElementById('wd-cal-modal');
+      if (modal && modal.style.display === 'flex') renderCalendarModal();
+    }
+
+    function wdRsvpTarget(item) {
+      if (item.matchId && String(item.result).toUpperCase() === 'UPCOMING' &&
+          firestoreMatches.some(function(match) { return match.id === item.matchId; })) {
+        return { collection: 'clan_matches', id: item.matchId };
+      }
+      if (item.eventId && !item.matchId && calendarEntryType(item) !== 'pending') {
+        return { collection: 'clan_events', id: item.eventId };
+      }
+      return null;
+    }
+
+    function renderCalendarRsvp(item, parent) {
+      var access = wdRsvpAccess();
+      var target = wdRsvpTarget(item);
+      if (!access || !target) return;
+      var responses = firebase.firestore().collection(target.collection).doc(target.id).collection('rsvps');
+      var own = responses.doc(access.uid);
+      var key = own.path;
+      var panel = document.createElement('div');
+      panel.className = 'wd-rsvp';
+      parent.appendChild(panel);
+      var message = document.createElement('p');
+      message.setAttribute('role', 'status');
+      message.textContent = 'Loading attendance…';
+      panel.appendChild(message);
+
+      function stillAuthorized() {
+        var current = wdRsvpAccess();
+        return panel.isConnected && current && current.uid === access.uid &&
+          current.staff === access.staff && current.canRespond === access.canRespond && current.memberId === access.memberId;
+      }
+
+      var query = access.staff ? responses : own;
+      query.get({ source: 'server' }).then(function(snapshot) {
+        if (!stillAuthorized()) return;
+        message.textContent = access.canRespond ? 'Your RSVP' : 'Attendance';
+        var docs = access.staff ? snapshot.docs : snapshot.exists ? [snapshot] : [];
+        var selected = docs.find(function(doc) { return doc.id === access.uid && doc.data().memberId === access.memberId; });
+        var currentStatus = selected ? selected.data().status : '';
+        if (access.canRespond) {
+          var choices = document.createElement('div');
+          choices.className = 'wd-rsvp-choices';
+          choices.setAttribute('role', 'group');
+          choices.setAttribute('aria-label', 'Your RSVP');
+          Object.keys(wdRsvpLabels).forEach(function(status) {
+            var button = document.createElement('button');
+            button.type = 'button';
+            button.className = 'wd-cal-textbtn';
+            button.textContent = wdRsvpLabels[status];
+            button.disabled = wdRsvpPending.has(key);
+            button.setAttribute('aria-pressed', String(status === currentStatus));
+            button.onclick = function() {
+              if (!stillAuthorized() || wdRsvpPending.has(key) || status === currentStatus) return;
+              wdRsvpPending.add(key);
+              choices.querySelectorAll('button').forEach(function(control) { control.disabled = true; });
+              message.textContent = 'Saving RSVP…';
+              own.set({ memberId: access.memberId, status: status }).then(function() {
+                wdRsvpPending.delete(key);
+                wdRsvpRefresh();
+              }).catch(function(error) {
+                wdRsvpPending.delete(key);
+                if (!stillAuthorized()) { wdRsvpRefresh(); return; }
+                choices.querySelectorAll('button').forEach(function(control) { control.disabled = false; });
+                message.textContent = error.code === 'permission-denied'
+                  ? 'RSVP denied. Check the event and Firestore permissions.' : 'Could not save RSVP. Try again.';
+              });
+            };
+            choices.appendChild(button);
+          });
+          panel.appendChild(choices);
+        }
+        if (access.staff) {
+          var list = document.createElement('div');
+          list.className = 'wd-rsvp-list';
+          Object.keys(wdRsvpLabels).forEach(function(status) {
+            var names = docs.map(function(doc) { return doc.data(); }).filter(function(entry) {
+              return entry.status === status && typeof entry.memberId === 'string';
+            }).map(function(entry) { return entry.memberId; }).sort();
+            var row = document.createElement('div');
+            row.textContent = wdRsvpLabels[status] + ' (' + names.length + ')' + (names.length ? ' · ' + names.join(', ') : '');
+            list.appendChild(row);
+          });
+          panel.appendChild(list);
+        }
+      }).catch(function(error) {
+        if (!stillAuthorized()) return;
+        message.textContent = error.code === 'permission-denied'
+          ? 'Attendance unavailable. Check the Firestore RSVP rules.' : 'Attendance could not load. Reopen the day to retry.';
+      });
+    }
+
+
     function renderCalendarModal() {
       var list = document.getElementById('wd-cal-modal-list');
       var heading = document.getElementById('wd-cal-modal-title');
@@ -9082,7 +9324,11 @@ async function renderUserMaps() {
 
           wrap.appendChild(btnGroup);
         }
-        list.appendChild(wrap);
+        var entry = document.createElement('div');
+        entry.className = 'wd-calendar-attendance-entry';
+        entry.appendChild(wrap);
+        list.appendChild(entry);
+        renderCalendarRsvp(item, entry);
       });
     }
 
@@ -9334,7 +9580,7 @@ async function renderUserMaps() {
       document.getElementById('match-inp-result').value = m.resultType || 'WIN';
       document.getElementById('match-inp-score').value = m.score || '';
       document.getElementById('match-inp-note').value = m.note || '';
-      document.getElementById('match-inp-sets').value = (m.sets && m.sets.length > 0) ? m.sets.join('\n') : '';
+      document.getElementById('match-inp-sets').value = Array.isArray(m.sets) ? m.sets.filter(function(line) { return typeof line === 'string'; }).join('\n') : typeof m.sets === 'string' ? m.sets : '';
 
       terminal.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
@@ -10570,7 +10816,7 @@ async function renderUserMaps() {
   </script>
 
 <style>
-#wd-health-trigger{position:fixed;right:14px;bottom:16px;z-index:1500;background:#0b1a2d;color:#d6efff;border:1px solid #2d6e8b;border-radius:25px;padding:9px 15px;font:700 12px 'Share Tech Mono',monospace;cursor:pointer;box-shadow:0 5px 18px #0008}
+#wd-health-trigger{margin:0 0 16px;background:#0b1a2d;color:#d6efff;border:1px solid #2d6e8b;border-radius:25px;padding:9px 15px;font:700 12px 'Share Tech Mono',monospace;cursor:pointer;box-shadow:0 5px 18px #0008}
 #wd-health-trigger[data-state=error]{border-color:#f87171;color:#fecaca}#wd-health-trigger[data-state=loading]{border-color:#fbbf24;color:#fde68a}
 #wd-health-modal[hidden]{display:none!important}#wd-health-modal{position:fixed;inset:0;background:#020712e8;z-index:3100;display:flex;align-items:center;justify-content:center;padding:16px}
 .wd-health-panel{width:min(680px,100%);max-height:88vh;overflow:auto;background:#0b1729;border:1px solid #22627f;border-radius:12px;padding:20px;color:#e2e8f0;font-family:'Rajdhani',sans-serif}
@@ -10579,7 +10825,6 @@ async function renderUserMaps() {
 .wd-health-status{font-weight:bold}.wd-health-status.ok{color:#34d399}.wd-health-status.cached{color:#fbbf24}.wd-health-status.error{color:#fb7185}.wd-health-status.loading{color:#9ca3af}.wd-health-meta{font:11px 'Share Tech Mono',monospace;color:#94a3b8;overflow-wrap:anywhere}
 @media(max-width:500px){.wd-health-row{grid-template-columns:90px 1fr}.wd-health-meta{grid-column:1/-1}.wd-health-panel{padding:13px}}
 </style>
-<button id="wd-health-trigger" type="button" data-state="loading" aria-haspopup="dialog" aria-controls="wd-health-modal">● SYNC STATUS</button>
 <div id="wd-health-modal" hidden role="dialog" aria-modal="true" aria-labelledby="wd-health-title">
  <section class="wd-health-panel">
   <div class="wd-health-head"><h2 id="wd-health-title">WHITE DRAGON · SYNC HEALTH</h2><button id="wd-health-close" type="button">✕ CLOSE</button></div>
@@ -10608,13 +10853,20 @@ async function renderUserMaps() {
   var problems=services.some(function(s){return states[s].state==='error'});
   var pending=services.some(function(s){return states[s].state==='loading'||states[s].state==='cached'});
   button.dataset.state=problems?'error':pending?'loading':'ok';
-  button.textContent=(problems?'● SYNC ERROR':pending?'● SYNC CHECK':'● SYNC OK');
+  button.textContent='SYNC STATUS · '+(problems?'ERROR':pending?'CHECK':'OK');
  }
  window.wdHealthSet=function(service,state,detail){
   if(!states[service])return;
   states[service]={state:state,detail:String(detail||'').slice(0,180),time:Date.now()};render();
  };
- document.getElementById('wd-health-trigger').addEventListener('click',function(){document.getElementById('wd-health-modal').hidden=false;render();});
+ var trigger=document.getElementById('wd-health-trigger');
+ var modal=document.getElementById('wd-health-modal');
+ trigger.addEventListener('click',function(){
+  if(trigger.hidden || !canViewWdSyncHealth())return;
+  modal.hidden=false;
+  render();
+  document.getElementById('wd-health-close').focus();
+ });
  document.getElementById('wd-health-close').addEventListener('click',function(){document.getElementById('wd-health-modal').hidden=true;});
  document.getElementById('wd-health-modal').addEventListener('click',function(e){if(e.target===this)this.hidden=true;});
  document.addEventListener('keydown',function(e){if(e.key==='Escape')document.getElementById('wd-health-modal').hidden=true;});
