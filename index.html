@@ -2897,7 +2897,7 @@
           CLICK OR DRAG & DROP REPLAY HERE
         </div>
         <div style="color: var(--text-muted); font-size: 0.8rem; font-family: 'Share Tech Mono', monospace;">
-          Supports StarCraft: Remastered replay files (.rep) and archives (.zip)
+          Supports StarCraft: Remastered replay files (.rep) and archives (.zip) up to 5 MB
         </div>
       </div>
 
@@ -5605,18 +5605,7 @@ function renderFirestoreReplays(cloudReplays) {
     var dlBtn = document.createElement('button');
     dlBtn.className = 'btn-download-rep';
     dlBtn.innerText = 'DOWNLOAD (.REP)';
-    dlBtn.onclick = function() {
-      if (!item.fileData) {
-        alert('No file data is stored for this replay.');
-        return;
-      }
-      var a = document.createElement('a');
-      a.href = item.fileData;
-      a.download = item.fileName || 'Replay.rep';
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-    };
+    dlBtn.onclick = function() { downloadCloudReplayFile(item); };
     btnGroup.appendChild(dlBtn);
 
     wdAddUploadEdit(btnGroup, item, 'clan_replays');
@@ -5628,7 +5617,7 @@ function renderFirestoreReplays(cloudReplays) {
       adminBtn.innerText = '🗑️ REMOVE';
       adminBtn.onclick = function() {
         if (!confirm('Delete this replay from Firestore permanently?')) return;
-        firebase.firestore().collection('clan_replays').doc(item.id).delete()
+        wdDeleteArchiveFile('clan_replays', item.id)
           .catch(function(err) {
             alert('Delete failed: ' + (err && err.message ? err.message : err));
           });
@@ -6055,50 +6044,50 @@ function currentReplayUser() {
     : currentUser;
 }
 
-function publishReplayToFirestore(file, meta) {
-  return new Promise(function(resolve, reject) {
-    if (!file) {
-      reject(new Error('No file selected.'));
-      return;
-    }
-    if (file.size > 700 * 1024) {
-      reject(new Error('The file is too large for Firestore (about 700 KB maximum).'));
-      return;
-    }
-    if (typeof firebase === 'undefined' || !firebase.firestore) {
-      reject(new Error('Firestore is not available.'));
-      return;
-    }
-    var user = currentReplayUser();
-    if (!user || !user.email) {
-      reject(new Error('You must be signed in to save.'));
-      return;
-    }
+var WD_ARCHIVE_CHUNK_SIZE = 512 * 1024;
+var WD_ARCHIVE_MAX_BYTES = 5 * 1024 * 1024;
 
-    var reader = new FileReader();
-    reader.onload = function(e) {
-      var replayRecord = {
-        title: (meta && meta.title) || file.name,
-        players: (meta && meta.players) || 'White Dragon Match',
-        map: (meta && meta.map) || 'StarCraft Map',
-        matchTitle: (meta && meta.matchTitle) || '',
-        ...(meta && meta.matchId ? { matchId: meta.matchId } : {}),
-        mode: meta && ['1v1', '2v2'].includes(meta.mode) ? meta.mode : '',
-        fileName: file.name,
-        fileSize: (file.size / 1024).toFixed(1) + ' KB',
-        fileData: e.target.result,
-        date: new Date().toLocaleDateString(),
-        createdAt: Date.now(),
-        uploader: user.email
-      };
-      firebase.firestore().collection('clan_replays').add(replayRecord)
-        .then(resolve)
-        .catch(reject);
-    };
-    reader.onerror = function() {
-      reject(reader.error || new Error('The file could not be read.'));
-    };
-    reader.readAsDataURL(file);
+function wdArchiveChunkCount(item) {
+  if (!Number.isInteger(item.chunkCount) || !Number.isInteger(item.fileBytes) ||
+      item.fileBytes < 1 || item.fileBytes > WD_ARCHIVE_MAX_BYTES ||
+      item.chunkCount !== Math.ceil(item.fileBytes / WD_ARCHIVE_CHUNK_SIZE)) {
+    throw new Error('Invalid archive file information.');
+  }
+  return item.chunkCount;
+}
+
+async function wdSaveArchiveFile(collection, file, fields) {
+  if (!file || !file.size) throw new Error('Select a non-empty file.');
+  var user = currentReplayUser();
+  if (!user || !user.emailVerified || !isClanWriter(user)) throw new Error('Verified member access is required.');
+  if (file.size > WD_ARCHIVE_MAX_BYTES) throw new Error('Maximum file size is 5 MB.');
+  var db = firebase.firestore();
+  var ref = db.collection(collection).doc();
+  var record = Object.assign({}, fields, {
+    fileName: file.name, fileSize: (file.size / 1024).toFixed(1) + ' KB',
+    date: new Date().toLocaleDateString(), createdAt: Date.now(), uploader: user.email,
+    fileBytes: file.size, chunkCount: Math.ceil(file.size / WD_ARCHIVE_CHUNK_SIZE)
+  });
+  var bytes = new Uint8Array(await file.arrayBuffer());
+  var batch = db.batch();
+  batch.set(ref, record);
+  for (var index = 0; index < record.chunkCount; index++) {
+    var start = index * WD_ARCHIVE_CHUNK_SIZE;
+    var data = firebase.firestore.Blob.fromUint8Array(bytes.subarray(start, start + WD_ARCHIVE_CHUNK_SIZE));
+    batch.set(ref.collection('file_chunks').doc(String(index)), { index: index, data: data });
+  }
+  await batch.commit();
+}
+
+function publishReplayToFirestore(file, meta) {
+  meta = meta || {};
+  return wdSaveArchiveFile('clan_replays', file, {
+    title: meta.title || (file && file.name),
+    players: meta.players || 'White Dragon Match',
+    map: meta.map || 'StarCraft Map',
+    matchTitle: meta.matchTitle || '',
+    ...(meta.matchId ? { matchId: meta.matchId } : {}),
+    mode: ['1v1', '2v2'].includes(meta.mode) ? meta.mode : ''
   });
 }
 
@@ -6223,14 +6212,77 @@ function wdAddUploadEdit(parent, item, collection) {
   }));
 }
 
-function downloadCloudReplayFile(item) {
-  if (!item || !item.fileData) {
-    alert('No file data is stored for this replay.');
+async function wdLoadArchiveChunks(collection, item) {
+  var count = wdArchiveChunkCount(item);
+  var parts = firebase.firestore().collection(collection).doc(item.id).collection('file_chunks');
+  var chunks = await Promise.all(Array.from({ length: count }, async function(_, index) {
+    var doc = await parts.doc(String(index)).get();
+    var chunk = doc.exists && doc.data();
+    if (!chunk || chunk.index !== index || !chunk.data || typeof chunk.data.toUint8Array !== 'function') {
+      throw new Error('A file part is missing.');
+    }
+    var bytes = chunk.data.toUint8Array();
+    if (bytes.length !== Math.min(WD_ARCHIVE_CHUNK_SIZE, item.fileBytes - index * WD_ARCHIVE_CHUNK_SIZE)) {
+      throw new Error('A file part has an invalid size.');
+    }
+    return bytes;
+  }));
+  var url = URL.createObjectURL(new Blob(chunks, { type: 'application/octet-stream' }));
+  wdDownloadArchiveUrl(url, item.fileName);
+  setTimeout(function() { URL.revokeObjectURL(url); }, 30000);
+}
+
+function downloadCloudReplayFile(item, collection) {
+  if (item && item.chunkCount != null) {
+    wdLoadArchiveChunks(collection || 'clan_replays', item)
+      .catch(function(error) { alert('Download failed: ' + error.message); });
     return;
   }
+  if (item && item.storagePath) {
+    firebase.storage().ref(item.storagePath).getDownloadURL().then(function(url) {
+      wdDownloadArchiveUrl(url, item.fileName);
+    }).catch(function(error) { alert('Download failed: ' + error.message); });
+    return;
+  }
+  if (!item || !item.fileData) {
+    alert('No file data is stored for this upload.');
+    return;
+  }
+  wdDownloadArchiveUrl(item.fileData, item.fileName);
+}
+
+async function wdDeleteArchiveFile(collection, id) {
+  var db = firebase.firestore();
+  var ref = db.collection(collection).doc(id);
+  await db.runTransaction(async function(transaction) {
+    var snapshot = await transaction.get(ref);
+    if (!snapshot.exists) return;
+    var item = snapshot.data();
+    if (item.chunkCount != null) {
+      var count = wdArchiveChunkCount(item);
+      for (var index = 0; index < count; index++) {
+        transaction.delete(ref.collection('file_chunks').doc(String(index)));
+      }
+    }
+    transaction.delete(ref);
+    return item.storagePath;
+  }).then(async function(storagePath) {
+    if (!storagePath) return;
+    var path = storagePath.split('/');
+    if (path.length !== 4 || path[0] !== 'wd_archive' || path[1] !== collection || path[3] !== id) {
+      throw new Error('Archive entry removed, but the Storage path was invalid.');
+    }
+    try { await firebase.storage().ref(storagePath).delete(); }
+    catch (error) {
+      if (error.code !== 'storage/object-not-found') throw new Error('Archive entry removed, but Storage cleanup failed: ' + error.message);
+    }
+  });
+}
+
+function wdDownloadArchiveUrl(url, fileName) {
   var a = document.createElement('a');
-  a.href = item.fileData;
-  a.download = item.fileName || 'Replay.rep';
+  a.href = url;
+  a.download = fileName || 'Download';
   document.body.appendChild(a);
   a.click();
   document.body.removeChild(a);
@@ -6327,7 +6379,7 @@ function handleMatchReplayFile(event) {
       firebase.firestore().collection('clan_replays').where('matchId', '==', matchId).get().then(function(snapshot) {
         if (!view.content.contains(list) || !view.dialog.open) return;
         var replays = [];
-        snapshot.forEach(function(doc) { replays.push(doc.data()); });
+        snapshot.forEach(function(doc) { replays.push(Object.assign({}, doc.data(), { id: doc.id })); });
         replays.sort(function(a, b) { return replaySortTime(b) - replaySortTime(a); });
         view.status.textContent = replays.length ? '' : 'No replay linked to this match yet.';
         replays.forEach(function(item) {
@@ -6550,57 +6602,19 @@ function handleMatchReplayFile(event) {
     }
 
     function saveMapDownload() {
-      if (!ensureClanWriter("save files to the Clan Vault")) return;
+      if (!ensureClanWriter('save files to the Clan Vault')) return;
       var file = currentSelectedMapFile;
-      if (!file) {
-        alert('Please select a file first.');
-        return;
-      }
-      if (file.size > 700 * 1024) {
-        alert('The file is too large for Firestore (about 700 KB maximum).');
-        return;
-      }
-      var user = (typeof firebase !== 'undefined' && firebase.auth && firebase.auth().currentUser)
-        ? firebase.auth().currentUser
-        : currentUser;
-      if (!user || !user.email) {
-        alert('You must be signed in to save.');
-        return;
-      }
-      if (typeof firebase === 'undefined' || !firebase.firestore) {
-        alert('Firestore is not available.');
-        return;
-      }
-
-      var titleInp = document.getElementById('map-title-input');
-      var descInp = document.getElementById('map-desc-input');
-      var catSelect = document.getElementById('map-category-input');
-      var reader = new FileReader();
-      reader.onload = function(e) {
-        var downloadRecord = {
-          title: (titleInp && titleInp.value.trim()) || file.name,
-          desc: (descInp && descInp.value.trim()) || 'StarCraft Resource File',
-          category: (catSelect && catSelect.value) || 'Map Pack',
-          fileName: file.name,
-          fileSize: (file.size / 1024).toFixed(1) + ' KB',
-          fileData: e.target.result,
-          date: new Date().toLocaleDateString(),
-          createdAt: Date.now(),
-          uploader: user.email
-        };
-        firebase.firestore().collection('clan_vault').add(downloadRecord)
-          .then(function() {
-            cancelMapUpload();
-            alert('File saved to Firestore. Every device can see it now.');
-          })
-          .catch(function(err) {
-            alert('Upload failed: ' + (err && err.message ? err.message : err));
-          });
-      };
-      reader.onerror = function() {
-        alert('The file could not be read.');
-      };
-      reader.readAsDataURL(file);
+      if (!file) { alert('Please select a file first.'); return; }
+      wdSaveArchiveFile('clan_vault', file, {
+        title: document.getElementById('map-title-input').value.trim() || file.name,
+        desc: document.getElementById('map-desc-input').value.trim() || 'StarCraft Resource File',
+        category: document.getElementById('map-category-input').value || 'Map Pack'
+      }).then(function() {
+        cancelMapUpload();
+        alert('File saved to the Clan Vault.');
+      }).catch(function(error) {
+        alert('Upload failed: ' + error.message);
+      });
     }
 
     function filterDownloads(cat) {
@@ -6754,6 +6768,7 @@ async function renderUserMaps() {
         dlBtn.innerText = 'DOWNLOAD';
         (function(savedItem) {
           dlBtn.onclick = function() {
+            if (savedItem.storagePath || savedItem.chunkCount != null) { downloadCloudReplayFile(savedItem, 'clan_vault'); return; }
             if (savedItem.fileData) {
               var a = document.createElement('a');
               a.href = savedItem.fileData;
@@ -8341,7 +8356,8 @@ async function renderUserMaps() {
       
       // 1. Attempt to delete from Firebase
       if (typeof firebase !== 'undefined' && firebase.firestore) {
-        firebase.firestore().collection('clan_vault').doc(dlId).delete().catch(function() {});
+        try { await wdDeleteArchiveFile('clan_vault', dlId); }
+        catch (error) { alert('Delete failed: ' + error.message); return; }
       }
 
       // 2. Delete from IndexedDB
