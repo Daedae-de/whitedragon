@@ -5619,6 +5619,7 @@ function renderFirestoreReplays(cloudReplays) {
     };
     btnGroup.appendChild(dlBtn);
 
+    wdAddUploadEdit(btnGroup, item, 'clan_replays');
     var isOwner = email && item.uploader && item.uploader.toLowerCase() === email;
     if (canModerate || isOwner) {
       var adminBtn = document.createElement('button');
@@ -6081,6 +6082,7 @@ function publishReplayToFirestore(file, meta) {
         players: (meta && meta.players) || 'White Dragon Match',
         map: (meta && meta.map) || 'StarCraft Map',
         matchTitle: (meta && meta.matchTitle) || '',
+        ...(meta && meta.matchId ? { matchId: meta.matchId } : {}),
         mode: meta && ['1v1', '2v2'].includes(meta.mode) ? meta.mode : '',
         fileName: file.name,
         fileSize: (file.size / 1024).toFixed(1) + ' KB',
@@ -6121,12 +6123,104 @@ function saveReplay() {
   });
 }
 
-function replayBelongsToMatch(item, matchTitle) {
-  var needle = String(matchTitle || '').trim().toLowerCase();
-  if (!needle || !item) return false;
-  var linked = String(item.matchTitle || '').trim().toLowerCase();
-  var title = String(item.title || '').trim().toLowerCase();
-  return linked === needle || title === needle || title.indexOf(needle) !== -1;
+function wdFileEditorAccess(item) {
+  var user = currentReplayUser();
+  if (!user || !user.emailVerified || !user.email) return false;
+  return isStaffUser(user) || (isClanWriter(user) && item.uploader === user.email);
+}
+
+function wdOpenFileDialog(title) {
+  var dialog = document.getElementById('wd-file-dialog');
+  var content = document.getElementById('wd-file-content');
+  var status = document.getElementById('wd-file-status');
+  document.getElementById('wd-file-heading').textContent = title;
+  content.replaceChildren();
+  status.textContent = '';
+  if (!dialog.open) dialog.showModal();
+  return { dialog: dialog, content: content, status: status };
+}
+
+function wdFileButton(text, action) {
+  var button = document.createElement('button');
+  button.type = 'button';
+  button.className = 'btn-download-rep';
+  button.textContent = text;
+  button.onclick = action;
+  return button;
+}
+
+function wdAddUploadEdit(parent, item, collection) {
+  if (!wdFileEditorAccess(item)) return;
+  parent.appendChild(wdFileButton('EDIT', function() {
+    if (!wdFileEditorAccess(item)) return;
+    var replay = collection === 'clan_replays';
+    var view = wdOpenFileDialog(replay ? 'Edit replay' : 'Edit download');
+    var form = document.createElement('form');
+    view.content.appendChild(form);
+    function field(label, value, options) {
+      var wrap = document.createElement('label');
+      wrap.style.cssText = 'display:block;margin:10px 0';
+      wrap.textContent = label;
+      var input = document.createElement(options ? 'select' : 'input');
+      input.style.cssText = 'display:block;width:100%;box-sizing:border-box;background:#101e34;color:white;padding:7px';
+      if (options) options.forEach(function(option) { input.add(new Option(option[1], option[0])); });
+      input.value = value || '';
+      wrap.appendChild(input);
+      form.appendChild(wrap);
+      return input;
+    }
+    var title = field('Title', item.title);
+    title.required = true;
+    title.maxLength = 300;
+    var second = field(replay ? 'Players' : 'Description', replay ? item.players : item.desc);
+    var third = replay ? field('Map', item.map) : field('Category', item.category, ['Map Pack', 'Map', 'Software', 'Other'].map(function(value) { return [value, value]; }));
+    if (!replay && !third.value) third.value = 'Other';
+    var mode;
+    var match;
+    var fixtures = [];
+    if (replay) {
+      mode = field('Format', item.mode, [['', 'Unknown'], ['1v1', '1v1'], ['2v2', '2v2']]);
+      fixtures = firestoreMatches.filter(function(record) { return record && record.id; });
+      var options = [['', 'No match linked']];
+      fixtures.forEach(function(record) {
+        options.push([String(record.id), [record.week || 'Date unknown', record.title || 'Untitled match', record.id].join(' · ')]);
+      });
+      if (item.matchId && !fixtures.some(function(record) { return String(record.id) === item.matchId; })) {
+        options.push([item.matchId, 'Current match · ' + item.matchId]);
+      }
+      match = field('Linked match', item.matchId, options);
+      if (!item.matchId && item.matchTitle) {
+        var hint = document.createElement('p');
+        hint.textContent = 'Previous title: ' + item.matchTitle + '. Select the match by date to link this replay.';
+        form.appendChild(hint);
+      }
+    }
+    var save = wdFileButton('SAVE', null);
+    save.type = 'submit';
+    form.appendChild(save);
+    form.onsubmit = function(event) {
+      event.preventDefault();
+      if (save.disabled || !wdFileEditorAccess(item)) return;
+      var cleanTitle = title.value.trim();
+      if (!cleanTitle) { view.status.textContent = 'Enter a title.'; return; }
+      var update = replay
+        ? { title: cleanTitle, players: second.value.trim(), map: third.value.trim(), mode: mode.value }
+        : { title: cleanTitle, desc: second.value.trim(), category: third.value };
+      if (replay && match.value !== (item.matchId || '')) {
+        var fixture = fixtures.find(function(record) { return String(record.id) === match.value; });
+        update.matchId = match.value;
+        update.matchTitle = fixture ? fixture.title || '' : '';
+      }
+      save.disabled = true;
+      view.status.textContent = 'Saving…';
+      firebase.firestore().collection(collection).doc(item.id).update(update).then(function() {
+        if (view.content.contains(form)) view.dialog.close();
+      }).catch(function(error) {
+        if (view.content.contains(form)) view.status.textContent = 'Could not save: ' + error.message;
+        save.disabled = false;
+      });
+    };
+  }));
 }
 
 function downloadCloudReplayFile(item) {
@@ -6165,7 +6259,7 @@ function handleMatchReplayFile(event) {
   if (!ensureClanWriter("save replays")) return;
 
   publishReplayToFirestore(file, meta).then(function() {
-    alert('Replay for "' + meta.matchTitle + '" was saved to Firestore.');
+    if (meta.refresh) meta.refresh();
   }).catch(function(err) {
     alert('Save failed: ' + (err && err.message ? err.message : err));
   });
@@ -6206,42 +6300,46 @@ function handleMatchReplayFile(event) {
 
     var pendingMatchReplayUpload = null;
 
-    function downloadMatchReplay(matchTitle, matchDate, matchNote) {
-      if (!ensureVerifiedAccess("download match replays")) return;
-      var title = String(matchTitle || '').trim();
+    function openMatchReplays(match) {
+      if (!ensureVerifiedAccess('view match replays')) return;
       if (typeof firebase === 'undefined' || !firebase.firestore) {
         alert('Firestore is not available.');
         return;
       }
-
-      firebase.firestore().collection('clan_replays').get().then(function(snapshot) {
-        var found = null;
-        snapshot.forEach(function(doc) {
-          var item = doc.data();
-          item.id = doc.id;
-          if (!replayBelongsToMatch(item, title)) return;
-          if (!found || replaySortTime(item) > replaySortTime(found)) found = item;
-        });
-        if (found && found.fileData) {
-          downloadCloudReplayFile(found);
-          return;
-        }
-        offerMatchReplayUpload(title, matchDate, matchNote);
-      }).catch(function(err) {
-        alert('Replay search failed: ' + (err && err.message ? err.message : err));
-      });
-
-      function offerMatchReplayUpload(title, matchDate, matchNote) {
-        var msg = 'No Firestore replay is linked to "' + title + '" yet.\n\nUpload one now?';
-        if (!confirm(msg)) return;
-        pendingMatchReplayUpload = {
-          title: title,
-          players: matchDate || 'White Dragon Match',
-          map: matchNote || 'StarCraft Map',
-          matchTitle: title
-        };
-        getMatchReplayInput().click();
+      var matchId = String(match.id || '');
+      if (!matchId) return;
+      var view = wdOpenFileDialog(match.title || 'Match replays');
+      var header = document.createElement('p');
+      header.textContent = match.week || 'Date unknown';
+      view.content.appendChild(header);
+      if (isClanWriter(currentReplayUser()) && firestoreMatches.some(function(record) { return String(record.id) === matchId; })) {
+        view.content.appendChild(wdFileButton('UPLOAD REPLAY', function() {
+          if (!ensureClanWriter('save replays')) return;
+          pendingMatchReplayUpload = { title: match.title, matchTitle: match.title, matchId: matchId, refresh: function() {
+            if (view.dialog.open && view.content.contains(header)) openMatchReplays(match);
+          } };
+          getMatchReplayInput().click();
+        }));
       }
+      var list = document.createElement('ul');
+      view.content.appendChild(list);
+      view.status.textContent = 'Loading match replays…';
+      firebase.firestore().collection('clan_replays').where('matchId', '==', matchId).get().then(function(snapshot) {
+        if (!view.content.contains(list) || !view.dialog.open) return;
+        var replays = [];
+        snapshot.forEach(function(doc) { replays.push(doc.data()); });
+        replays.sort(function(a, b) { return replaySortTime(b) - replaySortTime(a); });
+        view.status.textContent = replays.length ? '' : 'No replay linked to this match yet.';
+        replays.forEach(function(item) {
+          var row = document.createElement('li');
+          row.appendChild(wdFileButton(item.title || item.fileName || 'Download replay', function() {
+            if (ensureVerifiedAccess('download match replays')) downloadCloudReplayFile(item);
+          }));
+          list.appendChild(row);
+        });
+      }).catch(function(error) {
+        if (view.content.contains(list)) view.status.textContent = 'Could not load match replays: ' + error.message;
+      });
     }
 
     async function renderUserReplays() {
@@ -6669,6 +6767,8 @@ async function renderUserMaps() {
           };
         })(item);
         btnGroup.appendChild(dlBtn);
+
+        if (vaultUsesCloud) wdAddUploadEdit(btnGroup, item, 'clan_vault');
 
         // Add remove button for admins/webmasters
         if (canModerate) {
@@ -7700,6 +7800,8 @@ async function renderUserMaps() {
       else document.body.classList.remove('is-webmaster');
 
       if (user) updateProfileUI(user);
+      if (cloudReplayCache.length) renderFirestoreReplays(cloudReplayCache);
+      if (cloudVaultCache.length) renderUserMaps();
       if (typeof renderMatches === 'function') renderMatches();
       if (typeof renderRosterTableAndTiers === 'function') renderRosterTableAndTiers();
     }
@@ -8089,6 +8191,7 @@ async function renderUserMaps() {
       var usersPanel = document.getElementById('webmaster-users-panel');
       if (usersPanel) usersPanel.style.display = 'none';
       stopProfileWatchers();
+      if (cloudVaultCache.length) renderUserMaps();
       wdClearConsoleAccounts();
       wdRefreshActivityAccess();
       wdRefreshWebmasterConsole();
@@ -9300,7 +9403,7 @@ async function renderUserMaps() {
         var replayButton = card.querySelector('[data-match-action="replay"]');
         if (replayButton) {
           replayButton.addEventListener('click', function() {
-            downloadMatchReplay(displayTitle, displayDate, displayNote);
+            openMatchReplays(m);
           });
         }
 
@@ -11384,5 +11487,11 @@ async function renderUserMaps() {
  render();
 })();
 </script>
+<dialog id="wd-file-dialog" aria-labelledby="wd-file-heading" style="width:min(460px,90vw);max-height:85vh;background:#0b1627;color:#e2eefb;border:1px solid #42647e;border-radius:10px;padding:18px">
+  <h2 id="wd-file-heading"></h2>
+  <div id="wd-file-content"></div>
+  <p id="wd-file-status" role="status"></p>
+  <button type="button" class="btn-download-rep" onclick="document.getElementById('wd-file-dialog').close()">Close</button>
+</dialog>
 </body>
 </html>
