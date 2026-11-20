@@ -12,7 +12,7 @@ function winterRefreshNextMatch() {
     return (left ? left.getTime() : Infinity) - (right ? right.getTime() : Infinity);
   })[0];
   var crest = document.createElement('img');
-  crest.src = 'clan-logo.png';
+  crest.src = 'christmas-logo.jpg';
   crest.alt = 'White Dragon';
   container.appendChild(crest);
   var name = document.createElement('strong');
