@@ -1,0 +1,16 @@
+.wd-race-icon{display:inline-block!important;vertical-align:middle;width:28px!important;height:28px!important;min-width:28px;flex:0 0 28px;padding:0!important;border:0!important;border-radius:0!important;background-color:transparent!important;background-image:url('race-icons.png')!important;background-size:300% 100%!important;background-repeat:no-repeat!important;box-shadow:none!important}
+.wd-race-icon-terran{background-position:0 50%!important}.wd-race-icon-zerg{background-position:50% 50%!important}.wd-race-icon-protoss{background-position:100% 50%!important}
+.wd-race-icon-random,.wd-race-icon-unknown{background-image:url('race-random.svg')!important;background-size:contain!important;background-position:center!important}.wd-race-icon-ums{background-image:url('race-ums.svg')!important;background-size:contain!important;background-position:center!important}
+.wd-match-race-pair{display:inline-flex;gap:3px;align-items:center;vertical-align:middle}.wd-match-race-pair .wd-race-icon{width:22px!important;height:22px!important;min-width:22px;flex-basis:22px}
+.shieldbattery-banner .shieldbattery-emblem{width:34px!important;height:34px!important;min-width:34px!important;flex:0 0 34px!important;padding:0!important;border:0!important;border-radius:0!important;background:none!important;display:flex!important;align-items:center;justify-content:center;overflow:visible}
+.shieldbattery-banner .shieldbattery-emblem img,.shieldbattery-banner .shieldbattery-emblem svg{width:30px!important;height:30px!important;min-width:0!important;border-radius:0!important;object-fit:contain;margin:0!important;transform:none!important}
+.league-partner.shieldbattery-banner{display:flex;align-items:center;justify-content:flex-start;gap:10px}.shieldbattery-banner>div{min-width:0;flex:1}
+.winter-join .winter-panel-body{display:flex;flex-direction:column;gap:16px;padding:18px;height:auto}
+.winter-join p{margin:0;font-size:.88rem;line-height:1.65;max-width:58ch;text-wrap:pretty}
+.winter-join .winter-panel-body>p:nth-child(2){background:#f1f4f4;padding:12px;border-radius:6px;font-size:.83rem}
+.winter-join .winter-panel-body>button{width:100%;min-height:44px;margin:0}
+.clan-discord-contacts{display:grid!important;grid-template-columns:minmax(0,1fr)!important;gap:8px;width:100%}
+.clan-contact-label{grid-column:auto;margin-bottom:1px;font-size:.75rem}
+.winter-primary.clan-contact{width:100%;display:flex;justify-content:space-between;align-items:center;padding:11px 13px;font-size:.84rem;min-height:44px;overflow-wrap:normal;word-break:normal;white-space:nowrap}
+.clan-contact>span:first-child{min-width:0}.clan-contact>span:last-child{flex-shrink:0}
+@media(max-width:760px){.winter-join .winter-panel-body{padding:14px;gap:14px}}
