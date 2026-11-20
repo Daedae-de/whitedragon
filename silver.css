@@ -1,0 +1,16 @@
+/* Silver and graphite accents, using the supplied clan artwork. */
+:root{--cyan:#425b6b;--cyan-glow:rgba(83,119,140,.12);--ui-accent:#425b6b}
+.winter-banner.silver-banner{height:auto!important;min-height:0!important;padding:0!important;aspect-ratio:5.2/1;background:#e7edf0;border-radius:7px;overflow:hidden}
+.silver-banner>img{display:block;width:100%;height:100%;object-fit:cover;object-position:center bottom}
+.silver-banner::after{display:none!important;animation:none!important}
+.winter-primary,.winter-tools #winter-register{background:linear-gradient(180deg,#fafcfc,#dfe6e9)!important;color:#293e4c!important;border:1px solid #aebdc6!important;box-shadow:inset 0 1px 0 #fff;text-shadow:none}
+.winter-primary:hover,.winter-tools #winter-register:hover{background:linear-gradient(180deg,#edf3f5,#d3dfe5)!important;border-color:#7f9aaa!important;color:#172f3f!important}
+.winter-primary:active{background:#d3dfe5!important}
+.winter-panel::before{background:linear-gradient(90deg,#98b6c6,#d5e1e7)}
+.clan-discord-contacts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:2px}
+.clan-contact-label{grid-column:1/-1;font:500 .76rem/1.5 Inter,Arial,sans-serif;color:#607384;margin-bottom:2px}
+.winter-primary.clan-contact{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:10px;font-size:.77rem;min-width:0;overflow-wrap:anywhere}
+header .nav-links .nav-tab-btn.active{background:linear-gradient(90deg,#dde7ec,#edf2f4);border-left-color:#607e90;color:#2e4a5c}
+header .crest-nav-img{object-fit:contain;background:transparent}
+@media(max-width:1180px){.clan-discord-contacts{grid-template-columns:1fr}.clan-contact-label{grid-column:auto}}
+@media(max-width:760px){.winter-banner.silver-banner{aspect-ratio:5/1;min-height:0!important;border-radius:5px}.silver-banner>img{object-fit:cover}.clan-discord-contacts{grid-template-columns:1fr}.winter-primary.clan-contact{min-height:44px;font-size:.84rem}}
