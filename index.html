@@ -2424,6 +2424,7 @@ header .brand-title { font-size:1.25rem; }
 <link rel="stylesheet" href="icons.css?v=1">
 <link rel="stylesheet" href="christmas.css?v=1">
 <style>.bwcl-clan-cell{vertical-align:middle}.bwcl-clan-logo{width:40px;height:40px;object-fit:contain;display:inline-block;vertical-align:middle;margin-right:10px;flex-shrink:0}.bwcl-clan-logo[hidden]{display:none}.bwcl-clan-cell strong{vertical-align:middle}@media(max-width:760px){.bwcl-clan-logo{width:32px;height:32px;margin-right:8px}}</style>
+<link rel="stylesheet" href="polished.css?v=1">
 </head>
 <body>
   <!-- White Dragon rank insignia: self-contained SVG symbols, no extra assets. -->
@@ -2476,7 +2477,7 @@ header .brand-title { font-size:1.25rem; }
   <!-- ==================== 1. OVERVIEW TAB ==================== -->
   <section id="tab-overview" class="section-wrap winter-overview active-tab">
     <div class="winter-top-grid">
-      <section class="winter-panel winter-calendar" aria-labelledby="winter-calendar-heading"><h2 id="winter-calendar-heading">Calendar</h2>
+      <section class="winter-panel winter-calendar" aria-labelledby="winter-calendar-heading"><h2 id="winter-calendar-heading"><svg class="panel-heading-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5h14v16H5z M8 2v6M16 2v6M5 10h14 M8 14h2M14 14h2M8 18h2"/></svg>Calendar</h2>
         <div class="winter-calendar-inner">
           <div class="wd-calendar" id="wd-calendar"><div class="wd-cal-board">
             <div class="wd-cal-nav"><button type="button" onclick="shiftClanCalendar(-1)" aria-label="Previous month">‹</button><strong id="wd-cal-title">Calendar</strong><button type="button" onclick="shiftClanCalendar(1)" aria-label="Next month">›</button></div>
@@ -2486,12 +2487,12 @@ header .brand-title { font-size:1.25rem; }
           <div class="winter-agenda"><h3 id="winter-agenda-title">Upcoming events</h3><div id="winter-agenda-list"></div></div>
         </div>
       </section>
-      <section class="winter-panel winter-match" aria-labelledby="winter-match-heading"><h2 id="winter-match-heading">Next Match</h2><div id="winter-next-content" class="winter-next"></div></section>
+      <section class="winter-panel winter-match" aria-labelledby="winter-match-heading"><h2 id="winter-match-heading"><svg class="panel-heading-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 3l16 17M20 3L4 20M3 16l5 5M16 3l5 5"/></svg>Next Match</h2><div id="winter-next-content" class="winter-next"></div></section>
     </div>
     <div class="winter-bottom-grid">
-      <section class="winter-panel winter-news" aria-labelledby="winter-news-heading"><div class="winter-heading"><h2 id="winter-news-heading">Latest News</h2><button type="button" onclick="switchTab('community')">All news →</button></div><div id="latest-transmission-card"><p class="winter-empty">Loading clan news…</p></div></section>
-      <section class="winter-panel winter-ranking" aria-labelledby="winter-ranking-heading"><div class="winter-heading"><h2 id="winter-ranking-heading">Member Ranking</h2><button type="button" onclick="openWdFullRanking()">View all →</button></div><div id="overview-points-ranking-list"><p class="winter-empty">Loading member ranking…</p></div></section>
-      <section class="winter-panel winter-join" aria-labelledby="winter-join-heading"><h2 id="winter-join-heading">Join the Clan</h2><div class="winter-panel-body"><p>Play StarCraft: Remastered with a friendly community. Practice together, share replays and compete in clan matches.</p><p>Find us on <strong>US West</strong> in channel <strong>Op White-Dragon</strong>.</p><button class="winter-primary" type="button" onclick="copyJoinInfo()">Copy joining details</button><div class="clan-discord-contacts" aria-label="Discord recruitment contacts"><span class="clan-contact-label">Contact us on Discord</span><a class="winter-primary clan-contact" href="https://discord.com/users/839360695992844298" target="_blank" rel="noopener noreferrer"><span>LunarPop</span><span aria-hidden="true">↗</span></a><a class="winter-primary clan-contact" href="https://discord.com/users/1363731179454468136" target="_blank" rel="noopener noreferrer"><span>zz</span><span aria-hidden="true">↗</span></a><a class="winter-primary clan-contact" href="https://discord.com/users/492046348946898946" target="_blank" rel="noopener noreferrer"><span>Cheesecake</span><span aria-hidden="true">↗</span></a></div></div></section>
+      <section class="winter-panel winter-news" aria-labelledby="winter-news-heading"><div class="winter-heading"><h2 id="winter-news-heading"><svg class="panel-heading-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 4h18v16H3zM6 8h4v5H6zM13 8h5M13 11h5M6 16h12"/></svg>Latest News</h2><button type="button" onclick="switchTab('community')">All news →</button></div><div id="latest-transmission-card"><p class="winter-empty">Loading clan news…</p></div></section>
+      <section class="winter-panel winter-ranking" aria-labelledby="winter-ranking-heading"><div class="winter-heading"><h2 id="winter-ranking-heading"><svg class="panel-heading-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 21V12h4v9M10 21V7h4v14M17 21V3h4v18"/></svg>Member Ranking</h2><button type="button" onclick="openWdFullRanking()">View all →</button></div><div id="overview-points-ranking-list"><p class="winter-empty">Loading member ranking…</p></div></section>
+      <section class="winter-panel winter-join" aria-labelledby="winter-join-heading"><h2 id="winter-join-heading"><svg class="panel-heading-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8ZM2 21v-4c0-3 12-3 12 0v4M18 9v10M13 14h10"/></svg>Join the Clan</h2><div class="winter-panel-body"><p class="join-intro">Be part of White Dragon Clan!</p><p>Play StarCraft: Remastered with a friendly community. Practice together, share replays and compete in clan matches.</p><button class="winter-primary" type="button" id="clan-apply-open" aria-haspopup="dialog" aria-controls="clan-apply-dialog">APPLY NOW →</button></div></section>
     </div>
   </section>
 
@@ -11636,6 +11637,8 @@ async function renderUserMaps() {
 
 
 <script src="winter.js?v=christmas1"></script>
+<dialog class="clan-apply-dialog" id="clan-apply-dialog" aria-labelledby="clan-apply-title"><div class="clan-apply-heading"><h2 id="clan-apply-title">Join White Dragon Clan</h2><button class="clan-apply-close" id="clan-apply-close" type="button" aria-label="Close joining information" autofocus>×</button></div><div class="clan-apply-body"><p>Meet us in our Battle.net channel or contact a clan representative on Discord.</p><dl class="clan-channel"><dt>Gateway</dt><dd>US West</dd><dt>Channel</dt><dd>Op White-Dragon</dd></dl><button type="button" class="winter-primary" onclick="copyJoinInfo()">Copy joining details</button><div class="clan-discord-contacts" aria-label="Discord recruitment contacts"><span class="clan-contact-label">Contact us on Discord</span><a class="winter-primary clan-contact" href="https://discord.com/users/839360695992844298" target="_blank" rel="noopener noreferrer"><span>LunarPop</span><span aria-hidden="true">↗</span></a><a class="winter-primary clan-contact" href="https://discord.com/users/1363731179454468136" target="_blank" rel="noopener noreferrer"><span>zz</span><span aria-hidden="true">↗</span></a><a class="winter-primary clan-contact" href="https://discord.com/users/492046348946898946" target="_blank" rel="noopener noreferrer"><span>Cheesecake</span><span aria-hidden="true">↗</span></a></div></div></dialog>
+<script src="apply-dialog.js?v=1"></script>
 </body>
 </html>
 

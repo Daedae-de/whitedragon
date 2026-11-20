@@ -1,9 +1,11 @@
-WHITE DRAGON CHRISTMAS - BWCL CLAN LOGOS
+WHITE DRAGON CHRISTMAS - POLISHED OVERVIEW
 
-Upload all package contents, including clan-icons, to the website root and replace previous files. Refresh with Ctrl+F5.
+Upload all files/folders in this package together to the website directory. Replace previous files and refresh with Ctrl+F5.
 
-BWCL standings now show locally stored logos for SAS, dB)-3, CwT)-3 and RED-3 from https://bwcl.anicolasmoreno.chatgpt.site/. Shadow-2 has no logo in that source; its name remains visible. WD always uses the current Santa-hat logo. Live standings and initial fallback rows share the same mapping. The legacy logo.jpg and social preview image reference are updated too.
+Stronger warm metallic card frames, graphite buttons, heading icons, equal-height cards per desktop row, full-width desktop Rudolph-dragon banner. Mobile cards remain stacked with natural heights.
 
-Existing Christmas background, Rudolph-dragon banner, rank visibility, three Discord contacts and application features retained. No new Firestore writes or migration.
+Apply Now opens a separate modal window containing US West / Op White-Dragon, the original three Discord contacts and Copy joining details. Escape and focus management use the browser native dialog behavior. Dialog also closes using its close button or clicking outside.
 
-JavaScript syntax, logo aliases and actual downloaded image files verified. Visual browser testing unavailable.
+Existing Firebase, BWCL sync, clan logos, race icons, webmaster tools and remaining application functions retained. No database migration or additional database writes.
+
+Checked JavaScript syntax, local assets, three contact IDs and dialog open/close/backdrop/focus behavior using a simulated document. Visual layout and native keyboard behavior still need browser verification.
