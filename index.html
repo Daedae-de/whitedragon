@@ -2420,7 +2420,8 @@ header .brand-title { font-size:1.25rem; }
 
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="calm.css?v=silver1">
-<link rel="stylesheet" href="silver.css?v=1">
+<link rel="stylesheet" href="silver.css?v=icons1">
+<link rel="stylesheet" href="icons.css?v=1">
 </head>
 <body>
   <!-- White Dragon rank insignia: self-contained SVG symbols, no extra assets. -->
@@ -2488,7 +2489,7 @@ header .brand-title { font-size:1.25rem; }
     <div class="winter-bottom-grid">
       <section class="winter-panel winter-news" aria-labelledby="winter-news-heading"><div class="winter-heading"><h2 id="winter-news-heading">Latest News</h2><button type="button" onclick="switchTab('community')">All news →</button></div><div id="latest-transmission-card"><p class="winter-empty">Loading clan news…</p></div></section>
       <section class="winter-panel winter-ranking" aria-labelledby="winter-ranking-heading"><div class="winter-heading"><h2 id="winter-ranking-heading">Member Ranking</h2><button type="button" onclick="openWdFullRanking()">View all →</button></div><div id="overview-points-ranking-list"><p class="winter-empty">Loading member ranking…</p></div></section>
-      <section class="winter-panel winter-join" aria-labelledby="winter-join-heading"><h2 id="winter-join-heading">Join the Clan</h2><div class="winter-panel-body"><p>Play StarCraft: Remastered with a friendly community. Practice together, share replays and compete in clan matches.</p><p>Find us on <strong>US West</strong> in channel <strong>Op White-Dragon</strong>.</p><button class="winter-primary" type="button" onclick="copyJoinInfo()">Copy joining details</button><div class="clan-discord-contacts" aria-label="Discord recruitment contacts"><span class="clan-contact-label">Contact us on Discord</span><a class="winter-primary clan-contact" href="https://discord.com/users/613283502103986206" target="_blank" rel="noopener noreferrer"><span>Death~Orb</span><span aria-hidden="true">↗</span></a><a class="winter-primary clan-contact" href="https://discord.com/users/1136800479461003304" target="_blank" rel="noopener noreferrer"><span>RobFATKraft</span><span aria-hidden="true">↗</span></a><a class="winter-primary clan-contact" href="https://discord.com/users/492046348946898946" target="_blank" rel="noopener noreferrer"><span>Cheesecake</span><span aria-hidden="true">↗</span></a></div></div></section>
+      <section class="winter-panel winter-join" aria-labelledby="winter-join-heading"><h2 id="winter-join-heading">Join the Clan</h2><div class="winter-panel-body"><p>Play StarCraft: Remastered with a friendly community. Practice together, share replays and compete in clan matches.</p><p>Find us on <strong>US West</strong> in channel <strong>Op White-Dragon</strong>.</p><button class="winter-primary" type="button" onclick="copyJoinInfo()">Copy joining details</button><div class="clan-discord-contacts" aria-label="Discord recruitment contacts"><span class="clan-contact-label">Contact us on Discord</span><a class="winter-primary clan-contact" href="https://discord.com/users/839360695992844298" target="_blank" rel="noopener noreferrer"><span>LunarPop</span><span aria-hidden="true">↗</span></a><a class="winter-primary clan-contact" href="https://discord.com/users/1363731179454468136" target="_blank" rel="noopener noreferrer"><span>zz</span><span aria-hidden="true">↗</span></a><a class="winter-primary clan-contact" href="https://discord.com/users/492046348946898946" target="_blank" rel="noopener noreferrer"><span>Cheesecake</span><span aria-hidden="true">↗</span></a></div></div></section>
     </div>
   </section>
 
@@ -3429,7 +3430,7 @@ header .brand-title { font-size:1.25rem; }
             </div>
           </div>
           <div id="m-race-badge">
-            <span class="race-badge race-terran">Terran</span>
+            <span class="wd-race-icon wd-race-icon-terran" role="img" title="Terran" aria-label="Terran"></span>
           </div>
         </div>
 
@@ -3446,7 +3447,7 @@ header .brand-title { font-size:1.25rem; }
           </div>
           <div class="info-box">
             <div class="info-box-label">Preferred Race</div>
-            <div class="info-box-value" id="m-race-text">Terran</div>
+            <div class="info-box-value" id="m-race-text"><span class="wd-race-icon wd-race-icon-terran" role="img" aria-label="Terran" title="Terran"></span></div>
           </div>
           <div class="info-box">
             <div class="info-box-label">Status</div>
@@ -4917,13 +4918,11 @@ header .brand-title { font-size:1.25rem; }
 
 
     function getRaceBadgeHtml(race) {
-      var value = String(race || 'Random');
-      var key = value.toLowerCase().replace(/[^a-z]/g, '');
-      var allowed = ['terran', 'protoss', 'zerg', 'random', 'ums'];
-      if (allowed.indexOf(key) < 0) key = 'random';
-      return '<span class="race-badge race-' + key + '">' +
-        value.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;') +
-        '</span>';
+      var keys = {t:'terran',terran:'terran',p:'protoss',protoss:'protoss',z:'zerg',zerg:'zerg',r:'random',random:'random',ums:'ums'};
+      var key = keys[String(race || '').trim().toLowerCase()] || 'unknown';
+      var labels = {terran:'Terran',protoss:'Protoss',zerg:'Zerg',random:'Random',ums:'Use Map Settings',unknown:'Unknown race'};
+      var label = labels[key];
+      return '<span class="wd-race-icon wd-race-icon-' + key + '" role="img" title="' + label + '" aria-label="' + label + '"></span>';
     }
 
     function getMemberFlag(member) {
@@ -5765,7 +5764,7 @@ function renderFirestoreReplays(cloudReplays) {
         '<span class="wd-rank-label">' + wdCurrentRank[0] + '</span>';
       var squadKey = memberSquadKey(p.id);
       document.getElementById('m-team').innerHTML = squadCrestHtml(squadKey) + '<span>' + (squadKey || 'Unassigned') + '</span>';
-      document.getElementById('m-race-text').innerText = p.race;
+      document.getElementById('m-race-text').innerHTML = getRaceBadgeHtml(p.race);
       document.getElementById('m-country-name').innerText = p.country;
       document.getElementById('m-flag').innerHTML = getMemberFlag(p);
 
@@ -6000,8 +5999,8 @@ function renderFirestoreReplays(cloudReplays) {
       var text = 'White Dragon [WD] Clan Tryouts:' + nl +
         '- Battle.net Gateway: US West' + nl +
         '- Channel: Op White-Dragon' + nl +
-        '- Admin Death~Orb: https://discord.com/users/613283502103986206' + nl +
-        '- Admin RobFATKraft: https://discord.com/users/1136800479461003304' + nl +
+        '- LunarPop: https://discord.com/users/839360695992844298' + nl +
+        '- zz: https://discord.com/users/1363731179454468136' + nl +
         '- Cheesecake[WD]: https://discord.com/users/492046348946898946';
       if (navigator.clipboard && navigator.clipboard.writeText) {
         navigator.clipboard.writeText(text).then(function() {
@@ -8957,10 +8956,7 @@ async function renderUserMaps() {
       var wdRaceLabels = { P: 'Protoss', T: 'Terran', Z: 'Zerg', R: 'Random' };
       var wdRaceClasses = { P: 'race-protoss', T: 'race-terran', Z: 'race-zerg', R: 'race-random' };
       function wdMatchRaceBadge(letter) {
-        var raceName = wdRaceLabels[letter];
-        if (!raceName) return letter;
-        return '<span class="race-badge wd-match-race-letter ' + wdRaceClasses[letter] +
-          '" title="' + raceName + '" aria-label="' + raceName + '">' + letter + '</span>';
+        return getRaceBadgeHtml(wdRaceLabels[letter] || letter);
       }
       // Firestore historical set strings may contain regular brackets or HTML-encoded brackets.
       textPart = textPart.replace(/(?:\[|&#0*91;|&#x0*5b;|&lbrack;)(\s*[PTZR](?:\s*\/\s*[PTZR]|\s*[PTZR])?\s*)(?:\]|&#0*93;|&#x0*5d;|&rbrack;)|\((\s*[PTZR](?:\s*\/\s*[PTZR]|\s*[PTZR])?\s*)\)/gi,
@@ -10689,7 +10685,7 @@ async function renderUserMaps() {
           badge.title = member.race;
           badge.setAttribute('aria-label', member.race);
           badge.setAttribute('role', 'img');
-        } else badge.textContent = member.race || 'Random';
+        } else { badge.className = 'wd-race-icon wd-race-icon-' + (race === 'ums' ? 'ums' : 'random'); badge.style.cssText = ''; badge.setAttribute('role', 'img'); badge.setAttribute('aria-label', member.race || 'Random'); badge.title = member.race || 'Random'; }
         identity.appendChild(badge);
 
         var score = document.createElement('span');
@@ -11236,7 +11232,7 @@ async function renderUserMaps() {
         pill.innerHTML =
           getWDRankMarkHtml(p.rank) +
           '<span class="tag">' + pillAvatar + escapeMatchHtml(p.name) + '</span>' +
-          '<span class="pill-race" style="color:' + raceColor + '">' + raceTag + '</span>' +
+          getRaceBadgeHtml(p.race) +
           delBtnHtml;
 
         var pillRemoveButton = pill.querySelector('.wd-pill-remove');
