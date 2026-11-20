@@ -1,0 +1,58 @@
+/* Calm ivory interface. Presentation only; data and permissions stay in the application. */
+:root{--winter-sidebar:clamp(192px,12vw,252px);--ui-ink:#263747;--ui-muted:#607384;--ui-line:#d9e1e5;--ui-accent:#347fa2}
+html{scroll-behavior:auto}body{background:#f5f5f0!important;color:var(--ui-ink);font-family:Inter,Arial,sans-serif;line-height:1.55}
+*,*::before,*::after{box-sizing:border-box}
+.hero-banner,.section-wrap,footer,.winter-topbar{width:100%!important;max-width:none!important;margin-left:0!important;margin-right:0!important;padding-left:clamp(16px,1.8vw,52px)!important;padding-right:clamp(16px,1.8vw,52px)!important}
+.section-wrap{padding-top:22px!important;margin-top:0!important;margin-bottom:28px!important;min-width:0}
+.section-wrap.active-tab{animation:none!important}
+header{background:linear-gradient(155deg,#fffefb,#edf1f2)!important;border-right-color:var(--ui-line)!important;box-shadow:none!important}
+header .nav-container{gap:12px;padding:18px 12px;overflow-y:auto}
+header .nav-links .nav-tab-btn{border-bottom-color:transparent;border-radius:7px;font:500 .9rem/1.4 Inter,Arial,sans-serif;letter-spacing:0;min-height:44px;padding:11px 12px}
+header .nav-links .nav-tab-btn.active{background:#e0edf2;color:#245d79;box-shadow:none}
+header .nav-links .nav-tab-btn:hover{background:#eaf1f3}
+.winter-topbar{border-bottom-color:var(--ui-line);gap:20px;min-height:52px}
+.winter-topbar>span{margin-right:auto}.winter-topbar .world-clocks-hud{font-size:.76rem}
+.winter-banner{border-color:#d3dfe4;border-radius:10px;height:clamp(170px,12vw,270px);box-shadow:none}
+.winter-banner h1{font-family:'Barlow Semi Condensed',Arial,sans-serif!important;font-weight:600!important;letter-spacing:.005em;font-size:clamp(1.7rem,2.7vw,4.5rem)}
+.section-head{align-items:center;border-bottom-color:var(--ui-line);padding-bottom:16px;margin-bottom:20px;gap:12px}
+.section-head h2,.winter-panel>h2,.winter-heading h2,.winter-agenda h3{font-family:'Barlow Semi Condensed',Arial,sans-serif!important;font-weight:600!important;letter-spacing:.015em!important;line-height:1.2}
+.section-head h2{font-size:clamp(1.6rem,1.7vw,2.2rem);margin-bottom:7px;text-transform:none}
+.section-subtitle{font:400 .9rem/1.6 Inter,Arial,sans-serif;letter-spacing:0;color:var(--ui-muted);max-width:80ch}
+button,input,select,textarea{font-family:Inter,Arial,sans-serif!important}
+button,a,input,select,textarea{touch-action:manipulation}
+button,.nav-tab-btn,.winter-primary,.btn-download-rep{transition:background-color 160ms ease,border-color 160ms ease,color 160ms ease,box-shadow 160ms ease!important}
+button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid #3483a6;outline-offset:3px}
+.winter-primary,.winter-tools button{border-radius:7px;min-height:42px;box-shadow:none;text-shadow:none}
+.winter-primary{background:#287b9f;border-color:#287b9f}.winter-primary:hover{background:#216985}
+.winter-panel{background:#fffefa;border:1px solid var(--ui-line);border-radius:10px;box-shadow:0 2px 8px #26374705}
+.winter-panel::before{height:3px;width:26px;opacity:.7}
+.winter-panel>h2,.winter-panel>.winter-heading{background:#f2f4f2;border-color:var(--ui-line);font-size:1.35rem;padding:13px 16px}
+.winter-panel-body{padding:16px}.winter-top-grid,.winter-bottom-grid{gap:18px;align-items:start}
+.winter-next{min-height:250px}.winter-next strong{font:600 clamp(1.5rem,1.7vw,2.2rem)/1.2 'Barlow Semi Condensed',Arial,sans-serif}
+.winter-calendar-inner{padding:14px;gap:14px}.winter-event{min-height:51px}.winter-event strong{font-size:.83rem}.winter-event small{font-size:.7rem}
+.winter-news #latest-transmission-card p{font-size:.88rem!important;line-height:1.65!important}
+#overview-points-ranking-list>div{background:#f0f3f2!important;border-radius:6px;min-height:48px;margin-bottom:5px}
+.winter-join p{font-size:.88rem;line-height:1.7}.winter-race{width:30px;height:30px;flex-basis:30px}
+.squad-filter-bar{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px}
+.squad-filter-bar .nav-tab-btn{border:1px solid transparent;border-radius:7px;min-height:44px;padding:8px 12px;font:600 .83rem/1.4 Inter,Arial,sans-serif;letter-spacing:0;text-transform:none}
+.squad-filter-bar .nav-tab-btn.active{border-color:#b7d2de;background:#e5f0f4;box-shadow:none}
+.squad-filter-bar .squad-mark{width:30px;height:30px;object-fit:contain}
+.team-badge-header{display:flex;flex-wrap:wrap;align-items:center;gap:10px;padding:12px 16px;margin-bottom:18px;border:1px solid #cedee4;background:#edf4f4;box-shadow:none;border-radius:8px;font:500 .87rem/1.5 Inter,Arial,sans-serif}
+.team-badge-header .squad-crest-lg{width:48px;height:48px;object-fit:contain;margin:0}.team-badge-header span.pill{font:600 .68rem/1.5 Inter,Arial,sans-serif;letter-spacing:.02em;box-shadow:none}
+.table-container{overflow-x:auto;border:1px solid var(--ui-line);border-radius:9px;background:#fffefa;box-shadow:none;-webkit-overflow-scrolling:touch}
+.data-table{font:400 .9rem/1.45 Inter,Arial,sans-serif;min-width:720px;table-layout:auto}
+.data-table th{font:600 .72rem/1.4 Inter,Arial,sans-serif!important;letter-spacing:.035em!important;background:#edf1f1;text-transform:none;color:#596d79;white-space:nowrap}
+.data-table th,.data-table td{padding:12px 16px;border-bottom:1px solid #e7ecee}
+.data-table tbody tr{border-left:0!important}.data-table tbody tr:last-child td{border-bottom:0}
+.data-table tbody tr.clickable-row:hover{border-left:0!important;background:#edf4f6}
+.data-table tbody tr:hover td{background:#f0f6f7}.data-table .player-tag{font:600 .9rem/1.4 Inter,Arial,sans-serif;color:#273b4c;text-shadow:none}
+.data-table .player-tag:hover{text-shadow:none;color:#276b8b}
+.data-table .role-badge,.data-table .race-badge,.data-table .click-hint{font-family:Inter,Arial,sans-serif!important;font-weight:600;letter-spacing:.02em;font-size:.66rem;box-shadow:none!important;text-shadow:none!important;padding:4px 7px;border-radius:5px;white-space:nowrap}
+#tab-roster .data-table th:first-child{width:29%}#tab-roster .data-table th:nth-child(2){width:19%}#tab-roster .data-table th:nth-child(3){width:13%}#tab-roster .data-table th:nth-child(4){width:17%}
+#tab-roster .data-table td:last-child{white-space:nowrap;font-size:.75rem}
+.league-partner-row{gap:6px}.league-partner{background:transparent!important;box-shadow:none!important;border-color:var(--ui-line)!important;padding:8px;min-height:48px}
+.league-partner strong{font-size:.74rem}.league-partner span{font-size:.64rem}footer{background:transparent!important;padding-top:14px!important}footer>p{line-height:1.5;font-weight:400!important;color:var(--ui-muted)}
+@media(min-width:2200px){body{font-size:16px}.winter-bottom-grid{grid-template-columns:1.25fr 1fr 1fr}.winter-event strong{font-size:.95rem}.winter-next{min-height:270px}.data-table{font-size:1rem}.data-table .player-tag{font-size:1rem}.data-table th{font-size:.78rem!important}.data-table th,.data-table td{padding:14px 20px}}
+@media(max-width:1180px) and (min-width:761px){.winter-next{min-height:160px}.winter-calendar-inner{grid-template-columns:minmax(220px,1fr) minmax(180px,1fr)}}
+@media(max-width:760px){.hero-banner,.section-wrap,footer,.winter-topbar{padding-left:12px!important;padding-right:12px!important}.section-wrap{padding-top:14px!important;margin-bottom:18px!important}header .nav-container{padding:6px 10px}.winter-topbar{min-height:36px;gap:6px}.winter-banner{height:clamp(108px,29vw,170px);border-radius:7px;padding:12px}.winter-banner h1{font-size:clamp(1rem,3.7vw,1.9rem)}.section-head h2{font-size:1.6rem}.section-subtitle{font-size:.82rem}.winter-next{min-height:0}.winter-calendar-inner{grid-template-columns:minmax(0,1fr) minmax(0,1fr);padding:10px;gap:9px}.winter-event{min-height:46px}.winter-event strong{font-size:.7rem}.winter-event small{font-size:.6rem}.winter-panel>h2,.winter-panel>.winter-heading{font-size:1.2rem;padding:11px 13px}.squad-filter-bar{gap:6px}.squad-filter-bar .nav-tab-btn{font-size:.72rem;padding:7px 9px}.team-badge-header{padding:10px;font-size:.8rem}.data-table th,.data-table td{padding:11px 12px}.data-table{min-width:720px}.winter-topbar .world-clocks-hud{font-size:.65rem}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
