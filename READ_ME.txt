@@ -1,9 +1,11 @@
-WHITE DRAGON - REFERENCE OVERVIEW LAYOUT
+WHITE DRAGON - FOOTER, NEWS AND TIME DISPLAY
 
-Upload all package contents together, replace previous files and refresh with Ctrl+F5.
+Upload all package contents, replace previous files and refresh with Ctrl+F5.
 
-Layout follows the supplied five-panel reference: month navigation in the calendar heading, adjacent calendar/event list, opposing clan logos with shared match information footer, compact news rows, ranking medals and separators, Join the Clan with Apply Now dialog. Existing responsive stacking and real data retained. Race icons, points, clan logos and Christmas banner remain.
+Visitor count and Privacy are now at the bottom of the footer without panel or button frames. Existing counters and Privacy dialog are retained.
 
-News uses only existing images. Missing images use a neutral news symbol. Missing match metadata stays To be confirmed. Ranking remains clan-league points, not invented MMR. Ties retain their real ranks and medals.
+Overview news without an uploaded image use the current White Dragon Christmas logo. Failed image loads also fall back to that logo.
 
-Application syntax and local assets checked. Visual browser validation unavailable.
+Next Match shows Time (EST), with EDT label during summer, and a short TBA if no time has been recorded. The German time is no longer repeated in that card. Both directions of timezone conversion remain available in the match editor and other existing schedule displays.
+
+JavaScript syntax, single bottom footer container, fallback image and time display checked. Visual browser verification unavailable.

@@ -2427,6 +2427,14 @@ header .brand-title { font-size:1.25rem; }
 <link rel="stylesheet" href="polished.css?v=1">
 <link rel="stylesheet" href="balanced.css?v=1">
 <link rel="stylesheet" href="reference.css?v=1">
+<style>#match-inp-time,#match-inp-tz{display:block;width:100%;padding:8px;border:1px solid #b9b9ac;border-radius:5px;background:#faf7f0;color:#34433f;margin:5px 0 9px;color-scheme:light}.match-time-preview{font-size:.8rem;line-height:1.5;margin:8px 0;color:#416d60}.match-time-preview[data-invalid="true"]{color:#a23030}</style>
+<style>
+#winter-footer-tools{background:transparent!important;border:0!important;border-radius:0!important;box-shadow:none!important;padding:14px 0 0!important;margin-top:12px;order:99}
+#winter-footer-tools #floatingPrivacyBtn{background:transparent!important;border:0!important;border-radius:0!important;box-shadow:none!important;padding:5px 0!important;min-height:32px;color:#45534d;text-decoration:underline;text-underline-offset:3px}
+#winter-footer-tools #traffic-monitor-hud{border:0!important;background:transparent!important;box-shadow:none!important}
+.winter-news .news-default-logo{object-fit:contain!important;background:#faf7ef;padding:3px}
+.next-meta-field{min-width:0}.next-metadata dd{word-break:normal;overflow-wrap:normal}.next-meta-field dt{white-space:nowrap}.next-meta-field:has(dt:first-child){flex-wrap:wrap}
+</style>
 </head>
 <body>
   <!-- White Dragon rank insignia: self-contained SVG symbols, no extra assets. -->
@@ -2618,7 +2626,7 @@ header .brand-title { font-size:1.25rem; }
 &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width,initial-scale=1&quot;&gt;
 &lt;title&gt;WD Star League · Tournament Demo&lt;/title&gt;
 &lt;style&gt;
-  :root{color-scheme:dark;font-family:system-ui,sans-serif;background:#f1f5f7;color:#455a6e}
+  :root{color-scheme:light;font-family:system-ui,sans-serif;background:#f1f5f7;color:#455a6e}
   body{margin:0}main{max-width:1080px;margin:auto;padding:clamp(18px,5vw,56px)}
   h1{margin:0;color:#32698e}h2{font-size:1.1rem}p{color:#53697e}
   form,.round{background:#f4f6f7;border:1px solid #273b55;border-radius:10px;padding:16px}
@@ -2861,14 +2869,14 @@ header .brand-title { font-size:1.25rem; }
         <div>
           <label for="match-inp-date" style="display:block; font-size:0.68rem; color:var(--text-muted); font-family:'Barlow Semi Condensed',sans-serif; margin-bottom:4px;">DATE / CALENDAR</label>
           <div style="display:flex; align-items:stretch; gap:6px;">
-            <input type="date" id="match-inp-date" aria-label="Match date" onclick="openMatchDatePicker()" style="flex:1; min-width:0; width:100%; background:#f7f7f2; border:1px solid var(--border-color); color:#24364a; color-scheme:dark; padding:7px; border-radius:4px; font-family:'Inter', monospace; cursor:pointer;">
+            <input type="date" id="match-inp-date" oninput="updateMatchTimePreview()" onchange="updateMatchTimePreview()" aria-label="Match date" onclick="openMatchDatePicker()" style="flex:1; min-width:0; width:100%; background:#f7f7f2; border:1px solid var(--border-color); color:#24364a; color-scheme:dark; padding:7px; border-radius:4px; font-family:'Inter', monospace; cursor:pointer;">
             <button type="button" onclick="openMatchDatePicker()" aria-label="Open calendar" title="Choose date from calendar" class="btn-download-rep" style="display:inline-flex; align-items:center; justify-content:center; min-width:42px; padding:6px 10px; cursor:pointer;">
               📅
             </button>
           </div>
         </div>
         <div>
-          <label style="display:block; font-size:0.68rem; color:var(--text-muted); font-family:'Barlow Semi Condensed',sans-serif;">MATCH TITLE</label>
+          <label for="match-inp-time">MATCH TIME (OPTIONAL)</label><input id="match-inp-time" type="time" step="60" oninput="updateMatchTimePreview()" aria-describedby="match-time-preview"><label for="match-inp-tz">TIME ZONE</label><select id="match-inp-tz" onchange="updateMatchTimePreview()"><option value="CET">CET / CEST — Germany</option><option value="EST">EST / EDT — US Eastern</option></select><p id="match-time-preview" class="match-time-preview" role="status" aria-live="polite">Optional. Both time zones will be shown automatically.</p></div><div><label style="display:block; font-size:0.68rem; color:var(--text-muted); font-family:'Barlow Semi Condensed',sans-serif;">MATCH TITLE</label>
           <input type="text" id="match-inp-title" placeholder="e.g. WD vs dB)-3" style="width:100%; background:#f7f7f2; border:1px solid var(--border-color); color:#24364a; padding:7px; border-radius:4px;">
         </div>
         <div>
@@ -4231,7 +4239,7 @@ header .brand-title { font-size:1.25rem; }
     </div>
   </div>
 
-  <footer><div class="winter-footer-tools" id="winter-footer-tools"></div>
+  <footer>
     <div class="league-partners">
       <p class="league-partners-label">Community</p>
       <div class="league-partner-row">
@@ -4287,6 +4295,7 @@ header .brand-title { font-size:1.25rem; }
     </div>
     <p>© 2026 White Dragon [WD] Clan. StarCraft® and StarCraft: Remastered are registered trademarks of Blizzard Entertainment.</p>
     <p style="margin-top:4px; color:var(--text-dim);">Brood War eSports-Team | Channel: Op White-Dragon (US West)</p>
+    <div class="winter-footer-tools" id="winter-footer-tools"></div>
   </footer>
 
   <!-- Initialize the DEFAULT Firebase app before any feature listeners are registered. -->
@@ -7123,9 +7132,9 @@ function renderLatestTransmission(articles) {
     var url=typeof raw==='string'?raw:raw&&typeof raw.url==='string'?raw.url:'';
     var thumb;
     if(/^(https?:\/\/|data:image\/(?:png|jpeg|webp|gif);base64,)/i.test(url)){
-      thumb=document.createElement('img');thumb.src=url;thumb.alt='';thumb.loading='lazy';thumb.onerror=function(){this.hidden=true;};
-    }else{thumb=document.createElement('span');thumb.textContent='▤';thumb.setAttribute('aria-hidden','true');}
-    thumb.className='reference-news-thumb';
+      thumb=document.createElement('img');thumb.src=url;thumb.alt='';thumb.loading='lazy';thumb.onerror=function(){this.onerror=null;this.src='christmas-logo.jpg';this.classList.add('news-default-logo');};
+    }else{thumb=document.createElement('img');thumb.src='christmas-logo.jpg';thumb.alt='';thumb.classList.add('news-default-logo');}
+    thumb.classList.add('reference-news-thumb');
     var copy=document.createElement('span');copy.className='reference-news-copy';var title=document.createElement('h4');title.textContent=article.title||'Clan update';var body=document.createElement('p');body.textContent=String(article.body||'').replace(/\s+/g,' ').trim();copy.append(title,body);
     var date=document.createElement('span');date.className='reference-news-date';var stamp=getNewsSortTimestamp(article);date.textContent=stamp?new Date(stamp).toLocaleDateString('en-GB',{day:'numeric',month:'short'}):String(article.date||'');
     row.append(thumb,copy,date);container.appendChild(row);
@@ -9462,6 +9471,7 @@ function renderLatestTransmission(articles) {
               '</strong>' +
               '<span class="week">' +
                 escapeMatchHtml(displayDate) +
+                (wdMatchTimeText(m) ? ' · ' + escapeMatchHtml(wdMatchTimeText(m)) : '') +
                 ' <span style="font-size:0.65rem; color:var(--cyan); border:1px solid var(--cyan); padding:1px 5px; border-radius:3px; margin-left:4px; font-family:monospace; text-transform:uppercase;">' +
                   escapeMatchHtml(displayCategory) +
                 '</span>' +
@@ -9587,7 +9597,7 @@ function renderLatestTransmission(articles) {
           league: matchType === 'league',
           result: match.resultType || 'UPCOMING',
           title: calendarMatchTitle(match.title, matchType),
-          detail: (match.category || 'Match') + ' · ' + (match.score || match.resultType || ''),
+          detail: (match.category || 'Match') + ' · ' + (match.score || match.resultType || '') + (wdMatchTimeText(match) ? ' · ' + wdMatchTimeText(match) : ''),
           matchId: match.id
         });
       });
@@ -10236,6 +10246,41 @@ function renderLatestTransmission(articles) {
       }
     }
 
+function wdResolveMatchTime(dateKey,time,zone) {
+  if(!/^\d{4}-\d{2}-\d{2}$/.test(dateKey)||!/^(?:[01]\d|2[0-3]):[0-5]\d$/.test(time))return {error:'Choose a valid match date and time.'};
+  if(!/^(CET|CEST|EST|EDT|ET)$/.test(zone))return {error:'Choose CET or EST.'};
+  var parts=dateKey.split('-').map(Number), clock=time.split(':').map(Number);
+  var naive=Date.UTC(parts[0],parts[1]-1,parts[2],clock[0],clock[1]);
+  if(new Date(naive).toISOString().slice(0,10)!==dateKey)return {error:'Choose a valid match date.'};
+  var source=/^(EST|EDT|ET)$/.test(zone)?'America/New_York':'Europe/Berlin';
+  function localParts(instant,tz){var values={};new Intl.DateTimeFormat('en-GB',{timeZone:tz,year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',hourCycle:'h23'}).formatToParts(new Date(instant)).forEach(function(p){values[p.type]=p.value;});return values;}
+  function wallValue(p){return Date.UTC(Number(p.year),Number(p.month)-1,Number(p.day),Number(p.hour),Number(p.minute));}
+  var offsets=new Set([-86400000,0,86400000].map(function(delta){var sample=naive+delta;return wallValue(localParts(sample,source))-sample;}));
+  var candidates=[];offsets.forEach(function(offset){var instant=naive-offset;if(wallValue(localParts(instant,source))===naive)candidates.push(instant);});
+  if(!candidates.length)return {error:'This local time does not exist because the clocks move forward. Choose another time.'};
+  if(candidates.length>1)return {error:'This local time occurs twice when the clocks move back. Choose an unambiguous time.'};
+  var instant=candidates[0];
+  function formatted(tz){var local=localParts(instant,tz),offset=(wallValue(local)-instant)/3600000;
+    var abbr=tz==='Europe/Berlin'?(offset===2?'CEST':'CET'):(offset===-4?'EDT':'EST');
+    var key=local.year+'-'+local.month+'-'+local.day;
+    return {text:local.hour+':'+local.minute+' '+abbr+(key!==dateKey?' ('+key+')':''),date:key};
+  }
+  var germany=formatted('Europe/Berlin'),eastern=formatted('America/New_York');
+  return {instant:instant,germany:germany.text,eastern:eastern.text,combined:germany.text+' / '+eastern.text,source:source==='Europe/Berlin'?germany.text:eastern.text,target:source==='Europe/Berlin'?eastern.text:germany.text};
+}
+function wdMatchDualTime(date,time,zone){var result=wdResolveMatchTime(date,time,zone);return result.error?null:result;}
+function wdMatchTimeText(match){
+  if(!match.time)return '';
+  var date=parseClanDate(match.week);if(!date)return '';
+  var result=wdResolveMatchTime(calendarDateKey(date),String(match.time),String(match.tz||'CET').toUpperCase());return result.error?'':result.combined;
+}
+function updateMatchTimePreview(){
+  var output=document.getElementById('match-time-preview'),time=document.getElementById('match-inp-time').value;
+  if(!time){output.textContent='Optional. Both time zones will be shown automatically.';output.dataset.invalid='false';return;}
+  var result=wdResolveMatchTime(document.getElementById('match-inp-date').value,time,document.getElementById('match-inp-tz').value);
+  output.textContent=result.error||result.combined;output.dataset.invalid=String(Boolean(result.error));
+}
+
     function toggleMatchCMS() {
       var terminal = document.getElementById('admin-match-terminal');
       if (!terminal) return;
@@ -10250,6 +10295,9 @@ function renderLatestTransmission(articles) {
         var setNumberInput = document.getElementById('b-set-number');
         if (setNumberInput) setNumberInput.value = '1';
         document.getElementById('match-inp-date').value = '';
+        document.getElementById('match-inp-time').value = '';
+        document.getElementById('match-inp-tz').value = 'CET';
+        updateMatchTimePreview();
         document.getElementById('match-inp-score').value = '';
         document.getElementById('match-inp-note').value = '';
         document.getElementById('match-inp-sets').value = '';
@@ -10275,6 +10323,9 @@ function renderLatestTransmission(articles) {
       document.getElementById('match-cms-heading').innerText = '⚡ EDIT MATCH INTEL // ' + String(m.title || 'UNTITLED MATCH').toUpperCase();
       document.getElementById('match-inp-cat').value = isWdStarLeagueMatch(m) ? 'WD Star League' : (m.category || 'Clan League');
       document.getElementById('match-inp-date').value = m.week || '';
+      document.getElementById('match-inp-time').value = m.time || '';
+      document.getElementById('match-inp-tz').value = /^(EST|EDT|ET)$/i.test(m.tz || '') ? 'EST' : 'CET';
+      updateMatchTimePreview();
       document.getElementById('match-inp-title').value = m.title || '';
       document.getElementById('match-inp-result').value = m.resultType || 'WIN';
       document.getElementById('match-inp-score').value = m.score || '';
@@ -10309,6 +10360,13 @@ function renderLatestTransmission(articles) {
       var setsText = document.getElementById('match-inp-sets').value.trim();
 
       if (!title) { alert('Please enter a match title.'); return; }
+      var matchTime = document.getElementById('match-inp-time').value;
+      var matchZone = document.getElementById('match-inp-tz').value;
+      if (matchTime) {
+        var schedule = wdResolveMatchTime(date,matchTime,matchZone);
+        if(schedule.error){updateMatchTimePreview();alert(schedule.error);document.getElementById('match-inp-time').focus();return;}
+      }
+
 
       var setsArray = [];
       if (setsText) {
@@ -10324,6 +10382,8 @@ function renderLatestTransmission(articles) {
         resultType: result,
         score: score,
         note: note,
+        time: matchTime,
+        tz: matchZone,
         sets: setsArray
       };
 
@@ -11593,7 +11653,7 @@ function renderLatestTransmission(articles) {
 </dialog>
 
 
-<script src="winter.js?v=reference1"></script>
+<script src="winter.js?v=footer1"></script>
 <dialog class="clan-apply-dialog" id="clan-apply-dialog" aria-labelledby="clan-apply-title"><div class="clan-apply-heading"><h2 id="clan-apply-title">Join White Dragon Clan</h2><button class="clan-apply-close" id="clan-apply-close" type="button" aria-label="Close joining information" autofocus>×</button></div><div class="clan-apply-body"><p>Meet us in our Battle.net channel or contact a clan representative on Discord.</p><dl class="clan-channel"><dt>Gateway</dt><dd>US West</dd><dt>Channel</dt><dd>Op White-Dragon</dd></dl><button type="button" class="winter-primary" onclick="copyJoinInfo()">Copy joining details</button><div class="clan-discord-contacts" aria-label="Discord recruitment contacts"><span class="clan-contact-label">Contact us on Discord</span><a class="winter-primary clan-contact" href="https://discord.com/users/839360695992844298" target="_blank" rel="noopener noreferrer"><span>LunarPop</span><span aria-hidden="true">↗</span></a><a class="winter-primary clan-contact" href="https://discord.com/users/1363731179454468136" target="_blank" rel="noopener noreferrer"><span>zz</span><span aria-hidden="true">↗</span></a><a class="winter-primary clan-contact" href="https://discord.com/users/492046348946898946" target="_blank" rel="noopener noreferrer"><span>Cheesecake</span><span aria-hidden="true">↗</span></a></div></div></dialog>
 <script src="apply-dialog.js?v=1"></script>
 </body>

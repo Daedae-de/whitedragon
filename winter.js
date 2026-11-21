@@ -26,7 +26,7 @@ function wdNextMatchDetails(match, events) {
   }
   var dual = null;
   if (key && /^(?:[01]\d|2[0-3]):[0-5]\d$/.test(time) && /^(CET|CEST|EST|EDT|ET)$/.test(zone)) {
-    dual = getDualTimeStrings(key, time, /^(EST|EDT|ET)$/.test(zone) ? 'EST' : 'CET');
+    dual = wdMatchDualTime(key, time, /^(EST|EDT|ET)$/.test(zone) ? 'EST' : 'CET');
   }
   var maps = [];
   if (typeof match.maps === 'string' && match.maps.trim()) maps.push(match.maps.trim());
@@ -64,10 +64,10 @@ function winterRefreshNextMatch() {
   function field(label,value){var group=element('div','next-meta-field'+(label==='Maps'?' next-meta-maps':''));group.append(element('dt','',label),element('dd','',value));metadata.appendChild(group);}
   field('Date',details.date ? details.date.toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short',year:'numeric'}) : 'Date to be confirmed');
   if (details.dual) {
-    var values=[details.dual.source,details.dual.target];
-    field('Germany',values.find(function(v){return /CEST|CET/.test(v);}) || 'Time to be confirmed');
-    field('US Eastern',values.find(function(v){return /EDT|EST/.test(v);}) || 'Time to be confirmed');
-  } else field('Time · CET / EST','To be confirmed');
+    var eastern=[details.dual.source,details.dual.target].find(function(value){return /EDT|EST/.test(value);}) || '';
+    var label=/EDT/.test(eastern)?'Time (EDT)':'Time (EST)';
+    field(label,eastern.replace(/\s+(?:EST|EDT)\b/,'') || 'TBA');
+  } else field('Time (EST)','TBA');
   field('Maps',details.maps.length ? details.maps.join(' · ') : 'To be confirmed');
   var footer=element('div','next-footer');footer.appendChild(metadata);container.appendChild(footer);
   var button=element('button','winter-primary','Match details →');button.type='button';button.onclick=function(){openCalendarMatch(next.id);};footer.appendChild(button);
