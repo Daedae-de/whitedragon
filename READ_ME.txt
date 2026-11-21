@@ -1,11 +1,11 @@
-WHITE DRAGON - FOOTER, NEWS AND TIME DISPLAY
+WHITE DRAGON - BANNER INFORMATION AND FOOTER
 
-Upload all package contents, replace previous files and refresh with Ctrl+F5.
+Upload all files and folders together, replace previous files, then refresh with Ctrl+F5.
 
-Visitor count and Privacy are now at the bottom of the footer without panel or button frames. Existing counters and Privacy dialog are retained.
+Banner typography and spacing refined. Added EST. 2021, US West, Channel Op White-Dragon, and live Germany / US Eastern clocks. The redundant top bar is removed. Clock labels automatically show CET/EST or CEST/EDT as appropriate.
 
-Overview news without an uploaded image use the current White Dragon Christmas logo. Failed image loads also fall back to that logo.
+Visitor count and Privacy share a centered bottom row without boxes or borders. Footer has a quiet light surface for readability. Existing visitor IDs, counter logic and Privacy action retained.
 
-Next Match shows Time (EST), with EDT label during summer, and a short TBA if no time has been recorded. The German time is no longer repeated in that card. Both directions of timezone conversion remain available in the match editor and other existing schedule displays.
+All prior match scheduling, news fallback images, clan logos, join dialog and Firebase functionality retained. No new database writes or migration.
 
-JavaScript syntax, single bottom footer container, fallback image and time display checked. Visual browser verification unavailable.
+Checked JavaScript syntax, unique live counter and clock IDs, local assets, winter/summer timezone labels and clock values. Visual browser verification remains unavailable.

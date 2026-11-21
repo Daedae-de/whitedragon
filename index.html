@@ -2435,6 +2435,7 @@ header .brand-title { font-size:1.25rem; }
 .winter-news .news-default-logo{object-fit:contain!important;background:#faf7ef;padding:3px}
 .next-meta-field{min-width:0}.next-metadata dd{word-break:normal;overflow-wrap:normal}.next-meta-field dt{white-space:nowrap}.next-meta-field:has(dt:first-child){flex-wrap:wrap}
 </style>
+<link rel="stylesheet" href="banner-info.css?v=1">
 </head>
 <body>
   <!-- White Dragon rank insignia: self-contained SVG symbols, no extra assets. -->
@@ -2481,8 +2482,8 @@ header .brand-title { font-size:1.25rem; }
   </header>
 
   <!-- HERO COMMAND BANNER -->
-  <div class="winter-topbar"><strong>White Dragon Clan</strong><span>A community for StarCraft: Remastered</span><div class="world-clocks-hud" id="world-clocks"><span>ET <strong id="clock-et">--:--:--</strong></span><span>Berlin <strong id="clock-berlin">--:--:--</strong></span></div></div>
-  <section class="hero-banner"><div class="winter-banner christmas-banner"><img src="christmas-rudolph.jpg" alt="White Dragon flying ahead and pulling Santa in his Christmas sleigh" width="2172" height="724" fetchpriority="high"><div class="christmas-banner-title"><h1>WHITE DRAGON CLAN</h1><p>STARCRAFT · REMASTERED</p></div></div></section>
+  
+  <section class="hero-banner"><div class="winter-banner christmas-banner"><img src="christmas-rudolph.jpg" alt="White Dragon flying ahead and pulling Santa in his Christmas sleigh" width="2172" height="724" fetchpriority="high"><div class="christmas-banner-title"><p class="banner-eyebrow">Community · Competition · Teamplay</p><h1>WHITE DRAGON CLAN</h1><p class="banner-subtitle">STARCRAFT · REMASTERED</p><div class="banner-clan-details"><span>EST. <b>2021</b></span><span><b>US West</b></span><span>Channel <b>Op White-Dragon</b></span></div><div class="banner-live-clocks" aria-label="Current time in Germany and US Eastern"><span><span id="banner-zone-cet">CET</span><strong id="clock-berlin">--:--:--</strong></span><span><span id="banner-zone-est">EST</span><strong id="clock-et">--:--:--</strong></span></div></div></div></section>
 
   <!-- ==================== 1. OVERVIEW TAB ==================== -->
   <section id="tab-overview" class="section-wrap winter-overview active-tab">
@@ -4191,11 +4192,11 @@ header .brand-title { font-size:1.25rem; }
   <!-- BOTTOM-LEFT VISITOR COUNTER (REAL FIREBASE COUNTS) -->
   <div class="traffic-floating-cluster" id="traffic-monitor-hud" aria-label="Website visitor statistics">
     <div class="traffic-item">
-      <span>TODAY: <strong style="color:var(--cyan);" id="visitors-today-live">—</strong></span>
+      <span>Today <strong style="color:var(--cyan);" id="visitors-today-live">—</strong></span>
     </div>
     <span class="traffic-divider">|</span>
     <div class="traffic-item">
-      <span>TOTAL VISITORS: <strong style="color:#24364a;" id="visitors-total-live">—</strong></span>
+      <span>Total visitors <strong style="color:#24364a;" id="visitors-total-live">—</strong></span>
     </div>
   </div>
 
@@ -5437,6 +5438,10 @@ header .brand-title { font-size:1.25rem; }
     function updateClocks() {
       try {
         var now = new Date();
+        var cetLabel=document.getElementById('banner-zone-cet'),estLabel=document.getElementById('banner-zone-est');
+        function clockOffset(zone){var v=new Intl.DateTimeFormat('en-GB',{timeZone:zone,timeZoneName:'shortOffset'}).formatToParts(now).find(function(p){return p.type==='timeZoneName';}).value;return v;}
+        if(cetLabel)cetLabel.textContent=clockOffset('Europe/Berlin')==='GMT+2'?'CEST':'CET';
+        if(estLabel)estLabel.textContent=clockOffset('America/New_York')==='GMT-4'?'EDT':'EST';
         var elET = document.getElementById('clock-et');
         var elBER = document.getElementById('clock-berlin');
         if (elET) {
@@ -11653,7 +11658,7 @@ function updateMatchTimePreview(){
 </dialog>
 
 
-<script src="winter.js?v=footer1"></script>
+<script src="winter.js?v=bannerinfo1"></script>
 <dialog class="clan-apply-dialog" id="clan-apply-dialog" aria-labelledby="clan-apply-title"><div class="clan-apply-heading"><h2 id="clan-apply-title">Join White Dragon Clan</h2><button class="clan-apply-close" id="clan-apply-close" type="button" aria-label="Close joining information" autofocus>×</button></div><div class="clan-apply-body"><p>Meet us in our Battle.net channel or contact a clan representative on Discord.</p><dl class="clan-channel"><dt>Gateway</dt><dd>US West</dd><dt>Channel</dt><dd>Op White-Dragon</dd></dl><button type="button" class="winter-primary" onclick="copyJoinInfo()">Copy joining details</button><div class="clan-discord-contacts" aria-label="Discord recruitment contacts"><span class="clan-contact-label">Contact us on Discord</span><a class="winter-primary clan-contact" href="https://discord.com/users/839360695992844298" target="_blank" rel="noopener noreferrer"><span>LunarPop</span><span aria-hidden="true">↗</span></a><a class="winter-primary clan-contact" href="https://discord.com/users/1363731179454468136" target="_blank" rel="noopener noreferrer"><span>zz</span><span aria-hidden="true">↗</span></a><a class="winter-primary clan-contact" href="https://discord.com/users/492046348946898946" target="_blank" rel="noopener noreferrer"><span>Cheesecake</span><span aria-hidden="true">↗</span></a></div></div></dialog>
 <script src="apply-dialog.js?v=1"></script>
 </body>

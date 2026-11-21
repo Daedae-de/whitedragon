@@ -111,7 +111,7 @@ function renderWDCalendarAgenda(allItems) {
 
 (function() {
   var notice = document.getElementById('webmaster-banner');
-  var topbar = document.querySelector('.winter-topbar');
+  var topbar = document.querySelector('.hero-banner');
   if (notice && topbar) topbar.before(notice);
   var tools = document.getElementById('winter-account-tools');
   var auth = document.getElementById('floatingAuthBtn');
