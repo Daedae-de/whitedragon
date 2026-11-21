@@ -1,0 +1,17 @@
+:root{--text-main:#303537;--text-muted:#6b706e;--cyan:#4f6265;--ui-ink:#303537;--ui-muted:#6b706e}
+body{color:#303537}.winter-topbar,header .nav-links .nav-tab-btn,.section-subtitle,.winter-join p,.winter-news p,.winter-event,.winter-event small{color:#424b4b!important}
+header{background:linear-gradient(#faf7f0,#eee8dc)!important}header .nav-links .nav-tab-btn.active{background:#e5e4db;color:#303d3e;border-left-color:#6e8587}
+.winter-panel{background:#fbf8f1!important;border-color:#b6afa1!important;box-shadow:inset 0 0 0 1px #fff,0 2px 4px #3c352218!important}
+.winter-panel>h2,.winter-panel>.winter-heading{background:linear-gradient(#f4f0e7,#e9e3d6)!important;color:#303537;border-bottom-color:#c6bdad}
+#overview-points-ranking-list>div{background:#eeede5!important;color:#303537!important}#overview-points-ranking-list strong,#overview-points-ranking-list>div>span{color:#394444!important}
+.wd-cal-nav{background:#f3f1e9!important;border-color:#c8c4b8}.wd-cal-nav button{background:#e7eeeb!important;color:#445b5b!important;border-color:#9aafab!important;box-shadow:none!important}
+.wd-cal-weekdays{background:#e8e8df!important}.wd-cal-weekdays span,.wd-cal-day b,#wd-cal-title{color:#495351!important}.wd-cal-day.has-mark{background:#e0e9e3!important}.wd-cal-day.is-today{box-shadow:inset 0 0 0 1px #6c8a7f!important}.wd-cal-day.has-mark::after{background:#687f74}.winter-event time{background:#e5e9df;color:#47544c}
+.winter-banner.christmas-banner{background:linear-gradient(110deg,#f8f1e6,#ece0d0)!important}.christmas-banner h1{color:#303d3f!important}.christmas-banner p{color:#62706d!important}
+.winter-next{display:flex!important;flex-direction:column!important;align-items:stretch;gap:18px;padding:22px 26px;text-align:left;justify-content:center;min-height:300px}
+.next-teams{display:grid;grid-template-columns:minmax(0,1fr) 48px minmax(0,1fr);align-items:center;gap:12px;width:100%}
+.next-team{display:flex;flex-direction:column;align-items:center;gap:10px;min-width:0;text-align:center}.winter-next .next-team strong{font:650 clamp(1rem,1.1vw,1.55rem)/1.3 Inter,Arial,sans-serif;color:#303b3e;overflow-wrap:anywhere}
+.winter-next .next-clan-logo{width:90px;height:90px;object-fit:contain;grid-row:auto;max-width:100%}.next-clan-logo[hidden]{display:none}
+.next-versus{font:700 1.3rem Inter,Arial,sans-serif;color:#717570;text-align:center}
+.next-metadata{display:grid;grid-template-columns:105px minmax(0,1fr);gap:9px 16px;margin:0;padding:16px 0;border-top:1px solid #d3cbbc;border-bottom:1px solid #d3cbbc;font:400 .86rem/1.6 Inter,Arial,sans-serif}
+.next-metadata dt{color:#747971}.next-metadata dd{margin:0;color:#3a4545;font-weight:500;overflow-wrap:anywhere}.next-raw-title{margin:0;text-align:center}.winter-next>button{align-self:flex-end;min-width:180px}
+@media(max-width:760px){.winter-next{padding:16px;gap:15px;min-height:0}.next-teams{grid-template-columns:minmax(0,1fr) 30px minmax(0,1fr);gap:8px}.winter-next .next-clan-logo{width:64px;height:64px}.next-versus{font-size:1rem}.next-metadata{grid-template-columns:82px minmax(0,1fr);gap:8px;font-size:.78rem}.winter-next>button{width:100%;min-width:0}}

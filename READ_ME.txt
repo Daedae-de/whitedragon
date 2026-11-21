@@ -1,11 +1,13 @@
-WHITE DRAGON CHRISTMAS - POLISHED OVERVIEW
+WHITE DRAGON - NEXT MATCH AND BALANCED COLORS
 
-Upload all files/folders in this package together to the website directory. Replace previous files and refresh with Ctrl+F5.
+Upload all package files and folders to the website directory and replace previous files. Refresh with Ctrl+F5.
 
-Stronger warm metallic card frames, graphite buttons, heading icons, equal-height cards per desktop row, full-width desktop Rudolph-dragon banner. Mobile cards remain stacked with natural heights.
+Next Match now displays White Dragon and opponent logos, date, Germany and US Eastern times, map information and Match Details. Logos use the verified BWCL aliases. Unknown opponents remain named without an invented logo.
 
-Apply Now opens a separate modal window containing US West / Op White-Dragon, the original three Discord contacts and Copy joining details. Escape and focus management use the browser native dialog behavior. Dialog also closes using its close button or clicking outside.
+Times are read from explicit match time + timezone, uniquely matched calendar metadata, or an explicit zoned time in the match note (example: 13:00 EST). Missing times are marked To be confirmed. No time is guessed from unrelated news. Existing regional timezone conversion shows CET/EST in winter and CEST/EDT in summer, with date-shift indication.
 
-Existing Firebase, BWCL sync, clan logos, race icons, webmaster tools and remaining application functions retained. No database migration or additional database writes.
+Maps use existing match maps or labelled map details in the note (example: 1v1 MOTW: Odyssey RE | 2v2 MOTW: KnockOut). Existing application data is not modified.
 
-Checked JavaScript syntax, local assets, three contact IDs and dialog open/close/backdrop/focus behavior using a simulated document. Visual layout and native keyboard behavior still need browser verification.
+The palette now uses coordinated warm ivory and muted sage-grey for calendar, ranking, panels and text. Christmas artwork, join dialog and existing Firebase functions retained.
+
+JavaScript syntax and winter/summer time, unknown time, map extraction, opponent and unrelated-event tests passed. Visual browser verification remains unavailable.
