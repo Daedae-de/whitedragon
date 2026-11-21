@@ -2426,6 +2426,7 @@ header .brand-title { font-size:1.25rem; }
 <style>.bwcl-clan-cell{vertical-align:middle}.bwcl-clan-logo{width:40px;height:40px;object-fit:contain;display:inline-block;vertical-align:middle;margin-right:10px;flex-shrink:0}.bwcl-clan-logo[hidden]{display:none}.bwcl-clan-cell strong{vertical-align:middle}@media(max-width:760px){.bwcl-clan-logo{width:32px;height:32px;margin-right:8px}}</style>
 <link rel="stylesheet" href="polished.css?v=1">
 <link rel="stylesheet" href="balanced.css?v=1">
+<link rel="stylesheet" href="reference.css?v=1">
 </head>
 <body>
   <!-- White Dragon rank insignia: self-contained SVG symbols, no extra assets. -->
@@ -2478,10 +2479,10 @@ header .brand-title { font-size:1.25rem; }
   <!-- ==================== 1. OVERVIEW TAB ==================== -->
   <section id="tab-overview" class="section-wrap winter-overview active-tab">
     <div class="winter-top-grid">
-      <section class="winter-panel winter-calendar" aria-labelledby="winter-calendar-heading"><h2 id="winter-calendar-heading"><svg class="panel-heading-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5h14v16H5z M8 2v6M16 2v6M5 10h14 M8 14h2M14 14h2M8 18h2"/></svg>Calendar</h2>
+      <section class="winter-panel winter-calendar" aria-labelledby="winter-calendar-heading"><div class="winter-heading"><h2 id="winter-calendar-heading"><svg class="panel-heading-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5h14v16H5z M8 2v6M16 2v6M5 10h14 M8 14h2M14 14h2M8 18h2"/></svg>Calendar</h2><div class="wd-cal-nav"><button type="button" onclick="shiftClanCalendar(-1)" aria-label="Previous month">‹</button><strong id="wd-cal-title">Calendar</strong><button type="button" onclick="shiftClanCalendar(1)" aria-label="Next month">›</button></div></div>
         <div class="winter-calendar-inner">
           <div class="wd-calendar" id="wd-calendar"><div class="wd-cal-board">
-            <div class="wd-cal-nav"><button type="button" onclick="shiftClanCalendar(-1)" aria-label="Previous month">‹</button><strong id="wd-cal-title">Calendar</strong><button type="button" onclick="shiftClanCalendar(1)" aria-label="Next month">›</button></div>
+            
             <div class="wd-cal-weekdays"><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span></div>
             <div class="wd-cal-grid" id="wd-cal-grid"></div><div id="wd-mobile-agenda" hidden></div>
           </div></div>
@@ -2492,7 +2493,7 @@ header .brand-title { font-size:1.25rem; }
     </div>
     <div class="winter-bottom-grid">
       <section class="winter-panel winter-news" aria-labelledby="winter-news-heading"><div class="winter-heading"><h2 id="winter-news-heading"><svg class="panel-heading-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 4h18v16H3zM6 8h4v5H6zM13 8h5M13 11h5M6 16h12"/></svg>Latest News</h2><button type="button" onclick="switchTab('community')">All news →</button></div><div id="latest-transmission-card"><p class="winter-empty">Loading clan news…</p></div></section>
-      <section class="winter-panel winter-ranking" aria-labelledby="winter-ranking-heading"><div class="winter-heading"><h2 id="winter-ranking-heading"><svg class="panel-heading-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 21V12h4v9M10 21V7h4v14M17 21V3h4v18"/></svg>Member Ranking</h2><button type="button" onclick="openWdFullRanking()">View all →</button></div><div id="overview-points-ranking-list"><p class="winter-empty">Loading member ranking…</p></div></section>
+      <section class="winter-panel winter-ranking" aria-labelledby="winter-ranking-heading"><div class="winter-heading"><h2 id="winter-ranking-heading"><svg class="panel-heading-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 21V12h4v9M10 21V7h4v14M17 21V3h4v18"/></svg>Member Ranking</h2><button type="button" onclick="openWdFullRanking()">View all →</button></div><div class="reference-ranking-head" aria-hidden="true"><span>MEMBER</span><span>POINTS</span></div><div id="overview-points-ranking-list"><p class="winter-empty">Loading member ranking…</p></div></section>
       <section class="winter-panel winter-join" aria-labelledby="winter-join-heading"><h2 id="winter-join-heading"><svg class="panel-heading-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8ZM2 21v-4c0-3 12-3 12 0v4M18 9v10M13 14h10"/></svg>Join the Clan</h2><div class="winter-panel-body"><p class="join-intro">Be part of White Dragon Clan!</p><p>Play StarCraft: Remastered with a friendly community. Practice together, share replays and compete in clan matches.</p><button class="winter-primary" type="button" id="clan-apply-open" aria-haspopup="dialog" aria-controls="clan-apply-dialog">APPLY NOW →</button></div></section>
     </div>
   </section>
@@ -7111,71 +7112,26 @@ async function renderUserMaps() {
       return Number.isFinite(parsed) ? parsed : 0;
     }
 
-    function renderLatestTransmission(articles) {
-      var container = document.getElementById('latest-transmission-card');
-      if (!container) return;
+function renderLatestTransmission(articles) {
+  var container=document.getElementById('latest-transmission-card');if(!container)return;
+  var list=(Array.isArray(articles)?articles.slice():[]).sort(function(a,b){return wdCommunityArticleSortTime(b)-wdCommunityArticleSortTime(a);}).slice(0,3);
+  container.replaceChildren();
+  if(!list.length){var empty=document.createElement('p');empty.className='winter-empty';empty.textContent='No clan news published yet.';container.appendChild(empty);return;}
+  list.forEach(function(article){
+    var row=document.createElement('button');row.type='button';row.className='reference-news-row';row.onclick=function(){openArticleModal(article);};
+    var raw=Array.isArray(article.images)?article.images[0]:article.imageUrl;
+    var url=typeof raw==='string'?raw:raw&&typeof raw.url==='string'?raw.url:'';
+    var thumb;
+    if(/^(https?:\/\/|data:image\/(?:png|jpeg|webp|gif);base64,)/i.test(url)){
+      thumb=document.createElement('img');thumb.src=url;thumb.alt='';thumb.loading='lazy';thumb.onerror=function(){this.hidden=true;};
+    }else{thumb=document.createElement('span');thumb.textContent='▤';thumb.setAttribute('aria-hidden','true');}
+    thumb.className='reference-news-thumb';
+    var copy=document.createElement('span');copy.className='reference-news-copy';var title=document.createElement('h4');title.textContent=article.title||'Clan update';var body=document.createElement('p');body.textContent=String(article.body||'').replace(/\s+/g,' ').trim();copy.append(title,body);
+    var date=document.createElement('span');date.className='reference-news-date';var stamp=getNewsSortTimestamp(article);date.textContent=stamp?new Date(stamp).toLocaleDateString('en-GB',{day:'numeric',month:'short'}):String(article.date||'');
+    row.append(thumb,copy,date);container.appendChild(row);
+  });
+}
 
-      var latestTwo = (Array.isArray(articles) ? articles.slice() : [])
-        .sort(function(a, b) {
-          return wdCommunityArticleSortTime(b) - wdCommunityArticleSortTime(a);
-        })
-        .slice(0, 2);
-
-      container.innerHTML = '';
-
-      if (latestTwo.length === 0) {
-        var emptyCard = document.createElement('div');
-        emptyCard.style.cssText = 'background:rgba(240,245,248,0.7); padding:14px; border-radius:8px; border:1px solid var(--border-color);';
-        var emptyMeta = document.createElement('span');
-        emptyMeta.style.cssText = 'color:var(--cyan); font-size:0.75rem; font-family:Inter, monospace; font-weight:bold;';
-        emptyMeta.textContent = 'NO TRANSMISSION PUBLISHED';
-        var emptyTitle = document.createElement('h4');
-        emptyTitle.style.cssText = 'font-family:Inter, sans-serif; color:#24364a; font-size:1.02rem; margin:6px 0 8px; font-weight:800;';
-        emptyTitle.textContent = 'Awaiting the next clan update';
-        var emptyBody = document.createElement('p');
-        emptyBody.style.cssText = 'color:var(--text-muted); font-size:0.88rem; line-height:1.55;';
-        emptyBody.textContent = 'A new post published in the Community section will appear here automatically.';
-        emptyCard.appendChild(emptyMeta);
-        emptyCard.appendChild(emptyTitle);
-        emptyCard.appendChild(emptyBody);
-        container.appendChild(emptyCard);
-        return;
-      }
-
-      latestTwo.forEach(function(article, index) {
-        var card = document.createElement('div');
-        card.style.cssText = 'background:rgba(240,245,248,0.7); padding:14px; border-radius:8px; border:1px solid var(--border-color); cursor:pointer; transition:all 0.2s;';
-        card.title = "Click to inspect transmission details";
-        card.onmouseenter = function() { card.style.borderColor = 'var(--cyan)'; card.style.background = 'rgba(0, 229, 255, 0.08)'; card.style.transform = 'translateY(-2px)'; };
-        card.onmouseleave = function() { card.style.borderColor = 'var(--border-color)'; card.style.background = 'rgba(240,245,248,0.7)'; card.style.transform = 'translateY(0)'; };
-        (function(artItem) {
-          card.onclick = function() { openArticleModal(artItem); };
-        })(article);
-
-        var category = article.tag ? article.tag.replace(/^\/\//, '').trim() : (article.category || 'NEWS');
-        var timestamp = getNewsSortTimestamp(article);
-        var dateLabel = article.date || (timestamp
-          ? new Date(timestamp).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }).toUpperCase()
-          : 'LATEST UPDATE');
-
-        var meta = document.createElement('span');
-        meta.style.cssText = 'color:var(--cyan); font-size:0.75rem; font-family:Inter, monospace; font-weight:bold;';
-        meta.textContent = (index === 0 ? 'LATEST // ' : 'PREVIOUS // ') + dateLabel + ' // ' + String(category).toUpperCase() + ' ↗';
-
-        var title = document.createElement('h4');
-        title.style.cssText = 'font-family:Inter, sans-serif; color:#24364a; font-size:1.02rem; margin:6px 0 8px; font-weight:800;';
-        title.textContent = article.title || 'Untitled transmission';
-
-        var body = document.createElement('p');
-        body.style.cssText = 'color:var(--text-muted); font-size:0.88rem; line-height:1.55;';
-        body.textContent = article.body || '';
-
-        card.appendChild(meta);
-        card.appendChild(title);
-        card.appendChild(body);
-        container.appendChild(card);
-      });
-    }
 
     function filterCommunityCategory(cat) {
       currentCommunityCategoryFilter = cat;
@@ -10694,7 +10650,7 @@ async function renderUserMaps() {
 
         var rankLabel = document.createElement('strong');
         rankLabel.style.cssText = 'color:' + podiumStyle.color + '; font-family:Inter, sans-serif; min-width:24px;';
-        rankLabel.textContent = '#' + rank;
+        rankLabel.textContent = String(rank); rankLabel.className = 'ranking-place rank-' + rank + (rank <= 3 ? ' podium' : '');
         identity.appendChild(rankLabel);
 
         var name = document.createElement('strong');
@@ -11637,7 +11593,7 @@ async function renderUserMaps() {
 </dialog>
 
 
-<script src="winter.js?v=nextmatch1"></script>
+<script src="winter.js?v=reference1"></script>
 <dialog class="clan-apply-dialog" id="clan-apply-dialog" aria-labelledby="clan-apply-title"><div class="clan-apply-heading"><h2 id="clan-apply-title">Join White Dragon Clan</h2><button class="clan-apply-close" id="clan-apply-close" type="button" aria-label="Close joining information" autofocus>×</button></div><div class="clan-apply-body"><p>Meet us in our Battle.net channel or contact a clan representative on Discord.</p><dl class="clan-channel"><dt>Gateway</dt><dd>US West</dd><dt>Channel</dt><dd>Op White-Dragon</dd></dl><button type="button" class="winter-primary" onclick="copyJoinInfo()">Copy joining details</button><div class="clan-discord-contacts" aria-label="Discord recruitment contacts"><span class="clan-contact-label">Contact us on Discord</span><a class="winter-primary clan-contact" href="https://discord.com/users/839360695992844298" target="_blank" rel="noopener noreferrer"><span>LunarPop</span><span aria-hidden="true">↗</span></a><a class="winter-primary clan-contact" href="https://discord.com/users/1363731179454468136" target="_blank" rel="noopener noreferrer"><span>zz</span><span aria-hidden="true">↗</span></a><a class="winter-primary clan-contact" href="https://discord.com/users/492046348946898946" target="_blank" rel="noopener noreferrer"><span>Cheesecake</span><span aria-hidden="true">↗</span></a></div></div></dialog>
 <script src="apply-dialog.js?v=1"></script>
 </body>

@@ -1,13 +1,9 @@
-WHITE DRAGON - NEXT MATCH AND BALANCED COLORS
+WHITE DRAGON - REFERENCE OVERVIEW LAYOUT
 
-Upload all package files and folders to the website directory and replace previous files. Refresh with Ctrl+F5.
+Upload all package contents together, replace previous files and refresh with Ctrl+F5.
 
-Next Match now displays White Dragon and opponent logos, date, Germany and US Eastern times, map information and Match Details. Logos use the verified BWCL aliases. Unknown opponents remain named without an invented logo.
+Layout follows the supplied five-panel reference: month navigation in the calendar heading, adjacent calendar/event list, opposing clan logos with shared match information footer, compact news rows, ranking medals and separators, Join the Clan with Apply Now dialog. Existing responsive stacking and real data retained. Race icons, points, clan logos and Christmas banner remain.
 
-Times are read from explicit match time + timezone, uniquely matched calendar metadata, or an explicit zoned time in the match note (example: 13:00 EST). Missing times are marked To be confirmed. No time is guessed from unrelated news. Existing regional timezone conversion shows CET/EST in winter and CEST/EDT in summer, with date-shift indication.
+News uses only existing images. Missing images use a neutral news symbol. Missing match metadata stays To be confirmed. Ranking remains clan-league points, not invented MMR. Ties retain their real ranks and medals.
 
-Maps use existing match maps or labelled map details in the note (example: 1v1 MOTW: Odyssey RE | 2v2 MOTW: KnockOut). Existing application data is not modified.
-
-The palette now uses coordinated warm ivory and muted sage-grey for calendar, ranking, panels and text. Christmas artwork, join dialog and existing Firebase functions retained.
-
-JavaScript syntax and winter/summer time, unknown time, map extraction, opponent and unrelated-event tests passed. Visual browser verification remains unavailable.
+Application syntax and local assets checked. Visual browser validation unavailable.

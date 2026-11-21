@@ -61,7 +61,7 @@ function winterRefreshNextMatch() {
   container.appendChild(teams);
   if (!details.opponent) container.appendChild(element('p','next-raw-title',details.title));
   var metadata=element('dl','next-metadata');
-  function field(label,value){metadata.append(element('dt','',label),element('dd','',value));}
+  function field(label,value){var group=element('div','next-meta-field'+(label==='Maps'?' next-meta-maps':''));group.append(element('dt','',label),element('dd','',value));metadata.appendChild(group);}
   field('Date',details.date ? details.date.toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short',year:'numeric'}) : 'Date to be confirmed');
   if (details.dual) {
     var values=[details.dual.source,details.dual.target];
@@ -69,8 +69,8 @@ function winterRefreshNextMatch() {
     field('US Eastern',values.find(function(v){return /EDT|EST/.test(v);}) || 'Time to be confirmed');
   } else field('Time · CET / EST','To be confirmed');
   field('Maps',details.maps.length ? details.maps.join(' · ') : 'To be confirmed');
-  container.appendChild(metadata);
-  var button=element('button','winter-primary','Match details →');button.type='button';button.onclick=function(){openCalendarMatch(next.id);};container.appendChild(button);
+  var footer=element('div','next-footer');footer.appendChild(metadata);container.appendChild(footer);
+  var button=element('button','winter-primary','Match details →');button.type='button';button.onclick=function(){openCalendarMatch(next.id);};footer.appendChild(button);
 }
 
 function renderWDCalendarAgenda(allItems) {
