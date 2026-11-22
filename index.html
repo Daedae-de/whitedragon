@@ -9176,93 +9176,23 @@ function renderLatestTransmission(articles) {
         mem._history = [];
       });
 
-      function escapeRegExp(value) {
-        return String(value || '').replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-      }
-
-      function sideContainsMember(sideText, member) {
-        var aliases = [
-          member.id,
-          String(member.name || '').replace(/\s*\[WD\]\s*/ig, '').replace(/\s*\(WD\)\s*/ig, '').trim()
-        ].filter(Boolean);
-        var side = String(sideText || '');
-        return aliases.some(function(alias) {
-          // Avoid partial matches (e.g. "Wolf" matching "Wolfgang").
-          var pattern = new RegExp('(^|[^a-z0-9])' + escapeRegExp(alias) + '(?=$|[^a-z0-9])', 'i');
-          return pattern.test(side);
-        });
-      }
-
-      matches.forEach(function(match) {
-        if (!match || !Array.isArray(match.sets)) return;
-
-        var weekLabel = match.week ? String(match.week).split('//')[0].trim() : 'CW';
-        var category = String(match.category || '').toLowerCase();
-        var isClanLeague = category.indexOf('clan league') !== -1 || category.indexOf('bwcl') !== -1;
-
-        match.sets.forEach(function(rawSet) {
-          if (typeof rawSet !== 'string' || !rawSet.trim()) return;
-          var line = rawSet.trim();
-          var cleanText = line;
-          var isWin = null;
-
-          // Preferred format: "... | W", "... | L", "... | WIN", "... | LOSS", "... | POSTPONED".
-          var outcomeMatch = line.match(/(?:\|\s*|\s+)(WIN|LOSS|W|L|POSTPONED)\s*$/i);
-          if (outcomeMatch) {
-            cleanText = line.substring(0, outcomeMatch.index).trim();
-            var outcome = outcomeMatch[1].toUpperCase();
-            if (outcome === 'POSTPONED') {
-              isWin = null;
-            } else {
-              isWin = (outcome === 'W' || outcome === 'WIN');
-            }
+      // Single source of truth: the ranking uses exactly the same verified
+      // calculation as the player dossier (wdCollectPlayerStats). Matches that
+      // are still UPCOMING/PENDING and unverifiable set lines count nowhere.
+      allMembers.forEach(function(mem) {
+        var stats = wdCollectPlayerStats(mem, allMembers, matches);
+        stats.history.forEach(function(entry) {
+          if (entry.mode === '2v2') {
+            if (entry.win) mem._w2_w++; else mem._w2_l++;
+          } else {
+            if (entry.win) mem._w1_w++; else mem._w1_l++;
           }
-
-          // Read the score from the WD player's perspective when no explicit
-          // outcome marker exists. The WD player(s) are listed before the score.
-          var scoreMatch = cleanText.match(/(\d+)\s*[-:]\s*(\d+)/);
-          if (isWin === null && scoreMatch) {
-            var wdScore = parseInt(scoreMatch[1], 10);
-            var opponentScore = parseInt(scoreMatch[2], 10);
-            if (wdScore === opponentScore) return; // Draw/ambiguous set: no result points.
-            isWin = wdScore > opponentScore;
-          }
-
-          // Ignore unfinished/ambiguous set lines instead of silently counting
-          // them as losses.
-          if (isWin === null) return;
-
-          var is2v2 = /\b2v2\b/i.test(cleanText);
-          var scoreStr = scoreMatch ? scoreMatch[0] : (isWin ? '2:0' : '0:2');
-          var wdSide = scoreMatch ? cleanText.substring(0, scoreMatch.index).trim() : cleanText;
-
-          allMembers.forEach(function(mem) {
-            if (!sideContainsMember(wdSide, mem)) return;
-
-            if (is2v2) {
-              if (isWin) mem._w2_w++; else mem._w2_l++;
-            } else {
-              if (isWin) mem._w1_w++; else mem._w1_l++;
-            }
-
-            // White Dragon points apply only to Clan League/BWCL sets:
-            // every WD participant receives 2 points for a win and 1 for a loss.
-            if (isClanLeague) {
-              mem._pts += isWin ? 2 : 1;
-            }
-
-            var displaySet = cleanText;
-            if (cleanText.indexOf('|') !== -1) {
-              displaySet = cleanText.split('|').map(function(part) { return part.trim(); }).join(' • ');
-            }
-
-            mem._history.push({
-              week: weekLabel,
-              set: displaySet,
-              res: isWin ? 'WIN' : 'LOSS',
-              score: scoreStr,
-              win: isWin
-            });
+          if (entry.league) mem._pts += entry.win ? 2 : 1;
+          mem._history.push({
+            week: entry.week ? String(entry.week).split('//')[0].trim() : 'CW',
+            set: entry.set,
+            res: entry.res,
+            win: entry.win
           });
         });
       });
