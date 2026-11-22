@@ -8804,7 +8804,7 @@ function renderLatestTransmission(articles) {
 
     function wdStatsPlayerKey(value) {
       return wdNormalizePlayerName(value)
-        .replace(/\s*(?:\[wd\]|\(wd\))\s*$/i, '').trim().toLowerCase();
+        .replace(/[’‘`]/g, "'").replace(/\s*(?:\[wd\]|\(wd\))\s*$/i, '').trim().toLowerCase();
     }
 
     function wdParseStatsSet(rawSet) {
@@ -8812,10 +8812,10 @@ function renderLatestTransmission(articles) {
       var line = rawSet.trim()
         .replace(/&#0*91;|&#x0*5b;|&lbrack;/gi, '[')
         .replace(/&#0*93;|&#x0*5d;|&rbrack;/gi, ']')
-        .replace(/&amp;/gi, '&');
-      var type = line.match(/^(?:#\d+\s+)?([12]v[12])(?=\s|\|)/i);
-      if (!type || !/^(1v1|2v2)$/i.test(type[1])) return null;
-      var mode = type[1].toLowerCase();
+        .replace(/&amp;/gi, '&').replace(/&nbsp;|&#160;/gi,' ').replace(/[\u00a0\u202f]/g,' ');
+      var type = line.match(/^(?:#\d+\s+)?([12][vn][12])(?=\s|\|)/i);
+      if (!type || !/^(1[vn]1|2[vn]2)$/i.test(type[1])) return null;
+      var mode = type[1].toLowerCase().replace('n','v');
       var body = line.slice(type[0].length).trim();
       var outcome = body.match(/(?:\s*\|\s*|\s+)(WIN|LOSS|W|L|POSTPONED|PENDING|UPCOMING|DRAW|CANCELLED|CANCELED)$/i);
       if (outcome) {
@@ -8837,9 +8837,9 @@ function renderLatestTransmission(articles) {
       if (outcome && leftWin !== /^W/i.test(outcome[1])) return null;
 
       var left = body.slice(0, score.index)
-        .replace(/^(?:\[\s*[PTZR](?:\s*\/?\s*[PTZR])?\s*\]|\(\s*[PTZR](?:\s*\/?\s*[PTZR])?\s*\))\s*/i, '');
+        .replace(/(?:\[\s*[PTZR](?:\s*\/?\s*[PTZR])?\s*\]|\(\s*[PTZR](?:\s*\/?\s*[PTZR])?\s*\))/gi, ' ');
       var right = body.slice(score.index + score[0].length)
-        .replace(/\s*(?:\[\s*[PTZR](?:\s*\/?\s*[PTZR])?\s*\]|\(\s*[PTZR](?:\s*\/?\s*[PTZR])?\s*\))$/i, '');
+        .replace(/(?:\[\s*[PTZR](?:\s*\/?\s*[PTZR])?\s*\]|\(\s*[PTZR](?:\s*\/?\s*[PTZR])?\s*\))/gi, ' ');
       var leftKeys = left.split(/\s+&\s+/).map(wdStatsPlayerKey);
       var rightKeys = right.split(/\s+&\s+/).map(wdStatsPlayerKey);
       var teamSize = Number(mode[0]);
@@ -8879,15 +8879,16 @@ function renderLatestTransmission(articles) {
           if (typeof raw === 'string' && (!raw.trim() || /(?:\||\s)\s*(POSTPONED|PENDING|UPCOMING|DRAW|CANCELLED|CANCELED)\s*$/i.test(raw))) return;
           var set = wdParseStatsSet(raw);
           if (!set) { invalid++; return; }
-          if (seen.has(set.text)) return;
-          seen.add(set.text);
+          var signature = set.text.replace(/\s+/g,' ').trim();
+          if (seen.has(signature)) return;
+          seen.add(signature);
           function identifiesMember(key) {
             var owners = aliases.get(key);
             return owners && owners.size === 1 && owners.has(member.id);
           }
           var left = set.left.filter(identifiesMember).length;
           var right = set.right.filter(identifiesMember).length;
-          if (left + right !== 1 || (!left && !internal)) return;
+          if (left + right !== 1) return;
           var win = left ? set.leftWin : !set.leftWin;
           history.push({
             week: week, dateKey: dateKey, mode: set.mode, league: league,
@@ -8986,11 +8987,7 @@ function renderLatestTransmission(articles) {
             firestoreMatches = [];
             wdStatsMatchSnapshot = snapshot.metadata.fromCache ? null : { matches: [], cached: false };
             refreshOpenDossierStats();
-            if (typeof canWriteClanRosterToFirestore === 'function' && canWriteClanRosterToFirestore()) {
-              seedDefaultMatchesToFirestore();
-            } else {
-              renderMatches();
-            }
+            renderMatches();
           }
         }, function(err) {
         wdStatsMatchFailed = true;
@@ -9154,6 +9151,7 @@ function renderLatestTransmission(articles) {
     }
 
     function getMatchesList() {
+      if (wdStatsMatchSnapshot) return wdStatsMatchSnapshot.matches;
       if (firestoreMatches && firestoreMatches.length > 0) {
         return firestoreMatches;
       }
@@ -9166,57 +9164,21 @@ function renderLatestTransmission(articles) {
 
     function recalculateAllMemberScores() {
       var matches = getMatchesList();
-      var allMembers = (typeof getFullClanMembersList === 'function') ? getFullClanMembersList() : membersData;
-
-      // Reset every calculated field before rebuilding it from the match archive.
-      allMembers.forEach(function(mem) {
-        mem._w1_w = 0; mem._w1_l = 0;
-        mem._w2_w = 0; mem._w2_l = 0;
-        mem._pts = 0;
-        mem._history = [];
-      });
-
-      // Single source of truth: the ranking uses exactly the same verified
-      // calculation as the player dossier (wdCollectPlayerStats). Matches that
-      // are still UPCOMING/PENDING and unverifiable set lines count nowhere.
+      var allMembers = typeof getFullClanMembersList === 'function' ? getFullClanMembersList() : membersData;
       allMembers.forEach(function(mem) {
         var stats = wdCollectPlayerStats(mem, allMembers, matches);
+        mem._w1_w=0;mem._w1_l=0;mem._w2_w=0;mem._w2_l=0;mem._pts=0;
         stats.history.forEach(function(entry) {
-          if (entry.mode === '2v2') {
-            if (entry.win) mem._w2_w++; else mem._w2_l++;
-          } else {
-            if (entry.win) mem._w1_w++; else mem._w1_l++;
-          }
-          if (entry.league) mem._pts += entry.win ? 2 : 1;
-          mem._history.push({
-            week: entry.week ? String(entry.week).split('//')[0].trim() : 'CW',
-            set: entry.set,
-            res: entry.res,
-            win: entry.win
-          });
+          if(entry.mode==='1v1'){if(entry.win)mem._w1_w++;else mem._w1_l++;}
+          if(entry.mode==='2v2'){if(entry.win)mem._w2_w++;else mem._w2_l++;}
+          if(entry.league)mem._pts+=entry.win?2:1;
         });
+        mem._history=stats.history.slice();mem.history=stats.history.slice();
+        mem.w1=mem._w1_w+' - '+mem._w1_l;mem.w2=mem._w2_w+' - '+mem._w2_l;mem.pts=mem._pts;
       });
-
-      allMembers.forEach(function(mem) {
-        // Always replace stored values so edits/deletions and zero-result members
-        // are reflected accurately in the overview and member dossiers.
-        mem.w1 = mem._w1_w + ' - ' + mem._w1_l;
-        mem.w2 = mem._w2_w + ' - ' + mem._w2_l;
-        mem.pts = mem._pts;
-        mem.history = mem._history.slice();
-      });
-
-      // Keep the local fallback synchronized when Firestore is unavailable.
-      if (typeof firestoreMembers === 'undefined' || !firestoreMembers.length) {
-        try {
-          localStorage.setItem('wd_all_clan_members', JSON.stringify(allMembers));
-        } catch(e) {
-          console.warn('Could not save calculated member stats locally:', e);
-        }
-      }
-
       return allMembers;
     }
+
 
     // Schaltet die 2v2-Felder in der Tabelle ein/aus
     function toggleTable2v2Mode() {
@@ -11588,7 +11550,7 @@ function updateMatchTimePreview(){
 </dialog>
 
 
-<script src="winter.js?v=bannerinfo1"></script>
+<script src="winter.js?v=statsfix1"></script>
 <dialog class="clan-apply-dialog" id="clan-apply-dialog" aria-labelledby="clan-apply-title"><div class="clan-apply-heading"><h2 id="clan-apply-title">Join White Dragon Clan</h2><button class="clan-apply-close" id="clan-apply-close" type="button" aria-label="Close joining information" autofocus>×</button></div><div class="clan-apply-body"><p>Meet us in our Battle.net channel or contact a clan representative on Discord.</p><dl class="clan-channel"><dt>Gateway</dt><dd>US West</dd><dt>Channel</dt><dd>Op White-Dragon</dd></dl><button type="button" class="winter-primary" onclick="copyJoinInfo()">Copy joining details</button><div class="clan-discord-contacts" aria-label="Discord recruitment contacts"><span class="clan-contact-label">Contact us on Discord</span><a class="winter-primary clan-contact" href="https://discord.com/users/839360695992844298" target="_blank" rel="noopener noreferrer"><span>LunarPop</span><span aria-hidden="true">↗</span></a><a class="winter-primary clan-contact" href="https://discord.com/users/1363731179454468136" target="_blank" rel="noopener noreferrer"><span>zz</span><span aria-hidden="true">↗</span></a><a class="winter-primary clan-contact" href="https://discord.com/users/492046348946898946" target="_blank" rel="noopener noreferrer"><span>Cheesecake</span><span aria-hidden="true">↗</span></a></div></div></dialog>
 <script src="apply-dialog.js?v=1"></script>
 </body>

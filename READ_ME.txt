@@ -1,11 +1,13 @@
-WHITE DRAGON - BANNER INFORMATION AND FOOTER
+WHITE DRAGON - STATISTICS CONSISTENCY FIX
 
-Upload all files and folders together, replace previous files, then refresh with Ctrl+F5.
+Upload all package contents, replace previous files and refresh with Ctrl+F5.
 
-Banner typography and spacing refined. Added EST. 2021, US West, Channel Op White-Dragon, and live Germany / US Eastern clocks. The redundant top bar is removed. Clock labels automatically show CET/EST or CEST/EDT as appropriate.
+Profile and ranking now share the verified set parser. All supported completed sets contribute to their 1v1/2v2 record. Only Clan League/BWCL sets grant points: win 2, loss 1, per participant. Clan Match contributes to winrate but not league points.
 
-Visitor count and Privacy share a centered bottom row without boxes or borders. Footer has a quiet light surface for readability. Existing visitor IDs, counter logic and Privacy action retained.
+Fixes include multiline string sets, 1n1/2n2 notation, per-player race markers, right-side participation, smart apostrophes, duplicate whitespace variants and consistent handling of pending, drawn, contradictory or malformed sets. Ambiguous player aliases remain excluded to avoid invented attribution.
 
-All prior match scheduling, news fallback images, clan logos, join dialog and Firebase functionality retained. No new database writes or migration.
+An authoritative empty Firestore snapshot no longer falls back to demo results or automatically seeds default matches. No migration, database writes or new rules are needed. Match edits and deletions rebuild derived values.
 
-Checked JavaScript syntax, unique live counter and clock IDs, local assets, winter/summer timezone labels and clock values. Visual browser verification remains unavailable.
+Tests cover shared profile/ranking totals, points, both formats, invalid data exclusions, aliases, duplicates and empty/deleted results. JavaScript syntax checked. Live Firestore was not modified and visual browser verification was unavailable.
+
+The screenshot alone cannot establish that 20 points is incorrect: the profile winrates include friendlies, while points only include league sets. Review the player Match Records for the exact contributing sets.
