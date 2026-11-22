@@ -73,39 +73,29 @@ function winterRefreshNextMatch() {
   var button=element('button','winter-primary','Match details →');button.type='button';button.onclick=function(){openCalendarMatch(next.id);};footer.appendChild(button);
 }
 
+function wdUpcomingCalendarItems(allItems, today) {
+  return (Array.isArray(allItems)?allItems:[]).filter(function(item){
+    if(!item || !/^\d{4}-\d{2}-\d{2}$/.test(String(item.key||'')) || item.key<today)return false;
+    if(item.kind==='match')return /^(UPCOMING|PENDING)$/i.test(String(item.result||'UPCOMING').trim());
+    return !/^(CANCELLED|CANCELED|COMPLETED|POSTPONED)$/i.test(String(item.result||item.status||'').trim());
+  }).slice().sort(function(a,b){return a.key.localeCompare(b.key)||(Number(a.time)||0)-(Number(b.time)||0)||String(a.title||'').localeCompare(String(b.title||''));});
+}
+
 function renderWDCalendarAgenda(allItems) {
-  var list = document.getElementById('winter-agenda-list');
-  if (!list) return;
+  var list=document.getElementById('winter-agenda-list');if(!list)return;
   list.replaceChildren();
-  var today = calendarDateKey(new Date());
-  var selected = selectedCalendarKey || today;
-  var selectedItems = allItems.filter(function(item) { return item.key === selected; });
-  var items = selectedItems.length ? selectedItems : allItems.filter(function(item) { return item.key >= today; });
-  document.getElementById('winter-agenda-title').textContent = selectedItems.length ? 'Selected day' : 'Upcoming events';
-  items = items.slice().sort(function(a, b) { return a.time - b.time; }).slice(0, 4);
-  if (!items.length) {
-    var empty = document.createElement('p');
-    empty.className = 'winter-empty';
-    empty.textContent = 'No upcoming events scheduled.';
-    list.appendChild(empty);
-  }
-  items.forEach(function(item) {
-    var button = document.createElement('button');
-    button.type = 'button';
-    button.className = 'winter-event';
-    var date = document.createElement('time');
-    date.dateTime = item.key;
-    date.textContent = new Date(item.time).toLocaleDateString('en-US', { month:'short', day:'numeric' });
-    var text = document.createElement('span');
-    var title = document.createElement('strong');
-    title.textContent = item.title;
-    var category = document.createElement('small');
-    category.textContent = calendarCategoryLabel(item);
-    text.append(title, category);
-    button.append(date, text);
-    button.onclick = function() { selectClanCalendarDay(item.key); };
-    list.appendChild(button);
+  var upcoming=wdUpcomingCalendarItems(allItems,calendarDateKey(new Date()));
+  document.getElementById('winter-agenda-title').textContent='Upcoming events';
+  if(!upcoming.length){var empty=document.createElement('p');empty.className='winter-empty';empty.textContent='No upcoming events scheduled.';list.appendChild(empty);}
+  upcoming.slice(0,4).forEach(function(item){
+    var button=document.createElement('button');button.type='button';button.className='winter-event';
+    var date=document.createElement('time');date.dateTime=item.key;
+    var parts=item.key.split('-').map(Number);date.textContent=new Date(parts[0],parts[1]-1,parts[2]).toLocaleDateString('en-US',{month:'short',day:'numeric'});
+    var text=document.createElement('span'),title=document.createElement('strong'),category=document.createElement('small');
+    title.textContent=item.title||'Event';category.textContent=calendarCategoryLabel(item);
+    text.append(title,category);button.append(date,text);button.onclick=function(){selectClanCalendarDay(item.key);};list.appendChild(button);
   });
+  if(upcoming.length>4){var more=document.createElement('p');more.className='winter-empty';more.textContent='+'+(upcoming.length-4)+' more upcoming · select dates in the calendar';list.appendChild(more);}
   winterRefreshNextMatch();
 }
 

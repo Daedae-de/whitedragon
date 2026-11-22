@@ -5438,6 +5438,9 @@ header .brand-title { font-size:1.25rem; }
     function updateClocks() {
       try {
         var now = new Date();
+        var dayKey=calendarDateKey(now);
+        if(window.wdCalendarClockDay && window.wdCalendarClockDay!==dayKey && typeof renderClanCalendar==='function')renderClanCalendar();
+        window.wdCalendarClockDay=dayKey;
         var cetLabel=document.getElementById('banner-zone-cet'),estLabel=document.getElementById('banner-zone-est');
         function clockOffset(zone){var v=new Intl.DateTimeFormat('en-GB',{timeZone:zone,timeZoneName:'shortOffset'}).formatToParts(now).find(function(p){return p.type==='timeZoneName';}).value;return v;}
         if(cetLabel)cetLabel.textContent=clockOffset('Europe/Berlin')==='GMT+2'?'CEST':'CET';
@@ -8860,7 +8863,8 @@ function renderLatestTransmission(articles) {
       var history = [];
       var invalid = 0;
       matches.forEach(function(match) {
-        if (!match || /^(UPCOMING|POSTPONED|PENDING|CANCELLED|CANCELED)$/i.test(String(match.resultType || '').trim())) return;
+        // A fixture can still be UPCOMING while individual sets already have verified scores.
+        if (!match || /^(POSTPONED|CANCELLED|CANCELED)$/i.test(String(match.resultType || '').trim())) return;
         var category = String(match.category || '').trim();
         var internal = /^(WD Star League|WD Match)$/i.test(category);
         var league = /^(Clan League(?:\s*\(BWCL\))?|BWCL\b.*)$/i.test(category);
@@ -8981,7 +8985,7 @@ function renderLatestTransmission(articles) {
             });
             firestoreMatches = liveMatches;
             wdStatsMatchSnapshot = { matches: liveMatches, cached: snapshot.metadata.fromCache };
-            localStorage.setItem('wd_matches_vault', JSON.stringify(liveMatches));
+            try { localStorage.setItem('wd_matches_vault', JSON.stringify(liveMatches)); } catch (cacheError) { console.warn('Browser cache unavailable; showing live Firestore data.', cacheError); }
             renderMatches();
           } else {
             firestoreMatches = [];
@@ -9526,6 +9530,7 @@ function renderLatestTransmission(articles) {
           time: date.getTime(),
           kind: 'event',
           eventKind: eventItem.kind || 'Event',
+          status: eventItem.status || eventItem.resultType || '',
           league: eventType === 'league',
           title: calendarMatchTitle(title, eventType),
           detail: (eventItem.kind || 'Event') + timeDisplay + (eventItem.note ? ' · ' + eventItem.note : ''),
@@ -10746,7 +10751,7 @@ function updateMatchTimePreview(){
               liveList.push(d);
             });
             firestoreMembers = liveList;
-            localStorage.setItem('wd_all_clan_members', JSON.stringify(liveList));
+            try { localStorage.setItem('wd_all_clan_members', JSON.stringify(liveList)); } catch (cacheError) { console.warn('Browser cache unavailable; showing live Firestore data.', cacheError); }
             renderRosterTableAndTiers();
           } else {
             firestoreMembers = [];
@@ -11550,7 +11555,7 @@ function updateMatchTimePreview(){
 </dialog>
 
 
-<script src="winter.js?v=statsfix1"></script>
+<script src="winter.js?v=calendarfix1"></script>
 <dialog class="clan-apply-dialog" id="clan-apply-dialog" aria-labelledby="clan-apply-title"><div class="clan-apply-heading"><h2 id="clan-apply-title">Join White Dragon Clan</h2><button class="clan-apply-close" id="clan-apply-close" type="button" aria-label="Close joining information" autofocus>×</button></div><div class="clan-apply-body"><p>Meet us in our Battle.net channel or contact a clan representative on Discord.</p><dl class="clan-channel"><dt>Gateway</dt><dd>US West</dd><dt>Channel</dt><dd>Op White-Dragon</dd></dl><button type="button" class="winter-primary" onclick="copyJoinInfo()">Copy joining details</button><div class="clan-discord-contacts" aria-label="Discord recruitment contacts"><span class="clan-contact-label">Contact us on Discord</span><a class="winter-primary clan-contact" href="https://discord.com/users/839360695992844298" target="_blank" rel="noopener noreferrer"><span>LunarPop</span><span aria-hidden="true">↗</span></a><a class="winter-primary clan-contact" href="https://discord.com/users/1363731179454468136" target="_blank" rel="noopener noreferrer"><span>zz</span><span aria-hidden="true">↗</span></a><a class="winter-primary clan-contact" href="https://discord.com/users/492046348946898946" target="_blank" rel="noopener noreferrer"><span>Cheesecake</span><span aria-hidden="true">↗</span></a></div></div></dialog>
 <script src="apply-dialog.js?v=1"></script>
 </body>
