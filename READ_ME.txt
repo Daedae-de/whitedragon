@@ -1,9 +1,13 @@
-WHITE DRAGON - UPCOMING CALENDAR FIX
+WHITE DRAGON - SHIELDBATTERY AND LAST MATCH
 
 Upload all files/folders together, replace previous files, refresh with Ctrl+F5.
 
-The Overview Upcoming events list always shows upcoming entries from today onwards, independently of the selected calendar date or month. Clicking a day still opens the existing detailed day view. Past, finished and cancelled items do not fill the upcoming list. Up to four entries are shown with a remaining count if needed. Midnight refresh updates the list without resetting calendar selection.
+Apply Now dialog includes the White Dragon ShieldBattery channel:
+https://shieldbattery.net/chat/224/White-Dragon
+The same link is included in Copy joining details. Existing Discord contacts retained.
 
-Confirmed against the previously read public match archive: Nov 22 WD vs SAS and Nov 29 WD vs Shadow-2 both appear even when an older date is selected. The standalone clan_events collection was empty when read; upcoming match records supply the scheduled items.
+Below Next Match, a compact Last completed match row shows the latest dated WIN/LOSS/DRAW fixture, date, recorded numeric score when available and a Details link. Future, upcoming, postponed, cancelled and invalid-date fixtures are not presented as final results. A match still marked UPCOMING must have its final status saved before it can appear as completed; individual set statistics still update independently using the earlier statistics fix.
 
-Tests cover live fixture data, date selection independence, next-month events, completed/cancelled exclusions, empty state and opening the correct date. JavaScript syntax checked. Prior statistics fixes and all existing functions retained. No database writes or migration. Visual browser verification unavailable.
+When no next match exists, the last-result row still appears. Empty archive displays an honest empty state. No scores are invented or inferred from individual maps.
+
+JavaScript syntax, latest-result filtering and the new URL/copy-text integration tested. Calendar and statistics fixes preserved. No database changes. Visual browser verification unavailable.

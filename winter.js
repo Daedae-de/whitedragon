@@ -1,3 +1,27 @@
+function wdLatestCompletedMatch(matches, today) {
+  return (Array.isArray(matches)?matches:[]).filter(function(match){
+    if(!match || !/^(WIN|LOSS|DRAW)$/i.test(String(match.resultType||'').trim()))return false;
+    var date=parseClanDate(match.week);return date && calendarDateKey(date)<=today;
+  }).slice().sort(function(a,b){return parseClanDate(b.week)-parseClanDate(a.week)||String(a.id||'').localeCompare(String(b.id||''));})[0] || null;
+}
+function wdAppendLastMatch(container) {
+  var match=wdLatestCompletedMatch(getMatchesList(),calendarDateKey(new Date()));
+  var panel=document.createElement('div');panel.className='last-match-summary';
+  var heading=document.createElement('span');heading.className='last-match-label';heading.textContent='Last completed match';panel.appendChild(heading);
+  if(!match){var empty=document.createElement('span');empty.textContent='No completed match recorded.';panel.appendChild(empty);container.appendChild(panel);return;}
+  var row=document.createElement('div');row.className='last-match-row';
+  var identity=document.createElement('div');identity.className='last-match-identity';
+  var details=wdNextMatchDetails(match,[]);
+  if(details.opponent){var logoPath=wdClanLogoPath(details.opponent);if(logoPath){var logo=document.createElement('img');logo.src=logoPath;logo.alt='';logo.width=36;logo.height=36;logo.onerror=function(){this.hidden=true;};identity.appendChild(logo);}}
+  var text=document.createElement('div');var title=document.createElement('strong');title.textContent=String(match.title||'Match');var date=document.createElement('small');date.textContent=parseClanDate(match.week).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'});text.append(title,date);identity.appendChild(text);
+  var result=document.createElement('strong');result.className='last-match-result result-'+String(match.resultType).toLowerCase();
+  // Show only a recorded fixture score; do not infer a clan-war score from individual maps.
+  var score=String(match.score||'').trim();var number=score.match(/\b(\d+)\s*[-:–]\s*(\d+)\b/);
+  result.textContent=String(match.resultType).toUpperCase()+(number?' · '+number[1]+' – '+number[2]:'');
+  var button=document.createElement('button');button.type='button';button.className='last-match-details';button.textContent='Details →';button.onclick=function(){openCalendarMatch(match.id);};
+  row.append(identity,result,button);panel.appendChild(row);container.appendChild(panel);
+}
+
 function wdNextMatchDetails(match, events) {
   var date = parseClanDate(match.week);
   var key = date ? calendarDateKey(date) : '';
@@ -49,7 +73,7 @@ function winterRefreshNextMatch() {
     return String(match.resultType || '').trim().toUpperCase() === 'UPCOMING' && (!date || date >= today);
   }).sort(function(a,b) { var x=parseClanDate(a.week),y=parseClanDate(b.week);return (x?x.getTime():Infinity)-(y?y.getTime():Infinity); })[0];
   var element = function(tag, cls, text) { var node=document.createElement(tag);if(cls)node.className=cls;if(text)node.textContent=text;return node; };
-  if (!next) { container.appendChild(element('p','winter-empty','No upcoming match scheduled.'));return; }
+  if (!next) { container.appendChild(element('p','winter-empty','No upcoming match scheduled.'));wdAppendLastMatch(container);return; }
   var details = wdNextMatchDetails(next, typeof clanEvents !== 'undefined' ? clanEvents : []);
   var teams=element('div','next-teams');
   function team(name, file) {
@@ -71,6 +95,7 @@ function winterRefreshNextMatch() {
   field('Maps',details.maps.length ? details.maps.join(' · ') : 'To be confirmed');
   var footer=element('div','next-footer');footer.appendChild(metadata);container.appendChild(footer);
   var button=element('button','winter-primary','Match details →');button.type='button';button.onclick=function(){openCalendarMatch(next.id);};footer.appendChild(button);
+  wdAppendLastMatch(container);
 }
 
 function wdUpcomingCalendarItems(allItems, today) {
