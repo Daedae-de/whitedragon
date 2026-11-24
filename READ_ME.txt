@@ -1,9 +1,17 @@
-WHITE DRAGON - LAST RECORDED RESULT FIX
+WHITE DRAGON - ALL DIVISION CLAN LOGOS
 
-Upload all files/folders together and replace previous files. Refresh with Ctrl+F5.
+Upload all files/folders together, including clan-icons and clan-logos.js, replace previous files and refresh with Ctrl+F5.
 
-Verified live data: SAS on 22 Nov 2026 has recorded score 4:2 and completed sets but is still marked UPCOMING. Earlier filtering showed CwT from 15 Nov instead.
+Last Match Result now displays both White Dragon and opponent logos. Next Match and BWCL standings use the same registry.
 
-Last match result now accepts a past UPCOMING/PENDING fixture only if it has an explicit numeric fixture score and every entered nonempty set passes the verified result parser. Display uses the stored fixture score, never a sum inferred from maps. A tooltip identifies status-not-yet-updated records. Future, postponed, cancelled, scoreless and incomplete fixtures remain excluded.
+Source: https://bwcl.anicolasmoreno.chatgpt.site/
+23 registered teams, divisions A-D. 20 opponent logos downloaded and optimised locally. WD uses the existing Christmas logo. Shadow and Shadow-2 have no logo at the source; no badge is invented.
 
-Tested against current public data: SAS on 22 Nov is selected with recorded 4:2. No Firestore data was modified. Prior fixes and ShieldBattery link retained. Visual browser verification unavailable.
+Storage:
+- clan-icons/*.png: locally served clan images, max 160 pixels on the longest edge.
+- clan-logos.js: runtime lookup by team ID, full name and clan tag.
+- clan-icons/manifest.json: readable division/name/tag/file/source inventory.
+
+Name matching ignores case, punctuation and accents. Division suffixes remain significant (e.g. Cwt), Cwt)-2 and Cwt)-3 have separate entries). Unknown clan names do not receive an unrelated logo. New unknown clans require their logo and alias to be added to the registry. No Firestore storage or migration is involved.
+
+Verified all image files, aliases, JavaScript syntax and a simulated last-result renderer producing both logo images. All prior fixes retained. Visual browser verification unavailable.

@@ -2440,6 +2440,8 @@ header .brand-title { font-size:1.25rem; }
 .last-match-summary{border-top:1px solid #cfc4b3;padding-top:14px;margin-top:1px;font-family:Inter,Arial,sans-serif}.last-match-label{display:block;font-size:.67rem;color:#73786e;text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px}.last-match-row{display:flex;align-items:center;justify-content:space-between;gap:12px}.last-match-identity{display:flex;align-items:center;gap:9px;min-width:0;flex:1}.last-match-identity>img{width:36px!important;height:36px!important;object-fit:contain;flex-shrink:0}.last-match-identity>div{min-width:0}.winter-next .last-match-identity strong{font:600 .78rem/1.4 Inter,Arial,sans-serif;display:block;text-transform:none;overflow-wrap:anywhere;color:#36413b}.last-match-identity small{display:block;font-size:.65rem;color:#7b7d71;margin-top:3px}.winter-next .last-match-result{font:650 .8rem/1.4 Inter,Arial,sans-serif;white-space:nowrap}.last-match-result.result-win{color:#376b50}.last-match-result.result-loss{color:#995044}.last-match-result.result-draw{color:#786b4d}.last-match-details{background:transparent;border:0;color:#485e54;text-decoration:underline;text-underline-offset:3px;cursor:pointer;min-height:36px;font:.73rem Inter,Arial,sans-serif}.clan-shieldbattery-link{display:block;text-align:center;text-decoration:none;min-height:44px}
 @media(max-width:760px){.last-match-row{flex-wrap:wrap;gap:7px 12px}.last-match-identity{flex-basis:65%}.last-match-details{margin-left:auto}.winter-next .last-match-result{font-size:.75rem}}
 </style>
+<script src="clan-logos.js?v=1"></script>
+<style>.last-match-marks{display:flex;align-items:center;gap:8px;flex-shrink:0}.last-match-marks img{display:block;width:42px!important;height:42px!important;object-fit:contain}.last-match-marks img[hidden]{display:none}.last-match-vs{font:600 .62rem Inter,Arial,sans-serif;color:#7a7d73}.last-match-identity{gap:12px}@media(max-width:760px){.last-match-marks{gap:5px}.last-match-marks img{width:32px!important;height:32px!important}.last-match-identity{gap:8px}}</style>
 </head>
 <body>
   <!-- White Dragon rank insignia: self-contained SVG symbols, no extra assets. -->
@@ -5158,14 +5160,9 @@ header .brand-title { font-size:1.25rem; }
     // endpoint. Do NOT put Google credentials in this HTML file.
     // ========================================================
     function wdClanLogoPath(name) {
-      var key = String(name || '').toLowerCase().replace(/[^a-z0-9]/g, '');
-      var logos = {
-        whitedragon:'christmas-logo.jpg',whitedragonwd:'christmas-logo.jpg',wd:'christmas-logo.jpg',
-        sas:'clan-icons/SAS_D.png',db3:'clan-icons/DB_D.png',dabrotherhood3:'clan-icons/DB_D.png',
-        cwt3:'clan-icons/CWT_D.png',crazywarriorsteam3:'clan-icons/CWT_D.png',
-        red3:'clan-icons/RED_D.png',rasierteeierdodel3:'clan-icons/RED_D.png'
-      };
-      return Object.prototype.hasOwnProperty.call(logos,key) ? logos[key] : '';
+      var key=String(name||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]/g,'');
+      var logos=window.WD_CLAN_LOGOS||{};
+      return Object.prototype.hasOwnProperty.call(logos,key)?logos[key]:'';
     }
 
     const BWCL_APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxigC6t2Z7AXIijv1ptifUXL8QpXAy1_OHZwh7-q1MemLaGrrKUNvbjOBDyPaF14o3d/exec";
@@ -11560,7 +11557,7 @@ function updateMatchTimePreview(){
 </dialog>
 
 
-<script src="winter.js?v=lastresult2"></script>
+<script src="winter.js?v=alllogos1"></script>
 <dialog class="clan-apply-dialog" id="clan-apply-dialog" aria-labelledby="clan-apply-title"><div class="clan-apply-heading"><h2 id="clan-apply-title">Join White Dragon Clan</h2><button class="clan-apply-close" id="clan-apply-close" type="button" aria-label="Close joining information" autofocus>×</button></div><div class="clan-apply-body"><p>Meet us on Battle.net, join our ShieldBattery channel, or contact a clan representative on Discord.</p><dl class="clan-channel"><dt>Gateway</dt><dd>US West</dd><dt>Channel</dt><dd>Op White-Dragon</dd></dl><a class="winter-primary clan-shieldbattery-link" href="https://shieldbattery.net/chat/224/White-Dragon" target="_blank" rel="noopener noreferrer">Join White Dragon on ShieldBattery ↗</a><button type="button" class="winter-primary" onclick="copyJoinInfo()">Copy joining details</button><div class="clan-discord-contacts" aria-label="Discord recruitment contacts"><span class="clan-contact-label">Contact us on Discord</span><a class="winter-primary clan-contact" href="https://discord.com/users/839360695992844298" target="_blank" rel="noopener noreferrer"><span>LunarPop[WD]</span><span aria-hidden="true">↗</span></a><a class="winter-primary clan-contact" href="https://discord.com/users/1363731179454468136" target="_blank" rel="noopener noreferrer"><span>z'DAwgZ[WD]</span><span aria-hidden="true">↗</span></a><a class="winter-primary clan-contact" href="https://discord.com/users/492046348946898946" target="_blank" rel="noopener noreferrer"><span>Cheesecake[WD]</span><span aria-hidden="true">↗</span></a></div></div></dialog>
 <script src="apply-dialog.js?v=1"></script>
 </body>

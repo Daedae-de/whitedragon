@@ -25,7 +25,11 @@ function wdAppendLastMatch(container) {
   var row=document.createElement('div');row.className='last-match-row';
   var identity=document.createElement('div');identity.className='last-match-identity';
   var details=wdNextMatchDetails(match,[]);
-  if(details.opponent){var logoPath=wdClanLogoPath(details.opponent);if(logoPath){var logo=document.createElement('img');logo.src=logoPath;logo.alt='';logo.width=36;logo.height=36;logo.onerror=function(){this.hidden=true;};identity.appendChild(logo);}}
+  var marks=document.createElement('div');marks.className='last-match-marks';
+  function addMark(file,label){if(!file)return;var logo=document.createElement('img');logo.src=file;logo.alt=label;logo.width=42;logo.height=42;logo.onerror=function(){this.hidden=true;};marks.appendChild(logo);}
+  addMark(wdClanLogoPath('White Dragon'),'White Dragon');
+  if(details.opponent){var logoPath=wdClanLogoPath(details.opponent);if(logoPath){var versus=document.createElement('span');versus.className='last-match-vs';versus.textContent='VS';marks.appendChild(versus);addMark(logoPath,details.opponent);}}
+  identity.appendChild(marks);
   var text=document.createElement('div');var title=document.createElement('strong');title.textContent=String(match.title||'Match');var date=document.createElement('small');date.textContent=parseClanDate(match.week).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'});text.append(title,date);identity.appendChild(text);
   var recorded=wdRecordedMatchResult(match,calendarDateKey(new Date()));
   var result=document.createElement('strong');result.className='last-match-result result-'+recorded.outcome.toLowerCase();

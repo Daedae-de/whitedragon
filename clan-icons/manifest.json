@@ -1,0 +1,186 @@
+[
+  {
+    "id": "DB_A",
+    "division": "A",
+    "name": "Da BrotherHooD",
+    "tag": "dB)",
+    "file": "clan-icons/DB_A.png",
+    "source": "https://bwcl.anicolasmoreno.chatgpt.site/api/bwcl/media/9b39ccc5-e0a5-4215-a789-da43816d2959"
+  },
+  {
+    "id": "ANGELS",
+    "division": "A",
+    "name": "Angels",
+    "tag": "A]",
+    "file": "clan-icons/ANGELS.png",
+    "source": "https://bwcl.anicolasmoreno.chatgpt.site/api/bwcl/media/a7418378-f2ef-47ac-b84a-0b6621bd342f"
+  },
+  {
+    "id": "NAKR",
+    "division": "A",
+    "name": "NAKR",
+    "tag": "NAKR`",
+    "file": "clan-icons/NAKR.png",
+    "source": "https://bwcl.anicolasmoreno.chatgpt.site/api/bwcl/media/7d1c81be-f681-4096-826f-117ef72e149b"
+  },
+  {
+    "id": "IRK_A",
+    "division": "A",
+    "name": "inte Riktigt kloka-A",
+    "tag": "iRk-A",
+    "file": "clan-icons/IRK_A.png",
+    "source": "https://bwcl.anicolasmoreno.chatgpt.site/api/bwcl/media/423bc028-96a7-4810-b2de-4746528f15d1"
+  },
+  {
+    "id": "REV_A",
+    "division": "A",
+    "name": "Clan Revolution",
+    "tag": "[ReV]",
+    "file": "clan-icons/REV_A.png",
+    "source": "https://bwcl.anicolasmoreno.chatgpt.site/api/bwcl/media/52424c78-bc0b-475c-8086-941f3f747c64"
+  },
+  {
+    "id": "RED_B",
+    "division": "B",
+    "name": "Rasierte Eier Dödel + StarCastTV",
+    "tag": "Red+SCTV",
+    "file": "clan-icons/RED_B.png",
+    "source": "https://bwcl.anicolasmoreno.chatgpt.site/api/bwcl/media/5add2323-1881-4c7d-aa73-5f37a72a518d"
+  },
+  {
+    "id": "SHADOW_B",
+    "division": "B",
+    "name": "Shadow",
+    "tag": "Shadow]",
+    "file": null,
+    "source": null
+  },
+  {
+    "id": "REV_B2",
+    "division": "B",
+    "name": "Clan Revolution-2",
+    "tag": "[ReV]-2",
+    "file": "clan-icons/REV_B2.png",
+    "source": "https://bwcl.anicolasmoreno.chatgpt.site/api/bwcl/media/648d41cd-db59-496a-8734-5801e7fb56ce"
+  },
+  {
+    "id": "RED_B2",
+    "division": "B",
+    "name": "Rasierte Eier Dödel 2",
+    "tag": "Red-2",
+    "file": "clan-icons/RED_B2.png",
+    "source": "https://bwcl.anicolasmoreno.chatgpt.site/api/bwcl/media/fca1770f-0255-463b-af51-9b1923d977ea"
+  },
+  {
+    "id": "CWT_B",
+    "division": "B",
+    "name": "Crazy Warriors Team",
+    "tag": "Cwt)",
+    "file": "clan-icons/CWT_B.png",
+    "source": "https://bwcl.anicolasmoreno.chatgpt.site/api/bwcl/media/7e5a1cf7-6ab6-4c2c-937a-f5f8e23e59c2"
+  },
+  {
+    "id": "PSI_B",
+    "division": "B",
+    "name": "pSi",
+    "tag": "pSi",
+    "file": "clan-icons/PSI_B.png",
+    "source": "https://bwcl.anicolasmoreno.chatgpt.site/api/bwcl/media/95c45191-4eda-4bc3-9ce7-d711b8e666e1"
+  },
+  {
+    "id": "ASH_C",
+    "division": "C",
+    "name": "Aeterna societas honoris",
+    "tag": "ash",
+    "file": "clan-icons/ASH_C.png",
+    "source": "https://bwcl.anicolasmoreno.chatgpt.site/api/bwcl/media/3602ff13-0b4f-4866-9ecd-dcfe43359a8e"
+  },
+  {
+    "id": "DB_C",
+    "division": "C",
+    "name": "Da BrotherHooD-2",
+    "tag": "dB)-2",
+    "file": "clan-icons/DB_C.png",
+    "source": "https://bwcl.anicolasmoreno.chatgpt.site/api/bwcl/media/6e804b50-7513-4f95-b5ec-d4bc2f74731f"
+  },
+  {
+    "id": "IRK_C",
+    "division": "C",
+    "name": "inte Riktigt kloka-2",
+    "tag": "iRk-2",
+    "file": "clan-icons/IRK_C.png",
+    "source": "https://bwcl.anicolasmoreno.chatgpt.site/api/bwcl/media/6fdfac13-943b-49b7-bba5-86f76848236c"
+  },
+  {
+    "id": "GITM_C",
+    "division": "C",
+    "name": "Gosu in the making",
+    "tag": "GiTM",
+    "file": "clan-icons/GITM_C.png",
+    "source": "https://bwcl.anicolasmoreno.chatgpt.site/api/bwcl/media/777a38a2-676a-4070-b38b-eb8f86981b79"
+  },
+  {
+    "id": "DM_C",
+    "division": "C",
+    "name": "disturbed Mind",
+    "tag": "dM",
+    "file": "clan-icons/DM_C.png",
+    "source": "https://bwcl.anicolasmoreno.chatgpt.site/api/bwcl/media/abc079d1-4ee9-4c32-b78f-c9f8e3b532ab"
+  },
+  {
+    "id": "CWT_C",
+    "division": "C",
+    "name": "Crazy Warriors Team-2",
+    "tag": "Cwt)-2",
+    "file": "clan-icons/CWT_C.png",
+    "source": "https://bwcl.anicolasmoreno.chatgpt.site/api/bwcl/media/b7dc2ada-0f76-4af6-ae7b-20c1c4755f1d"
+  },
+  {
+    "id": "RED_D",
+    "division": "D",
+    "name": "Rasierte Eier, Dödel-3",
+    "tag": "Red-3",
+    "file": "clan-icons/RED_D.png",
+    "source": "https://bwcl.anicolasmoreno.chatgpt.site/api/bwcl/media/dd107681-4708-4ba9-a7a8-c495c2d0c070"
+  },
+  {
+    "id": "DB_D",
+    "division": "D",
+    "name": "Da BrotherHooD-3",
+    "tag": "dB)-3",
+    "file": "clan-icons/DB_D.png",
+    "source": "https://bwcl.anicolasmoreno.chatgpt.site/api/bwcl/media/24ec53b8-2272-49b4-a74e-7a1f489c0763"
+  },
+  {
+    "id": "SHADOW_D",
+    "division": "D",
+    "name": "Shadow-2",
+    "tag": "Shadow]-2",
+    "file": null,
+    "source": null
+  },
+  {
+    "id": "CWT_D",
+    "division": "D",
+    "name": "Crazy Warriors Team-3",
+    "tag": "Cwt)-3",
+    "file": "clan-icons/CWT_D.png",
+    "source": "https://bwcl.anicolasmoreno.chatgpt.site/api/bwcl/media/96ec0dc5-b2db-4afe-9bda-5234f80c060a"
+  },
+  {
+    "id": "WD_D",
+    "division": "D",
+    "name": "White Dragon",
+    "tag": "[WD]",
+    "file": "christmas-logo.jpg",
+    "source": "Existing White Dragon Christmas logo"
+  },
+  {
+    "id": "SAS_D",
+    "division": "D",
+    "name": "sas",
+    "tag": "sas.",
+    "file": "clan-icons/SAS_D.png",
+    "source": "https://bwcl.anicolasmoreno.chatgpt.site/api/bwcl/media/082cd48e-e017-41b8-b8f1-c4e137e92593"
+  }
+]
