@@ -1,23 +1,38 @@
+function wdRecordedMatchResult(match,today) {
+  if(!match)return null;
+  var date=parseClanDate(match.week);if(!date||calendarDateKey(date)>today)return null;
+  var state=String(match.resultType||'').trim().toUpperCase();
+  if(/^(CANCELLED|CANCELED|POSTPONED)$/.test(state))return null;
+  var number=String(match.score||'').match(/\b(\d+)\s*[-:–]\s*(\d+)\b/);
+  var score=number?number[1]+' – '+number[2]:'';
+  if(/^(WIN|LOSS|DRAW)$/.test(state))return {outcome:state,score:score,statusPending:false};
+  if(!/^(UPCOMING|PENDING)$/.test(state)||!number)return null;
+  var sets=Array.isArray(match.sets)?match.sets:typeof match.sets==='string'?match.sets.split(/\r?\n/):[];
+  sets=sets.filter(function(set){return typeof set!=='string'||set.trim();});
+  if(!sets.length||!sets.every(function(set){return Boolean(wdParseStatsSet(set));}))return null;
+  return {outcome:Number(number[1])>Number(number[2])?'WIN':Number(number[1])<Number(number[2])?'LOSS':'DRAW',score:score,statusPending:true};
+}
 function wdLatestCompletedMatch(matches, today) {
   return (Array.isArray(matches)?matches:[]).filter(function(match){
-    if(!match || !/^(WIN|LOSS|DRAW)$/i.test(String(match.resultType||'').trim()))return false;
-    var date=parseClanDate(match.week);return date && calendarDateKey(date)<=today;
+    return Boolean(wdRecordedMatchResult(match,today));
   }).slice().sort(function(a,b){return parseClanDate(b.week)-parseClanDate(a.week)||String(a.id||'').localeCompare(String(b.id||''));})[0] || null;
 }
 function wdAppendLastMatch(container) {
   var match=wdLatestCompletedMatch(getMatchesList(),calendarDateKey(new Date()));
   var panel=document.createElement('div');panel.className='last-match-summary';
-  var heading=document.createElement('span');heading.className='last-match-label';heading.textContent='Last completed match';panel.appendChild(heading);
+  var heading=document.createElement('span');heading.className='last-match-label';heading.textContent='Last match result';panel.appendChild(heading);
   if(!match){var empty=document.createElement('span');empty.textContent='No completed match recorded.';panel.appendChild(empty);container.appendChild(panel);return;}
   var row=document.createElement('div');row.className='last-match-row';
   var identity=document.createElement('div');identity.className='last-match-identity';
   var details=wdNextMatchDetails(match,[]);
   if(details.opponent){var logoPath=wdClanLogoPath(details.opponent);if(logoPath){var logo=document.createElement('img');logo.src=logoPath;logo.alt='';logo.width=36;logo.height=36;logo.onerror=function(){this.hidden=true;};identity.appendChild(logo);}}
   var text=document.createElement('div');var title=document.createElement('strong');title.textContent=String(match.title||'Match');var date=document.createElement('small');date.textContent=parseClanDate(match.week).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'});text.append(title,date);identity.appendChild(text);
-  var result=document.createElement('strong');result.className='last-match-result result-'+String(match.resultType).toLowerCase();
+  var recorded=wdRecordedMatchResult(match,calendarDateKey(new Date()));
+  var result=document.createElement('strong');result.className='last-match-result result-'+recorded.outcome.toLowerCase();
   // Show only a recorded fixture score; do not infer a clan-war score from individual maps.
   var score=String(match.score||'').trim();var number=score.match(/\b(\d+)\s*[-:–]\s*(\d+)\b/);
-  result.textContent=String(match.resultType).toUpperCase()+(number?' · '+number[1]+' – '+number[2]:'');
+  result.textContent=recorded.outcome+(recorded.score?' · '+recorded.score:'');
+  if(recorded.statusPending)result.title='Recorded score; fixture status has not yet been updated.';
   var button=document.createElement('button');button.type='button';button.className='last-match-details';button.textContent='Details →';button.onclick=function(){openCalendarMatch(match.id);};
   row.append(identity,result,button);panel.appendChild(row);container.appendChild(panel);
 }
