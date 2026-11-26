@@ -30,3 +30,5 @@ Alle bisherigen Kalender-, Statistik-, Clanlogo-, Match- und Firebase-Funktionen
 MMR UPDATE: Current MMR ist jetzt ein Pflichtfeld (ganze Zahl 0 bis 10000) und in Applications sichtbar. Bereits vorhandene Bewerbungen ohne MMR zeigen Not provided. Den aktualisierten clan_applications-Regelblock aus applications.rules.fragment erneut veroeffentlichen, damit das neue Feld gespeichert werden darf.
 
 COUNTRY UPDATE: Country of residence ist ein Pflichtfeld (max. 80 Zeichen). Es wird nur das Land abgefragt und in der Admin-Uebersicht angezeigt. Bestehende Bewerbungen ohne Land bleiben lesbar und zeigen Not provided. MMR bleibt Pflichtfeld. Der Bewerbungslink bleibt https://whitedragonclan.com/#apply .
+
+BWCL BANNER UPDATE: Sagi.gg wurde aus der Partnerleiste entfernt. An dieser Stelle steht der BWCL-Banner mit lokalem Original-Logo und Link zu https://bwcl.anicolasmoreno.chatgpt.site/ . Bewerbungen inklusive MMR und Country sowie bisherige Funktionen bleiben erhalten. Fuer diese Banner-Aenderung sind keine neuen Firestore-Regeln erforderlich.
