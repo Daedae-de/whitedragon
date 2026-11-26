@@ -1,17 +1,32 @@
-WHITE DRAGON - ALL DIVISION CLAN LOGOS
+WHITE DRAGON - MITGLIEDERBEWERBUNGEN
 
-Upload all files/folders together, including clan-icons and clan-logos.js, replace previous files and refresh with Ctrl+F5.
+1. WEBSITE HOCHLADEN
+Alle Dateien und Ordner aus diesem Paket in den bisherigen Website-Ordner hochladen und ersetzen. Anschliessend Strg+F5 druecken.
 
-Last Match Result now displays both White Dragon and opponent logos. Next Match and BWCL standings use the same registry.
+2. FIRESTORE FREISCHALTEN
+Die Anleitung in FIRESTORE_SETUP.txt befolgen und den neuen Regelblock veroeffentlichen. Ohne diesen Schritt lehnt Firestore das Einreichen und Laden der Bewerbungen ab.
 
-Source: https://bwcl.anicolasmoreno.chatgpt.site/
-23 registered teams, divisions A-D. 20 opponent logos downloaded and optimised locally. WD uses the existing Christmas logo. Shadow and Shadow-2 have no logo at the source; no badge is invented.
+3. BEWERBUNGSLINK
+Nach dem Hochladen:
+https://whitedragonclan.com/#apply
 
-Storage:
-- clan-icons/*.png: locally served clan images, max 160 pixels on the longest edge.
-- clan-logos.js: runtime lookup by team ID, full name and clan tag.
-- clan-icons/manifest.json: readable division/name/tag/file/source inventory.
+Der bestehende APPLY NOW Button oeffnet jetzt das Bewerbungsformular. Die bisherigen Discord-/Channel-Kontakte bleiben ueber View clan contacts erreichbar.
 
-Name matching ignores case, punctuation and accents. Division suffixes remain significant (e.g. Cwt), Cwt)-2 and Cwt)-3 have separate entries). Unknown clan names do not receive an unrelated logo. New unknown clans require their logo and alias to be added to the registry. No Firestore storage or migration is involved.
+4. BEWERBUNGEN PRUEFEN
+Als verifizierter Admin oder Webmaster anmelden. Konsole oeffnen, Applications auswaehlen. Dort stehen Race, Discord, Battle.net, ShieldBattery und Kommentar. Moegliche Status: New, Reviewing, Accepted, Declined. Interne Notizen sind nur fuer Admins/Webmaster sichtbar. Save review speichert den Status. Delete entfernt eine Bewerbung nach Bestaetigung. Copy application link kopiert den oeffentlichen Link.
 
-Verified all image files, aliases, JavaScript syntax and a simulated last-result renderer producing both logo images. All prior fixes retained. Visual browser verification unavailable.
+Accepted legt KEIN Mitglied oder Website-Konto automatisch an und versendet keine Nachrichten. Der Kontakt erfolgt durch euch ueber die angegebenen Gaming-IDs.
+
+5. DATENSCHUTZ UND SPEICHERUNG
+Neue Sammlung: clan_applications. Bewerbungen werden ausschliesslich in Firestore gespeichert, nicht in einem oeffentlichen HTML-Archiv. Gaeste koennen mit dem beigefuegten Regelblock nur eine neue Bewerbung einreichen, keine Bewerbungen lesen oder bearbeiten. Admin-/Webmaster-Zugriff nutzt euren bestehenden isAdmin()-Regelhelfer. Es werden keine privaten Bewerbungsdaten im Browser-Cache abgelegt.
+
+Discord und Spielername sind Pflichtfelder; Battle.net, ShieldBattery und Kommentar sind optional. Das Formular fragt nicht nach echtem Namen, Adresse oder Passwort. Zustimmung zur Verarbeitung fuer die Clan-Bewerbung ist erforderlich.
+
+6. PRUEFUNGEN
+JavaScript-Syntax, Dateiverweise, Formularvalidierung, Zustimmungsfeld, Doppelklick-/Wiederholungsschutz, Gast-/Admin-Zugriff im Client, interne Pruefung, sichere Textdarstellung und Entfernen privater Daten nach Abmeldung wurden mit simulierten Daten getestet. Keine Testbewerbung wurde an eure Live-Datenbank geschickt. Firestore-Regeln wurden manuell geprueft, hier jedoch nicht in einem Firebase-Emulator oder live getestet. Visuelle Browserpruefung war nicht verfuegbar.
+
+Alle bisherigen Kalender-, Statistik-, Clanlogo-, Match- und Firebase-Funktionen bleiben enthalten.
+
+MMR UPDATE: Current MMR ist jetzt ein Pflichtfeld (ganze Zahl 0 bis 10000) und in Applications sichtbar. Bereits vorhandene Bewerbungen ohne MMR zeigen Not provided. Den aktualisierten clan_applications-Regelblock aus applications.rules.fragment erneut veroeffentlichen, damit das neue Feld gespeichert werden darf.
+
+COUNTRY UPDATE: Country of residence ist ein Pflichtfeld (max. 80 Zeichen). Es wird nur das Land abgefragt und in der Admin-Uebersicht angezeigt. Bestehende Bewerbungen ohne Land bleiben lesbar und zeigen Not provided. MMR bleibt Pflichtfeld. Der Bewerbungslink bleibt https://whitedragonclan.com/#apply .

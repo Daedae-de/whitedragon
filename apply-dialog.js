@@ -2,7 +2,7 @@
   var dialog=document.getElementById('clan-apply-dialog');
   var trigger=document.getElementById('clan-apply-open');
   if(!dialog||!trigger)return;
-  trigger.addEventListener('click',function(){if(!dialog.open)dialog.showModal();});
+  trigger.addEventListener('click',function(){switchTab('apply');});
   document.getElementById('clan-apply-close').addEventListener('click',function(){dialog.close();});
   dialog.addEventListener('click',function(event){
     if(event.target!==dialog)return;

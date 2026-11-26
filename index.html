@@ -2442,6 +2442,7 @@ header .brand-title { font-size:1.25rem; }
 </style>
 <script src="clan-logos.js?v=1"></script>
 <style>.last-match-marks{display:flex;align-items:center;gap:8px;flex-shrink:0}.last-match-marks img{display:block;width:42px!important;height:42px!important;object-fit:contain}.last-match-marks img[hidden]{display:none}.last-match-vs{font:600 .62rem Inter,Arial,sans-serif;color:#7a7d73}.last-match-identity{gap:12px}@media(max-width:760px){.last-match-marks{gap:5px}.last-match-marks img{width:32px!important;height:32px!important}.last-match-identity{gap:8px}}</style>
+<link rel="stylesheet" href="applications.css?v=1">
 </head>
 <body>
   <!-- White Dragon rank insignia: self-contained SVG symbols, no extra assets. -->
@@ -3998,12 +3999,18 @@ header .brand-title { font-size:1.25rem; }
 
           <section id="wd-webmaster-console" aria-label="Webmaster console" hidden>
             <nav class="wd-console-nav" aria-label="Console sections">
+<button type="button" id="application-console-tab" data-console-section="applications" aria-controls="wd-console-applications" aria-pressed="false" onclick="wdShowConsoleSection('applications')" hidden>Applications</button>
               <button type="button" data-console-section="accounts" aria-controls="wd-console-accounts" aria-pressed="true" onclick="wdShowConsoleSection('accounts')">Accounts</button>
               <button type="button" data-console-section="activity" aria-controls="wd-console-activity" aria-pressed="false" onclick="wdShowConsoleSection('activity')">Activity log</button>
               <button type="button" data-console-section="tools" aria-controls="wd-console-tools" aria-pressed="false" onclick="wdShowConsoleSection('tools')">Site tools</button>
               <button type="button" data-console-section="sync" aria-controls="wd-console-sync" aria-pressed="false" onclick="wdShowConsoleSection('sync')">Sync status</button>
             </nav>
-            <section class="wd-console-panel" id="wd-console-accounts" data-console-panel="accounts">
+            <section class="wd-console-panel" id="wd-console-applications" data-console-panel="applications" hidden>
+  <div class="application-admin-tools"><h3>Membership applications</h3><button type="button" class="winter-primary" id="application-copy-link">Copy application link</button><label for="application-status-filter">Show<select id="application-status-filter"><option value="all">All applications</option><option value="new">New</option><option value="reviewing">Reviewing</option><option value="accepted">Accepted</option><option value="declined">Declined</option></select></label></div>
+  <p id="application-admin-message" role="status" aria-live="polite"></p><div id="application-admin-list"></div><button type="button" class="winter-primary" id="application-load-more" hidden>Show older applications</button>
+</section>
+
+<section class="wd-console-panel" id="wd-console-accounts" data-console-panel="accounts">
               <div id="webmaster-users-panel" style="display:none">
                 <div class="wd-account-filters">
                   <label>Search accounts<input id="wd-account-search" type="search" placeholder="Email or player name" oninput="wdFilterConsoleAccounts()"></label>
@@ -4245,6 +4252,25 @@ header .brand-title { font-size:1.25rem; }
       </div>
     </div>
   </div>
+
+<section id="tab-apply" class="section-wrap">
+  <div class="section-head"><div><h2>JOIN WHITE DRAGON</h2><div class="section-subtitle">Tell us about your StarCraft experience. Clan admins will review your application.</div></div></div>
+  <div class="wd-application-layout">
+    <form id="wd-application-form" class="wd-application-card">
+      <label for="application-name">Player name <span aria-hidden="true">*</span></label><input id="application-name" name="playerName" required maxlength="80" autocomplete="nickname">
+      <label for="application-country">Country of residence <span aria-hidden="true">*</span></label><input id="application-country" name="country" required maxlength="80" autocomplete="country-name" placeholder="e.g. Germany" aria-describedby="application-country-help"><p id="application-country-help" class="application-help">Which country do you live in? Country only — no city or address needed.</p><label for="application-race">Preferred race <span aria-hidden="true">*</span></label><select id="application-race" name="race" required><option value="">Choose your race</option><option>Terran</option><option>Zerg</option><option>Protoss</option><option>Random</option></select>
+      <label for="application-mmr">Current MMR <span aria-hidden="true">*</span></label><input id="application-mmr" name="mmr" type="number" required min="0" max="10000" step="1" inputmode="numeric" aria-describedby="application-mmr-help"><p id="application-mmr-help" class="application-help">Enter your current StarCraft ladder MMR.</p><label for="application-discord">Discord username or ID <span aria-hidden="true">*</span></label><input id="application-discord" name="discord" required maxlength="100" placeholder="Your Discord username or numeric user ID" autocomplete="off">
+      <label for="application-bnet">Battle.net ID <span class="application-optional">optional</span></label><input id="application-bnet" name="battleNet" maxlength="100" placeholder="Your player name or BattleTag" autocomplete="off">
+      <label for="application-shieldbattery">ShieldBattery ID <span class="application-optional">optional</span></label><input id="application-shieldbattery" name="shieldBattery" maxlength="100" placeholder="Your ShieldBattery player name or ID" autocomplete="off">
+      <label for="application-comment">Comment <span class="application-optional">optional</span></label><textarea id="application-comment" name="comment" maxlength="2000" rows="5" placeholder="Your experience, availability, or a short introduction"></textarea>
+      <div class="application-honeypot" aria-hidden="true"><label for="application-website">Leave this field empty</label><input id="application-website" name="website" tabindex="-1" autocomplete="off"></div>
+      <label class="application-consent"><input id="application-consent" type="checkbox" required> <span>I agree that White Dragon admins may use these details to review my application and contact me about joining.</span></label>
+      <p class="application-help">Only clan admins and the webmaster can read your application. Please use gaming IDs; do not include passwords, your address, or other sensitive information.</p>
+      <p id="application-message" role="status" aria-live="polite"></p><button type="submit" class="winter-primary" id="application-submit">Send application</button>
+    </form>
+    <aside class="wd-application-card application-aside"><h3>White Dragon Clan</h3><p>StarCraft: Remastered · US West</p><p>Battle.net channel<br><strong>Op White-Dragon</strong></p><a class="winter-primary" href="https://shieldbattery.net/chat/224/White-Dragon" target="_blank" rel="noopener noreferrer">Our ShieldBattery channel ↗</a><button type="button" class="winter-primary" onclick="document.getElementById('clan-apply-dialog').showModal()">View clan contacts</button><p>After submitting, an admin can contact you on Discord. This form does not register a website account.</p><button type="button" class="last-match-details" onclick="switchTab('overview')">← Back to overview</button></aside>
+  </div>
+</section>
 
   <footer>
     <div class="league-partners">
@@ -7817,6 +7843,7 @@ function renderLatestTransmission(articles) {
     }
 
     function wdRefreshWebmasterConsole() {
+      if (typeof wdRefreshApplicationsAccess === 'function') wdRefreshApplicationsAccess();
       var allowed = canViewWdSyncHealth();
       document.getElementById('wd-webmaster-console').hidden = !allowed;
       document.getElementById('authModal').classList.toggle('wd-staff-console', allowed);
@@ -11559,7 +11586,8 @@ function updateMatchTimePreview(){
 
 <script src="winter.js?v=alllogos1"></script>
 <dialog class="clan-apply-dialog" id="clan-apply-dialog" aria-labelledby="clan-apply-title"><div class="clan-apply-heading"><h2 id="clan-apply-title">Join White Dragon Clan</h2><button class="clan-apply-close" id="clan-apply-close" type="button" aria-label="Close joining information" autofocus>×</button></div><div class="clan-apply-body"><p>Meet us on Battle.net, join our ShieldBattery channel, or contact a clan representative on Discord.</p><dl class="clan-channel"><dt>Gateway</dt><dd>US West</dd><dt>Channel</dt><dd>Op White-Dragon</dd></dl><a class="winter-primary clan-shieldbattery-link" href="https://shieldbattery.net/chat/224/White-Dragon" target="_blank" rel="noopener noreferrer">Join White Dragon on ShieldBattery ↗</a><button type="button" class="winter-primary" onclick="copyJoinInfo()">Copy joining details</button><div class="clan-discord-contacts" aria-label="Discord recruitment contacts"><span class="clan-contact-label">Contact us on Discord</span><a class="winter-primary clan-contact" href="https://discord.com/users/839360695992844298" target="_blank" rel="noopener noreferrer"><span>LunarPop[WD]</span><span aria-hidden="true">↗</span></a><a class="winter-primary clan-contact" href="https://discord.com/users/1363731179454468136" target="_blank" rel="noopener noreferrer"><span>z'DAwgZ[WD]</span><span aria-hidden="true">↗</span></a><a class="winter-primary clan-contact" href="https://discord.com/users/492046348946898946" target="_blank" rel="noopener noreferrer"><span>Cheesecake[WD]</span><span aria-hidden="true">↗</span></a></div></div></dialog>
-<script src="apply-dialog.js?v=1"></script>
+<script src="apply-dialog.js?v=applications1"></script>
+<script src="applications.js?v=country1"></script>
 </body>
 </html>
 

@@ -1,0 +1,27 @@
+FIRESTORE - BEWERBUNGEN FREISCHALTEN
+
+1. Firebase Console oeffnen, euer Projekt waehlen.
+2. Firestore Database > Rules oeffnen.
+3. Die Datei applications.rules.fragment aus diesem Paket oeffnen und ihren kompletten Inhalt kopieren.
+4. In euren vorhandenen Regeln den Block innerhalb von
+   match /databases/{database}/documents {
+   einfuegen, neben den vorhandenen Sammlungen.
+   Geeignete Stelle: unmittelbar VOR dem abschliessenden
+   match /{document=**} {
+   der bisherigen Regeln.
+5. Vorhandene Regeln fuer Matches, Mitglieder, Uploads, Termine, Rollen und Counter beibehalten. Der neue Block verwendet die bereits vorhandene Funktion isAdmin().
+6. Regeln mit Publish veroeffentlichen.
+
+Erlaubnisse des neuen Blocks:
+- create: oeffentlich, ausschliesslich die vorgesehenen Felder, gueltige Laengen, Race, Status new, Zustimmung und Server-Zeitstempel.
+- read/list: nur verifizierte Admins/Webmaster gemaess eurem bestehenden isAdmin().
+- update: nur Admins/Webmaster und ausschliesslich Status, interne Notiz und Pruefmetadaten. Angaben der Bewerbung bleiben unveraendert.
+- delete: nur Admins/Webmaster.
+
+Die .fragment-Datei ist KEIN vollstaendiger Ersatz fuer eure Rules-Datei. Nur diesen neuen Block in die vorhandenen Regeln einfuegen.
+
+Nach dem Veroeffentlichen eine eigene Testbewerbung ueber #apply einreichen, als Admin pruefen und bei Bedarf loeschen. Eine Bewerbung darf ohne Admin-Anmeldung nicht aus Firestore lesbar sein.
+
+MMR UPDATE: Falls clan_applications bereits vorhanden ist, dessen bisherigen Regelblock durch die neue applications.rules.fragment ersetzen, nicht doppelt einfuegen. Andere Sammlungen unveraendert lassen. Die neue Version verlangt mmr als Integer 0 bis 10000 bei neuen Bewerbungen.
+
+COUNTRY UPDATE: Den vorhandenen clan_applications-Regelblock durch diese neueste applications.rules.fragment ersetzen. Country wird bei neuen Bewerbungen verlangt. Keine doppelten Regelbloecke anfuegen. Alle anderen Regeln beibehalten.

@@ -1,0 +1,28 @@
+    // Paste INSIDE match /databases/{database}/documents, alongside existing collections.
+    // Uses the existing isAdmin() helper; all other collection rules stay unchanged.
+    match /clan_applications/{applicationId} {
+      function validApplicationCreate() {
+        let d = request.resource.data;
+        return d.keys().hasAll(['playerName', 'country', 'race', 'mmr', 'discord', 'battleNet', 'shieldBattery', 'comment', 'status', 'consent', 'createdAt'])
+          && d.keys().hasOnly(['playerName', 'country', 'race', 'mmr', 'discord', 'battleNet', 'shieldBattery', 'comment', 'status', 'consent', 'createdAt'])
+          && d.playerName is string && d.playerName.size() > 0 && d.playerName.size() <= 80
+          && d.country is string && d.country.size() > 0 && d.country.size() <= 80
+          && d.race in ['Terran', 'Zerg', 'Protoss', 'Random']
+          && d.mmr is int && d.mmr >= 0 && d.mmr <= 10000
+          && d.discord is string && d.discord.size() > 0 && d.discord.size() <= 100
+          && d.battleNet is string && d.battleNet.size() <= 100
+          && d.shieldBattery is string && d.shieldBattery.size() <= 100
+          && d.comment is string && d.comment.size() <= 2000
+          && d.status == 'new' && d.consent == true
+          && d.createdAt is timestamp && d.createdAt == request.time;
+      }
+      allow create: if validApplicationCreate();
+      allow read: if isAdmin();
+      allow update: if isAdmin()
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status', 'adminNote', 'reviewedAt', 'reviewedBy'])
+        && request.resource.data.status in ['new', 'reviewing', 'accepted', 'declined']
+        && request.resource.data.adminNote is string && request.resource.data.adminNote.size() <= 2000
+        && request.resource.data.reviewedAt is timestamp && request.resource.data.reviewedAt == request.time
+        && request.resource.data.reviewedBy == request.auth.uid;
+      allow delete: if isAdmin();
+    }
